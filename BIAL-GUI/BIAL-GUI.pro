@@ -48,16 +48,17 @@ Debug:OBJECTS_DIR = $$PWD/../build/mac/debug/obj
 
 unix{
 
-Release:DESTDIR = $$PWD/../build/linux/release/
-Release:OBJECTS_DIR = $$PWD/../build/linux/release/obj
+CONFIG(release, debug|release):DESTDIR = $$PWD/../build/linux/release/
+CONFIG(release, debug|release):OBJECTS_DIR = $$PWD/../build/linux/release/obj
 
-Debug:DESTDIR = $$PWD/../build/linux/debug/
-Debug:OBJECTS_DIR = $$PWD/../build/linux/debug/obj
+CONFIG(debug, debug|release):DESTDIR = $$PWD/../build/linux/debug/
+CONFIG(debug, debug|release):OBJECTS_DIR = $$PWD/../build/linux/debug/obj
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build/win/release/lib -lbial
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build/win/debug/lib -lbial
-else:unix: LIBS += -L$$PWD/../build/linux/lib -lbial
+else:unix: CONFIG(release, debug|release): LIBS += -L$$PWD/../build/linux/release/lib -lbial
+else:unix: CONFIG(debug, debug|release): LIBS += -L$$PWD/../build/linux/debug/lib -lbial
 
 INCLUDEPATH += $$PWD/../bial/inc
 DEPENDPATH += $$PWD/../bial/inc

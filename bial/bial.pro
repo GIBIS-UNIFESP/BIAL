@@ -38,26 +38,39 @@ CONFIG += c++11
 QMAKE_CXXFLAGS -= -pipe
 
 win32{
-QMAKE_LFLAGS += -fopenmp
-
-Release:DESTDIR = $$PWD/../build/win/release/lib
-Release:OBJECTS_DIR = $$PWD/../build/win/release/obj
-
-Debug:DESTDIR = $$PWD/../build/win/debug/lib
-Debug:OBJECTS_DIR = $$PWD/../build/win/debug/obj
-}
-
-macx{
-DESTDIR = $$PWD/../build/mac/lib
-OBJECTS_DIR = $$PWD/../build/mac/obj
-}
-
-unix: !macx{
 QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS += -fopenmp
 
-DESTDIR = $$PWD/../build/linux/lib
-OBJECTS_DIR = $$PWD/../build/linux/obj
+Release:DESTDIR = $$PWD/../build/win/release/lib/
+Release:OBJECTS_DIR = $$PWD/../build/win/release/obj
+
+Debug:DESTDIR = $$PWD/../build/win/debug/lib/
+Debug:OBJECTS_DIR = $$PWD/../build/win/debug/obj
+}
+
+unix: !macx{
+QMAKE_CXXFLAGS += -fopenmp -std=c++11
+QMAKE_LFLAGS += -fopenmp -std=c++11
+}
+
+macx{
+QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++11
+QMAKE_LFLAGS += -stdlib=libc++
+
+Release:DESTDIR = $$PWD/../build/mac/release/lib/
+Release:OBJECTS_DIR = $$PWD/../build/mac/release/obj
+
+Debug:DESTDIR = $$PWD/../build/mac/debug/lib/
+Debug:OBJECTS_DIR = $$PWD/../build/mac/debug/obj
+}
+
+unix{
+
+CONFIG(release, debug|release):DESTDIR = $$PWD/../build/linux/release/lib/
+CONFIG(release, debug|release):OBJECTS_DIR = $$PWD/../build/linux/release/obj
+
+CONFIG(debug, debug|release):DESTDIR = $$PWD/../build/linux/debug/lib/
+CONFIG(debug, debug|release):OBJECTS_DIR = $$PWD/../build/linux/debug/obj
 }
 
 QMAKE_EXTRA_TARGETS += createDirs
