@@ -15,8 +15,8 @@ QMAKE_CXXFLAGS += -fopenmp
 }
 
 unix: !macx{
-QMAKE_CXXFLAGS += -fopenmp -std=c++17
-QMAKE_LFLAGS += -std=c++17
+QMAKE_CXXFLAGS += -fopenmp -std=c++11
+QMAKE_LFLAGS += -std=c++11
 }
 
 #QMAKE_CXXFLAGS += -DBIAL_IMPLICIT_BIN
