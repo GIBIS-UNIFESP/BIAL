@@ -1,4 +1,3 @@
-#define __SSP_STRONG__ 3
 #define __DBL_MIN_EXP__ (-1021)
 #define __cpp_attributes 200809
 #define __UINT_LEAST16_MAX__ 0xffff
@@ -56,7 +55,6 @@
 #define __INT64_C(c) c ## L
 #define __DBL_DIG__ 15
 #define __GCC_ATOMIC_POINTER_LOCK_FREE 2
-#define _FORTIFY_SOURCE 2
 #define __SIZEOF_INT__ 4
 #define __SIZEOF_POINTER__ 8
 #define __GCC_ATOMIC_CHAR16_T_LOCK_FREE 2
@@ -128,6 +126,7 @@
 #define __UINT16_MAX__ 0xffff
 #define __DBL_HAS_DENORM__ 1
 #define __UINT8_TYPE__ unsigned char
+#define __NO_INLINE__ 1
 #define __FLT_MANT_DIG__ 24
 #define __VERSION__ "5.3.1 20160406 (Red Hat 5.3.1-6)"
 #define __UINT64_C(c) c ## UL
@@ -159,7 +158,6 @@
 #define __SIG_ATOMIC_MAX__ 0x7fffffff
 #define __GCC_ATOMIC_WCHAR_T_LOCK_FREE 2
 #define __SIZEOF_PTRDIFF_T__ 8
-#define __OPTIMIZE__ 1
 #define __x86_64__ 1
 #define __DEC32_SUBNORMAL_MIN__ 0.000001E-95DF
 #define __INT_FAST16_MAX__ 0x7fffffffffffffffL
