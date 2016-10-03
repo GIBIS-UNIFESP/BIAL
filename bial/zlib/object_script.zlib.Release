@@ -1,0 +1,17 @@
+INPUT(
+./release\adler32.o
+./release\compress.o
+./release\crc32.o
+./release\deflate.o
+./release\gzclose.o
+./release\gzlib.o
+./release\gzread.o
+./release\gzwrite.o
+./release\infback.o
+./release\inffast.o
+./release\inflate.o
+./release\inftrees.o
+./release\trees.o
+./release\uncompr.o
+./release\zutil.o
+);

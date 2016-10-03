@@ -1,0 +1,17 @@
+INPUT(
+./debug\adler32.o
+./debug\compress.o
+./debug\crc32.o
+./debug\deflate.o
+./debug\gzclose.o
+./debug\gzlib.o
+./debug\gzread.o
+./debug\gzwrite.o
+./debug\infback.o
+./debug\inffast.o
+./debug\inflate.o
+./debug\inftrees.o
+./debug\trees.o
+./debug\uncompr.o
+./debug\zutil.o
+);

@@ -1,0 +1,47 @@
+tst/*
+
+# C++ objects and libs
+
+obj/*
+lib/*
+cpplex/obj/*
+cpplex/lib/*
+lsh/obj/*
+lsh/lib/*
+
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.dll
+*.dylib
+
+# Qt-es
+
+/.qmake.cache
+/.qmake.stash
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*-build-*
+
+# QtCreator
+
+*.autosave
+
+#QtCtreator Qml
+*.qmlproject.user
+*.qmlproject.user.*
+
+
+#Bial make aux file
+.bial_make
+.clang_complete

@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>863</width>
+    <height>983</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>190</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Bial</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qrs/resources.qrc">
+    <normaloff>:/icons/bial-logo.png</normaloff>:/icons/bial-logo.png</iconset>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout_7">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item row="0" column="1">
+     <widget class="GraphicsView" name="logoView">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="resizeAnchor">
+       <enum>QGraphicsView::NoAnchor</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="ImageViewer" name="imageViewer" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>100</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>863</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuRecent_files">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>R&amp;ecent files:</string>
+     </property>
+    </widget>
+    <addaction name="actionOpen_image"/>
+    <addaction name="actionOpen_DicomDir"/>
+    <addaction name="actionOpen_folder"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_image"/>
+    <addaction name="actionRemove_current_image"/>
+    <addaction name="separator"/>
+    <addaction name="actionAddLabel"/>
+    <addaction name="actionRemove_current_label"/>
+    <addaction name="separator"/>
+    <addaction name="menuRecent_files"/>
+    <addaction name="separator"/>
+    <addaction name="actionPrint"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuOverlay">
+    <property name="title">
+     <string>Overlay</string>
+    </property>
+    <widget class="QMenu" name="menuColor_2">
+     <property name="title">
+      <string>&amp;Color</string>
+     </property>
+     <addaction name="actionRedPen"/>
+     <addaction name="actionBluePen"/>
+     <addaction name="actionGreenPen"/>
+     <addaction name="actionBlackPen"/>
+     <addaction name="actionWhitePen"/>
+    </widget>
+    <addaction name="actionToggle_overlay"/>
+    <addaction name="menuColor_2"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="menuBackground_color">
+     <property name="title">
+      <string>&amp;Background color</string>
+     </property>
+     <addaction name="actionBlack_background"/>
+     <addaction name="actionWhite_background"/>
+     <addaction name="actionRed_background"/>
+     <addaction name="actionGreen_background"/>
+     <addaction name="actionBlue_background"/>
+    </widget>
+    <addaction name="separator"/>
+    <addaction name="actionShow_controls_dock"/>
+    <addaction name="actionHistogram_dock"/>
+    <addaction name="actionShow_images_dock"/>
+    <addaction name="actionSegmentation_dock"/>
+    <addaction name="separator"/>
+    <addaction name="menuBackground_color"/>
+   </widget>
+   <widget class="QMenu" name="menuLayout">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Layout</string>
+    </property>
+    <widget class="QMenu" name="menu1_View">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>&amp;1 view</string>
+     </property>
+     <addaction name="actionAxial"/>
+     <addaction name="actionCoronal"/>
+     <addaction name="actionSagittal"/>
+     <addaction name="actionRed_channel"/>
+     <addaction name="actionGreen_channel"/>
+     <addaction name="actionBlue_channel"/>
+     <addaction name="actionAll_channels"/>
+    </widget>
+    <addaction name="menu1_View"/>
+    <addaction name="action3_Views"/>
+    <addaction name="action4_Views"/>
+    <addaction name="separator"/>
+    <addaction name="actionVertical"/>
+    <addaction name="actionHorizontal"/>
+    <addaction name="actionGrid"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <widget class="QMenu" name="menuApplication_Language">
+     <property name="title">
+      <string>Switch Application &amp;Language</string>
+     </property>
+     <addaction name="actionEnglish"/>
+     <addaction name="actionPortuguese"/>
+    </widget>
+    <addaction name="actionSelect_default_folder"/>
+    <addaction name="menuApplication_Language"/>
+    <addaction name="separator"/>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuLayout"/>
+   <addaction name="menuOverlay"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QDockWidget" name="thumbsDock">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>100</width>
+     <height>35</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>524287</height>
+    </size>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>I&amp;mages</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_12">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <item row="0" column="0">
+      <widget class="ThumbsWidget" name="thumbsWidget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>100</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetHistogram">
+   <property name="windowTitle">
+    <string>Histog&amp;ram</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QCustomPlot" name="histogramWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>250</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="controlsDock">
+   <property name="windowTitle">
+    <string>Co&amp;ntrols</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_7">
+    <layout class="QGridLayout" name="gridLayout_11">
+     <item row="0" column="0">
+      <widget class="ControlsWidget" name="controlsWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>300</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetSegmentation">
+   <property name="windowTitle">
+    <string>Se&amp;gmentation</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_3">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="SegmentationWidget" name="segmentationWidget" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>250</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="actionOpen_image">
+   <property name="text">
+    <string>&amp;Open image...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionOpen_folder">
+   <property name="text">
+    <string>Open &amp;folder...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionAdd_image">
+   <property name="text">
+    <string>&amp;Add image...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionRemove_current_image">
+   <property name="text">
+    <string>&amp;Remove current image</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionAddLabel">
+   <property name="text">
+    <string>&amp;Load label...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionBlue_background">
+   <property name="text">
+    <string>B&amp;lue background</string>
+   </property>
+  </action>
+  <action name="actionRed_background">
+   <property name="text">
+    <string>&amp;Red background</string>
+   </property>
+  </action>
+  <action name="actionGreen_background">
+   <property name="text">
+    <string>&amp;Green background</string>
+   </property>
+  </action>
+  <action name="actionBlack_background">
+   <property name="text">
+    <string>&amp;Black background</string>
+   </property>
+  </action>
+  <action name="actionWhite_background">
+   <property name="text">
+    <string>&amp;White background</string>
+   </property>
+  </action>
+  <action name="actionCoronal">
+   <property name="text">
+    <string>&amp;Coronal</string>
+   </property>
+  </action>
+  <action name="actionSagittal">
+   <property name="text">
+    <string>&amp;Sagittal</string>
+   </property>
+  </action>
+  <action name="actionAxial">
+   <property name="text">
+    <string>&amp;Axial</string>
+   </property>
+  </action>
+  <action name="action3_Views">
+   <property name="text">
+    <string>&amp;3 views</string>
+   </property>
+  </action>
+  <action name="action4_Views">
+   <property name="text">
+    <string>&amp;4 views</string>
+   </property>
+  </action>
+  <action name="actionVertical">
+   <property name="text">
+    <string>&amp;Vertical</string>
+   </property>
+   <property name="toolTip">
+    <string>Vertical</string>
+   </property>
+  </action>
+  <action name="actionHorizontal">
+   <property name="text">
+    <string>&amp;Horizontal</string>
+   </property>
+   <property name="toolTip">
+    <string>Horizontal</string>
+   </property>
+  </action>
+  <action name="actionGrid">
+   <property name="text">
+    <string>&amp;Grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Grid</string>
+   </property>
+  </action>
+  <action name="actionSelect_default_folder">
+   <property name="text">
+    <string>&amp;Select default folder...</string>
+   </property>
+  </action>
+  <action name="actionToggle_overlay">
+   <property name="text">
+    <string>&amp;Activate/Deactivate</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionShow_controls_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Controls dock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionShow_images_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Thumbnails dock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionRemove_current_label">
+   <property name="text">
+    <string>Remove &amp;current label</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionRedPen">
+   <property name="text">
+    <string>&amp;Red</string>
+   </property>
+  </action>
+  <action name="actionBluePen">
+   <property name="text">
+    <string>&amp;Blue</string>
+   </property>
+  </action>
+  <action name="actionGreenPen">
+   <property name="text">
+    <string>&amp;Green</string>
+   </property>
+  </action>
+  <action name="actionBlackPen">
+   <property name="text">
+    <string>B&amp;lack</string>
+   </property>
+  </action>
+  <action name="actionWhitePen">
+   <property name="text">
+    <string>&amp;White</string>
+   </property>
+  </action>
+  <action name="actionEnglish">
+   <property name="text">
+    <string>&amp;English</string>
+   </property>
+  </action>
+  <action name="actionPortuguese">
+   <property name="text">
+    <string>&amp;Portuguese</string>
+   </property>
+  </action>
+  <action name="actionOpen_DicomDir">
+   <property name="text">
+    <string>Open &amp;DicomDir</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="text">
+    <string>&amp;Print...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionRed_channel">
+   <property name="text">
+    <string>&amp;Red channel</string>
+   </property>
+  </action>
+  <action name="actionGreen_channel">
+   <property name="text">
+    <string>&amp;Green channel</string>
+   </property>
+  </action>
+  <action name="actionBlue_channel">
+   <property name="text">
+    <string>&amp;Blue channel</string>
+   </property>
+  </action>
+  <action name="actionAll_channels">
+   <property name="text">
+    <string>A&amp;ll channels</string>
+   </property>
+  </action>
+  <action name="actionHistogram_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Histogram dock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionSegmentation_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Segmentation dock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>GraphicsView</class>
+   <extends>QGraphicsView</extends>
+   <header>src/graphicsview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ControlsWidget</class>
+   <extends>QWidget</extends>
+   <header>src/controlswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ThumbsWidget</class>
+   <extends>QWidget</extends>
+   <header>src/thumbswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ImageViewer</class>
+   <extends>QWidget</extends>
+   <header>src/imageviewer.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>thirdParty/qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SegmentationWidget</class>
+   <extends>QWidget</extends>
+   <header>src/segmentationwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../qrs/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

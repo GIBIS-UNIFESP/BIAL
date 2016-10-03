@@ -1,0 +1,80 @@
+/**
+ * @mainpage
+ * This document presents instructions to install and use BIAL with Linux (Ubuntu or Mint) operational system.
+ *
+ * The following describes how to install BIAL in a computer named "desk" by a user named "john". 
+ *
+ * 1) Before installing BIAL:
+ *
+ * Verify the version of g++ installed in your computer, by typing in the terminal:
+ *
+ * @code{.sh}
+ * john@desk:~$ g++ --version
+ * @endcode
+ *
+ * Verify if the present version is greater or equal to 4.8 as bellow:
+ *
+ * g++ (Ubuntu 4.8.1-2ubuntu1~12.04) 4.8.1
+ * Copyright (C) 2013 Free Software Foundation, Inc.
+ * This is free software; see the source for copying conditions.  There is NO
+ * warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * If your g++ version is lower than 4.8, you will need to install a newer version. Follow the instructions bellow, typing your password when required and waiting for the download and installation:
+ *
+ * @code{.sh}
+ * john@desk:~$ sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+ * john@desk:~$ sudo apt-get update
+ * john@desk:~$ sudo apt-get install g++-4.8
+ * @endcode
+ *
+ * The installation does not make g++ 4.8 the system default. To make it the default compiler follow the instructions:
+ *
+ * @code{.sh}
+ * john@desk:~$ sudo update-alternatives --remove-all g++
+ * john@desk:~$ sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
+ * john@desk:~$ sudo update-alternatives --config g++
+ * @endcode
+ *
+ * Finaly, you need to install zlib by the following command:
+ *
+ * @code{.sh}
+ * john@desk:~$ sudo apt-get install zlib1g-dev
+ * @endcode
+ *
+ *
+ * 2) Working with the library:
+ *
+ * Supposing that BIAL is installed in folder /home/john/work/bial, you can type the following to access its contents by the terminal:
+ *
+ * @code{.sh}
+ * john@desk:~$ cd work/bial
+ * john@desk:~/work/bial$
+ * @endcode
+ *
+ * From here you can access the inc folder, that contains the library implementation, and the tst folder, with some sampling programs.
+ *
+ * To compile all sampling programs type:
+ *
+ * @code{.sh}
+ * john@desk:~/work/bial$ cd tst
+ * john@desk:~/work/bial/tst$ make
+ * @endcode
+ *
+ * Instead, you may also compile only the program of interest, Image-Convert for instance, by typing:
+ *
+ * john@desk:~/work/bial/tst$ make Image-Convert
+ *
+ * Finally, to run the compiled program, type:
+ *
+ * @code{.sh}
+ * john@desk:~/work/bial/tst$ ./bin/Image-Convert
+ * @endcode
+ *
+ * Some of the sampling programs require parameters. They will show you the instructions if you run them without the required parameters. In the case of Image-Convert, an input image and an output image must be provided. For instance:
+ *
+ * @code{.sh}
+ * john@desk:~/work/bial/tst$ ./bin/Image-Convert res/macaw.pgm dat/macaw.bmp
+ * @endcode
+ *
+ * The folder tst/res contains several sampling images that can be used by the sampling programs.
+ */
