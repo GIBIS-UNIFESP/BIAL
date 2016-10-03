@@ -3,10 +3,9 @@ TEMPLATE = lib
 
 QT       -= core gui
 
-QMAKE_CXXFLAGS += -O0 -Wno-unused-function -Wno-unused-parameter \
+QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc \
--I$$PWD/cpplex/inc \
--I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
+-I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
 #-I$$PWD/SLIC/inc
 
@@ -25,24 +24,20 @@ QMAKE_CXXFLAGS += -DBIAL_EXPLICIT_LIB
 #DEFINES += BIAL_IMPLICIT_BIN
 DEFINES += BIAL_EXPLICIT_LIB
 
-QMAKE_CXXFLAGS_DEBUG -= -g
-QMAKE_CXXFLAGS_DEBUG += -O0
-QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -O0
+QMAKE_CXXFLAGS_RELEASE -= -O2 -O0
+QMAKE_CXXFLAGS_RELEASE += -O3
+QMAKE_CXXFLAGS_RELEASE -= -g
 
 macx{
 QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++17
 QMAKE_LFLAGS += -stdlib=libc++
 }
 
-CONFIG += c++17
+CONFIG += c++11
 
 QMAKE_CXXFLAGS -= -pipe
-QMAKE_CXXFLAGS_DEBUG -= -pipe
-QMAKE_CXXFLAGS_RELEASE -= -pipe
 
 win32{
-QMAKE_CXXFLAGS += -fopenmp
 QMAKE_LFLAGS += -fopenmp
 
 Release:DESTDIR = $$PWD/../build/win/release/lib
