@@ -67,7 +67,7 @@ BIN=./bin
 all: Adjacency Bit Brain Clustering Color DataSet Draw Edge Feature File Filtering Gradient Geometrics Heart Hough Image ImageInterpolation Insert-Inhomogeneity Kernel Lungs MarchingCubes Matrix MRI OPF Plate PNM Relaxometria Segmentation Signal SuperPixel Sorting Statistics Table Transform Vector
 
 libbial:
-	@echo "Make shure libbial.so.0 is compiled"
+	export LD_LIBRARY_PATH=$(LIB)
 #	rm -f $(OBJ)/Common.o
 #	qmake-qt5 $(QMAKE_PARAMS)
 #	$(MAKE) -C ../ --no-print-directory
