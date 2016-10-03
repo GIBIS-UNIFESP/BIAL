@@ -68,7 +68,7 @@ OBJECTS_DIR = $$PWD/../build/linux/obj
 QMAKE_EXTRA_TARGETS += createDirs
 
 createDirs.commands = $(QMAKE_MKDIR) $DESTDIR $OBJECTS_DIR
-target.depends += createDirs
+bial.depends += createDirs
 
 
 
