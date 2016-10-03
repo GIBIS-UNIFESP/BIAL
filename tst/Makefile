@@ -64,7 +64,7 @@ BIAL_SRC=../bial/src/*.cpp
 SRC=./src
 BIN=./bin
 
-all: Adjacency Bit Brain Clustering Color DataSet Draw Edge Feature File Filtering Gradient Geometrics Heart Hough Image ImageInterpolation Insert-Inhomogeneity Kernel Lungs MarchingCubes Matrix MRI OPF Plate PNM Relaxometria Segmentation Signal SuperPixel Sorting Statistics Table Transform Vector
+all: Adjacency Bit Brain Clustering Color DataSet Draw Edge Feature File Filtering Gradient Geometrics Heart Hough Image ImageInterpolation Insert-Inhomogeneity Kernel Lungs MarchingCubes Matrix MRI OPF Plate PNM Relaxometria Segmentation Signal Sorting Statistics Table Transform Vector
 
 libbial:
 	export LD_LIBRARY_PATH=$(LIB)
@@ -181,8 +181,8 @@ LiveWire: libbial
 RiverBed: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
-SuperPixel-RiverBed: libbial
-	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+# SuperPixel-RiverBed: libbial
+# 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 
 
@@ -615,13 +615,13 @@ Sorting-QuickIndex: libbial
 
 
 
-SuperPixel: SuperPixel-Image SuperPixel-Brain
+# SuperPixel: SuperPixel-Image SuperPixel-Brain
 
-SuperPixel-Brain: libbial
-	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+# SuperPixel-Brain: libbial
+# 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
-SuperPixel-Image: libbial
-	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+# SuperPixel-Image: libbial
+# 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 
 

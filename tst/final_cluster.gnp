@@ -1,2 +1,0 @@
-set palette defined ( 1 "antiquewhite", 2 "aquamarine", 3 "beige", 4 "black", 5 "blue", 6 "brown", 7 "chartreuse", 8 "coral", 9 "cyan", 10 "gold", 11 "gray", 12 "green", 13"magenta", 14"olive", 15 "pink", 16 "red", 17 "skyblue", 18 "slategray", 19 "violet", 20 "yellow" )
-splot "final_cluster.txt" u 1:2:3:4 with points palette pt 7
