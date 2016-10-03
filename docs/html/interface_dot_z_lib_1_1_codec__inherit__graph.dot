@@ -1,0 +1,12 @@
+digraph "DotZLib.Codec"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{DotZLib.Codec\n|+ Checksum\l|+ Add()\l+ Add()\l+ Finish()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{DotZLib.CodecBase\n|+ Checksum\l~ _ztream\l# _isDisposed\l# kBufferSize\l|+ CodecBase()\l+ Add()\l+ Add()\l+ Finish()\l+ Dispose()\l# OnDataAvailable()\l# CleanUp()\l# copyInput()\l# resetOutput()\l# setChecksum()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_dot_z_lib_1_1_codec_base.html",tooltip="Implements the common functionality needed for all Codecs "];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{DotZLib.Deflater\n||+ Deflater()\l+ Add()\l+ Finish()\l# CleanUp()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_dot_z_lib_1_1_deflater.html",tooltip="Implements a data compressor, using the deflate algorithm in the ZLib dll "];
+  Node2 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node4 [label="{DotZLib.Inflater\n||+ Inflater()\l+ Add()\l+ Finish()\l# CleanUp()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_dot_z_lib_1_1_inflater.html",tooltip="Implements a data decompressor, using the inflate algorithm in the ZLib dll "];
+}

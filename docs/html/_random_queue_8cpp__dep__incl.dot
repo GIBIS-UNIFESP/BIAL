@@ -1,0 +1,9 @@
+digraph "bial/src/RandomQueue.cpp"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="bial/src/RandomQueue.cpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="bial/inc/RandomQueue.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_random_queue_8hpp.html",tooltip="Content: Random-access queue class declaration.   Description: A random-acess queue. Its size is fixed. As soon as it gets full, the first inserted element is automatically replaced by the next inserted element.  It is useful to find the median element as walking through signal or image data, e.g. MedianFilter method of Signal class. Insertion and removal are made in limiar time with respect to the queue size.   Access to ordered keys by position is made in constant time.   Future add-on&#39;s: "];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

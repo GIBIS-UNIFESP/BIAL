@@ -1,0 +1,13 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::DiffusionFunction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_diffusion_function.html",tooltip="Diffusion functions to compute annisotropic filtering and other algorithms. "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Bial::GaussianDiffusionFunction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_gaussian_diffusion_function.html"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Bial::PowerDiffusionFunction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_power_diffusion_function.html"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="Bial::RobustDiffusionFunction",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_robust_diffusion_function.html"];
+}

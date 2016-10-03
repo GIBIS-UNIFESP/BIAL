@@ -1,0 +1,17 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::PathFunction\l\< Image, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_path_function.html"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Bial::EdgeMaxPathFunction\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_edge_max_path_function.html"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Bial::GeodesicDistancePath\lFunction\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_geodesic_distance_path_function.html"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="Bial::GeodesicRestriction\lPathFunction\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_geodesic_restriction_path_function.html"];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="Bial::OrientedExternPath\lFunction\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_oriented_extern_path_function.html"];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="Bial::OrientedInternPath\lFunction\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_oriented_intern_path_function.html"];
+}

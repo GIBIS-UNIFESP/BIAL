@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::Point3D",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__render__geom.html#class_bial_1_1_point3_d",tooltip="The Point3D class is a Geometric representation of a point in 3D space.   A point is a zero­dimension..."];
+}

@@ -1,0 +1,13 @@
+digraph "BIAL-GUI" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_8fd49bd0acdefaa35d9e5d7d8245cf3e {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_8fd49bd0acdefaa35d9e5d7d8245cf3e.html"];
+    dir_8fd49bd0acdefaa35d9e5d7d8245cf3e [shape=plaintext label="BIAL-GUI"];
+    dir_c4568b0d432dc6edde70c4a4ada081c2 [shape=box label="src" color="black" fillcolor="white" style="filled" URL="dir_c4568b0d432dc6edde70c4a4ada081c2.html"];
+    dir_f0b82b41e60d9f00839bc02a07c789fa [shape=box label="thirdParty" color="black" fillcolor="white" style="filled" URL="dir_f0b82b41e60d9f00839bc02a07c789fa.html"];
+  }
+  dir_752bf115b6f73c9d98878bf7307d3054 [shape=box label="bial" fillcolor="white" style="filled" color="red" URL="dir_752bf115b6f73c9d98878bf7307d3054.html"];
+  dir_c4568b0d432dc6edde70c4a4ada081c2->dir_752bf115b6f73c9d98878bf7307d3054 [headlabel="76", labeldistance=1.5 headhref="dir_000001_000003.html"];
+}

@@ -1,0 +1,6 @@
+digraph "Bial::Transform3D"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Transform3D\n||+ Transform3D()\l+ Transform3D()\l+ Transform3D()\l+ getAffineMatrix()\l+ setAffineMatrix()\l+ getInverseMatrix()\l+ setInverseMatrix()\l+ reset()\l+ copy()\l+ Inverse()\land 25 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

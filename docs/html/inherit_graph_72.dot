@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::Ray",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__render__geom.html#class_bial_1_1_ray",tooltip="The Ray class is a mathematic representation of a light ray.   A ray is a semi­infinite line specifie..."];
+}

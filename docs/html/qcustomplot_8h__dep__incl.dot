@@ -1,0 +1,8 @@
+digraph "BIAL-GUI/thirdParty/qcustomplot.h"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="BIAL-GUI/thirdParty\l/qcustomplot.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="BIAL-GUI/thirdParty\l/qcustomplot.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$qcustomplot_8cpp.html"];
+}

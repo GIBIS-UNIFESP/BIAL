@@ -1,0 +1,9 @@
+digraph "bial/zlib/test" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_b763646acf7ffb3c4b830dc9d1188a44 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="zlib" fontname="Helvetica", fontsize="10", URL="dir_b763646acf7ffb3c4b830dc9d1188a44.html"]
+  dir_3290f8305d5ec3b00a385d41405d3558 [shape=box, label="test", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_3290f8305d5ec3b00a385d41405d3558.html"];
+  }
+}

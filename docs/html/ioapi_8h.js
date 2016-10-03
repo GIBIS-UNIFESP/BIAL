@@ -1,0 +1,58 @@
+var ioapi_8h =
+[
+    [ "zlib_filefunc_def", "ioapi_8h.html#structzlib__filefunc__def", [
+      [ "opaque", "ioapi_8h.html#a66592acc5c8cbb0080944625d2d73eff", null ],
+      [ "zclose_file", "ioapi_8h.html#ae1dba23fd7b44ce6f7f7d7f72cc8bfb4", null ],
+      [ "zerror_file", "ioapi_8h.html#aa4b532f49136bd4e8084cac3690417c4", null ],
+      [ "zopen_file", "ioapi_8h.html#a42659d52c07155bade61ce32349270e1", null ],
+      [ "zread_file", "ioapi_8h.html#ab6caf98c5385de5d6c1936e19c1d7f77", null ],
+      [ "zseek_file", "ioapi_8h.html#a0dee5af7d9ac87043a68ca67ab58c4c9", null ],
+      [ "ztell_file", "ioapi_8h.html#ac6491fdcf600c60482d0efe003a69d98", null ],
+      [ "zwrite_file", "ioapi_8h.html#a648b4885ae289606c04292e51fd70817", null ]
+    ] ],
+    [ "zlib_filefunc64_def", "ioapi_8h.html#structzlib__filefunc64__def", [
+      [ "opaque", "ioapi_8h.html#a3e0ff7324816e5771c5c73f92d98b397", null ],
+      [ "zclose_file", "ioapi_8h.html#ac2ddc02969a33e3012371fc7b4132d29", null ],
+      [ "zerror_file", "ioapi_8h.html#abd57d73397c65d3e1c63a7cc17ee6d68", null ],
+      [ "zopen64_file", "ioapi_8h.html#a4e9e7a039afb27f7bcd865849083bbf6", null ],
+      [ "zread_file", "ioapi_8h.html#adcb570fbfd538198993a214cc8e768b4", null ],
+      [ "zseek64_file", "ioapi_8h.html#a22dc317cfd1f7f1046470c311b932700", null ],
+      [ "ztell64_file", "ioapi_8h.html#af9673024c3e5c3d84273c41bef25c404", null ],
+      [ "zwrite_file", "ioapi_8h.html#a30cb604b54a436509ecc6226cbad41f1", null ]
+    ] ],
+    [ "zlib_filefunc64_32_def", "ioapi_8h.html#structzlib__filefunc64__32__def", [
+      [ "zfile_func64", "ioapi_8h.html#af1dfd605206f0c569902731ce5d30252", null ],
+      [ "zopen32_file", "ioapi_8h.html#a66b0037d37a2d8e77950755342ea449b", null ],
+      [ "zseek32_file", "ioapi_8h.html#a6749630a003747d4c6e4c66bf6bbbd3e", null ],
+      [ "ztell32_file", "ioapi_8h.html#a2a54ab3342bee7d7d2da851e35932cb2", null ]
+    ] ],
+    [ "__USE_FILE_OFFSET64", "ioapi_8h.html#aa873b7168492eebce909df8415cac735", null ],
+    [ "__USE_LARGEFILE64", "ioapi_8h.html#a285ae8236e7a984a6692acf6530cd505", null ],
+    [ "_FILE_OFFSET_BIT", "ioapi_8h.html#ac86701761e1b32d5d7a3358a6c726efa", null ],
+    [ "_LARGEFILE64_SOURCE", "ioapi_8h.html#a0e6d20c5075b52b0f0bc4858d51c8591", null ],
+    [ "MAXU32", "ioapi_8h.html#ab8eb863e40d2de1fb90b50bea0117c61", null ],
+    [ "ZCALLBACK", "ioapi_8h.html#aace96475a6dd2915bc55bc542d7aa8a5", null ],
+    [ "ZCLOSE64", "ioapi_8h.html#ab1b931c867b0590b38467d49eea08037", null ],
+    [ "ZERROR64", "ioapi_8h.html#acf2095f95b741618436b88bb151feab1", null ],
+    [ "ZLIB_FILEFUNC_MODE_CREATE", "ioapi_8h.html#aca55322d595862ec1c298ec87e8ea225", null ],
+    [ "ZLIB_FILEFUNC_MODE_EXISTING", "ioapi_8h.html#a726af69b3b72f7485db98fd06352761f", null ],
+    [ "ZLIB_FILEFUNC_MODE_READ", "ioapi_8h.html#ae7bc575ca0cef5d90c7d5d093137d901", null ],
+    [ "ZLIB_FILEFUNC_MODE_READWRITEFILTER", "ioapi_8h.html#a389d35aa169a682776910718fad29487", null ],
+    [ "ZLIB_FILEFUNC_MODE_WRITE", "ioapi_8h.html#acb1ad2741eafcd1541c22553225146c6", null ],
+    [ "ZLIB_FILEFUNC_SEEK_CUR", "ioapi_8h.html#a740e5a75e0d5ca1b093661d263f82e99", null ],
+    [ "ZLIB_FILEFUNC_SEEK_END", "ioapi_8h.html#ace27d6d19b1005424d1fb4bd0c7c9602", null ],
+    [ "ZLIB_FILEFUNC_SEEK_SET", "ioapi_8h.html#a962e25bd3652f31479b855be08836c16", null ],
+    [ "ZOPEN64", "ioapi_8h.html#a08d33495c45c6de968041556a8de6257", null ],
+    [ "ZREAD64", "ioapi_8h.html#a5c7f4b3c02e50f438662270582097117", null ],
+    [ "ZSEEK64", "ioapi_8h.html#a03fd27ea409e9d59f97b4cb296ed5cde", null ],
+    [ "ZTELL64", "ioapi_8h.html#af1ccadb9156604070d26c39cf1af59bf", null ],
+    [ "ZWRITE64", "ioapi_8h.html#a420774865ef34a74d59accbe0a04d601", null ],
+    [ "OF", "ioapi_8h.html#ad61a438c01f886772dfe801b8a51f4db", null ],
+    [ "ZPOS64_T", "ioapi_8h.html#afffed08ed7f2413fa38e12a223ae0e72", null ],
+    [ "fill_zlib_filefunc64_32_def_from_filefunc32", "ioapi_8h.html#a0c90747a8b732158bc3666411776affe", null ],
+    [ "OF", "ioapi_8h.html#a0a34c04d1498ba27b9fefa83aeb9f580", null ],
+    [ "OF", "ioapi_8h.html#a3f615f0884c860540da7fdafb0beaecb", null ],
+    [ "OF", "ioapi_8h.html#a997578250a1533797ef30c4676c7394b", null ],
+    [ "OF", "ioapi_8h.html#a5b9205ac6242d0a8b15e834bc7796d23", null ],
+    [ "OF", "ioapi_8h.html#a141d3c48a06235ca951846d27f1d388c", null ]
+];

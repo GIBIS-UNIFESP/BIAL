@@ -1,0 +1,27 @@
+var _color_8hpp =
+[
+    [ "Color", "union_bial_1_1_color.html", "union_bial_1_1_color" ],
+    [ "operator!=", "_color_8hpp.html#a318d968e23f136034bba9d8496f56fae", null ],
+    [ "operator*", "_color_8hpp.html#a79b8ad0211c4629fa5be757887c34e59", null ],
+    [ "operator*", "_color_8hpp.html#a3258c2f4583fcfdaab521987734eda0d", null ],
+    [ "operator*", "_color_8hpp.html#aee31479de127592468d23d317ed346c5", null ],
+    [ "operator*=", "_color_8hpp.html#a23ecb721ae371403dcf6e17ada6f58da", null ],
+    [ "operator*=", "_color_8hpp.html#a3555b3286869a91b2b615ed305f908d9", null ],
+    [ "operator+", "_color_8hpp.html#a9059899dd30c57ce46c9e6169a796834", null ],
+    [ "operator+", "_color_8hpp.html#a9aefc387a1123ed4e4c515e347eca11d", null ],
+    [ "operator+", "_color_8hpp.html#ad81d2d3acc6f6774d5fcf6f07ac093af", null ],
+    [ "operator+=", "_color_8hpp.html#a696c75f27a7491e89572ebf8c6e10e9a", null ],
+    [ "operator+=", "_color_8hpp.html#a0587626cf4da6c46bb7afe6d1ffd6b84", null ],
+    [ "operator-", "_color_8hpp.html#ae1aeecc3ec4758fad1019efe5df6e64b", null ],
+    [ "operator-", "_color_8hpp.html#a0768a5db4b3a30f803ae148b41447d9c", null ],
+    [ "operator-", "_color_8hpp.html#aba9b4f1dffdd45baf34768a9ed343200", null ],
+    [ "operator-=", "_color_8hpp.html#ae0c010db318f145b7b78c07ca7660362", null ],
+    [ "operator-=", "_color_8hpp.html#a8a92d7e67dd59d3a549a7d5181589b1e", null ],
+    [ "operator/", "_color_8hpp.html#afadbe1a874b73b3c86d1995ad92eb729", null ],
+    [ "operator/", "_color_8hpp.html#a21d0bf59156f51d5dff56392ffa1d883", null ],
+    [ "operator/", "_color_8hpp.html#a53e58863b3ec2a29c660a62d43e5db8c", null ],
+    [ "operator/=", "_color_8hpp.html#a531d05a1cc1530416ba4b52349c92b37", null ],
+    [ "operator/=", "_color_8hpp.html#a84a79d1c6fdfc5ebae64025007b0d702", null ],
+    [ "operator<<", "_color_8hpp.html#abb7e658ca873edd403b80e227e661343", null ],
+    [ "operator==", "_color_8hpp.html#a8f3725a7d026481095a44f6fe73cbc04", null ]
+];

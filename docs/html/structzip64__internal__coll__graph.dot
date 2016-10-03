@@ -1,0 +1,20 @@
+digraph "zip64_internal"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{zip64_internal\n|+ filestream\l+ in_opened_file_inzip\l+ begin_pos\l+ add_position_when_writting\l_offset\l+ number_entry\l+ globalcomment\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +central_dir" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{linkedlist_data\n||}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zip_8c.html#structlinkedlist__data"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" +last_block\n+first_block" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{linkedlist_datablock\l_internal\n|+ next_datablock\l+ avail_in_this_block\l+ filled_in_this_block\l+ unused\l+ data\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zip_8c.html#structlinkedlist__datablock__internal"];
+  Node4 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +ci" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{curfile64_info\n|+ stream_initialised\l+ pos_in_buffered_data\l+ pos_local_header\l+ central_header\l+ size_centralExtra\l+ size_centralheader\l+ size_centralExtraFree\l+ flag\l+ method\l+ raw\land 11 more...\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zip_8c.html#structcurfile64__info"];
+  Node5 -> Node4 [color="grey25",fontsize="10",style="solid",label=" +stream" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{z_stream\n|+ next_in\l+ avail_in\l+ total_in\l+ next_out\l+ avail_out\l+ total_out\l+ msg\l+ zalloc\l+ zfree\l+ opaque\l+ data_type\l+ adler\l+ reserved\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zlib_8h.html#structz__stream"];
+  Node6 -> Node5 [color="grey25",fontsize="10",style="solid",label=" +state" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node6 [label="{internal_state\n|+ dummy\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zutil_8c.html#structinternal__state"];
+  Node7 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +z_filefunc" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node7 [label="{zlib_filefunc64_32_def\n|+ zopen32_file\l+ ztell32_file\l+ zseek32_file\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ioapi_8h.html#structzlib__filefunc64__32__def"];
+  Node8 -> Node7 [color="grey25",fontsize="10",style="solid",label=" +zfile_func64" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node8 [label="{zlib_filefunc64_def\n|+ zopen64_file\l+ zread_file\l+ zwrite_file\l+ ztell64_file\l+ zseek64_file\l+ zclose_file\l+ zerror_file\l+ opaque\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ioapi_8h.html#structzlib__filefunc64__def"];
+}

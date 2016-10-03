@@ -1,0 +1,8 @@
+digraph "DisplayFormat"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{DisplayFormat\n|# m_modality\l# m_currentLayout\l# m_currentViews\l# m_overlay\l# m_hasViewerControls\l# m_enableTools\l# m_rotateAll\l# m_rotateSingle\l# m_hasOverlay\l# m_hasLayout\land 11 more...\l|+ DisplayFormat()\l+ ~DisplayFormat()\l+ modality()\l+ currentLayout()\l+ setCurrentLayout()\l+ currentViews()\l+ setCurrentViews()\l+ hasViewerControls()\l+ enableTools()\l+ rotateAll()\land 19 more...\l# loadSettings()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{QObject\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

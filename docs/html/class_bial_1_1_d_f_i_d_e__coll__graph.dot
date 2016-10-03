@@ -1,0 +1,6 @@
+digraph "Bial::DFIDE"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::DFIDE\n|+ distance_function_type\l+ CharDistancePtr\l+ CharDistancePtrTgt\l+ UCharDistancePtr\l+ UCharDistancePtrTgt\l+ ShortDistancePtr\l+ ShortDistancePtrTgt\l+ IntDistancePtr\l+ IntDistancePtrTgt\l+ UIntDistancePtr\land 11 more...\l|+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\land 28 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

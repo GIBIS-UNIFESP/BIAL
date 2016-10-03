@@ -1,0 +1,20 @@
+digraph "bial/zlib/contrib/infback9/infback9.c"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="bial/zlib/contrib/infback9\l/infback9.c",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="zutil.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zutil_8h.html"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="zlib.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zlib_8h.html"];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="zconf.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zconf_8h.html"];
+  Node1 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="infback9.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$infback9_8h.html"];
+  Node1 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="inftree9.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$inftree9_8h.html"];
+  Node1 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="inflate9.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$inflate9_8h.html"];
+  Node1 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="inffix9.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$inffix9_8h.html"];
+}

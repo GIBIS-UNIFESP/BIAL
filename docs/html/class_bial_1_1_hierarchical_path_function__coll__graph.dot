@@ -1,0 +1,12 @@
+digraph "Bial::HierarchicalPathFunction&lt; C, D &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::HierarchicalPathFunction\l\< C, D \>\n|# handicap\l# merge_label\l# split_label\l|+ HierarchicalPathFunction()\l+ HierarchicalPathFunction()\l+ ~HierarchicalPathFunction()\l+ operator=()\l+ Initialize()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Bial::PathFunction\l\< C, D \>\n|# value\l# label\l# predecessor\l# next_label\l|+ PathFunction()\l+ PathFunction()\l+ ~PathFunction()\l+ Initialize()\l+ UpdateCompleteData()\l+ UpdatePredecessorData()\l+ UpdateLabelData()\l+ UpdateSimpleData()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l+ RemoveFunction()\l+ UpdateFunction()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_path_function.html",tooltip="Path function to compute the initial path-values and propagated path-values. "];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #bucket_size" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{D\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #new_merge_label" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{Bial::Vector\< int \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+}

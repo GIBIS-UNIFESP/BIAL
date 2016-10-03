@@ -1,0 +1,25 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::PathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_path_function.html",tooltip="Path function to compute the initial path-values and propagated path-values. "];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="Bial::ConnPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_conn_path_function.html"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Bial::DiffPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_diff_path_function.html"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="Bial::FeatureDistanceFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_feature_distance_function.html"];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="Bial::HierarchicalPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_hierarchical_path_function.html"];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="Bial::LocalMaxPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_local_max_path_function.html"];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="Bial::MaxPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_max_path_function.html"];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="Bial::MaxSumPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_max_sum_path_function.html"];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="Bial::MinPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_min_path_function.html"];
+  Node1 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="Bial::SumPathFunction\l\< C, D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_sum_path_function.html"];
+}

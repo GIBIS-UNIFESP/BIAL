@@ -1,0 +1,10 @@
+digraph "Bial::Table"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Table\n||+ Table()\l+ Table()\l+ Table()\l+ Table()\l+ PushBack()\l+ PushBack()\l+ PushBack()\l+ PushBack()\l+ operator[]()\l+ operator[]()\land 9 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Bial::Vector\< Bial\l::TableColumn \>\n|# _data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #qk_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::TableColumn\n||+ TableColumn()\l+ TableColumn()\l+ TableColumn()\l+ TableColumn()\l+ operator[]()\l+ operator[]()\l+ size()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_table_column.html"];
+}

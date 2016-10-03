@@ -1,0 +1,8 @@
+digraph "Controller"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Controller\n||+ Controller()\l+ currentImage()\l+ imageAt()\l+ currentImagePos()\l+ addImage()\l+ addLabel()\l+ removeCurrentLabel()\l+ removeCurrentImage()\l+ isEmpty()\l+ clear()\l+ size()\l+ setThumbsWidget()\l+ currentFormat()\l+ getPixmapItem()\l+ getLabelItem()\l+ update()\l+ setCurrentImagePos()\l+ loadNextImage()\l+ setCurrentSlice()\l+ setZoom()\l+ setInterpolation()\l+ rotateAll90()\l+ rotate90()\l+ flipH()\l+ flipV()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{QObject\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

@@ -1,0 +1,9 @@
+digraph "mem_zone"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{mem_zone\n|+ total\l+ highwater\l+ limit\l+ notlifo\l+ rogue\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +first" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{mem_item\n|+ ptr\l+ size\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$infcover_8c.html#structmem__item"];
+  Node2 -> Node2 [color="grey25",fontsize="10",style="solid",label=" +next" ,arrowhead="odiamond",fontname="Helvetica"];
+}

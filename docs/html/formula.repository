@@ -1,0 +1,9 @@
+\form#0:$ \vec{v} = (x,y,z) $
+\form#1:$||\vec{v}|| = \sqrt{x*x+y*y+z*z} $
+\form#2:$ ||\vec{v}||^2 = {x*x+y*y+z*z} $
+\form#3:$ \frac{\vec{v}}{||\vec{v}||^2} $
+\form#4:$ O $
+\form#5:$ \vec{d} $
+\form#6:$ P = O + *\vec{d} * t $
+\form#7:$ t $
+\form#8:$ P $

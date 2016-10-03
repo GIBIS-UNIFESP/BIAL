@@ -1,0 +1,8 @@
+digraph "type_ar"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{type_ar\n|+ esp\l+ ebp\l+ in\l+ last\l+ out\l+ beg\l+ end\l+ window\l+ hold\l+ bits\land 7 more...\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +dcode\n+lcode" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{code\n|+ op\l+ bits\l+ val\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$inftrees_8h.html#structcode"];
+}

@@ -1,0 +1,34 @@
+digraph "bial/src/PixelInterpolation.cpp"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="bial/src/PixelInterpolation.cpp",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="bial/inc/PixelInterpolation.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_pixel_interpolation_8hpp.html"];
+  Node2 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="bial/inc/GeometricsAffine.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_affine_8hpp.html"];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="bial/src/GeometricsAffine.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_affine_8cpp.html"];
+  Node4 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="bial/inc/GeometricsRotate.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_rotate_8hpp.html"];
+  Node5 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="bial/src/GeometricsRotate.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_rotate_8cpp.html"];
+  Node6 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="bial/inc/GeometricsScale.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_scale_8hpp.html"];
+  Node7 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="bial/src/GeometricsScale.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_scale_8cpp.html"];
+  Node8 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="bial/inc/GeometricsShear.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_shear_8hpp.html"];
+  Node9 -> Node10 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="bial/src/GeometricsShear.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_shear_8cpp.html"];
+  Node10 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="bial/inc/GeometricsTranslate.hpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_translate_8hpp.html"];
+  Node11 -> Node12 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="bial/src/GeometricsTranslate.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_geometrics_translate_8cpp.html"];
+  Node12 -> Node11 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

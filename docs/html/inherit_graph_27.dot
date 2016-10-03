@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::Feature\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_feature.html",tooltip="Feature vector class. It is essentialy a matrix where, the first dimention refers to the feature and ..."];
+}

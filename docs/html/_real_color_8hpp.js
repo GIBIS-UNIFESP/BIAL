@@ -1,0 +1,27 @@
+var _real_color_8hpp =
+[
+    [ "RealColor", "class_bial_1_1_real_color.html", "class_bial_1_1_real_color" ],
+    [ "operator!=", "_real_color_8hpp.html#a3b87dea9e0bfc33284ab60f2c6ab244c", null ],
+    [ "operator*", "_real_color_8hpp.html#ab3231c8e0ef57dc808304f6b31cd890d", null ],
+    [ "operator*", "_real_color_8hpp.html#a7aa03edc957350235ec31bfd51733a4b", null ],
+    [ "operator*", "_real_color_8hpp.html#aac33a67e57589782f5d93dee89d4edc5", null ],
+    [ "operator*=", "_real_color_8hpp.html#aac45fa50e51da4824ba889b1db1847b1", null ],
+    [ "operator*=", "_real_color_8hpp.html#a865c3f9600f23b0621281a62919eb1d2", null ],
+    [ "operator+", "_real_color_8hpp.html#a2cf14bd5d0649a394b576dcc8500b2b8", null ],
+    [ "operator+", "_real_color_8hpp.html#a72f7469750a5753ede663b8552bc1ab0", null ],
+    [ "operator+", "_real_color_8hpp.html#afff6a4d7a036f24d9447e3a97127a5ee", null ],
+    [ "operator+=", "_real_color_8hpp.html#a269529b992de6ca1dd0f2026d6e11cc4", null ],
+    [ "operator+=", "_real_color_8hpp.html#afe2fa08e2a3424f92769e71e3d3c2693", null ],
+    [ "operator-", "_real_color_8hpp.html#ac5f7e7f2891277ebdf2fcaa6085de6b0", null ],
+    [ "operator-", "_real_color_8hpp.html#af4ac1f525a6588957eecbc96335e9b9b", null ],
+    [ "operator-", "_real_color_8hpp.html#a71e35a5981a99e652cb7290442555bf4", null ],
+    [ "operator-=", "_real_color_8hpp.html#a424eec7f54816b22b467e85b8157bd75", null ],
+    [ "operator-=", "_real_color_8hpp.html#a7a7650ea5a664049d750e40eb49f17cc", null ],
+    [ "operator/", "_real_color_8hpp.html#ac5808b2d632f10ef587f00db599840d4", null ],
+    [ "operator/", "_real_color_8hpp.html#ad40173f725a5ea3f7b292c3ecb4a329a", null ],
+    [ "operator/", "_real_color_8hpp.html#a9b00b402d774b2ffcb2a284993fbe71e", null ],
+    [ "operator/=", "_real_color_8hpp.html#a47425ba0ca197d09703f85ab5e919758", null ],
+    [ "operator/=", "_real_color_8hpp.html#a028e8ae80e3c7954fe9189b1d5376266", null ],
+    [ "operator<<", "_real_color_8hpp.html#a303e70dd9cea615defddf007410fe292", null ],
+    [ "operator==", "_real_color_8hpp.html#a84692edb5bf7d8b412535940830c84d1", null ]
+];

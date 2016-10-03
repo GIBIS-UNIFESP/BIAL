@@ -1,0 +1,6 @@
+digraph "Bial::Vector&lt; bool &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Vector\< bool \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ operator=()\land 53 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

@@ -1,0 +1,14 @@
+digraph "Bial::BucketQueue"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::BucketQueue\n|# minimum\l# maximum\l# delta\l# elements\l# increasing\l# fifo\l|+ BucketQueue()\l+ ~BucketQueue()\l+ Insert()\l+ Remove()\l+ Update()\l+ Empty()\l+ Elements()\l+ Increasing()\l+ State()\l+ State()\l+ Finished()\l+ Buckets()\l+ ResetState()\l# Index()\l# Grow()\l# Remove()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #weight" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Bial::Vector\< Bial\l::WeightNode \>\n|# _data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #qk_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::WeightNode\n|+ first\l+ last\l|+ WeightNode()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_weight_node.html"];
+  Node4 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #identity" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{Bial::Vector\< Bial\l::IdentityNode \>\n|# _data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node5 -> Node4 [color="grey25",fontsize="10",style="solid",label=" #qk_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{Bial::IdentityNode\n|+ next\l+ prev\l+ state\l|+ IdentityNode()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_identity_node.html"];
+}

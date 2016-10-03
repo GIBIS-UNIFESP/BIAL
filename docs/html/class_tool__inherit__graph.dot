@@ -1,0 +1,12 @@
+digraph "Tool"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Tool\n|# guiImage\l# viewer\l# m_visible\l# m_hasLabel\l|+ Tool()\l+ type()\l+ mouseReleased()\l+ mouseClicked()\l+ mouseDragged()\l+ mouseMoved()\l+ sliceChanged()\l+ setVisible()\l+ getLabel()\l+ visible()\l+ hasLabel()\l# setHasLabel()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{QObject\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{DefaultTool\n|+ supportedFormats\l|+ DefaultTool()\l+ type()\l+ mouseReleased()\l+ mouseClicked()\l+ mouseDragged()\l+ mouseMoved()\l+ sliceChanged()\l+ updateOverlay()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_default_tool.html"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node4 [label="{SegmentationTool\n|+ supportedFormats\l|+ SegmentationTool()\l+ type()\l+ mouseReleased()\l+ mouseClicked()\l+ mouseDragged()\l+ mouseMoved()\l+ sliceChanged()\l+ getLabel()\l+ drawSeed()\l+ setDrawType()\land 12 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_segmentation_tool.html"];
+}

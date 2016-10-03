@@ -1,0 +1,8 @@
+digraph "Bial::LocalMaxPathFunction&lt; C, D &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::LocalMaxPathFunction\l\< C, D \>\n||+ LocalMaxPathFunction()\l+ Initialize()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Bial::PathFunction\l\< C, D \>\n|# value\l# label\l# predecessor\l# next_label\l|+ PathFunction()\l+ PathFunction()\l+ ~PathFunction()\l+ Initialize()\l+ UpdateCompleteData()\l+ UpdatePredecessorData()\l+ UpdateLabelData()\l+ UpdateSimpleData()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l+ RemoveFunction()\l+ UpdateFunction()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_path_function.html",tooltip="Path function to compute the initial path-values and propagated path-values. "];
+}

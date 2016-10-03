@@ -1,0 +1,6 @@
+digraph "Bial::MultiImage"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::MultiImage\n||+ MultiImage()\l+ MultiImage()\l+ MultiImage()\l+ MultiImage()\l+ MultiImage()\l+ MultiImage()\l+ MultiImage()\l+ ~MultiImage()\l+ operator=()\l+ operator=()\l+ Type()\l+ IntImage()\l+ FltImage()\l+ ClrImage()\l+ RclImage()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

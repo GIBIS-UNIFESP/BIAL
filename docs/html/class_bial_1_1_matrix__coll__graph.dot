@@ -1,0 +1,10 @@
+digraph "Bial::Matrix&lt; D &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Matrix\< D \>\n|# _data\l# _size\l# dims\l|+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ operator=()\l+ operator=()\land 96 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #qk_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{D\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #acc_dim_size\n#dim_size" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::Vector\< size_t \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+}

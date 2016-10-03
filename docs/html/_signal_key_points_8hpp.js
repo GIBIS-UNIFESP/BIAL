@@ -1,0 +1,27 @@
+var _signal_key_points_8hpp =
+[
+    [ "FirstLeftAcclivity", "_signal_key_points_8hpp.html#a1a749776f8a80ae004e7eca145341564", null ],
+    [ "FirstLeftAcclivity", "_signal_key_points_8hpp.html#a0808409ca9957eed48a93f38118a2aae", null ],
+    [ "FirstLeftDeclivity", "_signal_key_points_8hpp.html#a4b4fd41a71e5e785ea3b3cd01fe43186", null ],
+    [ "FirstLeftDeclivity", "_signal_key_points_8hpp.html#ac3e6f1ade17a023b804f8ca29e92ca5b", null ],
+    [ "FirstLeftPeak", "_signal_key_points_8hpp.html#ad3f64aa419f1e3eab49ec27c24d618e0", null ],
+    [ "FirstLeftPeak", "_signal_key_points_8hpp.html#a0003e41528435077730f561f3be07797", null ],
+    [ "FirstLeftValley", "_signal_key_points_8hpp.html#a47515acc849c215744774f34cd4d2fdc", null ],
+    [ "FirstLeftValley", "_signal_key_points_8hpp.html#a0d19d0347f2ec936c8c3d7f90d0273fa", null ],
+    [ "FirstRightAcclivity", "_signal_key_points_8hpp.html#abb5ebf8dd9baf486cecbc28875cbe489", null ],
+    [ "FirstRightAcclivity", "_signal_key_points_8hpp.html#a5a2ab547ca5ac1917f806ea098d3473a", null ],
+    [ "FirstRightDeclivity", "_signal_key_points_8hpp.html#a0b67be92944ad3866b03e7f5bf53b5fd", null ],
+    [ "FirstRightDeclivity", "_signal_key_points_8hpp.html#ab1d523f3b6ccd7b5fa00dd45ac68d387", null ],
+    [ "FirstRightPeak", "_signal_key_points_8hpp.html#a2f0d77c7290710634cba41169549e5ec", null ],
+    [ "FirstRightPeak", "_signal_key_points_8hpp.html#ab7c286e649234e1027aa913414ab41a7", null ],
+    [ "FirstRightValley", "_signal_key_points_8hpp.html#a8a05ff76085d68a8744540e9ea967338", null ],
+    [ "FirstRightValley", "_signal_key_points_8hpp.html#ac77997ad3c4f7f2a8caa60e9874b1bad", null ],
+    [ "Peak", "_signal_key_points_8hpp.html#af32c8d76b6120ff54dcdc2c83303c593", null ],
+    [ "Peaks", "_signal_key_points_8hpp.html#a60472f94b79b5033d7049b579ffba1a8", null ],
+    [ "PlateauLeftLimit", "_signal_key_points_8hpp.html#aaa68226ef8c59000c1e2a3c92ce76103", null ],
+    [ "PlateauLeftLimit", "_signal_key_points_8hpp.html#a813d7a0657616cdcc402d75ca9fa63c9", null ],
+    [ "PlateauRightLimit", "_signal_key_points_8hpp.html#ae5514320955586274c6efcc734a9d9ef", null ],
+    [ "PlateauRightLimit", "_signal_key_points_8hpp.html#abcd433a44713246cc7d054d657b67356", null ],
+    [ "Valley", "_signal_key_points_8hpp.html#a054ee386b2a25f920b9e1d67986b9b2c", null ],
+    [ "Valleys", "_signal_key_points_8hpp.html#a0137d6e797f66b90b0ae2b842540e7e5", null ]
+];

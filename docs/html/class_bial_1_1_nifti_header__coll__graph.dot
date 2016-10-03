@@ -1,0 +1,6 @@
+digraph "Bial::NiftiHeader"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::NiftiHeader\n|+ NIFTI_HEADER_SIZE\l+ ANALYZE_EXTENT\l|+ NiftiHeader()\l+ NiftiHeader()\l+ NiftiHeader()\l+ NiftiHeader()\l+ Dim()\l+ Size()\l+ Size()\l+ PixelSize()\l+ PixelSize()\l+ PixelSize()\land 18 more...\l+ Read()\l+ IsNiftiFile()\l+ HeaderFileName()\l+ DataFileName()\l+ ExistingHeaderFileName()\l+ ExistingDataFileName()\l+ AxialDimension()\l+ CoronalDimension()\l+ SagittalDimension()\l+ SuperiorInferior()\l+ AnteriorPosterior()\l+ SwapNBytes()\l+ IsSwapped()\l+ DataType()\l+ DataTypeSizes()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

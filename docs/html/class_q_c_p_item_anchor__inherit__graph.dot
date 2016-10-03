@@ -1,0 +1,8 @@
+digraph "QCPItemAnchor"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{QCPItemAnchor\n|# mName\l# mParentPlot\l# mParentItem\l# mAnchorId\l# mChildrenX\l# mChildrenY\l|+ QCPItemAnchor()\l+ ~QCPItemAnchor()\l+ name()\l+ pixelPoint()\l# toQCPItemPosition()\l# addChildX()\l# removeChildX()\l# addChildY()\l# removeChildY()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{QCPItemPosition\n|# mPositionTypeX\l# mPositionTypeY\l# mKeyAxis\l# mValueAxis\l# mAxisRect\l# mKey\l# mValue\l# mParentAnchorX\l# mParentAnchorY\l|+ QCPItemPosition()\l+ ~QCPItemPosition()\l+ type()\l+ typeX()\l+ typeY()\l+ parentAnchor()\l+ parentAnchorX()\l+ parentAnchorY()\l+ key()\l+ value()\land 16 more...\l# toQCPItemPosition()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_q_c_p_item_position.html",tooltip="Manages the position of an item. "];
+}

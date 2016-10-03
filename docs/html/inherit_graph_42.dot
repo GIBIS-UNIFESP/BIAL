@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::HoughIncreaseCompare\< D \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct_bial_1_1_hough_increase_compare.html",tooltip="Class is used to compare elements in increasing order to sort hough circle candidates. "];
+}

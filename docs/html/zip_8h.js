@@ -1,0 +1,48 @@
+var zip_8h =
+[
+    [ "tm_zip", "zip_8h.html#structtm__zip", [
+      [ "tm_hour", "zip_8h.html#a530bab9a707571262c7eccb0608ce84c", null ],
+      [ "tm_mday", "zip_8h.html#a58a4398913f7aa743ddb885ccf0a6ffa", null ],
+      [ "tm_min", "zip_8h.html#a0432ec48b32cb15b2697de1c42847dd0", null ],
+      [ "tm_mon", "zip_8h.html#a2ff2678b766fbe71889b16adca0b9127", null ],
+      [ "tm_sec", "zip_8h.html#ac1b0c38520ce14975215d69a5aeb5bab", null ],
+      [ "tm_year", "zip_8h.html#a116139acf88ee8527b38020e27819079", null ]
+    ] ],
+    [ "zip_fileinfo", "zip_8h.html#structzip__fileinfo", [
+      [ "dosDate", "zip_8h.html#a0541c57e59450fbc17b2f898ca4bc9e8", null ],
+      [ "external_fa", "zip_8h.html#ac0be78ded330ffd46815bafc5b6b37bb", null ],
+      [ "internal_fa", "zip_8h.html#a396175a434b86115ce5600ab1dbb1644", null ],
+      [ "tmz_date", "zip_8h.html#ae09a694a598b7507d23705764c9e46fb", null ]
+    ] ],
+    [ "APPEND_STATUS_ADDINZIP", "zip_8h.html#a3192cdd1a42f50096c341c48edb905a5", null ],
+    [ "APPEND_STATUS_CREATE", "zip_8h.html#ae90aeab52897f3fd1c867971c946fa87", null ],
+    [ "APPEND_STATUS_CREATEAFTER", "zip_8h.html#ab2967f332f8f7172138c4e5e9c51fd64", null ],
+    [ "DEF_MEM_LEVEL", "zip_8h.html#a19c8e60fa32d4ddf303ce988ba97af61", null ],
+    [ "Z_BZIP2ED", "zip_8h.html#ada7b1ad37b9026b52c9f7b10daf448d1", null ],
+    [ "ZIP_BADZIPFILE", "zip_8h.html#ac2eb83690692851093eb62ebb3744a64", null ],
+    [ "ZIP_EOF", "zip_8h.html#a37f7be5934cbc943c836174e44fd4df1", null ],
+    [ "ZIP_ERRNO", "zip_8h.html#a94d5d490eddae7316ed282729fdc4bf2", null ],
+    [ "ZIP_INTERNALERROR", "zip_8h.html#a7a86a2252db1151ec7ec91593e38f379", null ],
+    [ "ZIP_OK", "zip_8h.html#a394355d595e63f49e769ecd250222336", null ],
+    [ "ZIP_PARAMERROR", "zip_8h.html#a292dcf8769c6dd30324cae5abea8784e", null ],
+    [ "zipcharpc", "zip_8h.html#a3fb78711550861eb5b72cff21f1b1a84", null ],
+    [ "zipFile", "zip_8h.html#af69b9a5ea9aaf8e8f0b7681e451b224c", null ],
+    [ "OF", "zip_8h.html#a501e0f7a7e7cffe8d079f08a023bfe79", null ],
+    [ "OF", "zip_8h.html#a8996dd1f28de490f545a714829696f7b", null ],
+    [ "OF", "zip_8h.html#ae1efd0891c174e2427ca181436a78e8e", null ],
+    [ "OF", "zip_8h.html#a87a9c226e8f4e1a18a0b626871b10d53", null ],
+    [ "OF", "zip_8h.html#a063708078bf3ffea3888836a9536c864", null ],
+    [ "OF", "zip_8h.html#a906e30c93c55d17ec9807692e4a03a70", null ],
+    [ "OF", "zip_8h.html#a9a52ed2bbcff2e75f3d32338762c8c84", null ],
+    [ "OF", "zip_8h.html#a342684b5a525c94b3badfc94aa9d19b4", null ],
+    [ "OF", "zip_8h.html#a0389de1258c25cc64c63bfaea6183232", null ],
+    [ "OF", "zip_8h.html#a9a09716f1983ea7c1099ee7a093b87ba", null ],
+    [ "OF", "zip_8h.html#acd2e007569b2fd9484ca2f90698d8505", null ],
+    [ "OF", "zip_8h.html#a82426bf47f6a5c58c69f8d04866d953a", null ],
+    [ "OF", "zip_8h.html#ab7684c035d6f86220c3fd09481dc98e3", null ],
+    [ "OF", "zip_8h.html#abe51970444c6576638742393a8bf11a6", null ],
+    [ "OF", "zip_8h.html#a58507ccf726c37f0fe0d2f9d49ad98cb", null ],
+    [ "OF", "zip_8h.html#a53febef1a68f8d731d2f4b960e3d9a77", null ],
+    [ "OF", "zip_8h.html#aff13e661af564641ced1410bfeb4ea8e", null ],
+    [ "OF", "zip_8h.html#a4570253bcd4f8934b180dfed41700b93", null ]
+];

@@ -1,0 +1,19 @@
+digraph "DefaultTool"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{DefaultTool\n|+ supportedFormats\l|+ DefaultTool()\l+ type()\l+ mouseReleased()\l+ mouseClicked()\l+ mouseDragged()\l+ mouseMoved()\l+ sliceChanged()\l+ updateOverlay()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Tool\n|# m_visible\l# m_hasLabel\l|+ Tool()\l+ type()\l+ mouseReleased()\l+ mouseClicked()\l+ mouseDragged()\l+ mouseMoved()\l+ sliceChanged()\l+ setVisible()\l+ getLabel()\l+ visible()\l+ hasLabel()\l# setHasLabel()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_tool.html"];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{QObject\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #viewer" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{ImageViewer\n||+ ImageViewer()\l+ ~ImageViewer()\l+ setViewBgColor()\l+ eventFilter()\l+ getScene()\l+ setController()\l+ controller()\l# resizeEvent()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_image_viewer.html"];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node5 [label="{QWidget\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node6 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node6 [label="{ViewerInterface\n||+ setViewBgColor()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_viewer_interface.html"];
+  Node7 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #guiImage" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node7 [label="{GuiImage\n|+ tools\l|+ GuiImage()\l+ ~GuiImage()\l+ currentTool()\l+ modality()\l+ fileName()\l+ getSlice()\l+ width()\l+ heigth()\l+ depth()\l+ currentSlice()\land 23 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_gui_image.html",tooltip="The GuiImage class is a bridge to the Bial::Image data structure to the QImage data structure..."];
+  Node3 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+}

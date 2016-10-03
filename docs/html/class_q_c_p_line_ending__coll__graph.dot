@@ -1,0 +1,6 @@
+digraph "QCPLineEnding"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{QCPLineEnding\n|# mStyle\l# mWidth\l# mLength\l# mInverted\l|+ QCPLineEnding()\l+ QCPLineEnding()\l+ style()\l+ width()\l+ length()\l+ inverted()\l+ setStyle()\l+ setWidth()\l+ setLength()\l+ setInverted()\l+ boundingDistance()\l+ realLength()\l+ draw()\l+ draw()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

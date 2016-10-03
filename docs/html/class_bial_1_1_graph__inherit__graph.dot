@@ -1,0 +1,8 @@
+digraph "Bial::Graph&lt; GRAPH_ADJACENCY &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Graph\< GRAPH\l_ADJACENCY \>\n|# sample\l# density\l# cut\l# ordered\l# label\l# adjacency\l|+ MaxSamples()\l+ Initialize()\l+ Scales()\l+ Samples()\l+ Label()\l+ Label()\l+ PDF()\l+ Clustering()\l+ NormalizedCut()\l+ SampleNormalizedCut()\l+ SetCut()\l+ PropagateLabel()\l+ PropagateLabelThread()\l+ GnuPlot2DScatter()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Bial::HierarchicalGraph\l\< GRAPH_ADJACENCY \>\n|# merge_label\l# split_label\l# merge_cut\l# split_cut\l|+ Initialize()\l+ MergeLabel()\l+ MergeLabel()\l+ SplitLabel()\l+ SplitLabel()\l+ MergeCut()\l+ MergeCut()\l+ SplitCut()\l+ SplitCut()\l+ Clustering()\l+ MergeClusters()\l+ SplitClusters()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_hierarchical_graph.html"];
+}

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['name',['name',['../class_q_c_p_layer.html#a96ebd1e436f3813938cb9cd4a59a60be',1,'QCPLayer::name()'],['../class_q_c_p_abstract_plottable.html#a1affc1972938e4364a9325e4e4e4dcea',1,'QCPAbstractPlottable::name()'],['../class_q_c_p_item_anchor.html#ac93984042a58c875e76847dc3e5f75fe',1,'QCPItemAnchor::name()']]],
+  ['narrow2wide',['Narrow2Wide',['../class_picture_handler.html#a82a9e1406124e5d87088550ea46a4b1b',1,'PictureHandler']]],
+  ['niftiheader',['NiftiHeader',['../class_bial_1_1_nifti_header.html#a0f57158fad623ccea58f6c600b4e7986',1,'Bial::NiftiHeader::NiftiHeader()'],['../class_bial_1_1_nifti_header.html#a888c9565e279258c084441ddb7c0d729',1,'Bial::NiftiHeader::NiftiHeader(const Vector&lt; size_t &gt; &amp;new_dim, const Vector&lt; float &gt; &amp;new_pixdim, NiftiType new_datatype=NiftiType::INT8, bool one_file=true)'],['../class_bial_1_1_nifti_header.html#adcf885e6f1d09d06f9bf9e1612f91440',1,'Bial::NiftiHeader::NiftiHeader(const Image&lt; D &gt; &amp;img, bool one_file=true)'],['../class_bial_1_1_nifti_header.html#aac81c1f8e19f841f06c8bb815fbe73bf',1,'Bial::NiftiHeader::NiftiHeader(const std::string &amp;filename)']]],
+  ['noantialiasingondrag',['noAntialiasingOnDrag',['../class_q_custom_plot.html#ae07f2895a34d13a97a10cae4d8e17a36',1,'QCustomPlot']]],
+  ['nonmaxsobelsuppression',['NonMaxSobelSuppression',['../namespace_bial_1_1_gradient.html#adead461d27d888df59d8c060bb6c8e06',1,'Bial::Gradient::NonMaxSobelSuppression(const Image&lt; D &gt; &amp;img)'],['../namespace_bial_1_1_gradient.html#a003b4db91e8fc7d8502dedda1173685f',1,'Bial::Gradient::NonMaxSobelSuppression(const Image&lt; D &gt; &amp;magnitude, const Image&lt; int &gt; &amp;direction)']]],
+  ['normal',['Normal',['../group__render__geom.html#af8de39a5f506ea03a13282771697020d',1,'Bial::Normal::Normal()'],['../group__render__geom.html#aa66ab843464b7cbb911594468fe51eb1',1,'Bial::Normal::Normal(double xx, double yy, double zz)'],['../group__render__geom.html#a5c61462571d7000d689f693b72d35e40',1,'Bial::Normal::Normal(const Vector3D &amp;vec)']]],
+  ['normalinterp',['NormalInterp',['../class_bial_1_1_marching_cubes.html#ab7e01a46743d379fc8f830b6a5c00c18',1,'Bial::MarchingCubes']]],
+  ['normalize',['normalize',['../class_q_c_p_range.html#af914a7740269b0604d0827c634a878a9',1,'QCPRange::normalize()'],['../class_bial_1_1_kernel.html#ac4c64f9e9ac9bb2bef3d850566085051',1,'Bial::Kernel::Normalize()'],['../class_bial_1_1_kernel.html#a106ed790f5b94d41a4a8adc9fe4255ef',1,'Bial::Kernel::Normalize() const '],['../namespace_bial_1_1_signal_op.html#a185bec657433202eb3b218003fcec991',1,'Bial::SignalOp::Normalize(Signal &amp;sgn)'],['../namespace_bial_1_1_signal_op.html#a1721c42b5bdcaf752b12f9a885101743',1,'Bial::SignalOp::Normalize(const Signal &amp;sgn)']]],
+  ['normalized',['Normalized',['../group__render__geom.html#af88c0a003fea879a967b640540fbd3c7',1,'Bial::Vector3D::Normalized()'],['../group__render__geom.html#a6a3e3ff52244ebd296ebdf787c0ee4ed',1,'Bial::Normal::Normalized()'],['../group__render__geom.html#a444b274a5c54988ab29816d9d42a751a',1,'Bial::BBox::Normalized()']]],
+  ['normalizedcut',['NormalizedCut',['../class_bial_1_1_graph.html#aaea8747d2f95797904574ccfaa6d014d',1,'Bial::Graph']]],
+  ['normalizedgabor',['NormalizedGabor',['../namespace_bial_1_1_kernel_type.html#ade0a94ee23e56fa068655713056e2392',1,'Bial::KernelType']]],
+  ['normalizedgaussian',['NormalizedGaussian',['../namespace_bial_1_1_kernel_type.html#a7597b1665d3835cf0c048b654436fd11',1,'Bial::KernelType']]],
+  ['normalizedhistogram',['NormalizedHistogram',['../namespace_bial_1_1_signal_type.html#aef55995a4da0f7b3f9ce6708993b2881',1,'Bial::SignalType']]],
+  ['normalizedsobel',['NormalizedSobel',['../namespace_bial_1_1_kernel_type.html#a66ae7a56b5d66016beecdd1b8418e318',1,'Bial::KernelType']]],
+  ['notantialiasedelements',['notAntialiasedElements',['../class_q_custom_plot.html#a8060cee59757213764382a78d3196189',1,'QCustomPlot']]],
+  ['numberformat',['numberFormat',['../class_q_c_p_axis.html#ae6729b40845b29ffa5a440aa53cec215',1,'QCPAxis']]],
+  ['numberprecision',['numberPrecision',['../class_q_c_p_axis.html#a91cb2825060ac79a889296377fe0c7c1',1,'QCPAxis']]]
+];

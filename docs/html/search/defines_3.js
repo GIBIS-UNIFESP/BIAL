@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['casesensitivity',['CASESENSITIVITY',['../miniunz_8c.html#a025b7a799be05748d7635ec50a12d88b',1,'miniunz.c']]],
+  ['casesensitivitydefault_5fno',['CASESENSITIVITYDEFAULT_NO',['../unzip_8c.html#ac01c3d5519b2ebeb874e4db73b09fd6f',1,'unzip.c']]],
+  ['casesensitivitydefaultvalue',['CASESENSITIVITYDEFAULTVALUE',['../unzip_8c.html#a211c212a9634c4a42e21d04861c0bdd5',1,'unzip.c']]],
+  ['centralheadermagic',['CENTRALHEADERMAGIC',['../zip_8c.html#a693b6919a7002d5d8f2030ea38bdb745',1,'zip.c']]],
+  ['check_5ferr',['CHECK_ERR',['../example_8c.html#a026990621b357a386d7f3c42a9c5dfcc',1,'example.c']]],
+  ['check_5fmatch',['check_match',['../deflate_8c.html#a4041db99b23ca08963d3e5c284d837d6',1,'deflate.c']]],
+  ['chrtype',['CHRTYPE',['../untgz_8c.html#a28dd96209b4a46bc54a1dcc6c2d7e509',1,'untgz.c']]],
+  ['chunk',['CHUNK',['../gzappend_8c.html#a25022864dfc8ec428e7128282e57b136',1,'CHUNK():&#160;gzappend.c'],['../gzjoin_8c.html#a25022864dfc8ec428e7128282e57b136',1,'CHUNK():&#160;gzjoin.c'],['../zpipe_8c.html#a25022864dfc8ec428e7128282e57b136',1,'CHUNK():&#160;zpipe.c'],['../zran_8c.html#a25022864dfc8ec428e7128282e57b136',1,'CHUNK():&#160;zran.c']]],
+  ['clear_5fhash',['CLEAR_HASH',['../deflate_8c.html#af328dc05f080f25747abf0edd75b6251',1,'deflate.c']]],
+  ['code',['Code',['../deflate_8h.html#a068e76e6034d06450385bc98b69ea53e',1,'deflate.h']]],
+  ['comment_5fstate',['COMMENT_STATE',['../deflate_8h.html#a06c47936258e98a0c4ca38dd31a5f6c7',1,'deflate.h']]],
+  ['compress_5fop',['COMPRESS_OP',['../gzlog_8c.html#ae04135e21215ef73058fc5b10bd91012',1,'gzlog.c']]],
+  ['const',['const',['../zconf_8h.html#a2c212835823e3c54a8ab6d95c652660e',1,'zconf.h']]],
+  ['conttype',['CONTTYPE',['../untgz_8c.html#a26cf8d896ecbc3cf464f476f15128bf4',1,'untgz.c']]],
+  ['copy',['COPY',['../gzguts_8h.html#a9e77d621548de2a80bc9c5909bfa2b8a',1,'gzguts.h']]],
+  ['crc2',['CRC2',['../inflate_8c.html#a2bdde00539008d4c1be6f9d29f0e4bd0',1,'inflate.c']]],
+  ['crc32',['CRC32',['../crypt_8h.html#a9f548005c00fa0754e9c23b7726bf741',1,'crypt.h']]],
+  ['crc4',['CRC4',['../inflate_8c.html#a57c65b3c2ffdfe37b805b749a2c5fdbe',1,'inflate.c']]],
+  ['crc_5flocalheader_5foffset',['CRC_LOCALHEADER_OFFSET',['../zip_8c.html#a49d8aae52c0ac93104210373043250e6',1,'zip.c']]]
+];

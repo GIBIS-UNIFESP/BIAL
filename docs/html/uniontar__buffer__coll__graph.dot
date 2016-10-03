@@ -1,0 +1,8 @@
+digraph "tar_buffer"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{tar_buffer\n|+ buffer\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +header" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{tar_header\n|+ name\l+ mode\l+ uid\l+ gid\l+ size\l+ mtime\l+ chksum\l+ typeflag\l+ linkname\l+ magic\land 6 more...\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$untgz_8c.html#structtar__header"];
+}

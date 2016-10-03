@@ -1,0 +1,6 @@
+digraph "Bial::DicomHeader"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::DicomHeader\n|+ file_pointer\l|+ begin()\l+ end()\l+ DicomHeader()\l+ readFile()\l+ readZeroPadding()\l+ readDICM()\l+ readData()\l+ readImageData()\l+ push()\l+ getElement()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

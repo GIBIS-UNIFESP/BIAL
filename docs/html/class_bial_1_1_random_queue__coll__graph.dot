@@ -1,0 +1,10 @@
+digraph "Bial::RandomQueue"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::RandomQueue\n|# qk_data\l# occupancy\l# last\l# increasing\l|+ RandomQueue()\l+ operator[]()\l+ Size()\l+ Capacity()\l+ Insert()\l+ Remove()\l+ Update()\l+ Minimum()\l+ Median()\l+ Maximum()\l+ Full()\l+ Empty()\l+ Print()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #order" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Bial::Vector\< size_t \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::Vector\< double \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+}

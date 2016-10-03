@@ -1,0 +1,10 @@
+digraph "QCPAxis"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{QCPAxis\n|# mAxisType\l# mAxisRect\l# mPadding\l# mOrientation\l# mSelectableParts\l# mSelectedParts\l# mBasePen\l# mSelectedBasePen\l# mLabel\l# mLabelFont\land 40 more...\l|+ QCPAxis()\l+ ~QCPAxis()\l+ axisType()\l+ axisRect()\l+ scaleType()\l+ scaleLogBase()\l+ range()\l+ rangeReversed()\l+ autoTicks()\l+ autoTickCount()\land 111 more...\l+ marginSideToAxisType()\l+ orientation()\l+ opposite()\l# setupTickVectors()\l# generateAutoTicks()\l# calculateAutoSubTickCount()\l# calculateMargin()\l# applyDefaultAntialiasingHint()\l# draw()\l# selectionCategory()\l# selectEvent()\l# deselectEvent()\l# visibleTickBounds()\land 9 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{QCPLayerable\n|# mVisible\l# mParentPlot\l# mParentLayerable\l# mLayer\l# mAntialiased\l|+ QCPLayerable()\l+ ~QCPLayerable()\l+ visible()\l+ parentPlot()\l+ parentLayerable()\l+ layer()\l+ antialiased()\l+ setVisible()\l+ setLayer()\l+ setLayer()\l+ setAntialiased()\l+ selectTest()\l+ realVisibility()\l# parentPlotInitialized()\l# selectionCategory()\l# clipRect()\l# applyDefaultAntialiasingHint()\l# draw()\l# selectEvent()\l# deselectEvent()\l# initializeParentPlot()\l# setParentLayerable()\l# moveToLayer()\l# applyAntialiasingHint()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_q_c_p_layerable.html",tooltip="Base class for all drawable objects. "];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{QObject\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

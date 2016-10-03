@@ -1,0 +1,10 @@
+digraph "Bial::Figure&lt; DERIVED &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Figure\< DERIVED \>\n||+ Figure()\l+ Draw()\l+ Draw()\l+ Pixels()\l+ Pixels()\l+ Print()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +color" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Bial::Color\n|+ value\l|+ Color()\l+ Color()\l+ Color()\l+ Color()\l+ Color()\l+ ~Color()\l+ Color()\l+ operator=()\l+ operator=()\l+ operator[]()\land 6 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$union_bial_1_1_color.html"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" +channel" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::Array\< uchar, 4 \>\n|# _data\l|+ Array()\l+ Array()\l+ Array()\l+ Array()\l+ Array()\l+ operator=()\l+ operator=()\l+ operator=()\l+ operator+=()\l+ operator+=()\land 50 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_array.html"];
+}

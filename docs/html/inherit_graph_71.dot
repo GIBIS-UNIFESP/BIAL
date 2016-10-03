@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::RandomQueue",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_random_queue.html",tooltip="A random-acess queue. Its size is fixed. As soon as it gets full, the first inserted element is autom..."];
+}

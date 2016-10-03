@@ -1,0 +1,14 @@
+digraph "file_in_zip64_read_info_s"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{file_in_zip64_read\l_info_s\n|+ read_buffer\l+ pos_in_zipfile\l+ stream_initialised\l+ offset_local_extrafield\l+ size_local_extrafield\l+ pos_local_extrafield\l+ total_out_64\l+ crc32\l+ crc32_wait\l+ rest_read_compressed\l+ rest_read_uncompressed\l+ filestream\l+ compression_method\l+ byte_before_the_zipfile\l+ raw\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +stream" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{z_stream\n|+ next_in\l+ avail_in\l+ total_in\l+ next_out\l+ avail_out\l+ total_out\l+ msg\l+ zalloc\l+ zfree\l+ opaque\l+ data_type\l+ adler\l+ reserved\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zlib_8h.html#structz__stream"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" +state" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{internal_state\n|+ dummy\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zutil_8c.html#structinternal__state"];
+  Node4 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +z_filefunc" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{zlib_filefunc64_32_def\n|+ zopen32_file\l+ ztell32_file\l+ zseek32_file\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ioapi_8h.html#structzlib__filefunc64__32__def"];
+  Node5 -> Node4 [color="grey25",fontsize="10",style="solid",label=" +zfile_func64" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{zlib_filefunc64_def\n|+ zopen64_file\l+ zread_file\l+ zwrite_file\l+ ztell64_file\l+ zseek64_file\l+ zclose_file\l+ zerror_file\l+ opaque\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ioapi_8h.html#structzlib__filefunc64__def"];
+}

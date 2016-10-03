@@ -1,0 +1,15 @@
+digraph "bial/SLIC" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_752bf115b6f73c9d98878bf7307d3054 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="bial" fontname="Helvetica", fontsize="10", URL="dir_752bf115b6f73c9d98878bf7307d3054.html"]
+  subgraph clusterdir_774c823e4bcbdd649d617d2b59fc6876 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_774c823e4bcbdd649d617d2b59fc6876.html"];
+    dir_774c823e4bcbdd649d617d2b59fc6876 [shape=plaintext label="SLIC"];
+    dir_e9532794fc9c47f54151170322375bf0 [shape=box label="inc" color="black" fillcolor="white" style="filled" URL="dir_e9532794fc9c47f54151170322375bf0.html"];
+    dir_539eef8c6fe881ce0d2ce4010dff95c4 [shape=box label="src" color="black" fillcolor="white" style="filled" URL="dir_539eef8c6fe881ce0d2ce4010dff95c4.html"];
+  }
+  }
+  dir_539eef8c6fe881ce0d2ce4010dff95c4->dir_e9532794fc9c47f54151170322375bf0 [headlabel="12", labeldistance=1.5 headhref="dir_000007_000006.html"];
+}

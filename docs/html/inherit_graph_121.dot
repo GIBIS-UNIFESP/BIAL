@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="file_in_zip64_read\l_info_s",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unzip_8c.html#structfile__in__zip64__read__info__s"];
+}

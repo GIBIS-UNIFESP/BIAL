@@ -1,0 +1,33 @@
+digraph "Bial::ImageIFT&lt; D &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::ImageIFT\< D \>\n||+ ImageIFT()\l+ Run()\l+ EnableDifferentialIFT()\l+ DisableDifferentialIFT()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Bial::DegeneratedIFT\l\< Image, D \>\n|# value\l# sequential_label\l# bucket_size\l# fifo_tie\l|+ DegeneratedIFT()\l+ ~DegeneratedIFT()\l+ Run()\l# Initialize()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_degenerated_i_f_t.html"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #seed" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::Vector\< bool \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ operator=()\land 53 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector_3_01bool_01_4.html"];
+  Node4 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #queue" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{Bial::BucketQueue\n|# minimum\l# maximum\l# delta\l# elements\l# increasing\l# fifo\l|+ BucketQueue()\l+ ~BucketQueue()\l+ Insert()\l+ Remove()\l+ Update()\l+ Empty()\l+ Elements()\l+ Increasing()\l+ State()\l+ State()\l+ Finished()\l+ Buckets()\l+ ResetState()\l# Index()\l# Grow()\l# Remove()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_bucket_queue.html",tooltip="Standard bucket queue class, that may work with both integer or real values. "];
+  Node5 -> Node4 [color="grey25",fontsize="10",style="solid",label=" #weight" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{Bial::Vector\< Bial\l::WeightNode \>\n|# _data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node6 -> Node5 [color="grey25",fontsize="10",style="solid",label=" #qk_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node6 [label="{Bial::WeightNode\n|+ first\l+ last\l|+ WeightNode()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_weight_node.html"];
+  Node7 -> Node4 [color="grey25",fontsize="10",style="solid",label=" #identity" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node7 [label="{Bial::Vector\< Bial\l::IdentityNode \>\n|# _data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node8 -> Node7 [color="grey25",fontsize="10",style="solid",label=" #qk_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node8 [label="{Bial::IdentityNode\n|+ next\l+ prev\l+ state\l|+ IdentityNode()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_identity_node.html"];
+  Node9 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #predecessor\n#label" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node9 [label="{Bial::Image\< int \>\n|# qk_data\l# y_table\l# z_table\l|+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\land 74 more...\l# CreateTables()\l# DestroyTables()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_image.html"];
+  Node10 -> Node9 [color="grey25",fontsize="10",style="solid",label=" #pixel_size" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node10 [label="{Bial::Vector\< float \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node11 -> Node9 [color="grey25",fontsize="10",style="solid",label=" #_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node11 [label="{Bial::Matrix\< int \>\n|# qk_data\l# _size\l# dims\l|+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ operator=()\l+ operator=()\land 96 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_matrix.html"];
+  Node12 -> Node11 [color="grey25",fontsize="10",style="solid",label=" #_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node12 [label="{Bial::Vector\< int \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node13 -> Node11 [color="grey25",fontsize="10",style="solid",label=" #acc_dim_size\n#dim_size" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node13 [label="{Bial::Vector\< size_t \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node14 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #function\n#UpdateData\n#RemoveData" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node14 [label="{Bial::PathFunction\l\< Image, D \>\n|# value\l# next_label\l|+ PathFunction()\l+ PathFunction()\l+ ~PathFunction()\l+ Initialize()\l+ UpdateCompleteData()\l+ UpdatePredecessorData()\l+ UpdateLabelData()\l+ UpdateSimpleData()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l+ RemoveFunction()\l+ UpdateFunction()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_path_function.html"];
+  Node9 -> Node14 [color="grey25",fontsize="10",style="solid",label=" #predecessor\n#label" ,arrowhead="odiamond",fontname="Helvetica"];
+}

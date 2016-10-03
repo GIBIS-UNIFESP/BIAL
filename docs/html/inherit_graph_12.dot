@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="Bial::Common",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__common.html#class_bial_1_1_common",tooltip="Commonly used macros, types, static variables and functions. "];
+}

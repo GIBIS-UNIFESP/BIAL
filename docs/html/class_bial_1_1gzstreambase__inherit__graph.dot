@@ -1,0 +1,12 @@
+digraph "Bial::gzstreambase"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::gzstreambase\n|# buf\l|+ gzstreambase()\l+ gzstreambase()\l+ ~gzstreambase()\l+ open()\l+ close()\l+ rdbuf()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{std::ios\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node3 [label="{Bial::igzstream\n||+ igzstream()\l+ igzstream()\l+ igzstream()\l+ rdbuf()\l+ open()\l+ is_open()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1igzstream.html"];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node4 [label="{Bial::ogzstream\n||+ ogzstream()\l+ ogzstream()\l+ ogzstream()\l+ rdbuf()\l+ open()\l+ is_open()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1ogzstream.html"];
+}

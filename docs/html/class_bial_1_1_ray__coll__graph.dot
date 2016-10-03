@@ -1,0 +1,10 @@
+digraph "Bial::Ray"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::Ray\n|+ mint\l+ maxt\l+ time\l+ depth\l|+ Ray()\l+ Ray()\l+ Ray()\l+ operator()()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +d" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{Bial::Vector3D\n|+ x\l+ y\l+ z\l|+ Vector3D()\l+ Vector3D()\l+ Vector3D()\l+ HasNaNs()\l+ operator==()\l+ operator!=()\l+ operator+()\l+ operator+=()\l+ operator-()\l+ operator-=()\land 11 more...\l+ fromVector()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__render__geom.html#class_bial_1_1_vector3_d",tooltip="The Vector3D class is a Geometric representation of a vector direction in 3D space. "];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +o" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::Point3D\n|+ x\l+ y\l+ z\l|+ Point3D()\l+ Point3D()\l+ HasNaNs()\l+ operator==()\l+ operator!=()\l+ operator+()\l+ operator+=()\l+ operator-()\l+ operator-()\l+ operator-=()\land 11 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$group__render__geom.html#class_bial_1_1_point3_d",tooltip="The Point3D class is a Geometric representation of a point in 3D space.   A point is a zero­dimension..."];
+}

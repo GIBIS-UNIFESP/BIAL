@@ -1,0 +1,24 @@
+digraph "bial/zlib/contrib" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  subgraph clusterdir_b763646acf7ffb3c4b830dc9d1188a44 {
+    graph [ bgcolor="#ddddee", pencolor="black", label="zlib" fontname="Helvetica", fontsize="10", URL="dir_b763646acf7ffb3c4b830dc9d1188a44.html"]
+  subgraph clusterdir_d93661199b2e0e2ac7e821e63acee636 {
+    graph [ bgcolor="#eeeeff", pencolor="black", label="" URL="dir_d93661199b2e0e2ac7e821e63acee636.html"];
+    dir_d93661199b2e0e2ac7e821e63acee636 [shape=plaintext label="contrib"];
+    dir_80b6de4391de041d8c49ba6ac7910b50 [shape=box label="blast" color="black" fillcolor="white" style="filled" URL="dir_80b6de4391de041d8c49ba6ac7910b50.html"];
+    dir_7cb65f6104aa651965084e93a6d19a32 [shape=box label="dotzlib" color="red" fillcolor="white" style="filled" URL="dir_7cb65f6104aa651965084e93a6d19a32.html"];
+    dir_e43ef6c749e731cd9ef5221c7e81247c [shape=box label="infback9" color="black" fillcolor="white" style="filled" URL="dir_e43ef6c749e731cd9ef5221c7e81247c.html"];
+    dir_91b0161bc04d13168a2c883cfa0070d2 [shape=box label="inflate86" color="black" fillcolor="white" style="filled" URL="dir_91b0161bc04d13168a2c883cfa0070d2.html"];
+    dir_67823003aa88bde4c1b0e98ad123a3d4 [shape=box label="iostream" color="black" fillcolor="white" style="filled" URL="dir_67823003aa88bde4c1b0e98ad123a3d4.html"];
+    dir_e0c8ef5f753662d22c5ee4d29bba8dc1 [shape=box label="iostream2" color="black" fillcolor="white" style="filled" URL="dir_e0c8ef5f753662d22c5ee4d29bba8dc1.html"];
+    dir_19164c6d4cb8f4990062e3b2bbbdc6a4 [shape=box label="iostream3" color="black" fillcolor="white" style="filled" URL="dir_19164c6d4cb8f4990062e3b2bbbdc6a4.html"];
+    dir_4ce28525bc49b7fa79ba64361ba255a1 [shape=box label="masmx64" color="black" fillcolor="white" style="filled" URL="dir_4ce28525bc49b7fa79ba64361ba255a1.html"];
+    dir_fa7ab1121a239baa9bb5501352d16e53 [shape=box label="minizip" color="black" fillcolor="white" style="filled" URL="dir_fa7ab1121a239baa9bb5501352d16e53.html"];
+    dir_08f7f94dcc9ccf1d3c6d4482e1e326bc [shape=box label="puff" color="black" fillcolor="white" style="filled" URL="dir_08f7f94dcc9ccf1d3c6d4482e1e326bc.html"];
+    dir_da50e2b3913bcdab731820ab09dbe3e4 [shape=box label="testzlib" color="black" fillcolor="white" style="filled" URL="dir_da50e2b3913bcdab731820ab09dbe3e4.html"];
+    dir_17cf6a4f0a3aaa1721e9b2010281ae76 [shape=box label="untgz" color="black" fillcolor="white" style="filled" URL="dir_17cf6a4f0a3aaa1721e9b2010281ae76.html"];
+  }
+  }
+}

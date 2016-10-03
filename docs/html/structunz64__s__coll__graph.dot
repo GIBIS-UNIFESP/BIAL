@@ -1,0 +1,25 @@
+digraph "unz64_s"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{unz64_s\n|+ is64bitOpenFunction\l+ filestream\l+ byte_before_the_zipfile\l+ num_file\l+ pos_in_central_dir\l+ current_file_ok\l+ central_pos\l+ size_central_dir\l+ offset_central_dir\l+ encrypted\l+ isZip64\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +pfile_in_zip_read" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{file_in_zip64_read\l_info_s\n|+ read_buffer\l+ pos_in_zipfile\l+ stream_initialised\l+ offset_local_extrafield\l+ size_local_extrafield\l+ pos_local_extrafield\l+ total_out_64\l+ crc32\l+ crc32_wait\l+ rest_read_compressed\l+ rest_read_uncompressed\l+ filestream\l+ compression_method\l+ byte_before_the_zipfile\l+ raw\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unzip_8c.html#structfile__in__zip64__read__info__s"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" +stream" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{z_stream\n|+ next_in\l+ avail_in\l+ total_in\l+ next_out\l+ avail_out\l+ total_out\l+ msg\l+ zalloc\l+ zfree\l+ opaque\l+ data_type\l+ adler\l+ reserved\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zlib_8h.html#structz__stream"];
+  Node4 -> Node3 [color="grey25",fontsize="10",style="solid",label=" +state" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{internal_state\n|+ dummy\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$zutil_8c.html#structinternal__state"];
+  Node5 -> Node2 [color="grey25",fontsize="10",style="solid",label=" +z_filefunc" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{zlib_filefunc64_32_def\n|+ zopen32_file\l+ ztell32_file\l+ zseek32_file\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ioapi_8h.html#structzlib__filefunc64__32__def"];
+  Node6 -> Node5 [color="grey25",fontsize="10",style="solid",label=" +zfile_func64" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node6 [label="{zlib_filefunc64_def\n|+ zopen64_file\l+ zread_file\l+ zwrite_file\l+ ztell64_file\l+ zseek64_file\l+ zclose_file\l+ zerror_file\l+ opaque\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ioapi_8h.html#structzlib__filefunc64__def"];
+  Node7 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +cur_file_info_internal" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node7 [label="{unz_file_info64_internal\n|+ offset_curfile\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unzip_8c.html#structunz__file__info64__internal"];
+  Node8 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +cur_file_info" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node8 [label="{unz_file_info64\n|+ version\l+ version_needed\l+ flag\l+ compression_method\l+ dosDate\l+ crc\l+ compressed_size\l+ uncompressed_size\l+ size_filename\l+ size_file_extra\l+ size_file_comment\l+ disk_num_start\l+ internal_fa\l+ external_fa\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unzip_8h.html#structunz__file__info64"];
+  Node9 -> Node8 [color="grey25",fontsize="10",style="solid",label=" +tmu_date" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node9 [label="{tm_unz\n|+ tm_sec\l+ tm_min\l+ tm_hour\l+ tm_mday\l+ tm_mon\l+ tm_year\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unzip_8h.html#structtm__unz"];
+  Node10 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +gi" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node10 [label="{unz_global_info64\n|+ number_entry\l+ size_comment\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unzip_8h.html#structunz__global__info64"];
+  Node5 -> Node1 [color="grey25",fontsize="10",style="solid",label=" +z_filefunc" ,arrowhead="odiamond",fontname="Helvetica"];
+}

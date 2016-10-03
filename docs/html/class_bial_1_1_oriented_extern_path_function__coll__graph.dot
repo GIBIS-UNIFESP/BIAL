@@ -1,0 +1,19 @@
+digraph "Bial::OrientedExternPathFunction&lt; D &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::OrientedExternPath\lFunction\< D \>\n|# intensity\l# handicap\l# alpha\l|+ OrientedExternPathFunction()\l+ OrientedExternPathFunction()\l+ ~OrientedExternPathFunction()\l+ operator=()\l+ Initialize()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{Bial::PathFunction\l\< Image, D \>\n|# value\l# next_label\l|+ PathFunction()\l+ PathFunction()\l+ ~PathFunction()\l+ Initialize()\l+ UpdateCompleteData()\l+ UpdatePredecessorData()\l+ UpdateLabelData()\l+ UpdateSimpleData()\l+ RemoveSimple()\l+ RemoveLabel()\l+ Capable()\l+ Propagate()\l+ Increasing()\l+ RemoveFunction()\l+ UpdateFunction()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_path_function.html"];
+  Node3 -> Node2 [color="grey25",fontsize="10",style="solid",label=" #predecessor\n#label" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{Bial::Image\< int \>\n|# qk_data\l# y_table\l# z_table\l|+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\l+ Image()\land 74 more...\l# CreateTables()\l# DestroyTables()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_image.html"];
+  Node4 -> Node3 [color="grey25",fontsize="10",style="solid",label=" #pixel_size" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node4 [label="{Bial::Vector\< float \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node5 -> Node3 [color="grey25",fontsize="10",style="solid",label=" #_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node5 [label="{Bial::Matrix\< int \>\n|# qk_data\l# _size\l# dims\l|+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ Matrix()\l+ operator=()\l+ operator=()\land 96 more...\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_matrix.html"];
+  Node6 -> Node5 [color="grey25",fontsize="10",style="solid",label=" #_data" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node6 [label="{Bial::Vector\< int \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node7 -> Node5 [color="grey25",fontsize="10",style="solid",label=" #acc_dim_size\n#dim_size" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node7 [label="{Bial::Vector\< size_t \>\n|# _data\l# qk_data\l# _size\l|+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\l+ Vector()\land 84 more...\l+ Read()\l}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_bial_1_1_vector.html"];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" #geodesic_restriction" ,arrowhead="odiamond",fontname="Helvetica"];
+}

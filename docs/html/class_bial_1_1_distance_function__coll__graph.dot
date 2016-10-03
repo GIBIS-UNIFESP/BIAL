@@ -1,0 +1,6 @@
+digraph "Bial::DistanceFunction&lt; DERIVED &gt;"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Bial::DistanceFunction\l\< DERIVED \>\n||+ ~DistanceFunction()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\l+ Distance()\land 12 more...\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+}

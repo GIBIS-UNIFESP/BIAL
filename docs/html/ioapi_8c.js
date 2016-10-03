@@ -1,0 +1,27 @@
+var ioapi_8c =
+[
+    [ "FOPEN_FUNC", "ioapi_8c.html#a522a01bfc7c0429ab53987e50458fe8c", null ],
+    [ "FSEEKO_FUNC", "ioapi_8c.html#a0e74e519db7ea2da026a7da7eac65c7c", null ],
+    [ "FTELLO_FUNC", "ioapi_8c.html#ae84e3319767599bbef3ccbdeb4b0a3e4", null ],
+    [ "call_zopen64", "ioapi_8c.html#aba1d7f2b69248eee96210089ce140925", null ],
+    [ "call_zseek64", "ioapi_8c.html#aa3566299e354e3275a72193ab48e4af3", null ],
+    [ "call_ztell64", "ioapi_8c.html#ad18411c799d4ef86d37e25610e411c93", null ],
+    [ "fclose_file_func", "ioapi_8c.html#a46d15fd13aa338d56bf0baab0e13f33c", null ],
+    [ "ferror_file_func", "ioapi_8c.html#ac4648359d09344891d77ef91761c7e76", null ],
+    [ "fill_fopen64_filefunc", "ioapi_8c.html#aa67e4de04de04bf2d1694febd74bd16f", null ],
+    [ "fill_fopen_filefunc", "ioapi_8c.html#ab44f1d585b26ce7f9447a91ada432727", null ],
+    [ "fill_zlib_filefunc64_32_def_from_filefunc32", "ioapi_8c.html#a0c90747a8b732158bc3666411776affe", null ],
+    [ "fopen64_file_func", "ioapi_8c.html#af0c5573e34bd6c7310ce446f100c70d1", null ],
+    [ "fopen_file_func", "ioapi_8c.html#a4bb63e585627622dfc65b862326311fc", null ],
+    [ "fread_file_func", "ioapi_8c.html#a8a6ef04ff2a2ac53a4bea771742305fc", null ],
+    [ "fseek64_file_func", "ioapi_8c.html#a9a3b2a53e817284ec2f9ed2a63a7378b", null ],
+    [ "fseek_file_func", "ioapi_8c.html#a3a0e2fe55417c774e6fa27d30f4d7ae0", null ],
+    [ "ftell64_file_func", "ioapi_8c.html#a106a1b8a8ac4414ddef6a91014f91786", null ],
+    [ "ftell_file_func", "ioapi_8c.html#a488c4161c59f398fdcdbae003337dc97", null ],
+    [ "fwrite_file_func", "ioapi_8c.html#a71495c9ebc834d08026ad3e65099b16e", null ],
+    [ "OF", "ioapi_8c.html#a4a92a99d324ddfb710ac6952fc00ce8d", null ],
+    [ "OF", "ioapi_8c.html#a24d994607efdc339250266b1644f30e7", null ],
+    [ "OF", "ioapi_8c.html#abd3bace683786efe6997a4f138fc0d1e", null ],
+    [ "OF", "ioapi_8c.html#a8da098e84da1534de24f53d71a70a4e3", null ],
+    [ "OF", "ioapi_8c.html#a7b8b7cff08b10ebcdfffaa6df8a51458", null ]
+];

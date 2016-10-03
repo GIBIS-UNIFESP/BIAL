@@ -1,0 +1,8 @@
+digraph "QCustomPlot"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{QCustomPlot\n|+ xAxis\l+ yAxis\l+ xAxis2\l+ yAxis2\l+ legend\l# mViewport\l# mPlotLayout\l# mAutoAddPlottableToLegend\l# mPlottables\l# mGraphs\l# mItems\l# mLayers\l# mAntialiasedElements\l# mNotAntialiasedElements\l# mInteractions\land 14 more...\l|+ QCustomPlot()\l+ ~QCustomPlot()\l+ viewport()\l+ background()\l+ backgroundScaled()\l+ backgroundScaledMode()\l+ plotLayout()\l+ antialiasedElements()\l+ notAntialiasedElements()\l+ autoAddPlottableToLegend()\land 76 more...\l# minimumSizeHint()\l# sizeHint()\l# paintEvent()\l# resizeEvent()\l# mouseDoubleClickEvent()\l# mousePressEvent()\l# mouseMoveEvent()\l# mouseReleaseEvent()\l# wheelEvent()\l# draw()\l# axisRemoved()\l# legendRemoved()\l# updateLayerIndices()\l# layerableAt()\l# drawBackground()\l}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",arrowtail="onormal",fontname="Helvetica"];
+  Node2 [label="{QWidget\n||}",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}
