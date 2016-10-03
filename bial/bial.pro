@@ -5,7 +5,10 @@ QT       -= core gui
 
 QMAKE_CXXFLAGS += -O0 -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc \
--I$$PWD/cpplex/inc -I$$PWD/SLIC/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
+-I$$PWD/cpplex/inc \
+-I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
+
+#-I$$PWD/SLIC/inc
 
 win32{
 QMAKE_CXXFLAGS += -fopenmp
@@ -62,9 +65,16 @@ DESTDIR = $$PWD/../build/linux/lib
 OBJECTS_DIR = $$PWD/../build/linux/obj
 }
 
+QMAKE_EXTRA_TARGETS += createDirs
+
+createDirs.commands = $(QMAKE_MKDIR) $DESTDIR $OBJECTS_DIR
+target.depends += createDirs
+
+
+
 include(cpplex/cpplex.pri)
 include(lsh/lsh.pri)
-include(SLIC/SLIC.pri)
+#include(SLIC/SLIC.pri)
 include(zlib/zlib.pri)
 
 HEADERS += \
@@ -256,11 +266,12 @@ HEADERS += \
     inc/StatisticsPosNeg.hpp \
     inc/StatisticsStdDev.hpp \
     inc/SumPathFunction.hpp \
-    inc/Superpixel.hpp \
     inc/Table.hpp \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
     inc/Vector.hpp
+
+#inc/Superpixel.hpp \
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -435,10 +446,11 @@ SOURCES += \
     src/StatisticsPosNeg.cpp \
     src/StatisticsStdDev.cpp \
     src/SumPathFunction.cpp \
-    src/Superpixel.cpp \
     src/Table.cpp \
     src/TransformEuclDist.cpp \
     src/TransformEuclDistInv.cpp
+
+#src/Superpixel.cpp \
 
 DISTFILES += \
     uncrustify.cfg
