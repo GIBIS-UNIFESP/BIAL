@@ -177,7 +177,11 @@ namespace Bial {
           throw( std::logic_error( msg ) );
         }
         COMMENT( "Getting tissues intensities.", 0 );
-        Image< D > brain = img * msk;
+        Image< D > brain( img );
+        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
+          if( msk[ pxl ] == 0 )
+            brain[ pxl ] = 0;
+        }
         BrainIntensities tissues( brain );
         COMMENT( "Segmenting CSF from GM+WM.", 0 );
         D intensity = tissues.first_valley;
