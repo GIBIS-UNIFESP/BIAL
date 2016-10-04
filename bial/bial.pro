@@ -1,5 +1,6 @@
 TARGET = bial
 TEMPLATE = lib
+CONFIG += staticlib
 
 QT       -= core gui
 
@@ -463,3 +464,12 @@ SOURCES += \
 DISTFILES += \
     uncrustify.cfg
 
+## INSTALL LIBRARY
+headersDataFiles.path = $$[QT_INSTALL_HEADERS]/bial/
+headersDataFiles.files = $$PWD/inc/*.hpp
+INSTALLS += headersDataFiles
+
+libraryFiles.path = $$[QT_INSTALL_LIBS]
+Debug:libraryFiles.files = $$OUT_PWD/debug/*.a $$OUT_PWD/debug/*.prl
+Release:libraryFiles.files = $$OUT_PWD/release/*.a $$OUT_PWD/release/*.prl
+INSTALLS += libraryFiles
