@@ -1,0 +1,10 @@
+[Desktop Entry]
+GenericName=BIAL
+Name=BIAL
+Comment=BIAL GUI
+Exec=bash -c '"$(dirname "$1")"/files/bialgui.sh' dummy %k
+Icon=bial-logo.png
+Type=Application
+Categories=Utility;
+Terminal=false
+StartupNotify=false

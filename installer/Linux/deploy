@@ -1,0 +1,22 @@
+#!/bin/bash
+PROJECTPATH=${PWD}/../../master.pro
+BIALGUI=${PWD}/../../build/linux/release/bialgui
+FILES=${PWD}/portable_files
+PKGDIR=/tmp/bialgui-x64-portable
+qmake-qt5 $PROJECTPATH -r -spec linux-g++
+make -j4 --no-print-directory
+
+rm *.tar.gz -rf
+rm -rf $PKGDIR
+mkdir -p ${PKGDIR}/files/libs
+bash ${PWD}/cpld.bash $BIALGUI ${PKGDIR}/files/libs/
+
+cp ${FILES}/bialgui.desktop $PKGDIR
+
+cp ${FILES}/bial-logo.png ${PKGDIR}/files
+cp ${FILES}/bialgui.sh ${PKGDIR}/files
+cp $BIALGUI ${PKGDIR}/files
+
+pushd /tmp
+tar -zcf bialgui-x64-portable.tgz bialgui-x64-portable
+popd
