@@ -128,6 +128,7 @@ namespace Bial {
   template< template< class D > class C, class D >
   inline bool LocalMaxPathFunction< C, D >::Capable( int index, int adj_index, BucketState adj_state ) {
     try {
+      //return( this->value->operator()( adj_index ) < handicap( adj_index ) );
       return( ( adj_state == BucketState::NOT_VISITED ) || ( adj_state == BucketState::INSERTED ) );
     }
     catch( std::bad_alloc &e ) {
@@ -151,7 +152,14 @@ namespace Bial {
   template< template< class D > class C, class D >
   bool LocalMaxPathFunction< C, D >::Propagate( int index, int adj_index ) {
     try {
+      // D src_value = this->value->operator()( adj_index );
+      // D arc_weight = handicap( adj_index );
+      // D prp_value = arc_weight;
+      // if( src_value > prp_value ) {
+      //   this->value->operator()( adj_index ) = prp_value;
       return( true );
+      // }
+      // return( false );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -173,7 +181,7 @@ namespace Bial {
 
   template< template< class D > class C, class D >
   bool LocalMaxPathFunction< C, D >::Increasing( ) {
-    return( false );
+    return( true );
   }
 
 #ifdef BIAL_EXPLICIT_LocalMaxPathFunction

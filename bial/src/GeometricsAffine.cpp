@@ -70,13 +70,11 @@ namespace Bial {
             float y = u * transform( 0, 1 ) + v * transform( 1, 1 ) + w * transform( 2, 1 ) + transform( 3, 1 );
             float z = u * transform( 0, 2 ) + v * transform( 1, 2 ) + w * transform( 2, 2 ) + transform( 3, 2 );
             COMMENT( "Verifies if coordinates are in image domain.", 4 );
-            if( ( x <= 0.0f ) || ( y <= 0.0f ) || ( z <= 0.0f ) || ( x > img.size( 0 ) ) || ( y > img.size( 1 ) ) || 
-                ( z > img.size( 2 ) ) ) {
-              res( u, v, w ) = 0.0;
-            }
-            else {
-              res( u, v, w ) = interpolation( img, x, y, z );
-            }
+            // if( ( x <= 0.0f ) || ( y <= 0.0f ) || ( z <= 0.0f ) || ( x > img.size( 0 ) ) || ( y > img.size( 1 ) ) || 
+            //     ( z > img.size( 2 ) ) )
+            //   res( u, v, w ) = 0.0;
+            // else
+            res( u, v, w ) = interpolation( img, x, y, z );
           }
         }
       }

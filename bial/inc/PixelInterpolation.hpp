@@ -136,12 +136,10 @@ namespace Bial {
         ceil( dms ) = std::ceil( floor_dist( dms ) );
         floor( dms ) = std::floor( floor_dist( dms ) );
         if( ceil( dms ) == floor( dms ) ) {
-          if( ceil( dms ) == img.size( dms ) - 1 ) {
+          if( ceil( dms ) == img.size( dms ) - 1 )
             --floor( dms );
-          }
-          else {
+          else
             ++ceil( dms );
-          }
         }
         COMMENT( "Normalized distance.", 3 );
         ceil_dist( dms ) = ( ceil( dms ) - floor_dist( dms ) ) / ( ceil( dms ) - floor( dms ) );
@@ -198,12 +196,10 @@ namespace Bial {
         ceil( dms ) = std::ceil( floor_dist( dms ) );
         floor( dms ) = std::floor( floor_dist( dms ) );
         if( ceil( dms ) == floor( dms ) ) {
-          if( ceil( dms ) == img.size( dms ) - 1 ) {
+          if( ceil( dms ) == img.size( dms ) - 1 )
             --floor( dms );
-          }
-          else {
+          else
             ++ceil( dms );
-          }
         }
         COMMENT( "Normalized distance.", 3 );
         ceil_dist( dms ) = ( ceil( dms ) - floor_dist( dms ) ) / ( ceil( dms ) - floor( dms ) );

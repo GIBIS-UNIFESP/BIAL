@@ -23,16 +23,50 @@ namespace Bial {
 
   protected:
 
+    // /** @brief  Handicap container (Vector, Matrix, Image, etc). */
+    // C< D > handicap;
+    // /** @brief  Minimum difference between two sample intensities. */
+    // D bucket_size;
+
   public:
 
     /**
      * @date 2015/Jul/20
-     * @param none.
+     // * @param handicap: initial value to paths.
+     // * @param new_bucket_size: size of bucke in queue.
      * @return none.
      * @brief Basic constructor.
      * @warning none.
      */
+    // LocalMaxPathFunction( const C< D > &handicap, D new_bucket_size = 1.0 );
     LocalMaxPathFunction( );
+
+    // /**
+    //  * @date 2013/Jul/01
+    //  * @param pf: path-function to be copied.
+    //  * @return none.
+    //  * @brief Copy constructor.
+    //  * @warning none.
+    //  */
+    // LocalMaxPathFunction( const MaxPathFunction< C, D > &pf );
+    
+    // /**
+    //  * @date 2013/Jul/01
+    //  * @param none.
+    //  * @return none.
+    //  * @brief Destructor.
+    //  * @warning none.
+    //  */
+    // ~LocalMaxPathFunction( );
+
+    // /**
+    //  * @date 2013/Jul/01
+    //  * @param pf: path-function to be assigned.
+    //  * @return none.
+    //  * @brief Assignment operator.
+    //  * @warning none.
+    //  */
+    // LocalMaxPathFunction< C, D > operator=( const LocalMaxPathFunction< C, D > &pf );
 
     /**
      * @date 2015/Jul/20

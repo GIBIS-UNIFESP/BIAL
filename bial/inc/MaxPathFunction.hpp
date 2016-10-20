@@ -32,6 +32,7 @@ namespace Bial {
 
     /**
      * @date 2013/Jul/02
+     * @param handicap: initial value to paths.
      * @param new_bucket_size: size of bucke in queue.
      * @return none.
      * @brief Basic constructor.

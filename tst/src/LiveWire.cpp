@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2015/Jun/09 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with LiveWire function. */
 
@@ -27,7 +25,6 @@ int main( int argc, char **argv ) {
   }
   COMMENT( "Reading input image.", 0 );
   Image< int > img( Read< int >( argv[ 1 ] ) );
-
   COMMENT( "Creating seeds.", 0 );
   Vector< bool > seed( img.Size( ) );
   seed.Set( false );
@@ -38,9 +35,9 @@ int main( int argc, char **argv ) {
   ifile >> seed_dims;
   COMMENT( "seed dims: " << seed_dims, 3 );
   if( seed_dims != img.Dims( ) ) {
-    BIAL_ERROR( "Seed dimensions and image dimensions do not match. Seed: " + to_string( seed_dims ) +
-                ", image: " + to_string( img.Dims( ) ) + "." );
-    return( 0 );
+    std::string msg( BIAL_ERROR( "Seed dimensions and image dimensions do not match. Seed: " + to_string( seed_dims ) +
+                                 ", image: " + to_string( img.Dims( ) ) + "." ) );
+    throw( std::logic_error( msg ) );
   }
   COMMENT( "Reading seeds.", 1 );
   do {
