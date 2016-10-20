@@ -77,6 +77,7 @@ bool Controller::addImage( QString fname ) {
 
 bool Controller::addLabel( QString label ) {
   Q_UNUSED( label );
+
   /* TODO Controller::addLabel( QString label ) */
   return( false );
 }

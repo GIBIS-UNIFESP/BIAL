@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>863</width>
-    <height>983</height>
+    <width>440</width>
+    <height>1020</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -30,47 +30,42 @@
    <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout_7">
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item row="0" column="1">
-     <widget class="GraphicsView" name="logoView">
-      <property name="focusPolicy">
-       <enum>Qt::NoFocus</enum>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="resizeAnchor">
-       <enum>QGraphicsView::NoAnchor</enum>
-      </property>
-     </widget>
-    </item>
+   <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="ImageViewer" name="imageViewer" native="true">
-      <property name="minimumSize">
-       <size>
-        <width>100</width>
-        <height>0</height>
-       </size>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="ImageViewer" name="imageViewer" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>0</height>
+         </size>
+        </property>
+        <widget class="GraphicsView" name="logoView">
+         <property name="geometry">
+          <rect>
+           <x>110</x>
+           <y>20</y>
+           <width>646</width>
+           <height>1186</height>
+          </rect>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="resizeAnchor">
+          <enum>QGraphicsView::NoAnchor</enum>
+         </property>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -80,8 +75,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>863</width>
-     <height>19</height>
+     <width>440</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -281,7 +276,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QGridLayout" name="gridLayout">
+    <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
       <widget class="QCustomPlot" name="histogramWidget" native="true">
        <property name="minimumSize">
@@ -303,7 +298,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_7">
-    <layout class="QGridLayout" name="gridLayout_11">
+    <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
       <widget class="ControlsWidget" name="controlsWidget" native="true">
        <property name="minimumSize">
@@ -325,7 +320,7 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QGridLayout" name="gridLayout_2">
+    <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
       <widget class="SegmentationWidget" name="segmentationWidget" native="true">
        <property name="minimumSize">
@@ -352,6 +347,21 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetLabels">
+   <property name="windowTitle">
+    <string>Labels</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_5">
+    <layout class="QGridLayout" name="gridLayout_5">
+     <item row="0" column="0">
+      <widget class="LabelsWidget" name="labelsWidget" native="true"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="actionOpen_image">
    <property name="text">
@@ -649,6 +659,12 @@
    <class>SegmentationWidget</class>
    <extends>QWidget</extends>
    <header>src/segmentationwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LabelsWidget</class>
+   <extends>QWidget</extends>
+   <header>src/labelswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
