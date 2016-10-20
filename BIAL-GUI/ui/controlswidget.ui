@@ -41,12 +41,111 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-80</y>
         <width>268</width>
-        <height>945</height>
+        <height>796</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_11">
+       <item row="10" column="0">
+        <widget class="QGroupBox" name="groupBoxNiftiViews">
+         <property name="title">
+          <string>Number of Canvas NIfTI</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QPushButton" name="pushButton1View">
+            <property name="toolTip">
+             <string>One view</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../qrs/resources.qrc">
+              <normaloff>:/icons/icons/1view.png</normaloff>:/icons/icons/1view.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton3Views">
+            <property name="toolTip">
+             <string>Three views</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../qrs/resources.qrc">
+              <normaloff>:/icons/icons/3views.png</normaloff>:/icons/icons/3views.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton4Views">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Four views</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../qrs/resources.qrc">
+              <normaloff>:/icons/icons/4views.png</normaloff>:/icons/icons/4views.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
        <item row="13" column="0">
         <widget class="QGroupBox" name="groupBoxPpmViews">
          <property name="title">
@@ -259,84 +358,6 @@
          </layout>
         </widget>
        </item>
-       <item row="18" column="0">
-        <widget class="QGroupBox" name="groupBoxLabels">
-         <property name="title">
-          <string>Labels</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_10">
-          <item row="2" column="0" colspan="2">
-           <widget class="QRadioButton" name="solid">
-            <property name="text">
-             <string>Solid</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QRadioButton" name="translucent">
-            <property name="text">
-             <string>Translucent</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0" colspan="2">
-           <widget class="QRadioButton" name="multiLabel">
-            <property name="text">
-             <string>Multi-label</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSlider" name="labelHorizontalSlider">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="maximum">
-             <number>0</number>
-            </property>
-            <property name="pageStep">
-             <number>1</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksAbove</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QSpinBox" name="labelSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="maximum">
-             <number>0</number>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSlider" name="translucentSlider">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="maximum">
-             <number>100</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="tickPosition">
-             <enum>QSlider::TicksAbove</enum>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="14" column="0">
         <widget class="QGroupBox" name="groupBoxOrientation">
          <property name="title">
@@ -430,226 +451,6 @@
             </property>
             <property name="autoExclusive">
              <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="19" column="0">
-        <spacer name="vSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="10" column="0">
-        <widget class="QGroupBox" name="groupBoxNiftiViews">
-         <property name="title">
-          <string>Number of Canvas NIfTI</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QPushButton" name="pushButton1View">
-            <property name="toolTip">
-             <string>One view</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../qrs/resources.qrc">
-              <normaloff>:/icons/icons/1view.png</normaloff>:/icons/icons/1view.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton3Views">
-            <property name="toolTip">
-             <string>Three views</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../qrs/resources.qrc">
-              <normaloff>:/icons/icons/3views.png</normaloff>:/icons/icons/3views.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton4Views">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>Four views</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../qrs/resources.qrc">
-              <normaloff>:/icons/icons/4views.png</normaloff>:/icons/icons/4views.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="15" column="0">
-        <widget class="QGroupBox" name="groupBoxNiftiAxis">
-         <property name="title">
-          <string>NIfTI Axis</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QPushButton" name="pushButtonAxial">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Axial&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../qrs/resources.qrc">
-              <normaloff>:/icons/icons/axial.png</normaloff>:/icons/icons/axial.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonCoronal">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Coronal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../qrs/resources.qrc">
-              <normaloff>:/icons/icons/coronal.png</normaloff>:/icons/icons/coronal.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonSagittal">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sagittal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../qrs/resources.qrc">
-              <normaloff>:/icons/icons/sagittal.png</normaloff>:/icons/icons/sagittal.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>48</width>
-              <height>48</height>
-             </size>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-            <property name="autoExclusive">
-             <bool>true</bool>
-            </property>
-            <property name="flat">
-             <bool>false</bool>
             </property>
            </widget>
           </item>
@@ -890,12 +691,132 @@
          </layout>
         </widget>
        </item>
+       <item row="15" column="0">
+        <widget class="QGroupBox" name="groupBoxNiftiAxis">
+         <property name="title">
+          <string>NIfTI Axis</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QPushButton" name="pushButtonAxial">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Axial&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../qrs/resources.qrc">
+              <normaloff>:/icons/icons/axial.png</normaloff>:/icons/icons/axial.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonCoronal">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Coronal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../qrs/resources.qrc">
+              <normaloff>:/icons/icons/coronal.png</normaloff>:/icons/icons/coronal.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButtonSagittal">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sagittal&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="../qrs/resources.qrc">
+              <normaloff>:/icons/icons/sagittal.png</normaloff>:/icons/icons/sagittal.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>48</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoExclusive">
+             <bool>true</bool>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="18" column="0">
+        <spacer name="vSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
       </layout>
       <zorder>groupBoxNiftiViews</zorder>
       <zorder>groupBoxPpmViews</zorder>
       <zorder>groupBoxPpmChannels</zorder>
       <zorder>groupBoxEditor</zorder>
-      <zorder>groupBoxLabels</zorder>
       <zorder>groupBoxOrientation</zorder>
       <zorder>groupBoxNiftiAxis</zorder>
       <zorder>groupBoxFolderControls</zorder>

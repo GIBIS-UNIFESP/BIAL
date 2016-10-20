@@ -108,7 +108,7 @@ void ControlsWidget::imageChanged( ) {
   ui->groupBoxPpmViews->setVisible( format->showPpmViews( ) );
   ui->groupBoxPpmChannels->setVisible( format->showPpmChannels( ) );
   ui->rotate->setVisible( format->rotateSingle( ) );
-  ui->groupBoxLabels->setVisible( false );
+//  ui->groupBoxLabels->setVisible( false );
 
   /* TODO Continue ... */
 }

@@ -60,6 +60,11 @@ void DefaultTool::changeOtherSlices( QPointF posF, size_t view ) {
   }
 }
 
+QVector<GuiImage *> DefaultTool::labels( ) const {
+  return( m_labels );
+}
+
+
 void DefaultTool::updateOverlay( QPointF pt, size_t axis ) {
   /*  qDebug() << "Overlaypos = " << pt; */
   COMMENT( "ImageViewer::updateOverlay", 0 );

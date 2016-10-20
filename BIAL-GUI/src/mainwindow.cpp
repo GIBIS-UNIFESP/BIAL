@@ -24,6 +24,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   ui->controlsWidget->setController( controller );
   ui->controlsDock->hide( );
   ui->dockWidgetSegmentation->hide( );
+  ui->dockWidgetLabels->hide();
   ui->imageViewer->setController( controller );
   ui->actionPrint->setEnabled( false );
   /*
@@ -49,8 +50,8 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   actionSegmentationTool->setCheckable( true );
   actionSegmentationTool->setChecked( false );
 
-  connect( actionDefaultTool, &QAction::triggered, this, &MainWindow::on_actionDefaultTool_triggered );
-  connect( actionSegmentationTool, &QAction::triggered, this, &MainWindow::on_actionSegmentationTool_triggered );
+  connect( actionDefaultTool, &QAction::triggered, this, &MainWindow::actionDefaultTool_triggered );
+  connect( actionSegmentationTool, &QAction::triggered, this, &MainWindow::actionSegmentationTool_triggered );
 
   ui->toolBar->addActions( group->actions( ) );
 
@@ -156,6 +157,7 @@ void MainWindow::currentImageChanged( ) {
       actionSegmentationTool->setChecked( true );
     }
     ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
+    ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
   }
 }
 
@@ -182,6 +184,7 @@ void MainWindow::imageUpdated( ) {
   plot->replot( );
   if( controller->currentImage( ) ) {
     ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
+    ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
   }
 }
 
@@ -632,7 +635,7 @@ void MainWindow::on_actionToggle_overlay_triggered( ) {
   }
 }
 
-void MainWindow::on_actionDefaultTool_triggered( ) {
+void MainWindow::actionDefaultTool_triggered( ) {
   GuiImage *img = controller->currentImage( );
   if( img ) {
     bool found = false;
@@ -648,11 +651,12 @@ void MainWindow::on_actionDefaultTool_triggered( ) {
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
     ui->segmentationWidget->setTool( img->currentTool( ) );
+    ui->labelsWidget->setTool( img->currentTool( ) );
     emit img->imageUpdated( );
   }
 }
 
-void MainWindow::on_actionSegmentationTool_triggered( ) {
+void MainWindow::actionSegmentationTool_triggered( ) {
   GuiImage *img = controller->currentImage( );
   if( img ) {
     bool found = false;
@@ -667,6 +671,7 @@ void MainWindow::on_actionSegmentationTool_triggered( ) {
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
     ui->segmentationWidget->setTool( img->currentTool( ) );
+    ui->labelsWidget->setTool( img->currentTool( ) );
     ui->dockWidgetSegmentation->show( );
     emit img->imageUpdated( );
   }
@@ -692,7 +697,7 @@ void MainWindow::on_actionPortuguese_triggered( ) {
   ui->retranslateUi( this );
 }
 
-void MainWindow::on_actionFunctional_Tool_triggered( ) {
+void MainWindow::actionFunctional_Tool_triggered( ) {
   /*    ui->dockWidgetFunctional->show(); */
 /*  ui->widgetDragDrop->show( ); */
   ui->logoView->hide( );
@@ -705,6 +710,6 @@ void MainWindow::on_actionFunctional_Tool_triggered( ) {
  * redimensionar)
  */
 
-void MainWindow::on_actionChange_default_parameters_triggered( ) {
+void MainWindow::actionChange_default_parameters_triggered( ) {
   /* TODO: abrir janela para mostrar parametros */
 }

@@ -74,17 +74,18 @@ private slots:
 
   void on_actionToggle_overlay_triggered( );
 
-  void on_actionDefaultTool_triggered( );
+  void actionDefaultTool_triggered( );
 
-  void on_actionSegmentationTool_triggered( );
+  void actionSegmentationTool_triggered( );
 
   void on_actionEnglish_triggered( );
 
   void on_actionPortuguese_triggered( );
 
-  void on_actionFunctional_Tool_triggered( );
+  void actionFunctional_Tool_triggered( );
 
-  void on_actionChange_default_parameters_triggered( );
+  void actionChange_default_parameters_triggered( );
+
 
 private:
   Ui::MainWindow *ui;

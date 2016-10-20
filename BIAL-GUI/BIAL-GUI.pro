@@ -85,7 +85,8 @@ FORMS += \
     ui/segmentationwidget.ui \
     ui/thumbswidget.ui \
     ui/dragdrop.ui \
-    ui/functionalwidget.ui
+    ui/functionalwidget.ui \
+    ui/labelswidget.ui
 
 HEADERS += \
     src/controller.h \
@@ -112,7 +113,8 @@ HEADERS += \
     src/thumbswidget.h \
     src/tool.h \
     src/viewerinterface.h \
-    thirdParty/qcustomplot.h
+    thirdParty/qcustomplot.h \
+    src/labelswidget.h
 
 SOURCES += \
     src/controller.cpp \
@@ -139,7 +141,8 @@ SOURCES += \
     src/thumbnail.cpp \
     src/thumbswidget.cpp \
     src/tool.cpp \
-    thirdParty/qcustomplot.cpp
+    thirdParty/qcustomplot.cpp \
+    src/labelswidget.cpp
 
 DISTFILES += \
     uncrustify.cfg

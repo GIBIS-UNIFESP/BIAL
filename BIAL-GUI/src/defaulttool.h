@@ -20,6 +20,8 @@ public:
   void mouseMoved( QPointF pt, size_t axis );
   void sliceChanged( size_t axis, size_t slice );
   void updateOverlay( QPointF pt, size_t axis );
+  QVector<GuiImage *> labels() const;
+
 private:
   /**
    *
@@ -31,6 +33,7 @@ private:
    */
   void changeOtherSlices( QPointF posF, size_t view );
 
+  QVector< GuiImage * > m_labels;
 };
 
 #endif /* DEFAULTTOOL_H */
