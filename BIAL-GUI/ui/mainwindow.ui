@@ -99,7 +99,6 @@
     <addaction name="actionRemove_current_image"/>
     <addaction name="separator"/>
     <addaction name="actionAddLabel"/>
-    <addaction name="actionRemove_current_label"/>
     <addaction name="separator"/>
     <addaction name="menuRecent_files"/>
     <addaction name="separator"/>
@@ -397,7 +396,7 @@
   </action>
   <action name="actionAddLabel">
    <property name="text">
-    <string>&amp;Load label...</string>
+    <string>&amp;Load label</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -514,7 +513,7 @@
   </action>
   <action name="actionRemove_current_label">
    <property name="text">
-    <string>Remove &amp;current label</string>
+    <string>Remove label</string>
    </property>
   </action>
   <action name="actionAbout">

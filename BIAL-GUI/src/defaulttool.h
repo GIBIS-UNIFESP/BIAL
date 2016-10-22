@@ -3,6 +3,12 @@
 
 #include "tool.h"
 
+enum class LabelType : char {
+  none,
+  solid,
+  multilabel
+};
+
 class DefaultTool : public Tool {
 
 public:
@@ -20,9 +26,15 @@ public:
   void mouseMoved( QPointF pt, size_t axis );
   void sliceChanged( size_t axis, size_t slice );
   void updateOverlay( QPointF pt, size_t axis );
-  const QVector<Bial::Image<int> > & labels( ) const;
   void addLabel( QString filename );
+  void removeLabel( );
   QPixmap getLabel( size_t axis );
+
+  float getFactor( ) const;
+  void setTranslucentFactor( float m_factor );
+
+  LabelType getLabelType( ) const;
+  void setLabelType( const LabelType &value );
 
 private:
   /**
@@ -35,10 +47,12 @@ private:
    */
   void changeOtherSlices( QPointF posF, size_t view );
 
-  QVector< Bial::Image<int> > m_labels;
-  QVector< int > m_max;
+  Bial::Image< int > m_label;
+  int m_max;
   std::array< QPixmap, 4 > pixmaps;
   std::array< bool, 4 > needUpdate;
+  LabelType labelType;
+  float m_factor;
 };
 
 #endif /* DEFAULTTOOL_H */

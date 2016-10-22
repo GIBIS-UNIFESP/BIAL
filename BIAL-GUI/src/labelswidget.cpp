@@ -13,34 +13,43 @@ LabelsWidget::~LabelsWidget( ) {
 
 void LabelsWidget::setTool( Tool *sTool ) {
   tool = dynamic_cast< DefaultTool* >( sTool );
-  if( tool && !tool->labels().isEmpty() ) {
+  if( tool && tool->hasLabel( ) ) {
     setEnabled( true );
+    switch( tool->getLabelType( ) ) {
+        case LabelType::none:
+        ui->none->setChecked( true );
+        break;
+        case LabelType::solid:
+        ui->solid->setChecked( true );
+        break;
+//        case LabelType::multilabel:
+//        ui->multiLabel->setChecked( true );
+//        break;
+    }
+    int tf = static_cast< int >( tool->getFactor( ) );
+    ui->translucentSlider->setValue( tf );
   }
   else {
     setEnabled( false );
   }
 }
 
-void LabelsWidget::on_labelSpinBox_editingFinished( ) {
-
-}
-
-void LabelsWidget::on_labelHorizontalSlider_actionTriggered( int action ) {
-
+void LabelsWidget::on_none_clicked( ) {
+  tool->setLabelType( LabelType::none );
 }
 
 void LabelsWidget::on_solid_clicked( ) {
-
+  tool->setLabelType( LabelType::solid );
 }
 
-void LabelsWidget::on_translucent_clicked( ) {
+//void LabelsWidget::on_multiLabel_clicked( ) {
+//  tool->setLabelType( LabelType::multilabel );
+//}
 
+void LabelsWidget::on_translucentSlider_valueChanged( int value ) {
+  tool->setTranslucentFactor( ui->translucentSlider->value( ) );
 }
 
-void LabelsWidget::on_translucentSlider_actionTriggered( int action ) {
-
-}
-
-void LabelsWidget::on_multiLabel_clicked( ) {
-
+void LabelsWidget::on_pushButton_clicked( ) {
+  tool->removeLabel();
 }

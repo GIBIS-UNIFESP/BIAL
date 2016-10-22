@@ -319,11 +319,12 @@ void MainWindow::commandLineOpen( int argc, char *argv[] ) {
     else {
       BIAL_WARNING( "FILE DOES NOT EXISTS! : " << file.absolutePath( ).toStdString( ) );
     }
-    fileName = QString(argv[2]);
-    file.setFile(fileName);
+    fileName = QString( argv[ 2 ] );
+    file.setFile( fileName );
     if( argc == 3 ) {
-      if( file.exists( ) && file.isFile()) {
-        loadLabel(fileName);
+      if( file.exists( ) && file.isFile( ) ) {
+        loadLabel( fileName );
+        ui->dockWidgetLabels->show( );
       }
     }
   }
@@ -419,7 +420,6 @@ void MainWindow::loadLabel( QString filename ) {
   if( tool ) {
     tool->addLabel( filename );
   }
-  imageUpdated( );
 }
 
 void MainWindow::on_actionAddLabel_triggered( ) {

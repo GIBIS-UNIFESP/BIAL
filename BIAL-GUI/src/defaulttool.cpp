@@ -5,8 +5,12 @@
 #include <QDebug>
 #include <QPointF>
 #include <QRgb>
-DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) : Tool( guiImage, viewer ) {
+
+DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) :
+  Tool( guiImage, viewer ), m_max( 0 ), labelType(
+    LabelType::solid ), m_factor( 64.0 ) {
   setObjectName( "DefaultTool" );
+
 }
 
 int DefaultTool::type( ) {
@@ -62,18 +66,51 @@ void DefaultTool::changeOtherSlices( QPointF posF, size_t view ) {
   }
 }
 
-const QVector< Bial::Image< int > > &DefaultTool::labels( ) const {
-  return( m_labels );
+LabelType DefaultTool::getLabelType( ) const {
+  return( labelType );
 }
+
+void DefaultTool::setLabelType( const LabelType &value ) {
+  labelType = value;
+  for( int axis = 0; axis < 4; ++axis ) {
+    needUpdate[ axis ] = true;
+  }
+  emit guiImage->imageUpdated( );
+}
+
+void DefaultTool::setTranslucentFactor( float value ) {
+  m_factor = value;
+  for( int axis = 0; axis < 4; ++axis ) {
+    needUpdate[ axis ] = true;
+  }
+  emit guiImage->imageUpdated( );
+}
+
+float DefaultTool::getFactor( ) const {
+  return( m_factor );
+}
+
 
 void DefaultTool::addLabel( QString filename ) {
   std::cout << "Loading Label: " << filename.toStdString( ) << std::endl;
-  m_labels.append( Bial::Read< int >( filename.toStdString( ) ) );
-  m_max.append( m_labels.last().Maximum() );
+  m_label = Bial::Read< int >( filename.toStdString( ) );
+  m_max = m_label.Maximum( );
   setHasLabel( true );
   for( int axis = 0; axis < 4; ++axis ) {
     needUpdate[ axis ] = true;
   }
+  emit guiImage->imageUpdated();
+}
+
+void DefaultTool::removeLabel( ) {
+  setHasLabel( false );
+  m_label = Bial::Image< int >( );
+  m_max = 0.0;
+  for( int axis = 0; axis < 4; ++axis ) {
+    pixmaps[ axis ] = QPixmap( );
+    needUpdate[ axis ] = false;
+  }
+  emit guiImage->imageUpdated();
 }
 
 
@@ -108,29 +145,32 @@ void DefaultTool::sliceChanged( size_t axis, size_t slice ) {
 
 
 QPixmap DefaultTool::getLabel( size_t axis ) {
-  if( !needUpdate[ axis ] ) {
+  if( !needUpdate[ axis ] || !hasLabel( ) ) {
     return( pixmaps[ axis ] );
   }
   const size_t xsz = guiImage->width( axis );
   const size_t ysz = guiImage->heigth( axis );
   const Bial::FastTransform &transf = guiImage->getTransform( axis );
   QImage res( xsz, ysz, QImage::Format_ARGB32 );
-  if( m_labels.isEmpty( ) ) {
+  float factor = m_factor / m_max;
+  if( labelType == LabelType::none ) {
     res.fill( qRgba( 0, 0, 0, 0 ) );
   }
-  else {
-    float factor = 64.0/m_max.last();
-    const Bial::Image< int > &img( m_labels.last( ) );
-#pragma omp parallel for firstprivate(axis, xsz, ysz)
+  else if( labelType == LabelType::solid ) {
+//#pragma omp parallel for firstprivate(axis, xsz, ysz)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
         int xx, yy, zz;
         transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
-        int color = img( xx, yy, zz ) * factor;
+        int color = m_label( xx, yy, zz ) * factor;
         scanLine[ x ] = qRgba( 0, 255, 255, color );
       }
     }
+  }
+  else if( labelType == LabelType::multilabel ) {
+    res.fill( qRgba( 0, 0, 0, 0 ) );
+    //TODO: Multilabel
   }
   pixmaps[ axis ] = QPixmap::fromImage( res );
   return( pixmaps[ axis ] );
