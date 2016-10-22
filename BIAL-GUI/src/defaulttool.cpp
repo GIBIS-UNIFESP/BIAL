@@ -1,8 +1,10 @@
+#include "FileImage.hpp"
 #include "controller.h"
 #include "defaulttool.h"
+#include "gdcm.h"
 #include <QDebug>
 #include <QPointF>
-
+#include <QRgb>
 DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) : Tool( guiImage, viewer ) {
   setObjectName( "DefaultTool" );
 }
@@ -60,8 +62,18 @@ void DefaultTool::changeOtherSlices( QPointF posF, size_t view ) {
   }
 }
 
-QVector<GuiImage *> DefaultTool::labels( ) const {
+const QVector< Bial::Image< int > > &DefaultTool::labels( ) const {
   return( m_labels );
+}
+
+void DefaultTool::addLabel( QString filename ) {
+  std::cout << "Loading Label: " << filename.toStdString( ) << std::endl;
+  m_labels.append( Bial::Read< int >( filename.toStdString( ) ) );
+  m_max.append( m_labels.last().Maximum() );
+  setHasLabel( true );
+  for( int axis = 0; axis < 4; ++axis ) {
+    needUpdate[ axis ] = true;
+  }
 }
 
 
@@ -91,4 +103,35 @@ void DefaultTool::updateOverlay( QPointF pt, size_t axis ) {
 void DefaultTool::sliceChanged( size_t axis, size_t slice ) {
   Q_UNUSED( slice )
   updateOverlay( viewer->getScene( axis )->overlayPos( ), axis );
+  needUpdate[ axis ] = true;
+}
+
+
+QPixmap DefaultTool::getLabel( size_t axis ) {
+  if( !needUpdate[ axis ] ) {
+    return( pixmaps[ axis ] );
+  }
+  const size_t xsz = guiImage->width( axis );
+  const size_t ysz = guiImage->heigth( axis );
+  const Bial::FastTransform &transf = guiImage->getTransform( axis );
+  QImage res( xsz, ysz, QImage::Format_ARGB32 );
+  if( m_labels.isEmpty( ) ) {
+    res.fill( qRgba( 0, 0, 0, 0 ) );
+  }
+  else {
+    float factor = 64.0/m_max.last();
+    const Bial::Image< int > &img( m_labels.last( ) );
+#pragma omp parallel for firstprivate(axis, xsz, ysz)
+    for( size_t y = 0; y < ysz; ++y ) {
+      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+      for( size_t x = 0; x < xsz; ++x ) {
+        int xx, yy, zz;
+        transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
+        int color = img( xx, yy, zz ) * factor;
+        scanLine[ x ] = qRgba( 0, 255, 255, color );
+      }
+    }
+  }
+  pixmaps[ axis ] = QPixmap::fromImage( res );
+  return( pixmaps[ axis ] );
 }

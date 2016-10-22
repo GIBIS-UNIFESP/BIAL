@@ -20,7 +20,9 @@ public:
   void mouseMoved( QPointF pt, size_t axis );
   void sliceChanged( size_t axis, size_t slice );
   void updateOverlay( QPointF pt, size_t axis );
-  QVector<GuiImage *> labels() const;
+  const QVector<Bial::Image<int> > & labels( ) const;
+  void addLabel( QString filename );
+  QPixmap getLabel( size_t axis );
 
 private:
   /**
@@ -33,7 +35,10 @@ private:
    */
   void changeOtherSlices( QPointF posF, size_t view );
 
-  QVector< GuiImage * > m_labels;
+  QVector< Bial::Image<int> > m_labels;
+  QVector< int > m_max;
+  std::array< QPixmap, 4 > pixmaps;
+  std::array< bool, 4 > needUpdate;
 };
 
 #endif /* DEFAULTTOOL_H */
