@@ -24,7 +24,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   ui->controlsWidget->setController( controller );
   ui->controlsDock->hide( );
   ui->dockWidgetSegmentation->hide( );
-  ui->dockWidgetLabels->hide();
+  ui->dockWidgetLabels->hide( );
   ui->imageViewer->setController( controller );
   ui->actionPrint->setEnabled( false );
   /*
@@ -304,22 +304,26 @@ void MainWindow::commandLineOpen( int argc, char *argv[] ) {
   if( ( argc == 3 ) && ( QString( argv[ 1 ] ) == "-d" ) ) {
     loadDicomdir( QString( argv[ 2 ] ) );
   }
-  else {
+  else if( ( argc == 2 ) || ( argc == 3 ) ) {
     QFileInfo file;
-    for( int img = 1; img < argc; ++img ) {
-      QString fileName( argv[ img ] );
-      file.setFile( fileName );
-      COMMENT( "\tArgument[" << img << "] = " << fileName.toStdString( ), 0 );
-      if( file.exists( ) ) {
-        if( file.isFile( ) ) {
-          controller->addImage( file.absoluteFilePath( ) );
-        }
-        else if( file.isDir( ) ) {
-          loadFolder( file.absoluteFilePath( ) );
-        }
+    QString fileName( argv[ 1 ] );
+    file.setFile( fileName );
+    if( file.exists( ) ) {
+      if( file.isFile( ) ) {
+        controller->addImage( file.absoluteFilePath( ) );
       }
-      else {
-        BIAL_WARNING( "FILE DOES NOT EXISTS! : " << file.absolutePath( ).toStdString( ) );
+      else if( file.isDir( ) ) {
+        loadFolder( file.absoluteFilePath( ) );
+      }
+    }
+    else {
+      BIAL_WARNING( "FILE DOES NOT EXISTS! : " << file.absolutePath( ).toStdString( ) );
+    }
+    fileName = QString(argv[2]);
+    file.setFile(fileName);
+    if( argc == 3 ) {
+      if( file.exists( ) && file.isFile()) {
+        loadLabel(fileName);
       }
     }
   }
@@ -409,8 +413,18 @@ bool MainWindow::loadDicomdir( QString dicomFName ) {
   return( false );
 }
 
+void MainWindow::loadLabel( QString filename ) {
+  actionDefaultTool_triggered( );
+  DefaultTool *tool = dynamic_cast< DefaultTool* >( controller->currentImage( )->currentTool( ) );
+  if( tool ) {
+    tool->addLabel( filename );
+  }
+  imageUpdated( );
+}
+
 void MainWindow::on_actionAddLabel_triggered( ) {
-  controller->addLabel( getFileDialog( ) );
+  QString filename = getFileDialog( );
+  loadLabel( filename );
 }
 
 void MainWindow::on_actionOpen_folder_triggered( ) {

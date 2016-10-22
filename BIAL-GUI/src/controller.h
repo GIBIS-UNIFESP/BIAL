@@ -90,13 +90,6 @@ public:
   bool addImage( QString fname );
   /**
    *
-   * @brief addLabel Adds a label to the current image.
-   * @param label is the file name of the label to be opened.
-   *
-   */
-  bool addLabel( QString label );
-  /**
-   *
    * @brief removeCurrentLabel removes the current label from current image.
    * @return true if removed successfully.
    *

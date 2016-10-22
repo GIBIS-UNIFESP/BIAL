@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QFile>
 #include <qsettings.h>
-
+#include "defaulttool.h"
 Controller::Controller( int views, QObject *parent )
   : QObject( parent ), bw2dFormat( new BW2DFormat( this ) ), rgb2dFormat( new RGB2DFormat( this ) ),
   bw3dFormat( new BW3DFormat( this ) ) {
@@ -73,13 +73,6 @@ bool Controller::addImage( QString fname ) {
   emit currentImageChanged( );
 
   return( true );
-}
-
-bool Controller::addLabel( QString label ) {
-  Q_UNUSED( label );
-
-  /* TODO Controller::addLabel( QString label ) */
-  return( false );
 }
 
 bool Controller::removeCurrentLabel( ) {

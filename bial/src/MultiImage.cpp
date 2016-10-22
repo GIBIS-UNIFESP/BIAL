@@ -1,5 +1,5 @@
-/* Biomedical Image Analysis Library 
- * See README file in the root instalation directory for more information. 
+/* Biomedical Image Analysis Library
+ * See README file in the root instalation directory for more information.
  */
 
 /**
@@ -19,8 +19,8 @@
 #if defined ( BIAL_EXPLICIT_MultiImage ) || ( BIAL_IMPLICIT_BIN )
 
 namespace Bial {
-  
-  MultiImage::MultiImage( ) try : 
+
+  MultiImage::MultiImage( ) try :
     type( MultiImageType::none ), int_img( nullptr ), flt_img( nullptr ), clr_img( nullptr ), rcl_img( nullptr ) {
       COMMENT( "Creating empty multiimage.", 0 );
     }
@@ -42,7 +42,7 @@ namespace Bial {
   }
 
   MultiImage::MultiImage( const Image< int > &img ) try :
-    type( MultiImageType::int_img ), int_img( new Image< int >( img ) ), flt_img( nullptr ), clr_img( nullptr ), 
+    type( MultiImageType::int_img ), int_img( new Image< int >( img ) ), flt_img( nullptr ), clr_img( nullptr ),
       rcl_img( nullptr ) {
       COMMENT( "Creating int multiimage.", 0 );
     }
@@ -64,7 +64,7 @@ namespace Bial {
   }
 
   MultiImage::MultiImage( const Image< float > &img ) try :
-    type( MultiImageType::flt_img ), int_img( nullptr ), flt_img( new Image< float >( img ) ), clr_img( nullptr ), 
+    type( MultiImageType::flt_img ), int_img( nullptr ), flt_img( new Image< float >( img ) ), clr_img( nullptr ),
       rcl_img( nullptr ) {
       COMMENT( "Creating float multiimage.", 0 );
     }
@@ -86,7 +86,7 @@ namespace Bial {
   }
 
   MultiImage::MultiImage( const Image< Color > &img )try :
-    type( MultiImageType::clr_img ), int_img( nullptr ), flt_img( nullptr ), clr_img( new Image< Color >( img ) ), 
+    type( MultiImageType::clr_img ), int_img( nullptr ), flt_img( nullptr ), clr_img( new Image< Color >( img ) ),
       rcl_img( nullptr ) {
       COMMENT( "Creating color multiimage.", 0 );
     }
@@ -108,7 +108,7 @@ namespace Bial {
   }
 
   MultiImage::MultiImage( const Image< RealColor > &img )try :
-    type( MultiImageType::rcl_img ), int_img( nullptr ), flt_img( nullptr ), clr_img( nullptr ), 
+    type( MultiImageType::rcl_img ), int_img( nullptr ), flt_img( nullptr ), clr_img( nullptr ),
       rcl_img( new Image< RealColor >( img ) ) {
       COMMENT( "Creating realcolor multiimage.", 0 );
     }
@@ -129,7 +129,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  MultiImage::MultiImage( const MultiImage &mimg ) try : 
+  MultiImage::MultiImage( const MultiImage &mimg ) try :
     type( mimg.type ), int_img( nullptr ), flt_img( nullptr ), clr_img( nullptr ), rcl_img( nullptr ) {
       switch( type ) {
       case MultiImageType::int_img:
@@ -165,7 +165,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  MultiImage::MultiImage( MultiImage &&mimg ) try : 
+  MultiImage::MultiImage( MultiImage &&mimg ) try :
     type( std::move( mimg.type ) ), int_img( mimg.int_img ), flt_img( mimg.flt_img ), clr_img( mimg.clr_img ),
       rcl_img( mimg.rcl_img ) {
     }

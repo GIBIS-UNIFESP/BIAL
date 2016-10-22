@@ -19,6 +19,8 @@ public:
 
   void commandLineOpen( int argc, char *argv[] );
 
+  void loadLabel(QString filename);
+  
 private:
   void createConnections( );
   void setupLogoview( );
