@@ -299,35 +299,101 @@ void MainWindow::readSettings( ) {
   }
 }
 
-void MainWindow::commandLineOpen( int argc, char *argv[] ) {
-  COMMENT( "Command Line Open with " << argc << " arguments:", 0 );
-  if( ( argc == 3 ) && ( QString( argv[ 1 ] ) == "-d" ) ) {
-    loadDicomdir( QString( argv[ 2 ] ) );
-  }
-  else if( ( argc == 2 ) || ( argc == 3 ) ) {
-    QFileInfo file;
-    QString fileName( argv[ 1 ] );
-    file.setFile( fileName );
-    if( file.exists( ) ) {
-      if( file.isFile( ) ) {
-        controller->addImage( file.absoluteFilePath( ) );
+void MainWindow::commandLineOpen( const QCommandLineParser &parser,
+                                  const QCommandLineOption &dicomdir,
+                                  const QCommandLineOption &folder,
+                                  const QCommandLineOption &label ) {
+  COMMENT( "Command Line Open", 0 );
+  const QStringList args = parser.positionalArguments( );
+  QString msg;
+  if( !args.isEmpty( ) ) {
+    for( QString arg : args ) {
+      QFileInfo file( arg );
+      if( file.exists( ) ) {
+        if( file.isFile( ) ) {
+          if( controller->addImage( file.absoluteFilePath( ) ) ) {
+            msg = file.baseName( ) + " loaded succesfully.";
+          }
+          else {
+            msg = "Error loading " + file.absolutePath( ) + ".";
+            BIAL_WARNING( msg.toStdString( ) );
+          }
+        }
+        else {
+          msg = file.absoluteFilePath( ) + " is not a file.";
+          BIAL_WARNING( msg.toStdString( ) );
+        }
       }
-      else if( file.isDir( ) ) {
-        loadFolder( file.absoluteFilePath( ) );
+      else {
+        msg = file.absoluteFilePath( ) + " does not exist.";
+        BIAL_WARNING( msg.toStdString( ) );
+      }
+      if(controller->size() > 1){
+        ui->thumbsDock->show();
+      }
+    }
+    if( parser.isSet( label ) ) {
+      QFileInfo file( parser.value( label ) );
+      if( file.exists( ) ) {
+        if( file.isFile( ) ) {
+          if( loadLabel( file.absoluteFilePath( ) ) ) {
+            msg = file.baseName( ) + " loaded succesfully.";
+          }
+          else {
+            msg = "Error loading " + file.absoluteFilePath( ) + ".";
+            BIAL_WARNING( msg.toStdString( ) );
+          }
+        }
+        else {
+          msg = file.absoluteFilePath( ) + " is not a file.";
+          BIAL_WARNING( msg.toStdString( ) );
+        }
+      }
+      else {
+        msg = file.absoluteFilePath( ) + " does not exist.";
+        BIAL_WARNING( msg.toStdString( ) );
+      }
+    }
+  }
+  else if( parser.isSet( dicomdir ) ) {
+    QFileInfo file( parser.value( dicomdir ) );
+    if( file.exists( ) ) {
+      if( loadDicomdir( file.absoluteFilePath( ) ) ) {
+        msg = file.baseName( ) + " loaded succesfully.";
+      }
+      else {
+        msg = "Error loading " + file.absoluteFilePath( ) + ".";
+        BIAL_WARNING( msg.toStdString( ) );
       }
     }
     else {
-      BIAL_WARNING( "FILE DOES NOT EXISTS! : " << file.absolutePath( ).toStdString( ) );
-    }
-    fileName = QString( argv[ 2 ] );
-    file.setFile( fileName );
-    if( argc == 3 ) {
-      if( file.exists( ) && file.isFile( ) ) {
-        loadLabel( fileName );
-        ui->dockWidgetLabels->show( );
-      }
+      msg = file.absoluteFilePath( ) + " does not exist.";
+      BIAL_WARNING( msg.toStdString( ) );
     }
   }
+  else if( parser.isSet( folder ) ) {
+    QFileInfo file( parser.value( folder ) );
+    if( file.exists( ) ) {
+      if( file.isDir( ) ) {
+        if( loadFolder( file.absoluteFilePath( ) ) ) {
+          msg = file.baseName( ) + " loaded succesfully.";
+        }
+        else {
+          msg = "Error loading " + file.absoluteFilePath( ) + ".";
+          BIAL_WARNING( msg.toStdString( ) );
+        }
+      }
+      else {
+        msg = file.absoluteFilePath( ) + " is not a directory.";
+        BIAL_WARNING( msg.toStdString( ) );
+      }
+    }
+    else {
+      msg = file.absoluteFilePath( ) + " does not exist.";
+      BIAL_WARNING( msg.toStdString( ) );
+    }
+  }
+  ui->statusBar->showMessage( msg, 5000 );
 }
 
 void MainWindow::on_actionQuit_triggered( ) {
@@ -414,12 +480,15 @@ bool MainWindow::loadDicomdir( QString dicomFName ) {
   return( false );
 }
 
-void MainWindow::loadLabel( QString filename ) {
+bool MainWindow::loadLabel( QString filename ) {
   actionDefaultTool_triggered( );
   DefaultTool *tool = dynamic_cast< DefaultTool* >( controller->currentImage( )->currentTool( ) );
   if( tool ) {
-    tool->addLabel( filename );
+    bool status = tool->addLabel( filename );
+    ui->dockWidgetLabels->show( );
+    return( status );
   }
+  return( false );
 }
 
 void MainWindow::on_actionAddLabel_triggered( ) {

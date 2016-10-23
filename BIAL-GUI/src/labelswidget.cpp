@@ -42,6 +42,10 @@ void LabelsWidget::on_solid_clicked( ) {
   tool->setLabelType( LabelType::solid );
 }
 
+void LabelsWidget::on_translucent_clicked( ) {
+  tool->setLabelType( LabelType::translucent );
+}
+
 //void LabelsWidget::on_multiLabel_clicked( ) {
 //  tool->setLabelType( LabelType::multilabel );
 //}

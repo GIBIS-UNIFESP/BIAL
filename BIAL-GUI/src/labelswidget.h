@@ -27,6 +27,8 @@ private slots:
 
   void on_none_clicked( );
 
+  void on_translucent_clicked( );
+
   void on_pushButton_clicked();
 
 private:

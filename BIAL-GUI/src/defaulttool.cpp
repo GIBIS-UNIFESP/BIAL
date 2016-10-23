@@ -8,7 +8,7 @@
 
 DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) :
   Tool( guiImage, viewer ), m_max( 0 ), labelType(
-    LabelType::solid ), m_factor( 64.0 ) {
+    LabelType::translucent ), m_factor( 64.0 ) {
   setObjectName( "DefaultTool" );
 
 }
@@ -91,7 +91,8 @@ float DefaultTool::getFactor( ) const {
 }
 
 
-void DefaultTool::addLabel( QString filename ) {
+bool DefaultTool::addLabel( QString filename ) {
+  //TODO: Verify if the image maximum value is bigger than 0, and verify if image dimensions matchs.
   std::cout << "Loading Label: " << filename.toStdString( ) << std::endl;
   m_label = Bial::Read< int >( filename.toStdString( ) );
   m_max = m_label.Maximum( );
@@ -100,6 +101,7 @@ void DefaultTool::addLabel( QString filename ) {
     needUpdate[ axis ] = true;
   }
   emit guiImage->imageUpdated();
+  return true;
 }
 
 void DefaultTool::removeLabel( ) {
@@ -150,14 +152,14 @@ QPixmap DefaultTool::getLabel( size_t axis ) {
   }
   const size_t xsz = guiImage->width( axis );
   const size_t ysz = guiImage->heigth( axis );
-  const Bial::FastTransform &transf = guiImage->getTransform( axis );
+  Bial::FastTransform transf = guiImage->getTransform( axis );
   QImage res( xsz, ysz, QImage::Format_ARGB32 );
-  float factor = m_factor / m_max;
   if( labelType == LabelType::none ) {
     res.fill( qRgba( 0, 0, 0, 0 ) );
   }
-  else if( labelType == LabelType::solid ) {
-//#pragma omp parallel for firstprivate(axis, xsz, ysz)
+  else if( labelType == LabelType::translucent ) {
+    float factor = m_factor / m_max;
+#pragma omp parallel for firstprivate(axis, xsz, ysz, transf, factor) shared(res)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
@@ -165,6 +167,20 @@ QPixmap DefaultTool::getLabel( size_t axis ) {
         transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
         int color = m_label( xx, yy, zz ) * factor;
         scanLine[ x ] = qRgba( 0, 255, 255, color );
+      }
+    }
+  }
+  else if( labelType == LabelType::solid ) {
+    float factor = 255.0 / m_max;
+    int alpha = qMin( static_cast<int>( m_factor ), 255);
+#pragma omp parallel for firstprivate(axis, xsz, ysz, alpha, transf, factor) shared(res)
+    for( size_t y = 0; y < ysz; ++y ) {
+      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+      for( size_t x = 0; x < xsz; ++x ) {
+        int xx, yy, zz;
+        transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
+        int color = m_label( xx, yy, zz ) * factor;
+        scanLine[ x ] = qRgba( color, color, color, alpha);
       }
     }
   }

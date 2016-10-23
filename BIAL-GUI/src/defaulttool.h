@@ -6,6 +6,7 @@
 enum class LabelType : char {
   none,
   solid,
+  translucent,
   multilabel
 };
 
@@ -26,7 +27,7 @@ public:
   void mouseMoved( QPointF pt, size_t axis );
   void sliceChanged( size_t axis, size_t slice );
   void updateOverlay( QPointF pt, size_t axis );
-  void addLabel( QString filename );
+  bool addLabel( QString filename );
   void removeLabel( );
   QPixmap getLabel( size_t axis );
 
