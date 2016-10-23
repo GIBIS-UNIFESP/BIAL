@@ -4,6 +4,7 @@
 #include "controller.h"
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QMainWindow>
 
 namespace Ui {
@@ -17,10 +18,13 @@ public:
   explicit MainWindow( QWidget *parent = 0 );
   ~MainWindow( );
 
-  void commandLineOpen( int argc, char *argv[] );
+  void commandLineOpen( const QCommandLineParser &parser,
+                        const QCommandLineOption &dicomdir,
+                        const QCommandLineOption &folder,
+                        const QCommandLineOption &label );
 
-  void loadLabel(QString filename);
-  
+  bool loadLabel( QString filename );
+
 private:
   void createConnections( );
   void setupLogoview( );
