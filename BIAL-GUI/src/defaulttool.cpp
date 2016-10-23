@@ -6,8 +6,7 @@
 #include <QPointF>
 #include <QRgb>
 
-DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) :
-  Tool( guiImage, viewer ), m_max( 0 ), labelType(
+DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) : Tool( guiImage, viewer ), m_max( 0 ), labelType(
     LabelType::translucent ), m_factor( 64.0 ) {
   setObjectName( "DefaultTool" );
 
@@ -90,18 +89,43 @@ float DefaultTool::getFactor( ) const {
   return( m_factor );
 }
 
+bool validLabel( const Bial::Image<int> &label, GuiImage* guiImage, int max ) {
+  bool valid = true;
+  if( max == 0 ) {
+    valid = false;
+    BIAL_WARNING( "Label image should have valid pixels (pixel > 0)." );
+  }
+  else {
+    if( label.Dims( ) == guiImage->getDims( ) ) {
+      for( size_t dim = 0; dim < label.Dims( ); ++dim ) {
+        valid &= ( label.Dim().at( dim ) == guiImage->getDim( ).at( dim ) );
+      }
+    }
+    else {
+      BIAL_WARNING( "Label image should have same dimensions. " << label.Dims( ) << " != " << guiImage->getDims( ));
+      valid = false;
+    }
+  }
+  return valid;
+}
 
 bool DefaultTool::addLabel( QString filename ) {
-  //TODO: Verify if the image maximum value is bigger than 0, and verify if image dimensions matchs.
+  /* TODO: Verify if the image maximum value is bigger than 0, and verify if image dimensions matchs. */
   std::cout << "Loading Label: " << filename.toStdString( ) << std::endl;
-  m_label = Bial::Read< int >( filename.toStdString( ) );
-  m_max = m_label.Maximum( );
+  Bial::Image< int > label = Bial::Read< int >( filename.toStdString( ) );
+  int max = label.Maximum( );
+
+  if( ! validLabel(label, guiImage, max)) {
+    return( false );
+  }
+  m_label = std::move(label);
+  m_max = std::move(max);
   setHasLabel( true );
   for( int axis = 0; axis < 4; ++axis ) {
     needUpdate[ axis ] = true;
   }
-  emit guiImage->imageUpdated();
-  return true;
+  emit guiImage->imageUpdated( );
+  return( true );
 }
 
 void DefaultTool::removeLabel( ) {
@@ -112,7 +136,7 @@ void DefaultTool::removeLabel( ) {
     pixmaps[ axis ] = QPixmap( );
     needUpdate[ axis ] = false;
   }
-  emit guiImage->imageUpdated();
+  emit guiImage->imageUpdated( );
 }
 
 
@@ -172,7 +196,7 @@ QPixmap DefaultTool::getLabel( size_t axis ) {
   }
   else if( labelType == LabelType::solid ) {
     float factor = 255.0 / m_max;
-    int alpha = qMin( static_cast<int>( m_factor ), 255);
+    int alpha = qMin( static_cast< int >( m_factor ), 255 );
 #pragma omp parallel for firstprivate(axis, xsz, ysz, alpha, transf, factor) shared(res)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
@@ -180,13 +204,13 @@ QPixmap DefaultTool::getLabel( size_t axis ) {
         int xx, yy, zz;
         transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
         int color = m_label( xx, yy, zz ) * factor;
-        scanLine[ x ] = qRgba( color, color, color, alpha);
+        scanLine[ x ] = qRgba( color, color, color, alpha );
       }
     }
   }
   else if( labelType == LabelType::multilabel ) {
     res.fill( qRgba( 0, 0, 0, 0 ) );
-    //TODO: Multilabel
+    /* TODO: Multilabel */
   }
   pixmaps[ axis ] = QPixmap::fromImage( res );
   return( pixmaps[ axis ] );

@@ -305,28 +305,28 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
                                   const QCommandLineOption &label ) {
   COMMENT( "Command Line Open", 0 );
   const QStringList args = parser.positionalArguments( );
-  QString msg;
+  QString errorMsg;
   if( !args.isEmpty( ) ) {
     for( QString arg : args ) {
       QFileInfo file( arg );
       if( file.exists( ) ) {
         if( file.isFile( ) ) {
           if( controller->addImage( file.absoluteFilePath( ) ) ) {
-            msg = file.baseName( ) + " loaded succesfully.";
+            ui->statusBar->showMessage( file.baseName( ) + " loaded succesfully.", 2000 );
           }
           else {
-            msg = "Error loading " + file.absolutePath( ) + ".";
-            BIAL_WARNING( msg.toStdString( ) );
+            errorMsg = "Error loading " + file.absolutePath( ) + ".";
+            BIAL_WARNING( errorMsg.toStdString( ) );
           }
         }
         else {
-          msg = file.absoluteFilePath( ) + " is not a file.";
-          BIAL_WARNING( msg.toStdString( ) );
+          errorMsg = file.absoluteFilePath( ) + " is not a file.";
+          BIAL_WARNING( errorMsg.toStdString( ) );
         }
       }
       else {
-        msg = file.absoluteFilePath( ) + " does not exist.";
-        BIAL_WARNING( msg.toStdString( ) );
+        errorMsg = file.absoluteFilePath( ) + " does not exist.";
+        BIAL_WARNING( errorMsg.toStdString( ) );
       }
       if(controller->size() > 1){
         ui->thumbsDock->show();
@@ -337,21 +337,21 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
       if( file.exists( ) ) {
         if( file.isFile( ) ) {
           if( loadLabel( file.absoluteFilePath( ) ) ) {
-            msg = file.baseName( ) + " loaded succesfully.";
+            ui->statusBar->showMessage( file.baseName( ) + " loaded succesfully.", 2000 );
           }
           else {
-            msg = "Error loading " + file.absoluteFilePath( ) + ".";
-            BIAL_WARNING( msg.toStdString( ) );
+            errorMsg = "Error loading " + file.absoluteFilePath( ) + ".";
+            BIAL_WARNING( errorMsg.toStdString( ) );
           }
         }
         else {
-          msg = file.absoluteFilePath( ) + " is not a file.";
-          BIAL_WARNING( msg.toStdString( ) );
+          errorMsg = file.absoluteFilePath( ) + " is not a file.";
+          BIAL_WARNING( errorMsg.toStdString( ) );
         }
       }
       else {
-        msg = file.absoluteFilePath( ) + " does not exist.";
-        BIAL_WARNING( msg.toStdString( ) );
+        errorMsg = file.absoluteFilePath( ) + " does not exist.";
+        BIAL_WARNING( errorMsg.toStdString( ) );
       }
     }
   }
@@ -359,16 +359,16 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
     QFileInfo file( parser.value( dicomdir ) );
     if( file.exists( ) ) {
       if( loadDicomdir( file.absoluteFilePath( ) ) ) {
-        msg = file.baseName( ) + " loaded succesfully.";
+        ui->statusBar->showMessage( file.baseName( ) + " loaded succesfully.", 2000 );
       }
       else {
-        msg = "Error loading " + file.absoluteFilePath( ) + ".";
-        BIAL_WARNING( msg.toStdString( ) );
+        errorMsg = "Error loading " + file.absoluteFilePath( ) + ".";
+        BIAL_WARNING( errorMsg.toStdString( ) );
       }
     }
     else {
-      msg = file.absoluteFilePath( ) + " does not exist.";
-      BIAL_WARNING( msg.toStdString( ) );
+      errorMsg = file.absoluteFilePath( ) + " does not exist.";
+      BIAL_WARNING( errorMsg.toStdString( ) );
     }
   }
   else if( parser.isSet( folder ) ) {
@@ -376,24 +376,27 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
     if( file.exists( ) ) {
       if( file.isDir( ) ) {
         if( loadFolder( file.absoluteFilePath( ) ) ) {
-          msg = file.baseName( ) + " loaded succesfully.";
+          ui->statusBar->showMessage( file.baseName( ) + " loaded succesfully.", 2000 );
         }
         else {
-          msg = "Error loading " + file.absoluteFilePath( ) + ".";
-          BIAL_WARNING( msg.toStdString( ) );
+          errorMsg = "Error loading " + file.absoluteFilePath( ) + ".";
+          BIAL_WARNING( errorMsg.toStdString( ) );
         }
       }
       else {
-        msg = file.absoluteFilePath( ) + " is not a directory.";
-        BIAL_WARNING( msg.toStdString( ) );
+        errorMsg = file.absoluteFilePath( ) + " is not a directory.";
+        BIAL_WARNING( errorMsg.toStdString( ) );
       }
     }
     else {
-      msg = file.absoluteFilePath( ) + " does not exist.";
-      BIAL_WARNING( msg.toStdString( ) );
+      errorMsg = file.absoluteFilePath( ) + " does not exist.";
+      BIAL_WARNING( errorMsg.toStdString( ) );
     }
   }
-  ui->statusBar->showMessage( msg, 5000 );
+  if(!errorMsg.isEmpty()){
+    QMessageBox::warning( this, "Warning", errorMsg);
+    ui->statusBar->showMessage( errorMsg, 5000 );
+  }
 }
 
 void MainWindow::on_actionQuit_triggered( ) {
@@ -493,7 +496,9 @@ bool MainWindow::loadLabel( QString filename ) {
 
 void MainWindow::on_actionAddLabel_triggered( ) {
   QString filename = getFileDialog( );
-  loadLabel( filename );
+  if( !loadLabel( filename ) ){
+    QMessageBox::warning( this, "Warning", tr( "Could not open label!" ) );
+  }
 }
 
 void MainWindow::on_actionOpen_folder_triggered( ) {
