@@ -65,7 +65,7 @@ RGB2DFormat::RGB2DFormat( QObject *parent ) : DisplayFormat( parent ) {
   m_showNiftiViews = false;
   m_showNiftiAxis = false;
   m_showPpmViews = true;
-  m_showOrientation = true;
+  m_showOrientation = false;
   m_showPpmChannels = true;
   m_hasOverlay = true;
   m_hasLayout = false;
@@ -98,7 +98,7 @@ void DisplayFormat::loadSettings( ) {
     try {
       setNumberOfViews( settings.value( "numberOfViews" ).toInt( ) );
     }
-    catch( std::invalid_argument e ) {
+    catch( std::invalid_argument &e ) {
       return;
     }
   }
@@ -106,7 +106,7 @@ void DisplayFormat::loadSettings( ) {
     try {
       setCurrentLayout( ( Layout ) settings.value( "currentLayout" ).toInt( ) );
     }
-    catch( std::invalid_argument e ) {
+    catch( std::invalid_argument &e ) {
       return;
     }
   }
@@ -114,7 +114,7 @@ void DisplayFormat::loadSettings( ) {
     try {
       setCurrentViews( ( Views ) settings.value( "currentViews" ).toInt( ) );
     }
-    catch( std::invalid_argument e ) {
+    catch( std::invalid_argument &e ) {
       return;
     }
   }
@@ -263,10 +263,12 @@ void RGB2DFormat::setNumberOfViews( int numberOfViews ) {
   if( numberOfViews == 1 ) {
     m_currentViews = defaultViews;
     m_showPpmChannels = true;
+    m_showOrientation = false;
   }
   else {
     m_currentViews = Views::SHOW0123;
     m_showPpmChannels = false;
+    m_showOrientation = true;
   }
   m_numberOfViews = numberOfViews;
   emit updated( );

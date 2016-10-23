@@ -79,6 +79,7 @@ void ImageViewer::updateViews() {
 
 void ImageViewer::changeImage() {
   COMMENT("ImageViewer::changeImage", 2);
+  std::cout  << "ChangeImage" << std::endl;
   GuiImage *img = m_controller->currentImage();
   if (img) {
     if (img->tools.empty()) {
@@ -106,6 +107,7 @@ void ImageViewer::changeImage() {
     }
     setLayoutType(format->currentLayout());
     setViewMode(format->currentViews());
+    controller()->update();
     for (size_t axis = 0; axis < 4; ++axis) {
 //      DefaultTool *tool = dynamic_cast<DefaultTool *>(img->tools[0]);
 //      tool->updateOverlay( overlaypos, axis );

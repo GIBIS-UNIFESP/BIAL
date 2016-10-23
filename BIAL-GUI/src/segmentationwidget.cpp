@@ -42,7 +42,7 @@ void SegmentationWidget::on_SegmentationButton_clicked( ) {
   try {
     tool->segmentationOGS( alpha, beta );
   }
-  catch( std::runtime_error err ) {
+  catch( std::runtime_error &err ) {
     QMessageBox::warning( this, "ERROR", err.what( ) );
   }
 }

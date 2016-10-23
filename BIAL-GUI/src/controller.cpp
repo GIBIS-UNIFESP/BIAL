@@ -43,16 +43,16 @@ bool Controller::addImage( QString fname ) {
   try {
     img = new GuiImage( fname, this );
   }
-  catch( std::bad_alloc e ) {
+  catch( std::bad_alloc &e ) {
     BIAL_WARNING( e.what( ) );
   }
-  catch( std::runtime_error e ) {
+  catch( std::runtime_error &e ) {
     BIAL_WARNING( e.what( ) );
   }
-  catch( std::out_of_range e ) {
+  catch( std::out_of_range &e ) {
     BIAL_WARNING( e.what( ) );
   }
-  catch( std::logic_error e ) {
+  catch( std::logic_error &e ) {
     BIAL_WARNING( e.what( ) );
   }
   catch( ... ) {

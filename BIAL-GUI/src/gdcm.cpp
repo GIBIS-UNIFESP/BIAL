@@ -75,16 +75,16 @@ Bial::Image< int > GDCM::OpenGImage( const std::string &filename ) {
   try {
     return( Bial::Read< int >( filename ) );
   }
-  catch( std::bad_alloc e ) {
+  catch( std::bad_alloc &e ) {
     BIAL_WARNING( e.what( ) );
   }
-  catch( std::runtime_error e ) {
+  catch( std::runtime_error &e ) {
     BIAL_WARNING( e.what( ) );
   }
-  catch( std::out_of_range e ) {
+  catch( std::out_of_range &e ) {
     BIAL_WARNING( e.what( ) );
   }
-  catch( std::logic_error e ) {
+  catch( std::logic_error &e ) {
     BIAL_WARNING( e.what( ) );
   }
   if( !ir.Read( ) ) {
@@ -111,8 +111,8 @@ Bial::Image< int > GDCM::OpenGImage( const std::string &filename ) {
 
 Bial::MultiImage GDCM::OpenGImage( const std::string &filename ) {
   std::string extension( Bial::File::ToLowerExtension( filename ) );
-  if( ( filename.rfind( ".nii" ) != std::string::npos ) || ( filename.rfind( ".img" ) != std::string::npos ) ||
-      ( filename.rfind( ".hdr" ) != std::string::npos ) ) {
+  if( ( extension.rfind( ".nii" ) != std::string::npos ) || ( extension.rfind( ".img" ) != std::string::npos ) ||
+      ( extension.rfind( ".hdr" ) != std::string::npos ) ) {
     Bial::NiftiHeader hdr( filename );
     Bial::NiftiType type( hdr.DataType( ) );
     switch( type ) {
@@ -130,7 +130,7 @@ Bial::MultiImage GDCM::OpenGImage( const std::string &filename ) {
         throw( std::runtime_error( msg ) );
     }
   }
-  if( ( filename.rfind( ".ppm" ) != std::string::npos ) || ( filename.rfind( ".pnm" ) != std::string::npos ) ) {
+  if( ( extension.rfind( ".ppm" ) != std::string::npos ) || ( extension.rfind( ".pnm" ) != std::string::npos ) ) {
     return( Bial::MultiImage( Bial::Read< Bial::Color >( filename ) ) );
   }
   return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
