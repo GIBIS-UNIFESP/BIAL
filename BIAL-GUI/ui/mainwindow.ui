@@ -41,28 +41,24 @@
           <height>0</height>
          </size>
         </property>
-        <widget class="GraphicsView" name="logoView">
-         <property name="geometry">
-          <rect>
-           <x>110</x>
-           <y>20</y>
-           <width>646</width>
-           <height>1186</height>
-          </rect>
-         </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="resizeAnchor">
-          <enum>QGraphicsView::NoAnchor</enum>
-         </property>
-        </widget>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="GraphicsView" name="logoView">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="verticalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="horizontalScrollBarPolicy">
+            <enum>Qt::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="resizeAnchor">
+            <enum>QGraphicsView::NoAnchor</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -76,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>440</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

@@ -8,7 +8,7 @@ void Tool::setHasLabel( bool sHasLabel ) {
   m_hasLabel = sHasLabel;
 }
 
-Tool::Tool( GuiImage *guiImage, ImageViewer *viewer ) : QObject( guiImage ), guiImage( guiImage ), viewer( viewer ) {
+Tool::Tool( GuiImage *guiImage, ImageViewer *viewer ) : QObject( guiImage ), guiImage( guiImage ), viewer( viewer ), m_visible(false) {
 }
 
 void Tool::setVisible( bool value ) {

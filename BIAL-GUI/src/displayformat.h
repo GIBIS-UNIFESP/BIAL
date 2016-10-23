@@ -101,19 +101,19 @@ protected:
 
 class BW2DFormat : public DisplayFormat {
 public:
-  BW2DFormat( QObject *parent = 0 );
+  explicit BW2DFormat( QObject *parent = 0 );
   void setNumberOfViews( int numberOfViews );
 };
 
 class BW3DFormat : public DisplayFormat {
 public:
-  BW3DFormat( QObject *parent = 0 );
+  explicit BW3DFormat( QObject *parent = 0 );
   void setNumberOfViews( int numberOfViews );
 };
 
 class RGB2DFormat : public DisplayFormat {
 public:
-  RGB2DFormat( QObject *parent = 0 );
+  explicit RGB2DFormat( QObject *parent = 0 );
   void setNumberOfViews( int numberOfViews );
 };
 

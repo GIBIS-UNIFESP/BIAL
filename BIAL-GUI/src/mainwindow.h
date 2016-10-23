@@ -106,7 +106,7 @@ private:
 
 class CursorChanger {
 public:
-  CursorChanger( const QCursor &cursor ) {
+  explicit CursorChanger( const QCursor &cursor ) {
     QApplication::setOverrideCursor( cursor );
   }
   ~CursorChanger( ) {

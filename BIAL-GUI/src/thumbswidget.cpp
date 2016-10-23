@@ -2,7 +2,7 @@
 #include "thumbswidget.h"
 #include "ui_thumbswidget.h"
 
-ThumbsWidget::ThumbsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::ThumbsWidget ) {
+ThumbsWidget::ThumbsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::ThumbsWidget ), controller(nullptr) {
   ui->setupUi( this );
 }
 
