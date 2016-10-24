@@ -1,9 +1,7 @@
 #include "labelswidget.h"
 #include "ui_labelswidget.h"
 
-LabelsWidget::LabelsWidget( QWidget *parent ) :
-  QWidget( parent ),
-  ui( new Ui::LabelsWidget ) {
+LabelsWidget::LabelsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::LabelsWidget ) {
   ui->setupUi( this );
 }
 
@@ -22,9 +20,14 @@ void LabelsWidget::setTool( Tool *sTool ) {
         case LabelType::solid:
         ui->solid->setChecked( true );
         break;
-//        case LabelType::multilabel:
-//        ui->multiLabel->setChecked( true );
-//        break;
+        case LabelType::translucent:
+        ui->translucent->setChecked( true );
+        break;
+/*
+ *        case LabelType::multilabel:
+ *        ui->multiLabel->setChecked( true );
+ *        break;
+ */
     }
     int tf = static_cast< int >( tool->getFactor( ) );
     ui->translucentSlider->setValue( tf );
@@ -46,14 +49,16 @@ void LabelsWidget::on_translucent_clicked( ) {
   tool->setLabelType( LabelType::translucent );
 }
 
-//void LabelsWidget::on_multiLabel_clicked( ) {
-//  tool->setLabelType( LabelType::multilabel );
-//}
+/*
+ * void LabelsWidget::on_multiLabel_clicked( ) {
+ *  tool->setLabelType( LabelType::multilabel );
+ * }
+ */
 
 void LabelsWidget::on_translucentSlider_valueChanged( int value ) {
   tool->setTranslucentFactor( ui->translucentSlider->value( ) );
 }
 
 void LabelsWidget::on_pushButton_clicked( ) {
-  tool->removeLabel();
+  tool->removeLabel( );
 }
