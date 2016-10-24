@@ -79,7 +79,6 @@ void ImageViewer::updateViews() {
 
 void ImageViewer::changeImage() {
   COMMENT("ImageViewer::changeImage", 2);
-  std::cout  << "ChangeImage" << std::endl;
   GuiImage *img = m_controller->currentImage();
   if (img) {
     if (img->tools.empty()) {
