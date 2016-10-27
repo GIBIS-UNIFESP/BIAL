@@ -187,12 +187,13 @@ QPixmap GuiImage::getSlice( size_t view ) {
     const size_t ysize = heigth( view );
     QImage res( xsize, ysize, QImage::Format_ARGB32 );
     double factor = 255.0 / ( double ) m_fmax;
+    double contrastLevel = qPow( ( 100.0 + m_contrast ) / 100.0, 2 );
     const Bial::FastTransform &transf = transform[ view ];
     switch( image.Type( ) ) {
         case Bial::MultiImageType::int_img: {
         COMMENT( "Generating BW view.", 2 );
         const Bial::Image< int > &img( getIntImage( ) );
-#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor)
+#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor, contrastLevel)
         for( size_t y = 0; y < ysize; ++y ) {
           QRgb *scanLine = ( QRgb* ) res.scanLine( y );
           for( size_t x = 0; x < xsize; ++x ) {
@@ -203,7 +204,9 @@ QPixmap GuiImage::getSlice( size_t view ) {
             if( m_equalizeHistogram ) {
               pixel = equalization[ pixel ];
             }
-            pixel *= factor;
+            pixel += m_brightness;
+            pixel = ( ( ( ( pixel / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0 * factor;
+            pixel = qMax( qMin( pixel , 255 ), 0 );
             scanLine[ x ] = qRgb( pixel, pixel, pixel );
           }
         }
@@ -212,7 +215,7 @@ QPixmap GuiImage::getSlice( size_t view ) {
         case Bial::MultiImageType::flt_img: {
         COMMENT( "Generating BW float view.", 2 );
         const Bial::Image< float > &img( getFltImage( ) );
-#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor)
+#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor, contrastLevel)
         for( size_t y = 0; y < ysize; ++y ) {
           QRgb *scanLine = ( QRgb* ) res.scanLine( y );
           for( size_t x = 0; x < xsize; ++x ) {
@@ -223,7 +226,9 @@ QPixmap GuiImage::getSlice( size_t view ) {
             if( m_equalizeHistogram ) {
               pixel = equalization[ pixel ];
             }
-            pixel *= factor;
+            pixel += m_brightness;
+            pixel = ( ( ( ( pixel / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0 * factor;
+            pixel = qMax( qMin( pixel , 255 ), 0 );
             scanLine[ x ] = qRgb( pixel, pixel, pixel );
           }
         }
@@ -233,7 +238,7 @@ QPixmap GuiImage::getSlice( size_t view ) {
         if( needUpdate[ 0 ] ) {
           COMMENT( "Generating RGB view.", 2 );
           const Bial::Image< Bial::Color > &img( getClrImage( ) );
-#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor)
+#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor, contrastLevel)
           for( size_t y = 0; y < ysize; ++y ) {
             QRgb *scanLine = ( QRgb* ) res.scanLine( y );
             for( size_t x = 0; x < xsize; ++x ) {
@@ -248,7 +253,16 @@ QPixmap GuiImage::getSlice( size_t view ) {
                 g = equalization[ g ];
                 b = equalization[ b ];
               }
-              scanLine[ x ] = qRgb( r * factor, g * factor, b * factor );
+              r += m_brightness;
+              g += m_brightness;
+              b += m_brightness;
+              r = ( ( ( ( r / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0 * factor;
+              g = ( ( ( ( g / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0 * factor;
+              b = ( ( ( ( b / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0 * factor;
+              r = qMax( qMin( r, 255) , 0 );
+              g = qMax( qMin( g, 255) , 0 );
+              b = qMax( qMin( b, 255) , 0 );
+              scanLine[ x ] = qRgb( r, g, b );
             }
           }
           cachedPixmaps[ 0 ] = QPixmap::fromImage( res );
@@ -271,7 +285,7 @@ QPixmap GuiImage::getSlice( size_t view ) {
         if( needUpdate[ 0 ] ) {
           COMMENT( "Generating RGB view.", 2 );
           const Bial::Image< Bial::RealColor > &img( getRclImage( ) );
-#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor)
+#pragma omp parallel for default(none) shared(transf, img, res) firstprivate(slice, factor, contrastLevel)
           for( size_t y = 0; y < ysize; ++y ) {
             QRgb *scanLine = ( QRgb* ) res.scanLine( y );
             for( size_t x = 0; x < xsize; ++x ) {
@@ -315,45 +329,7 @@ QPixmap GuiImage::getSlice( size_t view ) {
     }
     /*    qDebug( ) << "Elapsed: " << timer.elapsed( ); */
   }
-  if( ( m_contrast != 0 ) || ( m_brightness != 0 ) ) {
-    return( applyContrastAndBrightness( cachedPixmaps[ view ] ) );
-  }
   return( cachedPixmaps[ view ] );
-}
-
-QPixmap GuiImage::applyContrastAndBrightness( QPixmap pixmap ) {
-  double contrastLevel = qPow( ( 100.0 + m_contrast ) / 100.0, 2 );
-
-  QImage res = pixmap.toImage( );
-  const size_t xsize = res.width( );
-  const size_t ysize = res.height( );
-  if( image.Type( ) == Bial::MultiImageType::int_img ) {
-/* #pragma omp parallel for shared(res) firstprivate(xsize, ysize) */
-    for( size_t y = 0; y < ysize; ++y ) {
-      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
-      for( size_t x = 0; x < xsize; ++x ) {
-        int pixel = qRed( scanLine[ x ] ) + m_brightness;
-        pixel = qMax( qMin( ( ( ( ( pixel / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
-        scanLine[ x ] = qRgb( pixel, pixel, pixel );
-      }
-    }
-  }
-  if( image.Type( ) == Bial::MultiImageType::clr_img ) {
-/* #pragma omp parallel for shared(res) firstprivate(xsize, ysize) */
-    for( size_t y = 0; y < ysize; ++y ) {
-      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
-      for( size_t x = 0; x < xsize; ++x ) {
-        int r = qRed( scanLine[ x ] ) + m_brightness;
-        int g = qGreen( scanLine[ x ] ) + m_brightness;
-        int b = qBlue( scanLine[ x ] ) + m_brightness;
-        r = qMax( qMin( ( ( ( ( r / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
-        g = qMax( qMin( ( ( ( ( g / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
-        b = qMax( qMin( ( ( ( ( b / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
-        scanLine[ x ] = qRgb( r, g, b );
-      }
-    }
-  }
-  return( QPixmap::fromImage( res ) );
 }
 
 

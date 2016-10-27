@@ -98,7 +98,6 @@ private:
    */
   void updateBoundings( size_t axis );
 
-  QPixmap applyContrastAndBrightness(QPixmap pixmap);
   public:
   /**
    * @brief tools is a vector containing the image tools.
