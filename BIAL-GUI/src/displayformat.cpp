@@ -226,7 +226,7 @@ void DisplayFormat::setOverlay( bool overlay ) {
 }
 
 void DisplayFormat::toggleOverlay( ) {
-  if(hasOverlay()){
+  if( hasOverlay( ) ) {
     setOverlay( !overlay( ) );
   }
 }

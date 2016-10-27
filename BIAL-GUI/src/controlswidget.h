@@ -66,7 +66,15 @@ private slots:
 
   void on_pushButtonHistogramNormalization_clicked( );
 
-  void on_pushButtonFitInView_clicked( );
+  void on_horizontalSliderContrast_valueChanged( int value );
+
+  void on_horizontalSliderBrightness_valueChanged( int value );
+
+  void on_resetContrast_clicked( );
+
+  void on_resetBrightness_clicked( );
+
+  void on_resetZoom_clicked( );
 
 private:
   Ui::ControlsWidget *ui;

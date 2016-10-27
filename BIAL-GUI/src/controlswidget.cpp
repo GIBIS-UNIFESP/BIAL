@@ -41,7 +41,7 @@ void ControlsWidget::setController( Controller *value ) {
   connect( controller, &Controller::imageUpdated, this, &ControlsWidget::imageUpdated );
   connect( controller, &Controller::containerUpdated, this, &ControlsWidget::updateRange );
   connect( ui->folderHorizontalSlider, &QAbstractSlider::valueChanged, controller, &Controller::setCurrentImagePos );
-  connect( ui->folderSpinBox, SIGNAL(valueChanged(int)), controller, SLOT(setCurrentImagePos(int)) );
+  connect( ui->folderSpinBox, SIGNAL( valueChanged( int ) ), controller, SLOT( setCurrentImagePos( int ) ) );
   connect( timer, &QTimer::timeout, controller, &Controller::loadNextImage );
   updateRange( );
 }
@@ -49,8 +49,17 @@ void ControlsWidget::setController( Controller *value ) {
 void ControlsWidget::imageChanged( ) {
   GuiImage *img = controller->currentImage( );
   if( img == nullptr ) {
+    ui->horizontalSliderZoom->setEnabled( false );
+    ui->horizontalSliderBrightness->setEnabled( false );
+    ui->horizontalSliderContrast->setEnabled( false );
     return;
   }
+/*  ui->horizontalSliderZoom->setEnabled( true ); */
+  ui->horizontalSliderBrightness->setEnabled( true );
+  ui->horizontalSliderContrast->setEnabled( true );
+  ui->horizontalSliderBrightness->setValue( img->getBrightness( ) );
+  ui->horizontalSliderContrast->setValue( img->getContrast( ) );
+
   ui->pushButtonHistogramNormalization->setChecked( img->getEqualizeHistogram( ) );
   ui->folderHorizontalSlider->setValue( controller->currentImagePos( ) );
   ui->folderSpinBox->setValue( controller->currentImagePos( ) );
@@ -108,12 +117,17 @@ void ControlsWidget::imageChanged( ) {
   ui->groupBoxPpmViews->setVisible( format->showPpmViews( ) );
   ui->groupBoxPpmChannels->setVisible( format->showPpmChannels( ) );
   ui->rotate->setVisible( format->rotateSingle( ) );
-//  ui->groupBoxLabels->setVisible( false );
+/*  ui->groupBoxLabels->setVisible( false ); */
 
   /* TODO Continue ... */
 }
 
 void ControlsWidget::imageUpdated( ) {
+  GuiImage *img = controller->currentImage( );
+  if( img != nullptr ) {
+    ui->horizontalSliderBrightness->setValue( img->getBrightness( ) );
+    ui->horizontalSliderContrast->setValue( img->getContrast( ) );
+  }
 }
 
 void ControlsWidget::updateRange( ) {
@@ -226,6 +240,30 @@ void ControlsWidget::on_pushButtonHistogramNormalization_clicked( ) {
   }
 }
 
-void ControlsWidget::on_pushButtonFitInView_clicked( ) {
-  emit controller->currentImageChanged( );
+void ControlsWidget::on_horizontalSliderContrast_valueChanged( int value ) {
+  if( controller->currentImage( ) ) {
+    controller->currentImage( )->setContrast( value );
+  }
+}
+
+void ControlsWidget::on_horizontalSliderBrightness_valueChanged( int value ) {
+  if( controller->currentImage( ) ) {
+    controller->currentImage( )->setBrightness( value );
+  }
+}
+
+void ControlsWidget::on_resetContrast_clicked( ) {
+  if( controller->currentImage( ) ) {
+    controller->currentImage( )->setContrast( 0 );
+  }
+}
+
+void ControlsWidget::on_resetBrightness_clicked( ) {
+  if( controller->currentImage( ) ) {
+    controller->currentImage( )->setBrightness( 0 );
+  }
+}
+
+void ControlsWidget::on_resetZoom_clicked( ) {
+
 }

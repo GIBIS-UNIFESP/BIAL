@@ -81,7 +81,14 @@ class GuiImage : public QObject {
    * @brief currentToolPos is the current Tool number.
    */
   size_t m_currentToolPos;
-
+  /**
+    * @brief contrast level
+    */
+  int m_contrast;
+  /**
+    * @brief brightness level
+    */
+  int m_brightness;
 private:
   /**
    * @brief updateBoundings is called each time the transformation matrix is updated. <br>
@@ -91,7 +98,8 @@ private:
    */
   void updateBoundings( size_t axis );
 
-public:
+  QPixmap applyContrastAndBrightness(QPixmap pixmap);
+  public:
   /**
    * @brief tools is a vector containing the image tools.
    */
@@ -253,7 +261,13 @@ public:
   void setCurrentToolPos( const size_t &currentToolPos );
 
   QPointF getIntersection( size_t view );
-signals:
+  int getContrast() const;
+  void setContrast(int contrast);
+
+  int getBrightness() const;
+  void setBrightness(int brightness);
+
+  signals:
   /**
    * @brief imageUpdated is called each time a internal property is updated,
    * after that the image views are updated.

@@ -13,10 +13,10 @@
 #include <QRgb>
 #include <QTime>
 #include <QTime>
-
+#include <QtMath>
 GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ), image( GDCM::OpenGImage(
                                                                                    fname.toStdString( ) ) ), m_fileName(
-    fname ) {
+    fname ), m_contrast( 0 ), m_brightness( 0 ) {
   qDebug( ) << "guiimage.";
 
   COMMENT( "GuiImage 0.", 2 );
@@ -166,10 +166,13 @@ QString GuiImage::fileName( ) {
 }
 
 QPointF GuiImage::getIntersection( size_t view ) {
-  /* TODO: implement */
-  size_t slice = currentSlice( view );
-//  std::cout << m_currentSlice[ 0 ] << " " << m_currentSlice[ 1 ] << " " << m_currentSlice[ 2 ] << " " <<
-//  m_currentSlice[ 3 ] << std::endl;
+  /* TODO: Get intersection between other views and current view. */
+/*  size_t slice = currentSlice( view );
+ *
+ *  std::cout << m_currentSlice[ 0 ] << " " << m_currentSlice[ 1 ] << " " << m_currentSlice[ 2 ] << " " <<
+ *  m_currentSlice[ 3 ] << std::endl;
+ */
+  return( QPointF( ) );
 }
 
 QPixmap GuiImage::getSlice( size_t view ) {
@@ -312,8 +315,47 @@ QPixmap GuiImage::getSlice( size_t view ) {
     }
     /*    qDebug( ) << "Elapsed: " << timer.elapsed( ); */
   }
+  if( ( m_contrast != 0 ) || ( m_brightness != 0 ) ) {
+    return( applyContrastAndBrightness( cachedPixmaps[ view ] ) );
+  }
   return( cachedPixmaps[ view ] );
 }
+
+QPixmap GuiImage::applyContrastAndBrightness( QPixmap pixmap ) {
+  double contrastLevel = qPow( ( 100.0 + m_contrast ) / 100.0, 2 );
+
+  QImage res = pixmap.toImage( );
+  const size_t xsize = res.width( );
+  const size_t ysize = res.height( );
+  if( image.Type( ) == Bial::MultiImageType::int_img ) {
+/* #pragma omp parallel for shared(res) firstprivate(xsize, ysize) */
+    for( size_t y = 0; y < ysize; ++y ) {
+      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+      for( size_t x = 0; x < xsize; ++x ) {
+        int pixel = qRed( scanLine[ x ] ) + m_brightness;
+        pixel = qMax( qMin( ( ( ( ( pixel / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
+        scanLine[ x ] = qRgb( pixel, pixel, pixel );
+      }
+    }
+  }
+  if( image.Type( ) == Bial::MultiImageType::clr_img ) {
+/* #pragma omp parallel for shared(res) firstprivate(xsize, ysize) */
+    for( size_t y = 0; y < ysize; ++y ) {
+      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+      for( size_t x = 0; x < xsize; ++x ) {
+        int r = qRed( scanLine[ x ] ) + m_brightness;
+        int g = qGreen( scanLine[ x ] ) + m_brightness;
+        int b = qBlue( scanLine[ x ] ) + m_brightness;
+        r = qMax( qMin( ( ( ( ( r / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
+        g = qMax( qMin( ( ( ( ( g / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
+        b = qMax( qMin( ( ( ( ( b / 255.0 ) - 0.5 ) * contrastLevel ) + 0.5 ) * 255.0, 255.0 ), 0.0 );
+        scanLine[ x ] = qRgb( r, g, b );
+      }
+    }
+  }
+  return( QPixmap::fromImage( res ) );
+}
+
 
 size_t GuiImage::width( size_t view = 0 ) {
   return( abs( round( bounding.at( view ).pMax.x ) ) );
@@ -530,6 +572,30 @@ void GuiImage::setCurrentToolPos( const size_t &currentToolPos ) {
   if( currentToolPos < static_cast< size_t >( tools.size( ) ) ) {
     m_currentToolPos = currentToolPos;
   }
+}
+
+int GuiImage::getContrast( ) const {
+  return( m_contrast );
+}
+
+void GuiImage::setContrast( int contrast ) {
+  m_contrast = contrast;
+  for( int axis = 0; axis < needUpdate.size( ); ++axis ) {
+    needUpdate[ axis ] = true;
+  }
+  emit imageUpdated( );
+}
+
+int GuiImage::getBrightness( ) const {
+  return( m_brightness );
+}
+
+void GuiImage::setBrightness( int brightness ) {
+  m_brightness = brightness;
+  for( int axis = 0; axis < needUpdate.size( ); ++axis ) {
+    needUpdate[ axis ] = true;
+  }
+  emit imageUpdated( );
 }
 
 void GuiImage::updateBoundings( size_t axis ) {
