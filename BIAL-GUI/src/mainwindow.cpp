@@ -66,11 +66,15 @@ void MainWindow::createConnections( ) {
   connect( ui->actionHistogram_dock, &QAction::toggled, ui->dockWidgetHistogram, &QDockWidget::setVisible );
   connect( ui->actionShow_images_dock, &QAction::toggled, ui->thumbsDock, &QDockWidget::setVisible );
   connect( ui->actionSegmentation_dock, &QAction::toggled, ui->dockWidgetSegmentation, &QDockWidget::setVisible );
+  connect( ui->actionLabels_dock, &QAction::toggled, ui->dockWidgetLabels, &QDockWidget::setVisible );
   connect( ui->controlsDock, &QDockWidget::visibilityChanged, ui->actionShow_controls_dock, &QAction::setChecked );
   connect( ui->thumbsDock, &QDockWidget::visibilityChanged, ui->actionShow_images_dock, &QAction::setChecked );
   connect( ui->dockWidgetHistogram, &QDockWidget::visibilityChanged, ui->actionHistogram_dock, &QAction::setChecked );
   connect( ui->dockWidgetSegmentation, &QDockWidget::visibilityChanged, ui->actionSegmentation_dock,
            &QAction::setChecked );
+  connect( ui->dockWidgetLabels, &QDockWidget::visibilityChanged, ui->actionLabels_dock,
+           &QAction::setChecked );
+
 
   /* Controller. */
   connect( controller, &Controller::currentImageChanged, this, &MainWindow::currentImageChanged );
@@ -328,8 +332,8 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
         errorMsg = file.absoluteFilePath( ) + " does not exist.";
         BIAL_WARNING( errorMsg.toStdString( ) );
       }
-      if(controller->size() > 1){
-        ui->thumbsDock->show();
+      if( controller->size( ) > 1 ) {
+        ui->thumbsDock->show( );
       }
     }
     if( parser.isSet( label ) ) {
@@ -393,8 +397,8 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
       BIAL_WARNING( errorMsg.toStdString( ) );
     }
   }
-  if(!errorMsg.isEmpty()){
-    QMessageBox::warning( this, "Warning", errorMsg);
+  if( !errorMsg.isEmpty( ) ) {
+    QMessageBox::warning( this, "Warning", errorMsg );
     ui->statusBar->showMessage( errorMsg, 5000 );
   }
 }
@@ -496,7 +500,7 @@ bool MainWindow::loadLabel( QString filename ) {
 
 void MainWindow::on_actionAddLabel_triggered( ) {
   QString filename = getFileDialog( );
-  if( !loadLabel( filename ) ){
+  if( !loadLabel( filename ) ) {
     QMessageBox::warning( this, "Warning", tr( "Could not open label!" ) );
   }
 }

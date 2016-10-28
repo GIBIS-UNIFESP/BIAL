@@ -72,7 +72,7 @@
      <x>0</x>
      <y>0</y>
      <width>440</width>
-     <height>19</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -138,8 +138,10 @@
     <addaction name="actionHistogram_dock"/>
     <addaction name="actionShow_images_dock"/>
     <addaction name="actionSegmentation_dock"/>
+    <addaction name="actionLabels_dock"/>
     <addaction name="separator"/>
     <addaction name="menuBackground_color"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuLayout">
     <property name="enabled">
@@ -616,6 +618,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="actionLabels_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Labels dock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
    </property>
   </action>
  </widget>

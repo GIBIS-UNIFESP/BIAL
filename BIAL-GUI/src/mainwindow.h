@@ -92,7 +92,6 @@ private slots:
 
   void actionChange_default_parameters_triggered( );
 
-
 private:
   Ui::MainWindow *ui;
   Controller *controller;
