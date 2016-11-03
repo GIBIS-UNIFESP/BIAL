@@ -39,8 +39,9 @@ void SegmentationWidget::setTool( Tool *sTool ) {
 void SegmentationWidget::on_SegmentationButton_clicked( ) {
   double alpha = ui->AlphaSpinBox->value( );
   double beta = ui->BetaSpinBox->value( );
+  int pf_type = ( ui->pfmaxgeo->isChecked( ) ? 0 : ( ui->pfmax->isChecked( ) ? 1 : 2 ) );
   try {
-    tool->segmentationOGS( alpha, beta );
+    tool->segmentationOGS( pf_type, alpha, beta );
   }
   catch( std::runtime_error &err ) {
     QMessageBox::warning( this, "ERROR", err.what( ) );

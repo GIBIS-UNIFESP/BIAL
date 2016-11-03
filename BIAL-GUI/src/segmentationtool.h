@@ -39,7 +39,8 @@ public:
   void drawSeed( Bial::Point3D last, Bial::Point3D actual );
   void setDrawType( int type );
   void clearSeeds( );
-  Bial::Image< int > segmentationOGS( double alpha, double beta );
+  /* pf_type: 0-maxgeo, 1-max, 2-sum */
+  Bial::Image< int > segmentationOGS( int pf_type, double alpha, double beta );
 
   double getAlpha( ) const;
   void setAlpha( double value );
