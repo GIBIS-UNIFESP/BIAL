@@ -1,6 +1,7 @@
 TARGET = bial
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += shared_and_static build_all
+
 
 QT       -= core gui
 

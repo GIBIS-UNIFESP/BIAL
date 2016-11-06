@@ -136,7 +136,7 @@ namespace Bial {
       Vector< size_t > centers;
       for( size_t y = 1; y < acc_rows - 1; ++y ) {
         for( size_t x = 1; x < acc_cols - 1; ++x ) {
-          if( ( accum( x, y ) > detection_threshold ) &&
+          if( ( accum( x, y ) > static_cast<int>(detection_threshold) ) &&
               ( accum( x, y ) > accum( x - 1, y ) ) && ( accum( x, y ) > accum( x + 1, y ) ) &&
               ( accum( x, y ) > accum( x, y - 1 ) ) && ( accum( x, y ) > accum( x, y + 1 ) ) ) {
             centers.push_back( x + y * accum.size( 0 ) );

@@ -280,7 +280,7 @@ namespace Bial {
         size_t adj_pxl = pred( pxl );
         size_t x_adj = adj_pxl % cost.size( 0 );
         size_t y_adj = adj_pxl / cost.size( 0 );
-        if( ( adj_pxl != pxl ) && ( adj_pxl != -1 ) ) {
+        if( ( adj_pxl != pxl ) && ( adj_pxl != static_cast<size_t>(-1) ) ) {
           size_t x_pos_adj = ( x_adj + 1 ) * 10;
           size_t y_pos_adj = ( y_adj + 1 ) * 10;
           COMMENT( "Moving arrow displacement.", 5 );
