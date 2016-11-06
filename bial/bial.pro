@@ -341,28 +341,28 @@ SOURCES += \
     src/ConnPathFunction.cpp \
     src/Correlation.cpp \
     src/DegeneratedIFT.cpp \
-    inc/DescriptionACC.cpp \
-    inc/DescriptionBAS.cpp \
-    inc/DescriptionBIC.cpp \
-    inc/DescriptionBoxCounting.cpp \
-    inc/DescriptionCCH.cpp \
-    inc/DescriptionCCV.cpp \
-    inc/DescriptionCGI.cpp \
-    inc/DescriptionCLD.cpp \
-    inc/DescriptionCSD.cpp \
-    inc/DescriptionEHD.cpp \
-    inc/DescriptionFeatureExtractor.cpp \
-    inc/DescriptionFeatures.cpp \
-    inc/DescriptionGCH.cpp \
-    inc/DescriptionLAS.cpp \
-    inc/DescriptionLBP.cpp \
-    inc/DescriptionLCH.cpp \
-    inc/DescriptionLuColor.cpp \
-    inc/DescriptionNoDetector.cpp \
-    inc/DescriptionSCD.cpp \
-    inc/DescriptionSS.cpp \
-    inc/DescriptionTAR.cpp \
-    inc/DescriptionUNSER.cpp \
+    src/DescriptionACC.cpp \
+    src/DescriptionBAS.cpp \
+    src/DescriptionBIC.cpp \
+    src/DescriptionBoxCounting.cpp \
+    src/DescriptionCCH.cpp \
+    src/DescriptionCCV.cpp \
+    src/DescriptionCGI.cpp \
+    src/DescriptionCLD.cpp \
+    src/DescriptionCSD.cpp \
+    src/DescriptionEHD.cpp \
+    src/DescriptionFeatureExtractor.cpp \
+    src/DescriptionFeatures.cpp \
+    src/DescriptionGCH.cpp \
+    src/DescriptionLAS.cpp \
+    src/DescriptionLBP.cpp \
+    src/DescriptionLCH.cpp \
+    src/DescriptionLuColor.cpp \
+    src/DescriptionNoDetector.cpp \
+    src/DescriptionSCD.cpp \
+    src/DescriptionSS.cpp \
+    src/DescriptionTAR.cpp \
+    src/DescriptionUNSER.cpp \
     src/DFIDE.cpp \
     src/DicomHeader.cpp \
     src/DiffPathFunction.cpp \
