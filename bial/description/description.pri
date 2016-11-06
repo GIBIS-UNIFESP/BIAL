@@ -22,7 +22,7 @@ HEADERS += \
     $$PWD/inc/DescriptionSCD.hpp \
     $$PWD/inc/DescriptionSS.hpp \
     $$PWD/inc/DescriptionTAR.hpp \
-    $$PWD/inc/DescriptionUNSER.hpp \
+    $$PWD/inc/DescriptionUNSER.hpp
 
 SOURCES += \
     $$PWD/src/DescriptionACC.cpp \
@@ -44,4 +44,4 @@ SOURCES += \
     $$PWD/src/DescriptionSCD.cpp \
     $$PWD/src/DescriptionSS.cpp \
     $$PWD/src/DescriptionTAR.cpp \
-    $$PWD/src/DescriptionUNSER.cpp \
+    $$PWD/src/DescriptionUNSER.cpp

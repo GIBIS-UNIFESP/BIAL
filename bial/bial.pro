@@ -7,7 +7,7 @@ CONFIG += c++11
 QT       -= core gui
 
 QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
--I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc\
+-I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc -I$$PWD/description/inc\
 -I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
 
