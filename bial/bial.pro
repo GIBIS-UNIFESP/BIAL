@@ -1,6 +1,7 @@
 TARGET = bial
 TEMPLATE = lib
-CONFIG += staticlib
+CONFIG += shared_and_static build_all
+
 
 QT       -= core gui
 
@@ -243,6 +244,7 @@ HEADERS += \
     inc/SegmentationBackground.hpp \
     inc/SegmentationBorder.hpp \
     inc/SegmentationConnectedComponents.hpp \
+    inc/SegmentationFSum.hpp \
     inc/SegmentationGeoStar.hpp \
     inc/SegmentationHysteresis.hpp \
     inc/SegmentationIntensityThreshold.hpp \
@@ -423,6 +425,7 @@ SOURCES += \
     src/SegmentationBackground.cpp \
     src/SegmentationBorder.cpp \
     src/SegmentationConnectedComponents.cpp \
+    src/SegmentationFSum.cpp \
     src/SegmentationGeoStar.cpp \
     src/SegmentationHysteresis.cpp \
     src/SegmentationIntensityThreshold.cpp \

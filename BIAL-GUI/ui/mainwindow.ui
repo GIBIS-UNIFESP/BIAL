@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
+    <width>615</width>
     <height>1020</height>
    </rect>
   </property>
@@ -32,6 +32,22 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
+     <widget class="GraphicsView" name="logoView">
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="resizeAnchor">
+       <enum>QGraphicsView::NoAnchor</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="ImageViewer" name="imageViewer" native="true">
@@ -41,24 +57,7 @@
           <height>0</height>
          </size>
         </property>
-        <layout class="QGridLayout" name="gridLayout_6">
-         <item row="0" column="0">
-          <widget class="GraphicsView" name="logoView">
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="verticalScrollBarPolicy">
-            <enum>Qt::ScrollBarAlwaysOff</enum>
-           </property>
-           <property name="horizontalScrollBarPolicy">
-            <enum>Qt::ScrollBarAlwaysOff</enum>
-           </property>
-           <property name="resizeAnchor">
-            <enum>QGraphicsView::NoAnchor</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QGridLayout" name="gridLayout_6"/>
        </widget>
       </item>
      </layout>
@@ -71,7 +70,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>440</width>
+     <width>615</width>
      <height>19</height>
     </rect>
    </property>
@@ -138,8 +137,10 @@
     <addaction name="actionHistogram_dock"/>
     <addaction name="actionShow_images_dock"/>
     <addaction name="actionSegmentation_dock"/>
+    <addaction name="actionLabels_dock"/>
     <addaction name="separator"/>
     <addaction name="menuBackground_color"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuLayout">
     <property name="enabled">
@@ -616,6 +617,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+4</string>
+   </property>
+  </action>
+  <action name="actionLabels_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Labels dock</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+5</string>
    </property>
   </action>
  </widget>

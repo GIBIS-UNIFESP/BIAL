@@ -1,10 +1,10 @@
-/* Biomedical Image Analysis Library 
- * See README file in the root instalation directory for more information. 
+/* Biomedical Image Analysis Library
+ * See README file in the root instalation directory for more information.
  */
 
 /**
- * @date 2013/Aug/08 
- * @brief File and Directory Handling. 
+ * @date 2013/Aug/08
+ * @brief File and Directory Handling.
  * @warning random access from IFile does not work for gziped files, since gzstream does not support it.
  */
 
@@ -31,13 +31,13 @@ namespace Bial {
       }
       return( true );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "I/O error." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -69,13 +69,13 @@ namespace Bial {
       }
       return( true );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "I/O error." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -135,13 +135,13 @@ namespace Bial {
       Bial_pclose( dirs );
       return( result );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing directory." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -198,13 +198,13 @@ namespace Bial {
 
       return( result );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing directory." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -265,13 +265,13 @@ namespace Bial {
 
       return( result );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing directory." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -299,13 +299,13 @@ namespace Bial {
 
       return( result );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing directory." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -329,13 +329,13 @@ namespace Bial {
 
   IFile::IFile( ) try : gz_file( ), std_file( ), gziped( false ) {
   }
-  catch( std::system_error &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-    throw( std::system_error( std::error_code( ), msg ) );
-  }
   catch( std::ios_base::failure &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing directory." ) );
     throw( std::ios_base::failure( msg ) );
+  }
+  catch( std::system_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+    throw( std::system_error( std::error_code( ), msg ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -372,13 +372,13 @@ namespace Bial {
       std_file.open( filename, mode );
     }
   }
-  catch( std::system_error &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-    throw( std::system_error( std::error_code( ), msg ) );
-  }
   catch( std::ios_base::failure &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open file." ) );
     throw( std::ios_base::failure( msg ) );
+  }
+  catch( std::system_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+    throw( std::system_error( std::error_code( ), msg ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -415,13 +415,13 @@ namespace Bial {
       std_file.open( filename.c_str( ), mode );
     }
   }
-  catch( std::system_error &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-    throw( std::system_error( std::error_code( ), msg ) );
-  }
   catch( std::ios_base::failure &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open file." ) );
     throw( std::ios_base::failure( msg ) );
+  }
+  catch( std::system_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+    throw( std::system_error( std::error_code( ), msg ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -455,13 +455,13 @@ namespace Bial {
         return( std_file.peek( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not access file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -485,13 +485,13 @@ namespace Bial {
     try {
       open( std::string( filename ), mode );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -540,13 +540,13 @@ namespace Bial {
         gziped = false;
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -575,13 +575,13 @@ namespace Bial {
         return( std_file.is_open( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -610,13 +610,13 @@ namespace Bial {
         return( std_file.good( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -645,13 +645,13 @@ namespace Bial {
         return( std_file.eof( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -680,13 +680,13 @@ namespace Bial {
         return( std_file.fail( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -715,13 +715,13 @@ namespace Bial {
         return( std_file.bad( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -750,13 +750,13 @@ namespace Bial {
         std_file.close( );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not close file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -786,13 +786,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -822,13 +822,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -858,13 +858,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -894,13 +894,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -930,13 +930,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -966,13 +966,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1002,13 +1002,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1038,13 +1038,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1074,13 +1074,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1110,13 +1110,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1146,13 +1146,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1182,13 +1182,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1218,13 +1218,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1254,13 +1254,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1290,13 +1290,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1326,13 +1326,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1362,13 +1362,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1396,13 +1396,13 @@ namespace Bial {
       }
       return( std_file.gcount( ) );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1431,13 +1431,13 @@ namespace Bial {
         return( std_file.get( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1467,13 +1467,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1503,13 +1503,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1539,13 +1539,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1575,13 +1575,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1611,13 +1611,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1647,13 +1647,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1683,13 +1683,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1719,13 +1719,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1755,13 +1755,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1792,13 +1792,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1829,13 +1829,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1864,13 +1864,13 @@ namespace Bial {
         return( std_file.exceptions( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1899,13 +1899,13 @@ namespace Bial {
         std_file.exceptions( except );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1941,13 +1941,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1977,13 +1977,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2013,13 +2013,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2049,13 +2049,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2085,13 +2085,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2121,13 +2121,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2157,13 +2157,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2193,13 +2193,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2229,13 +2229,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2265,13 +2265,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2295,13 +2295,13 @@ namespace Bial {
 
   OFile::OFile( ) try : gz_file( ), std_file( ), gziped( false ) {
   }
-  catch( std::system_error &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-    throw( std::system_error( std::error_code( ), msg ) );
-  }
   catch( std::ios_base::failure &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file." ) );
     throw( std::ios_base::failure( msg ) );
+  }
+  catch( std::system_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+    throw( std::system_error( std::error_code( ), msg ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2341,13 +2341,13 @@ namespace Bial {
         std_file.open( filename, mode );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open specified file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2386,13 +2386,13 @@ namespace Bial {
         std_file.open( filename.c_str( ), mode );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open specified file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2422,13 +2422,13 @@ namespace Bial {
     try {
       open( std::string( filename ), mode );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open specified file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2468,13 +2468,13 @@ namespace Bial {
         gziped = false;
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not open specified file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2503,13 +2503,13 @@ namespace Bial {
         return( std_file.is_open( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2538,13 +2538,13 @@ namespace Bial {
         return( std_file.eof( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2573,13 +2573,13 @@ namespace Bial {
         std_file.close( );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Could not close file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2609,13 +2609,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2645,13 +2645,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2681,13 +2681,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2717,13 +2717,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2753,13 +2753,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2789,13 +2789,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2825,13 +2825,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2861,13 +2861,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2897,13 +2897,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2933,13 +2933,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2969,13 +2969,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3005,13 +3005,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3041,13 +3041,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3077,13 +3077,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3113,13 +3113,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3149,13 +3149,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3185,13 +3185,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3221,13 +3221,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3257,13 +3257,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3293,13 +3293,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3329,13 +3329,13 @@ namespace Bial {
         return( std_file.tellp( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading file's position." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3366,13 +3366,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3403,13 +3403,13 @@ namespace Bial {
       }
       return( *this );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while reading from file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3438,13 +3438,13 @@ namespace Bial {
         return( std_file.exceptions( ) );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3473,13 +3473,13 @@ namespace Bial {
         std_file.exceptions( except );
       }
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while accessing file flags." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3515,13 +3515,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3551,13 +3551,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3587,13 +3587,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3623,13 +3623,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3659,13 +3659,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3695,13 +3695,13 @@ namespace Bial {
       }
       return( file );
     }
-    catch( std::system_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
-      throw( std::system_error( std::error_code( ), msg ) );
-    }
     catch( std::ios_base::failure &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error while writing to file." ) );
       throw( std::ios_base::failure( msg ) );
+    }
+    catch( std::system_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "System error, while accessing I/O." ) );
+      throw( std::system_error( std::error_code( ), msg ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -3885,4 +3885,3 @@ namespace Bial {
 #endif
 
 #endif
-

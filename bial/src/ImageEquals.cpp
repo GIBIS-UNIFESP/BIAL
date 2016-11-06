@@ -29,6 +29,10 @@ namespace Bial {
       Image< double > img2( Read< double >( file2 ) );
       return( ImageOp::EqualImages( img1, img2 ) );
     }
+    catch( std::ios_base::failure &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error opening images." ) );
+      throw( std::ios_base::failure( msg ) );
+    }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
       throw( std::runtime_error( msg ) );
@@ -44,10 +48,6 @@ namespace Bial {
     catch( const std::logic_error &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
       throw( std::logic_error( msg ) );
-    }
-    catch( std::ios_base::failure &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error opening images." ) );
-      throw( std::ios_base::failure( msg ) );
     }
   }
 

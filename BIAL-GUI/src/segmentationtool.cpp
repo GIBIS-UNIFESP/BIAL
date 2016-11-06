@@ -9,7 +9,9 @@
 #include "GradientMorphological.hpp"
 #include "MultiImage.hpp"
 #include "RealColor.hpp"
+#include "SegmentationFSum.hpp"
 #include "SegmentationGeoStar.hpp"
+#include "SegmentationWatershed.hpp"
 #include "guiimage.h"
 #include "segmentationtool.h"
 #include <QDebug>
@@ -180,7 +182,7 @@ void SegmentationTool::clearSeeds( ) {
   emit guiImage->imageUpdated( );
 }
 
-Bial::Image< int > SegmentationTool::segmentationOGS( double alpha, double beta ) {
+Bial::Image< int > SegmentationTool::segmentationOGS( int pf_type, double alpha, double beta ) {
   Bial::Vector< size_t > obj_seed;
   Bial::Vector< size_t > bkg_seed;
   maskVisible = true;
@@ -211,7 +213,22 @@ Bial::Image< int > SegmentationTool::segmentationOGS( double alpha, double beta 
         std::string msg( BIAL_ERROR( "Getting image from non initialized multi-image." ) );
         throw( std::runtime_error( msg ) );
     }
-    Bial::Image< int > res( Bial::Segmentation::OrientedGeodesicStar( img, obj_seed, bkg_seed, alpha, beta ) );
+    Bial::Image< int > res( 1, 1 );
+    switch( pf_type ) {
+    case 0: {
+        res = Bial::Segmentation::OrientedGeodesicStar( img, obj_seed, bkg_seed, alpha, beta );
+        break;
+    }
+    case 1: {
+        Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
+        res = Bial::Segmentation::Watershed( grad, obj_seed, bkg_seed );
+        break;
+    }
+    default: {
+        Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
+        res = Bial::Segmentation::FSum( grad, obj_seed, bkg_seed );
+    }
+    }
     mask = Bial::Gradient::Morphological( res );
     emit guiImage->imageUpdated( );
     return( res );
