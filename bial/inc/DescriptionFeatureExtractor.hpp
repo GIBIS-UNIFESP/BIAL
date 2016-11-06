@@ -1,34 +1,43 @@
+#include "Color.hpp"
 #include "DescriptionFeatureDetector.hpp"
 #include "DescriptionFeatures.hpp"
 #include "DescriptionParameterInterpreter.hpp"
-#include "Color.hpp"
 
 #ifndef FEATUREEXTRACTOR_H
 #define FEATUREEXTRACTOR_H
 
 namespace Bial {
+
+  static const int NIL = -1;
+  static const int WHITE = 0;
+  static const int GRAY = 1;
+  static const int BLACK = 2;
+
   typedef Vector< std::tuple< int, int > > Curve;
 
+  int Log( double value, double n );
+  Image< int > Mbb( Image< int > img, Image< int > mask );
+  Image< int > Mbb( Image< int > img );
+  Curve ImageToCurve( Image< int > img, Image< int > mask );
+  bool ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, size_t p ); /* mover */
+  Image< int > LabelContPixel( Image< int > img ); /* mover para segmentacion */
+  double find_angle( int deltax, int deltay ); /* mover ? */
+  Image< Color > RgbToHmmd( Image< Color > img );
+  Image< Color > RgbToHsv( Image< Color > img );
 
-  #define NIL -1
-  #define WHITE 0
-  #define GRAY 1
-  #define BLACK 2
+  Adjacency FixAdj( const Adjacency &adj );
+  Adjacency LeftSide( Adjacency adj );
+  Adjacency RightSide( Adjacency adj );
 
-  static int Log( double value, double n );
-  static Image< int > Mbb( Image< int > img, Image< int > mask );
-  static Curve ImageToCurve( Image< int > img, Image< int > mask );
-  static bool ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, int p ); /* mover */
-  static Image< int > LabelContPixel( Image< int > img ); /* mover para segmentacion */
-  static double find_angle( int deltax, int deltay ); /* mover ? */
-  static Image< Color > RgbToHmmd( Image< Color > img );
-  static Image< Color > RgbToHsv( Image< Color > img );
+  namespace AdjacencyType {
+    Adjacency AdjacencyBox( int ncols, int nrows );
+  }
 
 
   template< class I, class F >
   class FeatureExtractor {
 protected:
-    Vector <  std::tuple < Image< I >, Image< int >> > detected;
+    Vector < std::tuple < Image< I >, Image< int >> > detected;
 
 public:
     FeatureExtractor( Vector < std::tuple < Image< I >, Image< int >> > detected );
@@ -46,6 +55,5 @@ public:
   }
 }
 
-#include "DescriptionFeatureExtractor.cpp"
 
 #endif

@@ -1,4 +1,4 @@
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
 #ifndef SCD_H
 #define SCD_H
@@ -10,7 +10,6 @@ namespace Bial {
   class SCD : public FeatureExtractor< Color, int > {
 private:
     size_t dim;
-    static Image< Color > RgbToHsv( Image< Color > img );
 
 public:
     SCD( FeatureDetector< Color > *Fd );

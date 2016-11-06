@@ -8,24 +8,24 @@ namespace Bial {
   GCH::GCH( FeatureDetector< Color > *Fd ) : GCH( Fd->Run( ) ) {
   }
 
-  GCH::GCH( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
+  GCH::GCH( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
     this->dim = 4;
   }
 
 
   void GCH::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
+    std::tie( std::ignore, dim ) = vet[ 0 ];
   }
 
-  string GCH::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string GCH::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -38,15 +38,15 @@ namespace Bial {
     GCHfeature feat;
     Image< Color > img;
     Image< int > mask;
-    Image< unsigned char > quantized;
-    unsigned char fator_g = dim;
-    unsigned char fator_b = fator_g * dim;
-    unsigned char r, g, b;
+    Image< int > quantized;
+    int fator_g = dim;
+    int fator_b = fator_g * dim;
+    int r, g, b;
     Features< int > complete_histogram;
     for( size_t i = 0; i < detected.size( ); ++i ) {
       /* quantização------------------------------------------------ */
-      tie( img, mask ) = detected[ i ];
-      quantized = Image< unsigned char >( img.size( 0 ), img.size( 1 ) );
+      std::tie( img, mask ) = detected[ i ];
+      quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
       for( size_t j = 0; j < quantized.size( ); ++j ) {
         r = dim * img[ j ].channel[ 1 ] / 256;
         g = dim * img[ j ].channel[ 2 ] / 256;

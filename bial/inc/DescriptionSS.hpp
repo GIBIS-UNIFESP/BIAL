@@ -1,7 +1,7 @@
 #ifndef SS_H
 #define SS_H
 
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
 #define INTERIOR 0
 #define EXTERIOR 1
@@ -15,8 +15,8 @@ namespace Bial {
 
   typedef Vector < Features < double >> SSfeature;
 
-  typedef Vector< tuple< int, int > > Curve;
-  typedef Vector< tuple< double, double > > CurveDouble;
+  typedef Vector< std::tuple< int, int > > Curve;
+  typedef Vector< std::tuple< double, double > > CurveDouble;
 
 
   class SS : public FeatureExtractor< int, double > {

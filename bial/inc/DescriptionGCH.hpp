@@ -1,4 +1,4 @@
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
 #ifndef GCH_H
 #define GCH_H

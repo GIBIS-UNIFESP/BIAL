@@ -1138,7 +1138,7 @@ local void lm_init (s)
  * in which case the result is equal to prev_length and match_start is
  * garbage.
  * IN assertions: cur_match is the head of the hash chain for the current
- *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
+ *   std::string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
  * OUT assertion: the match length is not greater than s->lookahead.
  */
 #ifndef ASMV

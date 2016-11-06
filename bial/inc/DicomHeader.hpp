@@ -46,7 +46,7 @@ namespace Bial {
   private:
     /** @brief  Element ID */
     int id;
-    /** @brief  --> tipo == 1 ( string ), == 2 float, == 3 int */
+    /** @brief  --> tipo == 1 ( std::string ), == 2 float, == 3 int */
     int valtype;
     /** @brief  string value */
     std::string sval;
@@ -68,7 +68,7 @@ namespace Bial {
       throw( std::logic_error( msg ) );
     }
 
-    /** @brief  altera o valor ( String ) e o ID do Element */
+    /** @brief  altera o valor ( std::string ) e o ID do Element */
     void set( int newId, std::string data ) {
       id = newId;
       sval = data;

@@ -10,29 +10,29 @@ namespace Bial {
   LUCOLOR::LUCOLOR( FeatureDetector< Color > *Fd ) : LUCOLOR( Fd->Run( ) ) {
   }
 
-  LUCOLOR::LUCOLOR( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color,
+  LUCOLOR::LUCOLOR( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color,
                                                                                                     int >( detected ) {
     this->dim = 4;
     this->qtd_blocos = 100;
   }
 
   void LUCOLOR::SetParameters( ParameterInterpreter *interpreter ) {
-    string temp;
+    std::string temp;
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "qtd_blocos", qtd_blocos ) );
+    vet.push_back( std::tie( "dim", dim ) );
+    vet.push_back( std::tie( "qtd_blocos", qtd_blocos ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
-    tie( ignore, qtd_blocos ) = vet[ 1 ];
+    std::tie( std::ignore, dim ) = vet[ 0 ];
+    std::tie( std::ignore, qtd_blocos ) = vet[ 1 ];
   }
 
-  string LUCOLOR::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string LUCOLOR::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "qtd_blocos", qtd_blocos ) );
+    vet.push_back( std::tie( "dim", dim ) );
+    vet.push_back( std::tie( "qtd_blocos", qtd_blocos ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -60,7 +60,7 @@ namespace Bial {
     Features< int > histogram;
     Features< int > complete_histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       nelem = img.size( ) / qtd_blocos;
       resto = img.size( ) % qtd_blocos;

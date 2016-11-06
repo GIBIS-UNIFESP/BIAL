@@ -10,27 +10,27 @@ namespace Bial {
   LCH::LCH( FeatureDetector< Color > *Fd ) : LCH( Fd->Run( ) ) {
   }
 
-  LCH::LCH( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
+  LCH::LCH( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
     this->dim = 4;
     this->BINS = 4;
   }
 
   void LCH::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "BINS", BINS ) );
+    vet.push_back( std::tie( "dim", dim ) );
+    vet.push_back( std::tie( "BINS", BINS ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
-    tie( ignore, BINS ) = vet[ 1 ];
+    std::tie( std::ignore, dim ) = vet[ 0 ];
+    std::tie( std::ignore, BINS ) = vet[ 1 ];
   }
 
-  string LCH::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string LCH::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "BINS", BINS ) );
+    vet.push_back( std::tie( "dim", dim ) );
+    vet.push_back( std::tie( "BINS", BINS ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -54,7 +54,7 @@ namespace Bial {
     Features< int > histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
       /* quantização------------------------------------------------ */
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
       for( size_t j = 0; j < quantized.size( ); ++j ) {

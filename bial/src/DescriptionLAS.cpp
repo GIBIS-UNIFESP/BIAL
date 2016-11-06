@@ -1,6 +1,6 @@
 #include "DescriptionLAS.hpp"
 
-#include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "Signal.hpp"
 
 #include <fstream>
@@ -24,23 +24,23 @@ namespace Bial {
   LAS::LAS( FeatureDetector< int > *Fd ) : LAS( Fd->Run( ) ) {
   }
 
-  LAS::LAS( Vector < tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, int >( detected ) {
+  LAS::LAS( Vector < std::tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, int >( detected ) {
     this->bins = 4;
   }
 
   void LAS::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "bins", bins ) );
+    vet.push_back( std::tie( "bins", bins ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, bins ) = vet[ 0 ];
+    std::tie( std::ignore, bins ) = vet[ 0 ];
   }
 
-  string LAS::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string LAS::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "bins", bins ) );
+    vet.push_back( std::tie( "bins", bins ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -65,12 +65,12 @@ namespace Bial {
     ulong p, q;
     int g[ 4 ];
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
       property = Vector< int >( img.size( ) );
 
 
       /* Local Activity Spectrum------------------------------------------------ */
-      Adjacency adjpixels = Adjacency::Circular( 1.5f );
+      Adjacency adjpixels = AdjacencyType::Circular( 1.5f );
       for( size_t y = 0; y < img.size( 1 ); y++ ) {
         for( size_t x = 0; x < img.size( 0 ); x++ ) {
           if( mask( x, y ) == 1 ) {

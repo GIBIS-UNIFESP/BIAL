@@ -2,20 +2,20 @@
 #define VIDEOIO_H
 
 #include "Color.hpp"
+#include "Errors.hpp"
 #include "Image.hpp"
-#include "errors.h"
 #include <iostream>
 #include <string>
 
-using namespace std;
-using namespace Bial;
+namespace Bial {
 
-class VideoIO
-{
-  public:
-    virtual void Open(string file_name)=0;
-    virtual void Close( )=0;
-    virtual Image<Color> * GetFrame( )=0;
-};
+  class VideoIO {
+public:
+    virtual void Open( std::string file_name ) = 0;
+    virtual void Close( ) = 0;
+    virtual Image< Color >* GetFrame( ) = 0;
+  };
+
+}
 
 #endif

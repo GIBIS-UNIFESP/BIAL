@@ -1,4 +1,4 @@
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
 #ifndef LAS_H
 #define LAS_H

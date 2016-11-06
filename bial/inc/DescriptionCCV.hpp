@@ -1,4 +1,4 @@
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
 #ifndef CCV_H
 #define CCV_H

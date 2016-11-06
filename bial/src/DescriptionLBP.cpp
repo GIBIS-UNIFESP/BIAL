@@ -1,6 +1,6 @@
 #include "DescriptionLBP.hpp"
 
-#include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "Signal.hpp"
 
 #include <fstream>
@@ -29,13 +29,13 @@ namespace Bial {
   LBP::LBP( FeatureDetector< int > *Fd ) : LBP( Fd->Run( ) ) {
   }
 
-  LBP::LBP( Vector < tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, int >( detected ) {
+  LBP::LBP( Vector < std::tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, int >( detected ) {
   }
 
   void LBP::SetParameters( ParameterInterpreter *interpreter ) {
   }
 
-  string LBP::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string LBP::GetParameters( ParameterInterpreter *interpreter ) {
     return( "" );
   }
 
@@ -51,10 +51,10 @@ namespace Bial {
     ulong p, q;
     uchar sum, s[ 8 ];
     int gC, gP;
-    Adjacency adjpixels = Adjacency::Circular( 1.5f );
-    Adjacency::FixAdj( adjpixels );
+    Adjacency adjpixels = AdjacencyType::Circular( 1.5f );
+    FixAdj( adjpixels );
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       /* Local Binary Pattern------------------------------------------------ */
       Vector< int > property( img.size( ) );

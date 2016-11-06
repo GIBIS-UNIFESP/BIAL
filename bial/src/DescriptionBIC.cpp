@@ -39,18 +39,18 @@ namespace Bial {
     BICfeature feat;
     Image< Color > img;
     Image< int > mask;
-    Image< unsigned > quantized;
+    Image< int > quantized;
     int same_color;
-    unsigned char r, g, b;
-    unsigned char fator_g = dim;
-    unsigned char fator_b = fator_g * dim;
+    int r, g, b;
+    int fator_g = dim;
+    int fator_b = fator_g * dim;
 
     Features< int > complete_histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
 
       /* quantização------------------------------------------------ */
       std::tie( img, mask ) = this->detected[ i ];
-      quantized = Image< unsigned char >( img.size( 0 ), img.size( 1 ) );
+      quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
       for( size_t j = 0; j < quantized.size( ); ++j ) {
         r = dim * img[ j ].channel[ 1 ] / 256;
         g = dim * img[ j ].channel[ 2 ] / 256;

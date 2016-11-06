@@ -1,5 +1,9 @@
-#include "DescriptionFeatureExtractor.hpp"
 #include "AdjacencyRound.hpp"
+#include "DescriptionFeatureExtractor.hpp"
+#include "GeometricsScale.hpp"
+#include "ImageResize.hpp"
+#include "SortingSort.hpp"
+
 namespace Bial {
 
   int Log( double value, double n ) {
@@ -64,10 +68,43 @@ namespace Bial {
         }
       }
     }
-    return( img( mins, maxs ) );
+    return( ImageOp::Resize( img, mins, maxs ) );
   }
 
-  bool ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, int p ) {
+
+  Image< int > Mbb( Image< int > img ) {
+    Vector< size_t > mins( 2 );
+    Vector< size_t > maxs( 2 );
+
+    /* x: index 0, y: index 1 */
+    mins[ 0 ] = img.size( 0 ) - 1;
+    mins[ 1 ] = img.size( 1 ) - 1;
+
+    maxs[ 0 ] = 0;
+    maxs[ 1 ] = 0;
+    for( size_t y = 0; y < img.size( 1 ); y++ ) {
+      for( size_t x = 0; x < img.size( 0 ); x++ ) {
+        if( img[ x + img.size( 0 ) * y ] > 0 ) {
+          if( x < mins[ 0 ] ) {
+            mins[ 0 ] = x;
+          }
+          if( y < mins[ 1 ] ) {
+            mins[ 1 ] = y;
+          }
+          if( x > maxs[ 0 ] ) {
+            maxs[ 0 ] = x;
+          }
+          if( y > maxs[ 1 ] ) {
+            maxs[ 1 ] = y;
+          }
+        }
+      }
+    }
+    return( ImageOp::Resize( img, mins, maxs ) );
+  }
+
+
+  bool ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, size_t p ) {
     int left_side, right_side;
 
     int u_x, u_y, v_x, v_y, l_x, l_y, r_x, r_y;
@@ -116,7 +153,7 @@ namespace Bial {
     int u_x, u_y, v_x, v_y, w_x, w_y, q, p, left_side, right_side;
 
     Adjacency A = AdjacencyType::Circular( 1.0f );
-    Adjacency::FixAdj( A );
+    FixAdj( A );
 
     Image< int > bndr( img.size( 0 ), img.size( 1 ) );
     for( p = 0; p < img.size( ); p++ ) {
@@ -141,10 +178,10 @@ namespace Bial {
       }
     }
     A = AdjacencyType::Circular( 1.5f );
-    Adjacency::FixAdj( A );
+    FixAdj( A );
 
-    Adjacency L = Adjacency::LeftSide( A );
-    Adjacency R = Adjacency::RightSide( A );
+    Adjacency L = LeftSide( A );
+    Adjacency R = RightSide( A );
 
     Image< int > label( bndr.size( 0 ), bndr.size( 1 ) );
     Image< int > color( bndr.size( 0 ), bndr.size( 1 ) );
@@ -336,5 +373,89 @@ namespace Bial {
     }
     return( nova );
   }
+
+  Adjacency FixAdj( const Adjacency &adj ) {
+    Adjacency fixed = adj;
+    if( adj.size( ) == 5 ) {
+      fixed( 1, 0 ) = -1;
+      fixed( 1, 1 ) = 0;
+      fixed( 2, 0 ) = 0;
+      fixed( 2, 1 ) = -1;
+      return( fixed );
+    }
+    else if( fixed.size( ) == 9 ) {
+      fixed( 1, 0 ) = -1; fixed( 1, 1 ) = 0;
+      fixed( 2, 0 ) = -1; fixed( 2, 1 ) = -1;
+      fixed( 3, 0 ) = 0; fixed( 3, 1 ) = -1;
+      fixed( 4, 0 ) = 1; fixed( 4, 1 ) = -1;
+      fixed( 5, 0 ) = 1; fixed( 5, 1 ) = 0;
+      fixed( 6, 0 ) = 1; fixed( 6, 1 ) = 1;
+      fixed( 7, 0 ) = 0; fixed( 7, 1 ) = 1;
+      fixed( 8, 0 ) = -1; fixed( 8, 1 ) = 1;
+      return( fixed );
+    }
+    else {
+      throw std::invalid_argument( "Invalid input Adjacency size, should be 5 or 9." );
+    }
+  }
+
+  namespace AdjacencyType {
+
+    Adjacency AdjacencyBox( int ncols, int nrows ) {
+      if( ncols % 2 == 0 ) {
+        ncols++;
+      }
+      if( nrows % 2 == 0 ) {
+        nrows++;
+      }
+      Adjacency B( 2, ncols * nrows );
+
+      int i = 1;
+      for( int dy = -nrows / 2; dy <= nrows / 2; dy++ ) {
+        for( int dx = -ncols / 2; dx <= ncols / 2; dx++ ) {
+          if( ( dx != 0 ) || ( dy != 0 ) ) {
+            B( i, 0 ) = dx;
+            B( i, 1 ) = dy;
+            i++;
+          }
+        }
+      }
+      /* place the central pixel at first */
+      B( 0, 0 ) = 0;
+      B( 1, 0 ) = 0;
+
+      return( B );
+    }
+  }
+
+
+  Adjacency LeftSide( Adjacency adj ) {
+
+    Adjacency L( 2, adj.size( ) );
+    for( size_t i = 0; i < L.size( ); i++ ) {
+      float d = sqrt( adj( i, 0 ) * adj( i, 0 ) + adj( i, 1 ) * adj( i, 1 ) );
+      if( d != 0 ) {
+        L( i, 0 ) = round( ( ( float ) adj( i, 0 ) / 2.0 ) + ( ( float ) adj( i, 1 ) / d ) );
+        L( i, 1 ) = round( ( ( float ) adj( i, 1 ) / 2 ) - ( ( float ) adj( i, 0 ) / d ) );
+      }
+    }
+    return( L );
+  }
+
+  Adjacency RightSide( Adjacency adj ) {
+
+    Adjacency R( 2, adj.size( ) );
+    for( size_t i = 0; i < R.size( ); i++ ) {
+      float d = sqrt( adj( i, 0 ) * adj( i, 0 ) + adj( i, 1 ) * adj( i, 1 ) );
+      if( d != 0 ) {
+        if( d != 0 ) {
+          R( i, 0 ) = round( ( ( float ) adj( i, 0 ) / 2.0 ) - ( ( float ) adj( i, 1 ) / d ) );
+          R( i, 1 ) = round( ( ( float ) adj( i, 1 ) / 2 ) + ( ( float ) adj( i, 0 ) / d ) );
+        }
+      }
+    }
+    return( R );
+  }
+
 
 }

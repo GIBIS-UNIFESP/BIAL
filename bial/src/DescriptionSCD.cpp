@@ -11,23 +11,23 @@ namespace Bial {
   SCD::SCD( FeatureDetector< Color > *Fd ) : SCD( Fd->Run( ) ) {
   }
 
-  SCD::SCD( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
+  SCD::SCD( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
     this->dim = 4;
   }
 
   void SCD::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
+    std::tie( std::ignore, dim ) = vet[ 0 ];
   }
 
-  string SCD::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string SCD::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
+    vet.push_back( std::tie( "dim", dim ) );
     interpreter->SetExpectedParameters( vet );
 
     return( interpreter->GetExpectedParameters( ) );
@@ -49,7 +49,7 @@ namespace Bial {
 
     Features< int > histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       /* quantização------------------------------------------------ */
       quantized = Image< int >( img.size( 0 ), img.size( 1 ) );

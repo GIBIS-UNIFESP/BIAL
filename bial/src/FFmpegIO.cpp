@@ -1,210 +1,200 @@
-#include "FFmpegIO.h"
-
-Image<Color>* FFmpegIO::AVFrame2Image( )
-{
+#include "FFmpegIO.hpp"
+namespace Bial {
+  Image< Color >* FFmpegIO::AVFrame2Image( ) {
     static struct SwsContext *img_convert_ctx;
     static uint8_t *buf;
     unsigned char *ptr;
     AVPicture pict;
     int size, w, h;
-
-    if ( pCodecCtx->pix_fmt != AV_PIX_FMT_RGB24) {
-        if (img_convert_ctx == NULL) {
-            img_convert_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt,
-                                             pCodecCtx->width, pCodecCtx->height, AV_PIX_FMT_RGB24,
-                                             SWS_BICUBIC, NULL, NULL, NULL);
-
-            if (img_convert_ctx == NULL)
-                throw FFMPEG_COVERSION_ERROR;
-
-            size = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecCtx->width ,pCodecCtx->height);
-            buf = (uint8_t *) av_malloc(size * sizeof(uint8_t));
+    if( pCodecCtx->pix_fmt != AV_PIX_FMT_RGB24 ) {
+      if( img_convert_ctx == NULL ) {
+        img_convert_ctx = sws_getContext( pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt,
+                                          pCodecCtx->width, pCodecCtx->height, AV_PIX_FMT_RGB24,
+                                          SWS_BICUBIC, NULL, NULL, NULL );
+        if( img_convert_ctx == NULL ) {
+          throw FFMPEG_COVERSION_ERROR;
         }
+        size = avpicture_get_size( AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height );
+        buf = ( uint8_t* ) av_malloc( size * sizeof( uint8_t ) );
+      }
+      avpicture_fill( &pict, buf, AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height );
 
-        avpicture_fill(&pict, buf, AV_PIX_FMT_RGB24, pCodecCtx->width , pCodecCtx->height);
-
-        sws_scale(img_convert_ctx, (const unsigned char * const *) pFrame->data, pFrame->linesize,
-                  0, pCodecCtx->height , pict.data, pict.linesize);
+      sws_scale( img_convert_ctx, ( const unsigned char*const* ) pFrame->data, pFrame->linesize,
+                 0, pCodecCtx->height, pict.data, pict.linesize );
     }
-
-    Image<Color> *result = new Image<Color>(pCodecCtx->width,pCodecCtx->height);
-
-    for (h = 0; h < pCodecCtx->height ; h++) {
-        ptr = pict.data[0] + h * pict.linesize[0];
-        for (w = 0; w < pCodecCtx->width ; w++) {
-	         (*result)(w,h).channel[1] = ptr[3 * w + 0];
-           (*result)(w,h).channel[2] = ptr[3 * w + 1];
-           (*result)(w,h).channel[3] = ptr[3 * w + 2];
-        }
+    Image< Color > *result = new Image< Color >( pCodecCtx->width, pCodecCtx->height );
+    for( h = 0; h < pCodecCtx->height; h++ ) {
+      ptr = pict.data[ 0 ] + h * pict.linesize[ 0 ];
+      for( w = 0; w < pCodecCtx->width; w++ ) {
+        (*result)( w, h ).channel[ 1 ] = ptr[ 3 * w + 0 ];
+        (*result)( w, h ).channel[ 2 ] = ptr[ 3 * w + 1 ];
+        (*result)( w, h ).channel[ 3 ] = ptr[ 3 * w + 2 ];
+      }
     }
+    return( result );
 
-    return result;
+  }
 
-}
+  FFmpegIO::FFmpegIO( std::string file_name ) {
+    this->Open( file_name );
+  }
 
-FFmpegIO::FFmpegIO(string file_name){this->Open(file_name);}
+  unsigned long FFmpegIO::GetFrameCount( ) {
+    return( this->frame_count );
+  }
 
-unsigned long FFmpegIO::GetFrameCount( ){return this->frame_count;}
+  double FFmpegIO::GetVideoClock( ) {
+    return( this->video_clock );
+  }
 
-double FFmpegIO::GetVideoClock( ){return this->video_clock;}
-
-void FFmpegIO::Open(string file_name)
-{
+  void FFmpegIO::Open( std::string file_name ) {
     pFormatCtx = NULL;
     pCodecCtx = NULL;
     pCodec = NULL;
     pFrame = NULL;
     fFirstTime = true;
 
-    av_register_all();
-
+    av_register_all( );
     /* Open video file. */
-    if (avformat_open_input(&pFormatCtx, file_name.c_str(), NULL, NULL) != 0)
-        throw OPEN_ERROR;
-
+    if( avformat_open_input( &pFormatCtx, file_name.c_str( ), NULL, NULL ) != 0 ) {
+      throw OPEN_ERROR;
+    }
     /* Retrieve stream information. */
-    if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
-        throw FFMPEG_STREAM_ERROR;
-
+    if( avformat_find_stream_info( pFormatCtx, NULL ) < 0 ) {
+      throw FFMPEG_STREAM_ERROR;
+    }
     /* Dump information about file onto standard error. */
-    av_dump_format(pFormatCtx, 0, file_name.c_str() , false);
+    av_dump_format( pFormatCtx, 0, file_name.c_str( ), false );
 
     /* Find the first video stream. */
     videoStream = -1;
-    for (int i = 0; i < pFormatCtx->nb_streams; i++) {
-        AVCodecContext *cc = pFormatCtx->streams[i]->codec;
-        if (cc->codec_type == AVMEDIA_TYPE_VIDEO) {
-            /* Don't care FF_DEBUG_VIS_MV_B_BACK */
-            //cc->debug_mv = FF_DEBUG_VIS_MV_P_FOR | FF_DEBUG_VIS_MV_B_FOR;
-            videoStream = i;
-            break;
-        }
+    for( int i = 0; i < pFormatCtx->nb_streams; i++ ) {
+      AVCodecContext *cc = pFormatCtx->streams[ i ]->codec;
+      if( cc->codec_type == AVMEDIA_TYPE_VIDEO ) {
+        /* Don't care FF_DEBUG_VIS_MV_B_BACK */
+        /* cc->debug_mv = FF_DEBUG_VIS_MV_P_FOR | FF_DEBUG_VIS_MV_B_FOR; */
+        videoStream = i;
+        break;
+      }
     }
-    if (videoStream == -1)
-        throw FFMPEG_VIDEO_STREAM_ERROR;
-
+    if( videoStream == -1 ) {
+      throw FFMPEG_VIDEO_STREAM_ERROR;
+    }
     /* Get a pointer to the codec context for the video stream. */
-    pCodecCtx = pFormatCtx->streams[videoStream]->codec;
+    pCodecCtx = pFormatCtx->streams[ videoStream ]->codec;
 
     /* Find the decoder for the video stream. */
-    pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-    if (pCodec == NULL)
-        throw FFMPEG_CODEC_ERROR;
-
+    pCodec = avcodec_find_decoder( pCodecCtx->codec_id );
+    if( pCodec == NULL ) {
+      throw FFMPEG_CODEC_ERROR;
+    }
     /* Inform the codec that we can handle truncated bitstreams -- i.e.,
-       bitstreams where frame boundaries can fall in the middle of packets.
+     * bitstreams where frame boundaries can fall in the middle of packets.
      */
-    if (pCodec->capabilities & CODEC_CAP_TRUNCATED)
-        pCodecCtx->flags |= CODEC_FLAG_TRUNCATED;
-
+    if( pCodec->capabilities & CODEC_CAP_TRUNCATED ) {
+      pCodecCtx->flags |= CODEC_FLAG_TRUNCATED;
+    }
     /* Open codec. */
-    if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0)
-        throw FFMPEG_CODEC_OPEN_ERROR;
-
+    if( avcodec_open2( pCodecCtx, pCodec, NULL ) < 0 ) {
+      throw FFMPEG_CODEC_OPEN_ERROR;
+    }
     /* Hack to correct wrong frame rates that seem to be generated by
-       some codecs.
+     * some codecs.
      */
-    //if (pCodecCtx->frame_rate > 1000 && pCodecCtx->frame_rate_base == 1)
-    //    pCodecCtx->frame_rate_base = 1000;
+    /*
+     * if (pCodecCtx->frame_rate > 1000 && pCodecCtx->frame_rate_base == 1)
+     *    pCodecCtx->frame_rate_base = 1000;
+     */
 
     /* Allocate video frame. */
-   pFrame = av_frame_alloc();// avcodec_alloc_frame();
+    pFrame = av_frame_alloc( ); /* avcodec_alloc_frame(); */
 
-   video_clock = 0.0;
-   frame_count = 1;
-   is_open=true;
-}
+    video_clock = 0.0;
+    frame_count = 1;
+    is_open = true;
+  }
 
-Image<Color>* FFmpegIO::GetFrame( )
-{
-    int             bytesDecoded;
-    int             frameFinished;
-	  double		     	frame_delay;
-
-    if(!is_open)
-	     throw VIDEO_OPEN_ERROR;
-
-
+  Image< Color >* FFmpegIO::GetFrame( ) {
+    int bytesDecoded;
+    int frameFinished;
+    double frame_delay;
+    if( !is_open ) {
+      throw VIDEO_OPEN_ERROR;
+    }
     /* First time we're called, set packet.data to NULL to indicate it
-       doesn't have to be freed.
+     * doesn't have to be freed.
      */
-    if (fFirstTime) {
-        fFirstTime = false;
-		    av_init_packet(&packet);
-        packet.data = NULL;
-		    packet.size = 0;
+    if( fFirstTime ) {
+      fFirstTime = false;
+      av_init_packet( &packet );
+      packet.data = NULL;
+      packet.size = 0;
     }
-
     /* Decode packets until we have decoded a complete frame. */
-    while (true) {
-        /* Work on the current packet until we have decoded all of it. */
-        while (packet.size > 0) {
-            /* Decode the next chunk of data. */
-            bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame,
-                &frameFinished, &packet);
-
-            /* Was there an error? */
-            if (bytesDecoded < 0) {
-				          throw FFMEPEG_DECODING_ERROR;
-            }
-
-            packet.size -= bytesDecoded;
-            if (packet.size > 0)
-                packet.data += bytesDecoded;
-            else
-                packet.data = NULL;
-
-            /* Did we finish the current frame? Then we can return. */
-            if (frameFinished)
-            {
-			           frame_count++;
-
-		            frame_delay = av_q2d(pCodecCtx->time_base);
-		            frame_delay += pFrame->repeat_pict * (frame_delay * 0.5);
-		            video_clock += frame_delay;
-
-				        return AVFrame2Image( );
-	         }
+    while( true ) {
+      /* Work on the current packet until we have decoded all of it. */
+      while( packet.size > 0 ) {
+        /* Decode the next chunk of data. */
+        bytesDecoded = avcodec_decode_video2( pCodecCtx, pFrame,
+                                              &frameFinished, &packet );
+        /* Was there an error? */
+        if( bytesDecoded < 0 ) {
+          throw FFMEPEG_DECODING_ERROR;
         }
+        packet.size -= bytesDecoded;
+        if( packet.size > 0 ) {
+          packet.data += bytesDecoded;
+        }
+        else {
+          packet.data = NULL;
+        }
+        /* Did we finish the current frame? Then we can return. */
+        if( frameFinished ) {
+          frame_count++;
 
-        /* Read the next packet, skipping all packets that aren't for
-           this stream.
-         */
-        do {
-            /* Free old packet. */
-            if (packet.data != NULL)
-                av_free_packet(&packet);
+          frame_delay = av_q2d( pCodecCtx->time_base );
+          frame_delay += pFrame->repeat_pict * ( frame_delay * 0.5 );
+          video_clock += frame_delay;
 
-            /* Read new packet. */
-            if (av_read_frame(pFormatCtx, &packet) < 0)
-                goto loop_exit;
-        } while (packet.stream_index != videoStream);
+          return( AVFrame2Image( ) );
+        }
+      }
+      /* Read the next packet, skipping all packets that aren't for
+       * this stream.
+       */
+      do {
+        /* Free old packet. */
+        if( packet.data != NULL ) {
+          av_free_packet( &packet );
+        }
+        /* Read new packet. */
+        if( av_read_frame( pFormatCtx, &packet ) < 0 ) {
+          goto loop_exit;
+        }
+      } while( packet.stream_index != videoStream );
     }
-
-loop_exit:
+  loop_exit:
 
     packet.data = NULL;
     packet.size = 0;
 
     /* Decode the rest of the last frame. */
-    bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished,
-        &packet);
-
+    bytesDecoded = avcodec_decode_video2( pCodecCtx, pFrame, &frameFinished,
+                                          &packet );
     /* Free last packet. */
-    if (packet.data != NULL)
-        av_free_packet(&packet);
+    if( packet.data != NULL ) {
+      av_free_packet( &packet );
+    }
+    return( NULL );
+  }
 
-    return NULL;
-}
+  void FFmpegIO::Close( ) {
 
-void FFmpegIO::Close( )
-{
+    av_free( pFrame );
 
-  av_free(pFrame);
-
-	av_free(pFrame);
-	avcodec_close(pCodecCtx);
-	avformat_close_input(&pFormatCtx);
+    av_free( pFrame );
+    avcodec_close( pCodecCtx );
+    avformat_close_input( &pFormatCtx );
 
     pFormatCtx = NULL;
     pCodecCtx = NULL;
@@ -213,5 +203,7 @@ void FFmpegIO::Close( )
     fFirstTime = true;
     video_clock = 0.0;
     frame_count = 0;
-    is_open=false;
+    is_open = false;
+  }
+
 }

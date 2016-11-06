@@ -1,10 +1,9 @@
 #ifndef UNSER_H
 #define UNSER_H
 
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
-using namespace std;
-using namespace Bial;
+namespace Bial {
 
 typedef Vector < Features < int >> UNSERfeature;
 
@@ -26,13 +25,15 @@ private:
 public:
   UNSER( FeatureDetector< int > *Fd );
 
-  UNSER( Vector < tuple < Image< int >, Image< int >> > detected );
+  UNSER( Vector < std::tuple < Image< int >, Image< int >> > detected );
 
   void SetParameters( ParameterInterpreter *interpreter );
 
-  string GetParameters( ParameterInterpreter *interpreter );
+  std::string GetParameters( ParameterInterpreter *interpreter );
 
   UNSERfeature Run( );
 };
+
+}
 
 #endif

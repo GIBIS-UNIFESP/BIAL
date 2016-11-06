@@ -1,40 +1,34 @@
-#include "DescriptionCCH.hpp"
+#include "DescriptionCCV.hpp"
 
-#include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "Signal.hpp"
 
 #include <fstream>
-
+#include <queue>
 
 namespace Bial {
 
-  CCH::CCH( FeatureDetector< Color > *Fd ) : CCH( Fd->Run( ) ) {
+
+  CCV::CCV( FeatureDetector< Color > *Fd ) : CCV( Fd->Run( ) ) {
   }
 
-  CCH::CCH( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
-    this->grid = 4;
+  CCV::CCV( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
     this->dim = 4;
   }
 
-  void CCH::SetParameters( ParameterInterpreter *interpreter ) {
-
+  void CCV::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back(  std::tie( "dim", dim ) );
-    vet.push_back(  std::tie( "grid", grid ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-     std::tie( std::ignore, dim ) = vet[ 0 ];
-     std::tie( std::ignore, grid ) = vet[ 1 ];
-
-    vet.clear( );
+    std::tie( std::ignore, dim ) = vet[ 0 ];
   }
 
-   std::string CCH::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string CCV::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back(  std::tie( "dim", dim ) );
-    vet.push_back(  std::tie( "grid", grid ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -42,12 +36,12 @@ namespace Bial {
   }
 
 
-  CCHfeature CCH::Run( ) {
+  CCVfeature CCV::Run( ) {
     size_t size = dim * dim * dim;
-    size_t cell = grid * grid;
-    size_t bins = cell * size;
 
-    CCHfeature feat;
+    size_t p;
+
+    CCVfeature feat;
     Image< Color > img;
     Image< int > mask;
     Image< int > quantized;
@@ -56,14 +50,24 @@ namespace Bial {
     unsigned char fator_b = fator_g * dim;
     unsigned char r, g, b;
 
-    Features< int > histogram, area, colors;
+    Features< int > complete_histogram;
+    Features< int > HIGH_histogram;
+    Features< int > LOW_histogram;
+
+    Vector< bool > frequency;
+    std::queue< int > fila;
+    int nlabels = 0;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-
-
       /* quantização------------------------------------------------ */
       std::tie( img, mask ) = this->detected[ i ];
 
       quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
+
+      frequency = Vector< bool >( quantized.size( ) );
+      int labels[ quantized.size( ) ];
+      for( size_t i = 0; i < quantized.size( ); i++ ) {
+        labels[ i ] = NIL;
+      }
       for( size_t j = 0; j < quantized.size( ); ++j ) {
         r = dim * img[ j ].channel[ 1 ] / 256;
         g = dim * img[ j ].channel[ 2 ] / 256;
@@ -73,49 +77,74 @@ namespace Bial {
       }
       /* ----------------------------------------------------------- */
 
+      /* Frequencia dos pixels-------------------------------------- */
+
+      Adjacency adjpixels = AdjacencyType::Circular( 1.1f );
+      for( size_t y = 0; y < quantized.size( 1 ); y++ ) {
+        for( size_t x = 0; x < quantized.size( 0 ); x++ ) {
+          if( mask( x, y ) == 1 ) {
+            size_t p = x + y * quantized.size( 0 );
+            if( labels[ p ] == NIL ) {
+              labels[ p ] = nlabels++;
+              fila.push( p );
+              while( !fila.empty( ) ) {
+                p = fila.front( );
+                fila.pop( );
+
+                int u_x = p % quantized.size( 0 );
+                int u_y = p / quantized.size( 0 );
+                for( size_t pos = 1; pos < adjpixels.size( ); ++pos ) {
+                  int v_x = u_x + adjpixels( pos, 0 );
+                  int v_y = u_y + adjpixels( pos, 1 );
+                  if( ( v_x >= 0 ) && ( v_x < quantized.size( 0 ) ) && ( v_y >= 0 ) && ( v_y < quantized.size( 1 ) ) ) {
+                    int q = v_x + v_y * quantized.size( 0 );
+                    if( ( labels[ q ] == NIL ) && ( quantized[ p ] == quantized[ q ] ) ) {
+                      labels[ q ] = labels[ p ];
+                      fila.push( q );
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      /* ---------------------------------------------------------- */
+
       /* Histograma------------------------------------------------ */
-      colors = Features< int >( bins );
-      area = Features< int >( size );
-
-
-      size_t fator_x = grid;
-      size_t fator_y = cell;
-      for( size_t r = 0; r < quantized.size( 1 ); r++ ) {
-        for( size_t c = 0; c < quantized.size( 0 ); c++ ) {
-          if( mask( c, r ) == 1 ) {
-            size_t x = grid * r / quantized.size( 1 );
-            size_t y = grid * c / quantized.size( 0 );
-            colors[ fator_y * quantized[ r * quantized.size( 0 ) + c ] + fator_x * y + x ]++;
-          }
+      Vector< int > area( nlabels );
+      for( int i = 0; i < nlabels; i++ ) {
+        area[ i ] = 0;
+      }
+      for( p = 0; p < quantized.size( ); p++ ) {
+        area[ labels[ p ] ]++;
+      }
+      for( p = 0; p < quantized.size( ); p++ ) {
+        if( 100 * area[ labels[ p ] ] < MIN_AREA * quantized.size( ) ) {
+          frequency[ p ] = LOW;
+        }
+        else {
+          frequency[ p ] = HIGH;
         }
       }
+      complete_histogram = Features< int >( 2 * size );
+      LOW_histogram = Features< int >( size );
+      HIGH_histogram = Features< int >( size );
       for( size_t j = 0; j < quantized.size( ); j++ ) {
-        if( mask[ j ] == 1 ) {
-          area[ quantized[ j ] ]++;
+        if( frequency[ j ] == LOW ) {
+          LOW_histogram[ quantized[ j ] ]++;
+        }
+        else {
+          HIGH_histogram[ quantized[ j ] ]++;
         }
       }
-      size_t n = 0;
       for( size_t j = 0; j < size; j++ ) {
-        if( area[ j ] ) {
-          for( size_t k = 0; k < cell; k++ ) {
-            colors[ n++ ] = colors[ j * cell + k ];
-          }
-        }
+        complete_histogram[ j ] = ( int ) Log( LOW_histogram[ j ], quantized.size( ) );
       }
-      colors.resize( n );
-
-      histogram = Features< int >( 2 + n + size );
-      n = 0;
-
-      histogram[ n++ ] = dim;
-      histogram[ n++ ] = grid;
-      for( size_t j = 0; j < area.size( ); j++ ) {
-        histogram[ n++ ] = Log( area[ j ], quantized.size( ) );
+      for( size_t j = 0; j < size; j++ ) {
+        complete_histogram[ size + j ] = ( int ) Log( HIGH_histogram[ j ], quantized.size( ) );
       }
-      for( size_t j = 0; j < colors.size( ); j++ ) {
-        histogram[ n++ ] = Log( colors[ j ], quantized.size( ) );
-      }
-      feat.push_back( histogram );
+      feat.push_back( complete_histogram );
       /* ---------------------------------------------------------- */
     }
     return( feat );

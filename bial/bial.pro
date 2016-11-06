@@ -1,6 +1,7 @@
 TARGET = bial
 TEMPLATE = lib
-CONFIG += shared_and_static build_all
+#CONFIG += shared_and_static build_all
+CONFIG += c++11
 
 
 QT       -= core gui
@@ -35,13 +36,13 @@ QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++17
 QMAKE_LFLAGS += -stdlib=libc++
 }
 
-CONFIG += c++11
 
 QMAKE_CXXFLAGS -= -pipe
+LIBS += -lavutil -lavformat -lavcodec -lswscale -lm
 
 win32{
 QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp  -lavutil -lavformat -lavcodec -lswscale -lm
 
 Release:DESTDIR = $$PWD/../build/win/release/lib/
 Release:OBJECTS_DIR = $$PWD/../build/win/release/obj
@@ -135,7 +136,6 @@ HEADERS += \
     inc/DescriptionCLD.hpp \
     inc/DescriptionCSD.hpp \
     inc/DescriptionEHD.hpp \
-    inc/DescriptionErrors.hpp \
     inc/DescriptionFeatureDetector.hpp \
     inc/DescriptionFeatureExtractor.hpp \
     inc/DescriptionFeatures.hpp \
@@ -302,14 +302,14 @@ HEADERS += \
     inc/StatisticsObsAgree.hpp \
     inc/StatisticsPosNeg.hpp \
     inc/StatisticsStdDev.hpp \
-    inc/Superpixel.hpp \
     inc/SumPathFunction.hpp \
     inc/Table.hpp \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
     inc/Vector.hpp \
-    inc/VideoIO.hpp
-
+    inc/VideoIO.hpp \
+    inc/Errors.hpp
+#inc/Superpixel.hpp \
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -352,13 +352,11 @@ SOURCES += \
     src/DescriptionCSD.cpp \
     src/DescriptionEHD.cpp \
     src/DescriptionFeatureExtractor.cpp \
-    src/DescriptionFeatures.cpp \
     src/DescriptionGCH.cpp \
     src/DescriptionLAS.cpp \
     src/DescriptionLBP.cpp \
     src/DescriptionLCH.cpp \
     src/DescriptionLuColor.cpp \
-    src/DescriptionNoDetector.cpp \
     src/DescriptionSCD.cpp \
     src/DescriptionSS.cpp \
     src/DescriptionTAR.cpp \
@@ -509,11 +507,10 @@ SOURCES += \
     src/StatisticsPosNeg.cpp \
     src/StatisticsStdDev.cpp \
     src/SumPathFunction.cpp \
-    src/Superpixel.cpp \
     src/Table.cpp \
     src/TransformEuclDist.cpp \
     src/TransformEuclDistInv.cpp
-
+#src/Superpixel.cpp \
 DISTFILES += \
     uncrustify.cfg
 
