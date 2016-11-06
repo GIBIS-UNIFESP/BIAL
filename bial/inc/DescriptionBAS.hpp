@@ -1,4 +1,4 @@
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
 #ifndef BAS_H
 #define BAS_H
@@ -8,7 +8,6 @@ namespace Bial {
   typedef Vector < Features < double >> BASfeature;
 
   class BAS : public FeatureExtractor< int, double > {
-    enum {NIL = -1, WHITE = 0, GRAY = 1, BLACK = 2};
 private:
 
     size_t SAMPLES;

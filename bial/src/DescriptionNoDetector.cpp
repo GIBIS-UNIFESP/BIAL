@@ -5,9 +5,9 @@ namespace Bial {
   }
 
   template< class T >
-  Vector < tuple < Image< T >, Image< int >> > NoDetector< T >::Run( ) {
-    Vector < tuple < Image< T >, Image< int >> > v;
-    tuple < Image< T >, Image < int >> t;
+  Vector <  std::tuple < Image< T >, Image< int >> > NoDetector< T >::Run( ) {
+    Vector <  std::tuple < Image< T >, Image< int >> > v;
+     std::tuple < Image< T >, Image < int >> t;
     Image< int > mask( this->img.size( 0 ), this->img.size( 1 ) );
     for( size_t i = 0; i < mask.size( ); ++i ) {
       mask[ i ] = 1;

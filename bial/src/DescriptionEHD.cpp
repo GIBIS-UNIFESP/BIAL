@@ -45,7 +45,7 @@ namespace Bial {
   EHD::EHD( FeatureDetector< int > *Fd ) : EHD( Fd->Run( ) ) {
   }
 
-  EHD::EHD( Vector < tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, int >( detected ) {
+  EHD::EHD( Vector < std::tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, int >( detected ) {
     GRID = 4;
     BINS = 5;
     BLCK = 16;
@@ -53,24 +53,24 @@ namespace Bial {
 
   void EHD::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "grid", GRID ) );
-    vet.push_back( tie( "bins", BINS ) );
-    vet.push_back( tie( "blck", BLCK ) );
+    vet.push_back( std::tie( "grid", GRID ) );
+    vet.push_back( std::tie( "bins", BINS ) );
+    vet.push_back( std::tie( "blck", BLCK ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, GRID ) = vet[ 0 ];
-    tie( ignore, BINS ) = vet[ 1 ];
-    tie( ignore, BLCK ) = vet[ 2 ];
+    std::tie( std::ignore, GRID ) = vet[ 0 ];
+    std::tie( std::ignore, BINS ) = vet[ 1 ];
+    std::tie( std::ignore, BLCK ) = vet[ 2 ];
   }
 
-  string EHD::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string EHD::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
 
-    vet.push_back( tie( "grid", GRID ) );
-    vet.push_back( tie( "bins", BINS ) );
-    vet.push_back( tie( "blck", BLCK ) );
+    vet.push_back( std::tie( "grid", GRID ) );
+    vet.push_back( std::tie( "bins", BINS ) );
+    vet.push_back( std::tie( "blck", BLCK ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -101,7 +101,7 @@ namespace Bial {
 
     size_t bin, cell, sum;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
       /* initialize levels--------------------------------------------------------- */
       for( ygrid = 0; ygrid < GRID; ygrid++ ) {
         for( xgrid = 0; xgrid < GRID; xgrid++ ) {

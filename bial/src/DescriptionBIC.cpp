@@ -1,4 +1,4 @@
-#include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "Color.hpp"
 #include "DescriptionBIC.hpp"
 
@@ -6,25 +6,25 @@ namespace Bial {
   BIC::BIC( FeatureDetector< Color > *Fd ) : BIC( Fd->Run( ) ) {
   }
 
-  BIC::BIC( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >(
+  BIC::BIC( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >(
       detected ) {
     this->dim = 4;
   }
 
   void BIC::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
+    std::tie( std::ignore, dim ) = vet[ 0 ];
 
   }
 
-  string BIC::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string BIC::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
+    vet.push_back( std::tie( "dim", dim ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -34,7 +34,7 @@ namespace Bial {
   BICfeature BIC::Run( ) {
     int size = dim * dim * dim;
 
-    vector< int > border, interior;
+    std::vector< int > border, interior;
 
     BICfeature feat;
     Image< Color > img;
@@ -49,7 +49,7 @@ namespace Bial {
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
 
       /* quantização------------------------------------------------ */
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
       quantized = Image< unsigned char >( img.size( 0 ), img.size( 1 ) );
       for( size_t j = 0; j < quantized.size( ); ++j ) {
         r = dim * img[ j ].channel[ 1 ] / 256;
@@ -63,7 +63,7 @@ namespace Bial {
       /* Classificação dos pixels---------------------------------- */
 
 
-      Adjacency adjpixels = Adjacency::Circular( 1.0 );
+      Adjacency adjpixels = AdjacencyType::Circular( 1.0 );
       for( size_t y = 0; y < quantized.size( 1 ); y++ ) {
         for( size_t x = 0; x < quantized.size( 0 ); x++ ) {
           if( mask( x, y ) == 1 ) {

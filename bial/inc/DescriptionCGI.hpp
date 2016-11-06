@@ -1,4 +1,4 @@
-#include "ParameterInterpreter.h"
+#include "DescriptionParameterInterpreter.hpp"
 
 #ifndef CGI_H
 #define CGI_H
@@ -6,7 +6,7 @@
 namespace Bial {
   class CGI : public ParameterInterpreter {
 private:
-    static parameter InterpretParameter( string par );
+    static parameter InterpretParameter( std::string par );
     void ChangeParameterValue( parameter p );
 
 public:

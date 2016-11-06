@@ -220,14 +220,14 @@ namespace Bial {
   CLD::CLD( FeatureDetector< Color > *Fd ) : CLD( Fd->Run( ) ) {
   }
 
-  CLD::CLD( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >(
+  CLD::CLD( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >(
       detected ) {
   }
 
   void CLD::SetParameters( ParameterInterpreter *interpreter ) {
   }
 
-  string CLD::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string CLD::GetParameters( ParameterInterpreter *interpreter ) {
     return( "" );
   }
 
@@ -249,7 +249,7 @@ namespace Bial {
     Features< int > histogram_cb;
     Features< int > histogram_cr;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
 
       /* property ----------------------------------------------------------------- */

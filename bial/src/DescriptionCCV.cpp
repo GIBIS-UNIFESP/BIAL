@@ -11,7 +11,7 @@ namespace Bial {
   CCH::CCH( FeatureDetector< Color > *Fd ) : CCH( Fd->Run( ) ) {
   }
 
-  CCH::CCH( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
+  CCH::CCH( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
     this->grid = 4;
     this->dim = 4;
   }
@@ -19,22 +19,22 @@ namespace Bial {
   void CCH::SetParameters( ParameterInterpreter *interpreter ) {
 
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "grid", grid ) );
+    vet.push_back(  std::tie( "dim", dim ) );
+    vet.push_back(  std::tie( "grid", grid ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
-    tie( ignore, grid ) = vet[ 1 ];
+     std::tie( std::ignore, dim ) = vet[ 0 ];
+     std::tie( std::ignore, grid ) = vet[ 1 ];
 
     vet.clear( );
   }
 
-  string CCH::GetParameters( ParameterInterpreter *interpreter ) {
+   std::string CCH::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "grid", grid ) );
+    vet.push_back(  std::tie( "dim", dim ) );
+    vet.push_back(  std::tie( "grid", grid ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -61,7 +61,7 @@ namespace Bial {
 
 
       /* quantização------------------------------------------------ */
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
       for( size_t j = 0; j < quantized.size( ); ++j ) {

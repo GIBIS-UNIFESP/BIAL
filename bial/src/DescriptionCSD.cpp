@@ -1,6 +1,6 @@
 #include "DescriptionCSD.hpp"
 
-#include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "Signal.hpp"
 
 #include <fstream>
@@ -11,13 +11,13 @@ namespace Bial {
   CSD::CSD( FeatureDetector< Color > *Fd ) : CSD( Fd->Run( ) ) {
   }
 
-  CSD::CSD( Vector < tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
+  CSD::CSD( Vector < std::tuple < Image< Color >, Image< int >> > detected ) : FeatureExtractor< Color, int >( detected ) {
   }
 
   void CSD::SetParameters( ParameterInterpreter *interpreter ) {
   }
 
-  string CSD::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string CSD::GetParameters( ParameterInterpreter *interpreter ) {
     return( "" );
   }
 
@@ -36,11 +36,11 @@ namespace Bial {
 
     Vector< int > dx;
     Vector< int > dy;
-    vector< bool > colors;
+    std::vector< bool > colors;
 
     Features< int > histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       /* quantização------------------------------------------------ */
       quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
@@ -74,14 +74,14 @@ namespace Bial {
 
       /* Histograma------------------------------------------------ */
       histogram = Features< int >( size );
-      colors = vector< bool >( size );
+      colors = std::vector< bool >( size );
 
 
-      k = max( 0, ( ( int ) ( log( quantized.size( ) ) / log( 2 ) ) ) / 2 - 8 );
+      k = std::max( 0, ( ( int ) ( std::log( quantized.size( ) ) / std::log( 2 ) ) ) / 2 - 8 );
       w = 1 << k;
       m = 8 * w;
 
-      Adjacency adj = Adjacency::AdjacencyBox( m, m );
+      Adjacency adj = AdjacencyType::AdjacencyBox( m, m );
 
       maximum = 0;
       for( size_t y = 0; y <= quantized.size( 1 ) - m; y += w ) {

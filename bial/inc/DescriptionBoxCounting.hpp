@@ -1,24 +1,24 @@
-#include "FeatureExtractor.h"
+#include "DescriptionFeatureExtractor.hpp"
 
-#ifndef BOXCOUNTING_H
-#define BOXCOUNTING_H
+#ifndef BoxCounting_H
+#define BoxCounting_H
 
 namespace Bial {
 
-  typedef Vector < Features < double >> BOXCOUNTINGfeature;
+  typedef Vector < Features < double >> BoxCountingfeature;
 
-  class BOXCOUNTING : public FeatureExtractor< int, double > {
+  class BoxCounting : public FeatureExtractor< int, double > {
 
 public:
-    BOXCOUNTING( FeatureDetector< int > *Fd );
+    BoxCounting( FeatureDetector< int > *Fd );
 
-    BOXCOUNTING( Vector < std::tuple < Image< int >, Image< int >> > detected );
+    BoxCounting( Vector < std::tuple < Image< int >, Image< int >> > detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 
     std::string GetParameters( ParameterInterpreter *interpreter );
 
-    BOXCOUNTINGfeature Run( );
+    BoxCountingfeature Run( );
   };
 
 }

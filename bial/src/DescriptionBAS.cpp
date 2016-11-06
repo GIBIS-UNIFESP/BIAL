@@ -1,9 +1,8 @@
 #include "DescriptionBAS.hpp"
 
 #include "Adjacency.hpp"
-#include "Geometrics.hpp"
+#include "GeometricsScale.hpp"
 #include "Signal.hpp"
-#include "Sorting.hpp"
 
 #include <fstream>
 #include <stdlib.h>
@@ -13,26 +12,26 @@ namespace Bial {
   BAS::BAS( FeatureDetector< int > *Fd ) : BAS( Fd->Run( ) ) {
   }
 
-  BAS::BAS( Vector < tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, double >( detected ) {
+  BAS::BAS( Vector < std::tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, double >( detected ) {
     this->SAMPLES = 40;
   }
 
   void BAS::SetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "SAMPLES", SAMPLES ) );
+    vet.push_back( std::tie( "SAMPLES", SAMPLES ) );
 
     interpreter->SetExpectedParameters( vet );
 
     vet = interpreter->Interpret( );
 
-    tie( ignore, SAMPLES ) = vet[ 0 ];
+    std::tie( std::ignore, SAMPLES ) = vet[ 0 ];
 
   }
 
-  string BAS::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string BAS::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
 
-    vet.push_back( tie( "SAMPLES", SAMPLES ) );
+    vet.push_back( std::tie( "SAMPLES", SAMPLES ) );
 
     interpreter->SetExpectedParameters( vet );
 
@@ -48,7 +47,7 @@ namespace Bial {
 
     Curve contour, curve, rcurve;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       contour = ImageToCurve( img, mask );
 
@@ -66,9 +65,9 @@ namespace Bial {
       Vector< int > bearing_array( curvelength - 1 );
       for( size_t j = 0; j < contour.size( ); j++ ) {
         total = 0.0;
-        tie( x1, y1 ) = contour[ ( ( j - 1 ) + contour.size( ) ) % contour.size( ) ];
-        tie( x2, y2 ) = contour[ j ];
-        tie( x3, y3 ) = contour[ ( ( j + 1 ) + contour.size( ) ) % contour.size( ) ];
+        std::tie( x1, y1 ) = contour[ ( ( j - 1 ) + contour.size( ) ) % contour.size( ) ];
+        std::tie( x2, y2 ) = contour[ j ];
+        std::tie( x3, y3 ) = contour[ ( ( j + 1 ) + contour.size( ) ) % contour.size( ) ];
 
         delta_x = x1 - x2;
         delta_y = -( y1 - y2 );
@@ -88,9 +87,9 @@ namespace Bial {
 
         previous = angle_curve;
         for( size_t k = 2; k < curvelength; k++ ) {
-          tie( x1, y1 ) = contour[ ( ( j - k ) + contour.size( ) ) % contour.size( ) ];
-          tie( x2, y2 ) = contour[ j ];
-          tie( x3, y3 ) = contour[ ( ( j + k ) + contour.size( ) ) % contour.size( ) ];
+          std::tie( x1, y1 ) = contour[ ( ( j - k ) + contour.size( ) ) % contour.size( ) ];
+          std::tie( x2, y2 ) = contour[ j ];
+          std::tie( x3, y3 ) = contour[ ( ( j + k ) + contour.size( ) ) % contour.size( ) ];
 
           delta_x = x1 - x2;
           delta_y = -( y1 - y2 );

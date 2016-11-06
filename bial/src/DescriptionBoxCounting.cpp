@@ -1,7 +1,7 @@
 #include "DescriptionBoxCounting.hpp"
 
 #include "Adjacency.hpp"
-#include "Geometrics.hpp"
+#include "GeometricsScale.hpp"
 #include "Signal.hpp"
 
 #include <fstream>
@@ -13,14 +13,14 @@ namespace Bial {
   BoxCounting::BoxCounting( FeatureDetector< int > *Fd ) : BoxCounting( Fd->Run( ) ) {
   }
 
-  BoxCounting::BoxCounting( Vector < tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, double >(
+  BoxCounting::BoxCounting( Vector < std::tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, double >(
       detected ) {
   }
 
   void BoxCounting::SetParameters( ParameterInterpreter *interpreter ) {
   }
 
-  string BoxCounting::GetParameters( ParameterInterpreter *interpreter ) {
+  std::string BoxCounting::GetParameters( ParameterInterpreter *interpreter ) {
     return( "" );
   }
 
@@ -40,7 +40,7 @@ namespace Bial {
     Features< double > histogram;
     Vector< int > counter;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       size_t size = 1 << ( SIZE - 1 );
       if( ( img.size( 0 ) > size ) && ( img.size( 1 ) > size ) ) {

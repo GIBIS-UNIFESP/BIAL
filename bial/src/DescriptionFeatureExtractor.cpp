@@ -1,8 +1,8 @@
-#include "DescriptionFeatureExtraction.hpp"
-
+#include "DescriptionFeatureExtractor.hpp"
+#include "AdjacencyRound.hpp"
 namespace Bial {
 
-  int FeatureExtractor::Log( double value, double n ) {
+  int Log( double value, double n ) {
     value = 255.0 * value / n;
     if( value == 0. ) {
       return( 0 );
@@ -36,7 +36,7 @@ namespace Bial {
     }
   }
 
-  Image< int > FeatureExtractor::Mbb( Image< int > img, Image< int > mask ) {
+  Image< int > Mbb( Image< int > img, Image< int > mask ) {
     Vector< size_t > mins( 2 );
     Vector< size_t > maxs( 2 );
 
@@ -66,7 +66,8 @@ namespace Bial {
     }
     return( img( mins, maxs ) );
   }
-  bool FeatureExtractor::ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, int p ) {
+
+  bool ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, int p ) {
     int left_side, right_side;
 
     int u_x, u_y, v_x, v_y, l_x, l_y, r_x, r_y;
@@ -111,10 +112,10 @@ namespace Bial {
   }
 
 
-  Image< int > FeatureExtractor::LabelContPixel( Image< int > img ) { /* MOVER PARA SEGMEN */
+  Image< int > LabelContPixel( Image< int > img ) { /* MOVER PARA SEGMEN */
     int u_x, u_y, v_x, v_y, w_x, w_y, q, p, left_side, right_side;
 
-    Adjacency A = Adjacency::Circular( 1.0f );
+    Adjacency A = AdjacencyType::Circular( 1.0f );
     Adjacency::FixAdj( A );
 
     Image< int > bndr( img.size( 0 ), img.size( 1 ) );
@@ -139,7 +140,7 @@ namespace Bial {
         }
       }
     }
-    A = Adjacency::Circular( 1.5f );
+    A = AdjacencyType::Circular( 1.5f );
     Adjacency::FixAdj( A );
 
     Adjacency L = Adjacency::LeftSide( A );
@@ -220,7 +221,7 @@ namespace Bial {
   }
 
 
-  double FeatureExtractor::find_angle( int deltax, int deltay ) {
+  double find_angle( int deltax, int deltay ) {
     double angle;
     double pi;
 
@@ -245,7 +246,7 @@ namespace Bial {
   }
 
 
-  Curve FeatureExtractor::ImageToCurve( Image< int > img, Image< int > mask ) {
+  Curve ImageToCurve( Image< int > img, Image< int > mask ) {
     Image< int > contour = LabelContPixel( img );
 
     Vector< int > order, curve_x, curve_y, curve_z;
@@ -266,13 +267,13 @@ namespace Bial {
 
     Curve curve( order.size( ) );
     for( size_t i = 0; i < order.size( ); i++ ) {
-      curve[ i ] = make_tuple( curve_x[ i ], curve_y[ i ] );
+      curve[ i ] = std::make_tuple( curve_x[ i ], curve_y[ i ] );
     }
     return( curve );
 
   }
 
-  Image< Color > FeatureExtractor::RgbToHmmd( Image< Color > img ) {
+  Image< Color > RgbToHmmd( Image< Color > img ) {
     float r, g, b, h, s, d, minimum, maximum, f;
     int k;
 
@@ -282,8 +283,8 @@ namespace Bial {
       g = ( float ) img[ i ].channel[ 2 ] / 255.0;
       b = ( float ) img[ i ].channel[ 3 ] / 255.0;
 
-      minimum = min( r, min( g, b ) );
-      maximum = max( r, max( g, b ) );
+      minimum = std::min( r, std::min( g, b ) );
+      maximum = std::max( r, std::max( g, b ) );
       if( maximum == minimum ) {
         h = 0.0;
       }
@@ -304,7 +305,7 @@ namespace Bial {
   }
 
 
-  Image< Color > FeatureExtractor::RgbToHsv( Image< Color > img ) {
+  Image< Color > RgbToHsv( Image< Color > img ) {
     float r, g, b, h, s, v, minimum, maximum, f;
     int k;
 
@@ -314,8 +315,8 @@ namespace Bial {
       g = ( float ) img[ i ].channel[ 2 ] / 255.0;
       b = ( float ) img[ i ].channel[ 3 ] / 255.0;
 
-      minimum = min( r, min( g, b ) );
-      maximum = max( r, max( g, b ) );
+      minimum = std::min( r, std::min( g, b ) );
+      maximum = std::max( r, std::max( g, b ) );
       if( maximum == minimum ) {
         h = 0.0;
         s = 0.0;

@@ -13,7 +13,7 @@ protected:
 
 public:
     FeatureDetector( Image< T > img );
-    virtual Vector < tuple < Image< T >, Image< int >> > Run( ) = 0;
+    virtual Vector < std::tuple < Image< T >, Image< int >> > Run( ) = 0;
   };
 
   template< class T >
@@ -23,6 +23,5 @@ public:
 
 }
 
-#include "NoDetector.h"
-
+#include "DescriptionNoDetector.hpp"
 #endif

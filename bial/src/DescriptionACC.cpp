@@ -1,6 +1,7 @@
 #include "DescriptionACC.hpp"
 
 #include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "Signal.hpp"
 
 #include <fstream>
@@ -22,24 +23,24 @@ namespace Bial {
     size_t d;
     std::string temp;
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "n_distances", n_distances ) );
+    vet.push_back(  std::tie( "dim", dim ) );
+    vet.push_back(  std::tie( "n_distances", n_distances ) );
 
     interpreter->SetExpectedParameters( vet );
     vet = interpreter->Interpret( );
 
-    tie( ignore, dim ) = vet[ 0 ];
-    tie( ignore, n_distances ) = vet[ 1 ];
+    std::tie( std::ignore, dim ) = vet[ 0 ];
+    std::tie( std::ignore, n_distances ) = vet[ 1 ];
 
     vet.clear( );
     for( size_t i = 0; i < n_distances; i++ ) {
-      temp = std::string( "d" ) + to_string( i );
+      temp = std::string( "d" ) + std::to_string( i );
       if( i < distances.size( ) ) {
-        vet.push_back( tie( temp, distances[ i ] ) );
+        vet.push_back( std::tie( temp, distances[ i ] ) );
       }
       else {
         double nd = 0.0;
-        vet.push_back( tie( temp, nd ) );
+        vet.push_back( std::tie( temp, nd ) );
       }
     }
     interpreter->SetExpectedParameters( vet );
@@ -47,7 +48,7 @@ namespace Bial {
 
     distances.clear( );
     for( size_t i = 0; i < n_distances; i++ ) {
-      tie( ignore, d ) = vet[ i ];
+      std::tie( std::ignore, d ) = vet[ i ];
 
       distances.push_back( d );
     }
@@ -55,11 +56,11 @@ namespace Bial {
 
   std::string ACC::GetParameters( ParameterInterpreter *interpreter ) {
     Vector< parameter > vet;
-    vet.push_back( tie( "dim", dim ) );
-    vet.push_back( tie( "n_distances", n_distances ) );
+    vet.push_back( std::tie( "dim", dim ) );
+    vet.push_back( std::tie( "n_distances", n_distances ) );
     for( size_t i = 0; i < n_distances; i++ ) {
-      std::string temp = std::string( "d" ) + to_string( i );
-      vet.push_back( tie( temp, distances[ i ] ) );
+      std::string temp = std::string( "d" ) + std::to_string( i );
+      vet.push_back( std::tie( temp, distances[ i ] ) );
     }
     interpreter->SetExpectedParameters( vet );
 
@@ -86,13 +87,13 @@ namespace Bial {
     Vector< int > frequency[ n_distances ];
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
       /* quantização------------------------------------------------ */
-      tie( img, mask ) = this->detected[ i ];
+      std::tie( img, mask ) = this->detected[ i ];
 
       quantized = Image< int >( img.size( 0 ), img.size( 1 ) );
       for( size_t j = 0; j < quantized.size( ); ++j ) {
-        r = dim * img[ j ].channel[ 1 ] / 256;
-        g = dim * img[ j ].channel[ 2 ] / 256;
-        b = dim * img[ j ].channel[ 3 ] / 256;
+        r = dim * img[ j ][ 1 ] / 256;
+        g = dim * img[ j ][ 2 ] / 256;
+        b = dim * img[ j ][ 3 ] / 256;
 
         quantized[ j ] = ( r + fator_g * g + fator_b * b );
       }
@@ -103,7 +104,7 @@ namespace Bial {
       for( size_t j = 0; j < n_distances; j++ ) {
         frequency[ j ] = Vector< int >( quantized.size( ) );
       }
-      Adjacency adjpixels = Adjacency::Circular( 1.1f );
+      Adjacency adjpixels = AdjacencyType::Circular( 1.1f );
       for( size_t y = 0; y < quantized.size( 1 ); y++ ) {
         for( size_t x = 0; x < quantized.size( 0 ); x++ ) {
           if( mask( x, y ) == 1 ) {

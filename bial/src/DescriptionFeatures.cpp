@@ -23,7 +23,7 @@ namespace Bial {
       return( item[ i ] );
     }
     else {
-      cout << item.size( ) << " " << i << endl;
+       std::cout << item.size( ) << " " << i <<  std::endl;
       throw "error";
     }
   }
