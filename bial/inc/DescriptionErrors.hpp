@@ -6,16 +6,16 @@
  */
 
 #ifndef ERRORS_H
-#define	ERRORS_H
+#define ERRORS_H
 
-//from Image, ImageIO and ImageOperators
+/* from Image, ImageIO and ImageOperators */
 #define OPEN_ERROR "error: could not open file"
 #define FORMAT_ERROR "error: image format not supported"
 #define IMAGE_SIZE_ERROR "error: image size doesn't match"
 #define IMAGE_ERROR "error: empty image"
 #define IMAGE_DEPTH_ERROR "error: image doesn't have a three-dimensional color space"
 
-//from VideoIO
+/* from VideoIO */
 #define FFMPEG_COVERSION_ERROR "error: Cannot initialize the conversion context";
 #define FFMPEG_STREAM_ERROR "error: Could not find stream information";
 #define FFMPEG_VIDEO_STREAM_ERROR "error: Could not find a video stream";
@@ -27,4 +27,4 @@
 
 #define VIDEO_OPEN_ERROR "error: there is no video open";
 
-#endif	/* ERRORS_H */
+#endif /* ERRORS_H */

@@ -1,30 +1,27 @@
+#include "FeatureExtractor.h"
+
 #ifndef BIC_H
 #define BIC_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < int >> BICfeature;
 
-typedef Vector<Features<int>> BICfeature;
-
-class BIC : public FeatureExtractor<Color, int>
-{
-  private:
+  class BIC : public FeatureExtractor< Color, int > {
+private:
     size_t dim;
 
-    static int Log( float value , double n );
+public:
+    BIC( FeatureDetector< Color > *Fd );
 
-  public:
-    BIC(FeatureDetector<Color>* Fd);
+    BIC( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
-    BIC(Vector<tuple<Image<Color>,Image<int>>> detected);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    BICfeature Run();
-};
+    BICfeature Run( );
+  };
+}
 
 #endif

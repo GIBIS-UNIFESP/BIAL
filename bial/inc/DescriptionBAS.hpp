@@ -1,42 +1,29 @@
+#include "FeatureExtractor.h"
+
 #ifndef BAS_H
 #define BAS_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < double >> BASfeature;
 
-#define NIL -1
-#define WHITE 0
-#define GRAY 1
-#define BLACK 2
-
-typedef Vector<Features<double>> BASfeature;
-
-typedef Vector< tuple<int,int> > Curve;
-
-class BAS : public FeatureExtractor<int, double>
-{
-  private:
+  class BAS : public FeatureExtractor< int, double > {
+    enum {NIL = -1, WHITE = 0, GRAY = 1, BLACK = 2};
+private:
 
     size_t SAMPLES;
 
-    static bool ValidContPoint(Image<int> bin, Adjacency L, Adjacency R, int p);//mover
-    static Image<int> LabelContPixel( Image<int> img);//mover para segmentacion
-    static inline double find_angle(int deltax, int deltay);//mover ?
-    static Curve ImageToCurve(Image<int> img , Image<int> mask);
+public:
+    BAS( FeatureDetector< int > *Fd );
 
+    BAS( Vector < std::tuple < Image< int >, Image< int >> > detected );
 
-  public:
-    BAS(FeatureDetector<int>* Fd);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    BAS(Vector<tuple<Image<int>,Image<int>>> detected);
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
-
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    BASfeature Run();
-};
+    BASfeature Run( );
+  };
+}
 
 #endif

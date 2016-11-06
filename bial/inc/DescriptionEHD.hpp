@@ -1,17 +1,16 @@
+#include "FeatureExtractor.h"
+
 #ifndef EHD_H
 #define EHD_H
 
-#include "FeatureExtractor.h"
-
-using namespace std;
-using namespace Bial;
+namespace Bial {
 
 /*
  * This convention improves accuracy in integer implementations and saves
  * some work in floating-point ones.
  */
-typedef short INT16;
-typedef long  INT32;
+  typedef short INT16;
+  typedef long INT32;
 
 /*
  * We have to do addition and subtraction of the integer inputs, which
@@ -34,73 +33,72 @@ typedef long  INT32;
  * have 8 + CONST_BITS + PASS1_BITS <= 26.  Error analysis shows that the
  * values given below are the most effective.
  */
-#define CONST_BITS  13
-#define PASS1_BITS  2
+#define CONST_BITS 13
+#define PASS1_BITS 2
 
 /*
  * Macros for handling fixed-point arithmetic.
  *
  * All values are expected to be of type INT32.
  */
-#define ONE		((INT32) 1)
+#define ONE ( ( INT32 ) 1 )
 
-#define CONST_SCALE	(ONE << CONST_BITS)
+#define CONST_SCALE ( ONE << CONST_BITS )
 
-#define FIX_1_4142135	((INT32) 11585)		/* FIX(1.4142135) */
+#define FIX_1_4142135 ( ( INT32 ) 11585 ) /* FIX(1.4142135) */
 
 /* Convert a positive real constant to an integer scaled by CONST_SCALE */
-#define FIX(x)			((INT32) ((x) * CONST_SCALE + 0.5))
+#define FIX( x ) ( ( INT32 ) ( ( x ) * CONST_SCALE + 0.5 ) )
 
 /* LEFT_SHIFT provides a proper signed left shift of an INT32 quantity.
  * It is only applied with constant shift counts.
  */
-#define LEFT_SHIFT(x,shft)	((x) << (shft))
+#define LEFT_SHIFT( x, shft ) ( ( x ) << ( shft ) )
 
 /* RIGHT_SHIFT provides a proper signed right shift of an INT32 quantity.
  * It is only applied with constant shift counts.
  */
-#define RIGHT_SHIFT(x,shft)	((x) >> (shft))
+#define RIGHT_SHIFT( x, shft ) ( ( x ) >> ( shft ) )
 
 /* Descale and correctly round an INT32 value that's scaled by N bits.
  * We assume RIGHT_SHIFT rounds towards minus infinity, so adding
  * the fudge factor is correct for either sign of X.
  */
-#define DESCALE(x,n)		RIGHT_SHIFT((x) + LEFT_SHIFT(ONE, (n)-1), n)
+#define DESCALE( x, n ) RIGHT_SHIFT( ( x ) + LEFT_SHIFT( ONE, ( n ) - 1 ), n )
 
 /* Multiply an INT32 variable by an INT32 constant to yield an INT32 result.
  * For 8-bit samples with the recommended scaling, all the variable
  * and constant values involved are no more than 16 bits wide, so a
  * 16x16->32 bit multiply can be used instead of a full 32x32 multiply.
  */
-#define MULTIPLY(var,const)  	((var) * (const))
+#define MULTIPLY( var, const ) ( ( var ) * ( const ) )
 
 
-typedef Vector<Features<int>> EHDfeature;
+  typedef Vector < Features < int >> EHDfeature;
 
-class EHD : public FeatureExtractor<int, int>
-{
-  private:
+  class EHD : public FeatureExtractor< int, int > {
+private:
 
-    //parametros----------------------------------------------------------------
+    /* parametros---------------------------------------------------------------- */
     size_t GRID;
     size_t BINS;
     size_t BLCK;
-    //--------------------------------------------------------------------------
+    /* -------------------------------------------------------------------------- */
 
-    static int Log( double value , double n );
-    static size_t FindMaxPosition(Vector<int> vet);
-    Vector<int> ConvolveFilter( int mask[2][2] );
+    static size_t FindMaxPosition( Vector< int > vet );
+    Vector< int > ConvolveFilter( int mask[ 2 ][ 2 ] );
 
-  public:
-    EHD(FeatureDetector<int>* Fd);
+public:
+    EHD( FeatureDetector< int > *Fd );
 
-    EHD(Vector<tuple<Image<int>,Image<int>>> detected);
+    EHD( Vector < std::tuple < Image< int >, Image< int >> > detected );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    EHDfeature Run();
-};
+    EHDfeature Run( );
+  };
 
+}
 #endif

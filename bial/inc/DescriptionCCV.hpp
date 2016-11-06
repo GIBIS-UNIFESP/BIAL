@@ -1,35 +1,31 @@
+#include "FeatureExtractor.h"
+
 #ifndef CCV_H
 #define CCV_H
 
-#include "FeatureExtractor.h"
-
-using namespace std;
-using namespace Bial;
-
 #define HIGH true
 #define LOW false
-#define MIN_AREA 1
-#define NIL -1
 
-typedef Vector<Features<int>> CCVfeature;
+namespace Bial {
 
-class CCV : public FeatureExtractor<Color, int>
-{
-  private:
+
+  typedef Vector < Features < int >> CCVfeature;
+
+  class CCV : public FeatureExtractor< Color, int > {
+    enum { NIL = -1, MIN_AREA = 1 };
+private:
     size_t dim;
 
-    static int Log( double value , double n );
+public:
+    CCV( FeatureDetector< Color > *Fd );
 
-  public:
-    CCV(FeatureDetector<Color>* Fd);
+    CCV( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
-    CCV(Vector<tuple<Image<Color>,Image<int>>> detected);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    CCVfeature Run();
-};
-
+    CCVfeature Run( );
+  };
+}
 #endif

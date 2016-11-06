@@ -1,12 +1,11 @@
+#include "FeatureExtractor.h"
+
 #ifndef CLD_H
 #define CLD_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
-
-typedef Vector<Features<int>> CLDfeature;
+  typedef Vector < Features < int >> CLDfeature;
 
 
 /*
@@ -36,13 +35,13 @@ typedef Vector<Features<int>> CLDfeature;
  * range of +-8K for 8-bit data.  This convention improves accuracy in
  * integer implementations and saves some work in floating-point ones.
  */
-typedef int DCTELEM;		/* 16 or 32 bits is fine */
-typedef long INT32;
+  typedef int DCTELEM; /* 16 or 32 bits is fine */
+  typedef long INT32;
 
 /* Various constants determining the sizes of things.
  */
-#define DCTSIZE		    8	/* The basic DCT block is 8x8 samples */
-#define DCTSIZE2	    64	/* DCTSIZE squared; # of elements in a block */
+#define DCTSIZE 8 /* The basic DCT block is 8x8 samples */
+#define DCTSIZE2 64 /* DCTSIZE squared; # of elements in a block */
 
 /*
  * Each 1-D DCT step produces outputs which are a factor of sqrt(N)
@@ -73,75 +72,75 @@ typedef long INT32;
  * have 8 + CONST_BITS + PASS1_BITS <= 26.  Error analysis shows that the
  * values given below are the most effective.
  */
-#define CONST_BITS  13
-#define PASS1_BITS  2
+#define CONST_BITS 13
+#define PASS1_BITS 2
 
 /*
  * Macros for handling fixed-point arithmetic.
  *
  * All values are expected to be of type INT32.
  */
-#define ONE	((INT32) 1)
+#define ONE ( ( INT32 ) 1 )
 
-#define FIX_0_298631336  ((INT32)  2446)	/* FIX(0.298631336) */
-#define FIX_0_390180644  ((INT32)  3196)	/* FIX(0.390180644) */
-#define FIX_0_541196100  ((INT32)  4433)	/* FIX(0.541196100) */
-#define FIX_0_765366865  ((INT32)  6270)	/* FIX(0.765366865) */
-#define FIX_0_899976223  ((INT32)  7373)	/* FIX(0.899976223) */
-#define FIX_1_175875602  ((INT32)  9633)	/* FIX(1.175875602) */
-#define FIX_1_501321110  ((INT32)  12299)	/* FIX(1.501321110) */
-#define FIX_1_847759065  ((INT32)  15137)	/* FIX(1.847759065) */
-#define FIX_1_961570560  ((INT32)  16069)	/* FIX(1.961570560) */
-#define FIX_2_053119869  ((INT32)  16819)	/* FIX(2.053119869) */
-#define FIX_2_562915447  ((INT32)  20995)	/* FIX(2.562915447) */
-#define FIX_3_072711026  ((INT32)  25172)	/* FIX(3.072711026) */
+#define FIX_0_298631336 ( ( INT32 ) 2446 ) /* FIX(0.298631336) */
+#define FIX_0_390180644 ( ( INT32 ) 3196 ) /* FIX(0.390180644) */
+#define FIX_0_541196100 ( ( INT32 ) 4433 ) /* FIX(0.541196100) */
+#define FIX_0_765366865 ( ( INT32 ) 6270 ) /* FIX(0.765366865) */
+#define FIX_0_899976223 ( ( INT32 ) 7373 ) /* FIX(0.899976223) */
+#define FIX_1_175875602 ( ( INT32 ) 9633 ) /* FIX(1.175875602) */
+#define FIX_1_501321110 ( ( INT32 ) 12299 ) /* FIX(1.501321110) */
+#define FIX_1_847759065 ( ( INT32 ) 15137 ) /* FIX(1.847759065) */
+#define FIX_1_961570560 ( ( INT32 ) 16069 ) /* FIX(1.961570560) */
+#define FIX_2_053119869 ( ( INT32 ) 16819 ) /* FIX(2.053119869) */
+#define FIX_2_562915447 ( ( INT32 ) 20995 ) /* FIX(2.562915447) */
+#define FIX_3_072711026 ( ( INT32 ) 25172 ) /* FIX(3.072711026) */
 
 /* LEFT_SHIFT provides a proper signed left shift of an INT32 quantity.
  * It is only applied with constant shift counts.
  */
-#define LEFT_SHIFT(x,shft)	((x) << (shft))
+#define LEFT_SHIFT( x, shft ) ( ( x ) << ( shft ) )
 
 /* RIGHT_SHIFT provides a proper signed right shift of an INT32 quantity.
  * It is only applied with constant shift counts.
  */
-#define RIGHT_SHIFT(x,shft)	((x) >> (shft))
+#define RIGHT_SHIFT( x, shft ) ( ( x ) >> ( shft ) )
 
 /* Descale and correctly round an INT32 value that's scaled by N bits.
  * We assume RIGHT_SHIFT rounds towards minus infinity, so adding
  * the fudge factor is correct for either sign of X.
  */
-#define DESCALE(x,n)  RIGHT_SHIFT((x) + LEFT_SHIFT(ONE, (n)-1), n)
+#define DESCALE( x, n ) RIGHT_SHIFT( ( x ) + LEFT_SHIFT( ONE, ( n ) - 1 ), n )
 
 /* Multiply an INT32 variable by an INT32 constant to yield an INT32 result.
  * For 8-bit samples with the recommended scaling, all the variable
  * and constant values involved are no more than 16 bits wide, so a
  * 16x16->32 bit multiply can be used instead of a full 32x32 multiply.
  */
-#define MULTIPLY(var,const)  ((var) * (const))
+#define MULTIPLY( var, const ) ( ( var ) * ( const ) )
 
 
-class CLD : public FeatureExtractor<Color, int>
-{
-  private:
+  class CLD : public FeatureExtractor< Color, int > {
+private:
 
-    static const unsigned short int quantbits[DCTSIZE2];
-    static const unsigned short int zigzag[DCTSIZE2];
+    static const unsigned short int quantbits[ DCTSIZE2 ];
+    static const unsigned short int zigzag[ DCTSIZE2 ];
 
-    static uchar LinearNormalize( double value , double n );
-    Vector< int > DiscreteCosineTransform(Vector< int > data);
+    static uchar LinearNormalize( double value, double n );
+    Vector< int > DiscreteCosineTransform( Vector< int > data );
     Vector< int > QuantizeCoefficients( Vector< int > data );
 
-  public:
-    CLD(FeatureDetector<Color>* Fd);
+public:
+    CLD( FeatureDetector< Color > *Fd );
 
-    CLD(Vector<tuple<Image<Color>,Image<int>>> detected);
+    CLD( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    CLDfeature Run();
-};
+    CLDfeature Run( );
+  };
 
+}
 #endif

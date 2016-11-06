@@ -1,16 +1,72 @@
-#include "DescriptionTAR.hpp"
+#include "DescriptionFeatureExtraction.hpp"
 
-#include "Adjacency.hpp"
-#include "Geometrics.hpp"
-#include "Signal.hpp"
-#include "Sorting.hpp"
+namespace Bial {
 
-#include <fstream>
-#include <stdlib.h>
+  int FeatureExtractor::Log( double value, double n ) {
+    value = 255.0 * value / n;
+    if( value == 0. ) {
+      return( 0 );
+    }
+    else if( value < 1. ) {
+      return( 1 );
+    }
+    else if( value < 2. ) {
+      return( 2 );
+    }
+    else if( value < 4. ) {
+      return( 3 );
+    }
+    else if( value < 8. ) {
+      return( 4 );
+    }
+    else if( value < 16. ) {
+      return( 5 );
+    }
+    else if( value < 32. ) {
+      return( 6 );
+    }
+    else if( value < 64. ) {
+      return( 7 );
+    }
+    else if( value < 128. ) {
+      return( 8 );
+    }
+    else {
+      return( 9 );
+    }
+  }
 
-namespace std {
+  Image< int > FeatureExtractor::Mbb( Image< int > img, Image< int > mask ) {
+    Vector< size_t > mins( 2 );
+    Vector< size_t > maxs( 2 );
 
-  bool TAR::ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, int p ) {
+    /* x: index 0, y: index 1 */
+    mins[ 0 ] = img.size( 0 ) - 1;
+    mins[ 1 ] = img.size( 1 ) - 1;
+
+    maxs[ 0 ] = 0;
+    maxs[ 1 ] = 0;
+    for( size_t y = 0; y < img.size( 1 ); y++ ) {
+      for( size_t x = 0; x < img.size( 0 ); x++ ) {
+        if( ( img[ x + img.size( 0 ) * y ] > 0 ) && ( mask( x, y ) != 0 ) ) {
+          if( x < mins[ 0 ] ) {
+            mins[ 0 ] = x;
+          }
+          if( y < mins[ 1 ] ) {
+            mins[ 1 ] = y;
+          }
+          if( x > maxs[ 0 ] ) {
+            maxs[ 0 ] = x;
+          }
+          if( y > maxs[ 1 ] ) {
+            maxs[ 1 ] = y;
+          }
+        }
+      }
+    }
+    return( img( mins, maxs ) );
+  }
+  bool FeatureExtractor::ValidContPoint( Image< int > bin, Adjacency L, Adjacency R, int p ) {
     int left_side, right_side;
 
     int u_x, u_y, v_x, v_y, l_x, l_y, r_x, r_y;
@@ -55,7 +111,7 @@ namespace std {
   }
 
 
-  Image< int > TAR::LabelContPixel( Image< int > img ) { /* MOVER PARA SEGMEN */
+  Image< int > FeatureExtractor::LabelContPixel( Image< int > img ) { /* MOVER PARA SEGMEN */
     int u_x, u_y, v_x, v_y, w_x, w_y, q, p, left_side, right_side;
 
     Adjacency A = Adjacency::Circular( 1.0f );
@@ -164,7 +220,7 @@ namespace std {
   }
 
 
-  double TAR::find_angle( int deltax, int deltay ) {
+  double FeatureExtractor::find_angle( int deltax, int deltay ) {
     double angle;
     double pi;
 
@@ -189,7 +245,7 @@ namespace std {
   }
 
 
-  Curve TAR::ImageToCurve( Image< int > img, Image< int > mask ) {
+  Curve FeatureExtractor::ImageToCurve( Image< int > img, Image< int > mask ) {
     Image< int > contour = LabelContPixel( img );
 
     Vector< int > order, curve_x, curve_y, curve_z;
@@ -216,144 +272,68 @@ namespace std {
 
   }
 
-  Vector< double > TAR::ComputeScale( Curve contour, int n, int ts ) {
-    Vector< double > tar( n );
-    for( size_t i = 0; i < tar.size( ); i++ ) {
-      int l = ( n + i - ts ) % n;
-      int r = ( i + ts ) % n;
+  Image< Color > FeatureExtractor::RgbToHmmd( Image< Color > img ) {
+    float r, g, b, h, s, d, minimum, maximum, f;
+    int k;
 
-      tar[ i ] = 0.5 *
-                 ( get< 0 >( contour[ l ] ) * get< 1 >( contour[ i ] ) + get< 0 >( contour[ i ] ) *
-                   get< 1 >( contour[ r ] )
-                   + get< 0 >( contour[ r ] ) * get< 1 >( contour[ l ] ) -
-                   get< 0 >( contour[ r ] ) * get< 1 >( contour[ i ] ) - get< 0 >( contour[ i ] ) *
-                   get< 1 >( contour[ l ] )
-                   - get< 0 >( contour[ l ] ) * get< 1 >( contour[ r ] ) );
-    }
-    return( tar );
-  }
+    Image< Color > nova( img.size( 0 ), img.size( 1 ) );
+    for( int i = 0; i < img.size( ); i++ ) {
+      r = ( float ) img[ i ].channel[ 1 ] / 255.0;
+      g = ( float ) img[ i ].channel[ 2 ] / 255.0;
+      b = ( float ) img[ i ].channel[ 3 ] / 255.0;
 
-
-  Vector< Vector< double > > TAR::ComputeSignature( Curve contour, int n ) {
-    int nscales = ( n - 1 ) / 2;
-
-    Vector< Vector< double > > tar( nscales );
-    for( size_t ts = 0; ts < nscales; ts++ ) {
-      Vector< double > scale = ComputeScale( contour, n, ts + 1 );
-
-      Vector< double > abs_scale( scale );
-      abs_scale.Abs( );
-
-      double max = abs_scale.Maximum( );
-      if( max != 0 ) {
-        scale /= max;
+      minimum = min( r, min( g, b ) );
+      maximum = max( r, max( g, b ) );
+      if( maximum == minimum ) {
+        h = 0.0;
       }
       else {
-        throw "divisao por zero";
-      }
-      tar[ ts ] = scale;
+        f = ( r == minimum ) ? g - b : ( ( g == minimum ) ? b - r : r - g );
+        k = ( r == minimum ) ? 3 : ( ( g == minimum ) ? 5 : 1 );
 
+        h = ( ( float ) k - f / ( maximum - minimum ) );
+      }
+      s = ( maximum + minimum ) / 2;
+      d = maximum - minimum;
+
+      nova[ i ].channel[ 1 ] = round( abs( 255. / 6 * h ) );
+      nova[ i ].channel[ 2 ] = round( abs( 255. * s ) );
+      nova[ i ].channel[ 3 ] = round( abs( 255. * d ) );
     }
-    return( tar );
+    return( nova );
   }
 
-  double TAR::ShapeComplexity( Vector< Vector< double > > tar, int samples ) {
-    double sc = 0.0;
 
-    int nscales = ( samples - 1 ) / 2;
+  Image< Color > FeatureExtractor::RgbToHsv( Image< Color > img ) {
+    float r, g, b, h, s, v, minimum, maximum, f;
+    int k;
 
-    Vector< Vector< double > > reverse_tar( samples );
-    for( size_t i = 0; i < samples; i++ ) {
-      for( size_t ts = 0; ts < nscales; ts++ ) {
-        reverse_tar[ i ].push_back( tar[ ts ][ i ] );
+    Image< Color > nova( img.size( 0 ), img.size( 1 ) );
+    for( int i = 0; i < img.size( ); i++ ) {
+      r = ( float ) img[ i ].channel[ 1 ] / 255.0;
+      g = ( float ) img[ i ].channel[ 2 ] / 255.0;
+      b = ( float ) img[ i ].channel[ 3 ] / 255.0;
+
+      minimum = min( r, min( g, b ) );
+      maximum = max( r, max( g, b ) );
+      if( maximum == minimum ) {
+        h = 0.0;
+        s = 0.0;
+        v = maximum;
       }
+      else {
+        f = ( r == minimum ) ? g - b : ( ( g == minimum ) ? b - r : r - g );
+        k = ( r == minimum ) ? 3 : ( ( g == minimum ) ? 5 : 1 );
+
+        h = ( ( float ) k - f / ( maximum - minimum ) );
+        s = ( maximum - minimum ) / maximum;
+        v = maximum;
+      }
+      nova[ i ].channel[ 1 ] = round( abs( 255. / 6 * h ) );
+      nova[ i ].channel[ 2 ] = round( abs( 255. * s ) );
+      nova[ i ].channel[ 3 ] = round( abs( 255. * v ) );
     }
-    for( size_t i = 0; i < samples; i++ ) {
-      double max = reverse_tar[ i ].Maximum( );
-      double min = reverse_tar[ i ].Minimum( );
-
-      sc += fabs( max - min );
-    }
-    sc /= samples;
-
-    return( sc );
-  }
-
-  TAR::TAR( FeatureDetector< int > *Fd ) : TAR( Fd->Run( ) ) {
-  }
-
-  TAR::TAR( Vector < tuple < Image< int >, Image< int >> > detected ) : FeatureExtractor< int, double >( detected ) {
-    this->SAMPLES = 128;
-  }
-
-  void TAR::SetParameters( ParameterInterpreter *interpreter ) {
-    Vector< parameter > vet;
-    vet.push_back( tie( "SAMPLES", SAMPLES ) );
-
-    interpreter->SetExpectedParameters( vet );
-
-    vet = interpreter->Interpret( );
-
-    tie( ignore, SAMPLES ) = vet[ 0 ];
-
-  }
-
-  std::string TAR::GetParameters( ParameterInterpreter *interpreter ) {
-    Vector< parameter > vet;
-
-    vet.push_back( tie( "SAMPLES", SAMPLES ) );
-
-    interpreter->SetExpectedParameters( vet );
-
-    return( interpreter->GetExpectedParameters( ) );
-  }
-
-  TARfeature TAR::Run( ) {
-    TARfeature feat;
-    Image< int > img;
-    Image< int > mask;
-
-    Features< double > histogram;
-
-    Curve contour;
-    for( size_t i = 0; i < this->detected.size( ); ++i ) {
-      tie( img, mask ) = this->detected[ i ];
-
-      contour = ImageToCurve( img, mask );
-
-      /* Resample------------------------------------------------------------------ */
-
-      Image< int > img1( contour.size( ), 2 );
-      for( size_t x = 0; x < contour.size( ); x++ ) {
-        tie( img1[ x ], img1[ x + img1.size( 0 ) ] ) = contour[ x ];
-      }
-      Image< int > img2 = Geometrics::Scale( img1, ( ( ( float ) SAMPLES ) / contour.size( ) ), 1.0, true );
-
-      Curve rcontour( SAMPLES );
-      for( size_t x = 0; x < SAMPLES; x++ ) {
-        rcontour[ x ] = tie( img2[ x ], img2[ x + img1.size( 0 ) ] );
-      }
-      /* -------------------------------------------------------------------------- */
-
-      Vector< Vector< double > > tar = ComputeSignature( rcontour, SAMPLES );
-      double sc = ShapeComplexity( tar, SAMPLES );
-
-      /* Histogram----------------------------------------------------------------- */
-      histogram = Features< double >( tar.size( ) * SAMPLES + 1 );
-
-      size_t p = 0;
-      for( size_t ts = 0; ts < tar.size( ); ts++ ) {
-        for( size_t j = 0; j < tar[ ts ].size( ); j++ ) {
-          histogram[ p++ ] = tar[ ts ][ j ];
-        }
-      }
-      histogram[ p ] = sc;
-      /* -------------------------------------------------------------------------- */
-
-      feat.push_back( histogram );
-
-    }
-    return( feat );
+    return( nova );
   }
 
 }

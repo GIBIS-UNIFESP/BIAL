@@ -1,30 +1,24 @@
+#include "FeatureExtractor.h"
+
 #ifndef CSD_H
 #define CDS_H
 
-#include "FeatureExtractor.h"
-#include <tuple>
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < int >> CSDfeature;
 
-typedef Vector<Features<int>> CSDfeature;
+  class CSD : public FeatureExtractor< Color, int > {
+public:
+    CSD( FeatureDetector< Color > *Fd );
 
-class CSD : public FeatureExtractor<Color, int>
-{
-  private:
-    static int Log( double value , double n );
-    static Image<Color> RgbToHmmd(Image<Color> img);
+    CSD( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
-  public:
-    CSD(FeatureDetector<Color>* Fd);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    CSD(Vector<tuple<Image<Color>,Image<int>>> detected);
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
-
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    CSDfeature Run();
-};
+    CSDfeature Run( );
+  };
+}
 
 #endif

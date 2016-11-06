@@ -1,31 +1,27 @@
+#include "FeatureExtractor.h"
+
 #ifndef SCD_H
 #define SCD_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < int >> SCDfeature;
 
-typedef Vector<Features<int>> SCDfeature;
-
-class SCD : public FeatureExtractor<Color, int>
-{
-  private:
+  class SCD : public FeatureExtractor< Color, int > {
+private:
     size_t dim;
-    static int Log( double value , double n );
-    static Image<Color> RgbToHsv(Image<Color> img);
+    static Image< Color > RgbToHsv( Image< Color > img );
 
-  public:
-    SCD(FeatureDetector<Color>* Fd);
+public:
+    SCD( FeatureDetector< Color > *Fd );
 
-    SCD(Vector<tuple<Image<Color>,Image<int>>> detected);
+    SCD( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    SCDfeature Run();
-};
-
+    SCDfeature Run( );
+  };
+}
 #endif

@@ -1,32 +1,28 @@
+#include "DescriptionFeatureExtractor.hpp"
+
 #ifndef ACC_H
 #define ACC_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < int >> ACCfeature;
 
-typedef Vector<Features<int>> ACCfeature;
-
-class ACC : public FeatureExtractor<Color, int>
-{
-  private:
+  class ACC : public FeatureExtractor< Color, int > {
+private:
     size_t dim;
     size_t n_distances;
-    Vector<size_t> distances;
+    Vector< size_t > distances;
 
-    static int Log( double value , double n );
+public:
+    ACC( FeatureDetector< Color > *Fd );
 
-  public:
-    ACC(FeatureDetector<Color> *Fd);
+    ACC( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
-    ACC(Vector<tuple<Image<Color>,Image<int>>> detected);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    ACCfeature Run();
-};
-
+    ACCfeature Run( );
+  };
+}
 #endif

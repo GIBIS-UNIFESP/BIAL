@@ -125,6 +125,31 @@ HEADERS += \
     inc/DiffusionFunction.hpp \
     inc/Display.hpp \
     inc/DistanceFunction.hpp \
+    inc/DescriptionACC.hpp \
+    inc/DescriptionBAS.hpp \
+    inc/DescriptionBIC.hpp \
+    inc/DescriptionBoxCounting.hpp \
+    inc/DescriptionCCH.hpp \
+    inc/DescriptionCCV.hpp \
+    inc/DescriptionCGI.hpp \
+    inc/DescriptionCLD.hpp \
+    inc/DescriptionCSD.hpp \
+    inc/DescriptionEHD.hpp \
+    inc/DescriptionErrors.hpp \
+    inc/DescriptionFeatureDetector.hpp \
+    inc/DescriptionFeatureExtractor.hpp \
+    inc/DescriptionFeatures.hpp \
+    inc/DescriptionGCH.hpp \
+    inc/DescriptionLAS.hpp \
+    inc/DescriptionLBP.hpp \
+    inc/DescriptionLCH.hpp \
+    inc/DescriptionLuColor.hpp \
+    inc/DescriptionNoDetector.hpp \
+    inc/DescriptionParameterInterpreter.hpp \
+    inc/DescriptionSCD.hpp \
+    inc/DescriptionSS.hpp \
+    inc/DescriptionTAR.hpp \
+    inc/DescriptionUNSER.hpp \
     inc/DrawBox.hpp \
     inc/DrawCircle.hpp \
     inc/DrawFigure.hpp \
@@ -142,6 +167,7 @@ HEADERS += \
     inc/Feature.hpp \
     inc/FeaturePathFunction.hpp \
     inc/FeatureResize.hpp \
+    inc/FFmpegIO.hpp \
     inc/File.hpp \
     inc/FileBMP.hpp \
     inc/FileDicom.hpp \
@@ -276,13 +302,14 @@ HEADERS += \
     inc/StatisticsObsAgree.hpp \
     inc/StatisticsPosNeg.hpp \
     inc/StatisticsStdDev.hpp \
+    inc/Superpixel.hpp \
     inc/SumPathFunction.hpp \
     inc/Table.hpp \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
-    inc/Vector.hpp
+    inc/Vector.hpp \
+    inc/VideoIO.hpp
 
-#inc/Superpixel.hpp \
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -314,6 +341,28 @@ SOURCES += \
     src/ConnPathFunction.cpp \
     src/Correlation.cpp \
     src/DegeneratedIFT.cpp \
+    inc/DescriptionACC.cpp \
+    inc/DescriptionBAS.cpp \
+    inc/DescriptionBIC.cpp \
+    inc/DescriptionBoxCounting.cpp \
+    inc/DescriptionCCH.cpp \
+    inc/DescriptionCCV.cpp \
+    inc/DescriptionCGI.cpp \
+    inc/DescriptionCLD.cpp \
+    inc/DescriptionCSD.cpp \
+    inc/DescriptionEHD.cpp \
+    inc/DescriptionFeatureExtractor.cpp \
+    inc/DescriptionFeatures.cpp \
+    inc/DescriptionGCH.cpp \
+    inc/DescriptionLAS.cpp \
+    inc/DescriptionLBP.cpp \
+    inc/DescriptionLCH.cpp \
+    inc/DescriptionLuColor.cpp \
+    inc/DescriptionNoDetector.cpp \
+    inc/DescriptionSCD.cpp \
+    inc/DescriptionSS.cpp \
+    inc/DescriptionTAR.cpp \
+    inc/DescriptionUNSER.cpp \
     src/DFIDE.cpp \
     src/DicomHeader.cpp \
     src/DiffPathFunction.cpp \
@@ -335,6 +384,7 @@ SOURCES += \
     src/Feature.cpp \
     src/FeaturePathFunction.cpp \
     src/FeatureResize.cpp \
+    src/FFmpegIO.cpp \
     src/File.cpp \
     src/FileFeature.cpp \
     src/FileSignal.cpp \
@@ -413,6 +463,7 @@ SOURCES += \
     src/OrientedExternPathFunction.cpp \
     src/OrientedInternPathFunction.cpp \
     src/PathFunction.cpp \
+    src/ParameterInterpreter.cpp \
     src/PixelInterpolation.cpp \
     src/Plotting.cpp \
     src/PNMHeader.cpp \
@@ -458,11 +509,10 @@ SOURCES += \
     src/StatisticsPosNeg.cpp \
     src/StatisticsStdDev.cpp \
     src/SumPathFunction.cpp \
+    src/Superpixel.cpp \
     src/Table.cpp \
     src/TransformEuclDist.cpp \
     src/TransformEuclDistInv.cpp
-
-#src/Superpixel.cpp \
 
 DISTFILES += \
     uncrustify.cfg

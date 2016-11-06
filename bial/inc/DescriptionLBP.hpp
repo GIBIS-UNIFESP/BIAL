@@ -1,32 +1,29 @@
+#include "FeatureExtractor.h"
+
 #ifndef LBP_H
 #define LBP_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < int >> LBPfeature;
 
-typedef Vector<Features<int>> LBPfeature;
+  class LBP : public FeatureExtractor< int, int > {
+private:
+    static uchar Uniformity( uchar s[ 8 ] );
 
-class LBP : public FeatureExtractor<int, int>
-{
-  private:
-    static int Log( double value , double n );
+    static uchar Signal( int x );
 
-    static uchar Uniformity(uchar s[8]);
+public:
+    LBP( FeatureDetector< int > *Fd );
 
-    static uchar Signal(int x);
+    LBP( Vector < std::tuple < Image< int >, Image< int >> > detected );
 
-  public:
-    LBP(FeatureDetector<int>* Fd);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    LBP(Vector<tuple<Image<int>,Image<int>>> detected);
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    LBPfeature Run( );
+  };
 
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    LBPfeature Run();
-};
-
+}
 #endif

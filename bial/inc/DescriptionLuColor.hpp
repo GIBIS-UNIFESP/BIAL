@@ -1,31 +1,28 @@
+#include "FeatureExtractor.h"
+
 #ifndef LUCOLOR_H
 #define LUCOLOR_H
 
-#include "FeatureExtractor.h"
+namespace Bial {
 
-using namespace std;
-using namespace Bial;
+  typedef Vector < Features < int >> LUCOLORfeature;
 
-typedef Vector<Features<int>> LUCOLORfeature;
-
-class LUCOLOR : public FeatureExtractor<Color, int>
-{
-  private:
+  class LUCOLOR : public FeatureExtractor< Color, int > {
+private:
     size_t dim;
     size_t qtd_blocos;
 
-    static int Log( double value , double n );
+public:
+    LUCOLOR( FeatureDetector< Color > *Fd );
 
-  public:
-    LUCOLOR(FeatureDetector<Color>* Fd);
+    LUCOLOR( Vector < std::tuple < Image< Color >, Image< int >> > detected );
 
-    LUCOLOR(Vector<tuple<Image<Color>,Image<int>>> detected);
+    void SetParameters( ParameterInterpreter *interpreter );
 
-    void SetParameters( ParameterInterpreter* interpreter );
+    std::string GetParameters( ParameterInterpreter *interpreter );
 
-    string GetParameters( ParameterInterpreter* interpreter );
-
-    LUCOLORfeature Run();
-};
+    LUCOLORfeature Run( );
+  };
+}
 
 #endif
