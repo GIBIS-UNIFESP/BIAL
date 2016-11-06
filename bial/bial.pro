@@ -7,10 +7,9 @@ CONFIG += c++11
 QT       -= core gui
 
 QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
--I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc \
+-I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc\
 -I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
-#-I$$PWD/SLIC/inc
 
 win32{
 QMAKE_CXXFLAGS += -fopenmp
@@ -85,8 +84,9 @@ bial.depends += createDirs
 
 include(cpplex/cpplex.pri)
 include(lsh/lsh.pri)
-#include(SLIC/SLIC.pri)
+include(SLIC/SLIC.pri)
 include(zlib/zlib.pri)
+include(description/description.pri)
 
 HEADERS += \
     inc/Adjacency.hpp \
@@ -126,30 +126,6 @@ HEADERS += \
     inc/DiffusionFunction.hpp \
     inc/Display.hpp \
     inc/DistanceFunction.hpp \
-    inc/DescriptionACC.hpp \
-    inc/DescriptionBAS.hpp \
-    inc/DescriptionBIC.hpp \
-    inc/DescriptionBoxCounting.hpp \
-    inc/DescriptionCCH.hpp \
-    inc/DescriptionCCV.hpp \
-    inc/DescriptionCGI.hpp \
-    inc/DescriptionCLD.hpp \
-    inc/DescriptionCSD.hpp \
-    inc/DescriptionEHD.hpp \
-    inc/DescriptionFeatureDetector.hpp \
-    inc/DescriptionFeatureExtractor.hpp \
-    inc/DescriptionFeatures.hpp \
-    inc/DescriptionGCH.hpp \
-    inc/DescriptionLAS.hpp \
-    inc/DescriptionLBP.hpp \
-    inc/DescriptionLCH.hpp \
-    inc/DescriptionLuColor.hpp \
-    inc/DescriptionNoDetector.hpp \
-    inc/DescriptionParameterInterpreter.hpp \
-    inc/DescriptionSCD.hpp \
-    inc/DescriptionSS.hpp \
-    inc/DescriptionTAR.hpp \
-    inc/DescriptionUNSER.hpp \
     inc/DrawBox.hpp \
     inc/DrawCircle.hpp \
     inc/DrawFigure.hpp \
@@ -303,13 +279,13 @@ HEADERS += \
     inc/StatisticsPosNeg.hpp \
     inc/StatisticsStdDev.hpp \
     inc/SumPathFunction.hpp \
+    inc/Superpixel.hpp \
     inc/Table.hpp \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
     inc/Vector.hpp \
     inc/VideoIO.hpp \
     inc/Errors.hpp
-#inc/Superpixel.hpp \
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -341,26 +317,6 @@ SOURCES += \
     src/ConnPathFunction.cpp \
     src/Correlation.cpp \
     src/DegeneratedIFT.cpp \
-    src/DescriptionACC.cpp \
-    src/DescriptionBAS.cpp \
-    src/DescriptionBIC.cpp \
-    src/DescriptionBoxCounting.cpp \
-    src/DescriptionCCH.cpp \
-    src/DescriptionCCV.cpp \
-    src/DescriptionCGI.cpp \
-    src/DescriptionCLD.cpp \
-    src/DescriptionCSD.cpp \
-    src/DescriptionEHD.cpp \
-    src/DescriptionFeatureExtractor.cpp \
-    src/DescriptionGCH.cpp \
-    src/DescriptionLAS.cpp \
-    src/DescriptionLBP.cpp \
-    src/DescriptionLCH.cpp \
-    src/DescriptionLuColor.cpp \
-    src/DescriptionSCD.cpp \
-    src/DescriptionSS.cpp \
-    src/DescriptionTAR.cpp \
-    src/DescriptionUNSER.cpp \
     src/DFIDE.cpp \
     src/DicomHeader.cpp \
     src/DiffPathFunction.cpp \
@@ -507,10 +463,11 @@ SOURCES += \
     src/StatisticsPosNeg.cpp \
     src/StatisticsStdDev.cpp \
     src/SumPathFunction.cpp \
+    src/Superpixel.cpp \
     src/Table.cpp \
     src/TransformEuclDist.cpp \
     src/TransformEuclDistInv.cpp
-#src/Superpixel.cpp \
+
 DISTFILES += \
     uncrustify.cfg
 

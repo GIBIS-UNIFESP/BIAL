@@ -83,7 +83,7 @@ public:
 	// Can also be used to draw boundaries around supervoxels, i.e layer by layer.
 	//============================================================================
 	void DrawContoursAroundSegments(
-		unsigned int*&				segmentedImage,
+		unsigned int*				segmentedImage,
 		int*&						labels,
 		const int&					width,
 		const int&					height,
