@@ -8,6 +8,10 @@ QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc \
 -I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
+debug {
+QMAKE_CXXFLAGS += -DBIAL_DEBUG=4
+}
+
 #-I$$PWD/SLIC/inc
 
 win32{

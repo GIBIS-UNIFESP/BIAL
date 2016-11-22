@@ -179,9 +179,10 @@ namespace Bial {
   }
 
   template< class D >
-  inline bool OrientedInternPathFunction< D >::Capable( int index, int adj_index, BucketState ) {
+  inline bool OrientedInternPathFunction< D >::Capable( int index, int adj_index, BucketState adj_state ) {
     try {
-      return( this->value->operator()( index ) < this->value->operator()( adj_index ) );
+      return( ( adj_state != BucketState::REMOVED ) && 
+              ( this->value->operator()( index ) < this->value->operator()( adj_index ) ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

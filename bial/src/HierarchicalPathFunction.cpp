@@ -211,13 +211,14 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline bool HierarchicalPathFunction< C, D >::Capable( int index, int adj_index, BucketState ) {
+  inline bool HierarchicalPathFunction< C, D >::Capable( int index, int adj_index, BucketState adj_state ) {
     try {
-      return( ( split_label->operator()( index ) == split_label->operator()( adj_index ) ) &&
-              ( ( ( new_merge_label( merge_label->operator()( adj_index ) ) ) == -1 ) ||
-                ( ( new_merge_label( merge_label->operator()( adj_index ) ) ) ==
-                  this->label->operator()( index ) ) ) &&
-              ( this->value->operator()( index ) > this->value->operator()( adj_index ) ) );
+      return( ( adj_state != BucketState::REMOVED ) && 
+              ( ( split_label->operator()( index ) == split_label->operator()( adj_index ) ) &&
+                ( ( ( new_merge_label( merge_label->operator()( adj_index ) ) ) == -1 ) ||
+                  ( ( new_merge_label( merge_label->operator()( adj_index ) ) ) ==
+                    this->label->operator()( index ) ) ) &&
+                ( this->value->operator()( index ) > this->value->operator()( adj_index ) ) ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

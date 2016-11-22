@@ -108,9 +108,9 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline bool FeatureDistanceFunction< C, D >::Capable( int, int adj_index, BucketState ) {
+  inline bool FeatureDistanceFunction< C, D >::Capable( int, int adj_index, BucketState adj_state ) {
     try {
-      return( this->value->operator()( adj_index ) > 0.0 );
+      return( ( adj_state != BucketState::REMOVED ) && ( this->value->operator()( adj_index ) > 0.0 ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

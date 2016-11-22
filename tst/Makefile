@@ -1,12 +1,8 @@
 # Biomedical Image Analysis Library
 # See README file in the root instalation directory for more information.
 
-# Author: Fábio Augusto Menocci Cappabianco
-# Date: 2012/Sep/01
 # Version: 1.0.00
 # Content: Makefile for testing files.
-# Description: Defines compilation directives.
-# Future add-on's: many.
 
 debug ?= 0
 verbose ?= 0

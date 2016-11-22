@@ -176,10 +176,7 @@ namespace Bial {
      * @warning none. 
      */
     template< class D >
-    void GnuPlot2DScatter( const std::string &basename,
-                           const Feature< D > &feat,
-                           size_t scale,
-                           size_t x = 0,
+    void GnuPlot2DScatter( const std::string &basename, const Feature< D > &feat, size_t scale, size_t x = 0,
                            size_t y = 1 );
   };
 

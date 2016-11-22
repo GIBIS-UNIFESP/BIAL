@@ -69,8 +69,7 @@ namespace Bial {
         if( capable ) {
           for( AdjacencyIterator adj = begin( adjacency, this->value, index ); *adj < size; ++adj ) {
             size_t adj_index = *( adj );
-            if( ( this->queue->State( adj_index ) != BucketState::REMOVED ) &&
-                ( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) ) {
+            if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
               COMMENT( "Conquering: " << adj_index, 4 );
               D previous_value = this->value[ adj_index ];
               if( this->function->Propagate( index, adj_index ) ) {
@@ -144,7 +143,7 @@ namespace Bial {
   //         if( capable ) {
   //           for( AdjacencyIterator adj = begin( adjacency, value, index ); *adj < size; ++adj ) {
   //             size_t adj_index = *adj;
-  //             if( ( mask[ adj_index ] != 0 ) && ( queue->State( adj_index ) != BucketState::REMOVED ) &&
+  //             if( ( mask[ adj_index ] != 0 ) &&
   //                 ( function->Capable( index, adj_index, queue->State( adj_index ) ) ) ) {
   //               D previous_value = value[ adj_index ];
   //               if( function->Propagate( index, adj_index ) ) {

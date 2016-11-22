@@ -119,8 +119,7 @@ namespace Bial {
             COMMENT( "Propagating to fixed size nighborhood.", 4 );
             for( size_t fxd = 0; fxd < uniform_adjs; ++fxd ) {
               size_t adj_index = uniform_adjacency->operator( )( index, fxd );
-              if( ( this->queue->State( adj_index ) != BucketState::REMOVED ) &&
-                  ( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) ) {
+              if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
                 if( this->function->Propagate( index, adj_index ) ) {
@@ -134,8 +133,7 @@ namespace Bial {
             size_t adjs = variable_adjacency( index ).size( );
             for( size_t var = 0; var < adjs; ++var ) {
               size_t adj_index = variable_adjacency( index )( var );
-              if( ( this->queue->State( adj_index ) != BucketState::REMOVED ) &&
-                  ( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) ) {
+              if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
                 if( this->function->Propagate( index, adj_index ) ) {
@@ -161,8 +159,7 @@ namespace Bial {
             for( size_t var = 0; var < variable_adjs->operator( )( index ); ++var ) {
               size_t adj_index = variable_adjacency( index ) ( var );
               COMMENT( "Propagating to neighbor " << var << ": " << adj_index << ".", 4 );
-              if( ( this->queue->State( adj_index ) != BucketState::REMOVED ) &&
-                  ( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) ) {
+              if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
                 if( this->function->Propagate( index, adj_index ) ) {

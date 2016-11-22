@@ -114,6 +114,12 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
+  D PathFunction< C, D >::BestValue( int index ) {
+    std::cout << "Bestvalue pathfunction." << std::endl;
+    return( ( *value )[ index ] );
+  }
+
+  template< template< class D > class C, class D >
   typename PathFunction< C, D >::RemoveFn PathFunction< C, D >::RemoveFunction( ) {
     try {
       if( next_label == -1 ) {

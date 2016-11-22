@@ -32,12 +32,10 @@ namespace Bial {
 
   template< class D >
   std::tuple< Image< D >, Image< int > > Edge::LazyWalk( const Image< D > &img, const Vector< bool > &seed ) {
-
     COMMENT( "Computing gradient.", 0 );
     Image< D > grad = Gradient::Morphological( img );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
-
     COMMENT( "Computing IFT.", 0 );
     D delta = 1.0;
     MaxPathFunction< Image, D > pf( grad, delta );
@@ -51,7 +49,6 @@ namespace Bial {
     }
     ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
     ift.Run( );
-
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
   }
@@ -59,13 +56,11 @@ namespace Bial {
   template< class D >
   std::tuple< Image< D >, Image< int > > 
   Edge::LazyWalk( const Image< D > &img, const Image< D > &msk, const Vector< bool > &seed ) {
-
     COMMENT( "Computing gradient.", 0 );
     Image< D > grad = Gradient::Morphological( img );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
     // DEBUG_WRITE( grad, "grad", 0 );
-
     COMMENT( "Computing IFT.", 0 );
     D delta = 1.0;
     MaxPathFunction< Image, D > pf( grad, delta );
@@ -83,36 +78,31 @@ namespace Bial {
     }
     ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
     ift.Run( );
-
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
   }
 
 #ifdef BIAL_EXPLICIT_EdgeLazyWalk
 
-  template std::tuple< Image< int >, Image< int > > Edge::LazyWalk( const Image< int > &img, 
-                                                                    const Vector< bool > &seed );
-  template std::tuple< Image< int >, Image< int > > Edge::LazyWalk( const Image< int > &img,
-                                                                    const Image< int > &msk,
-                                                                    const Vector< bool > &seed );
+  template std::tuple< Image< int >, Image< int > > 
+  Edge::LazyWalk( const Image< int > &img, const Vector< bool > &seed );
+  template std::tuple< Image< int >, Image< int > > 
+  Edge::LazyWalk( const Image< int > &img, const Image< int > &msk, const Vector< bool > &seed );
 
-  template std::tuple< Image< llint >, Image< int > > Edge::LazyWalk( const Image< llint > &img,
-                                                                      const Vector< bool > &seed );
-  template std::tuple< Image< llint >, Image< int > > Edge::LazyWalk( const Image< llint > &img,
-                                                                      const Image< llint > &msk,
-                                                                      const Vector< bool > &seed );
+  template std::tuple< Image< llint >, Image< int > > 
+  Edge::LazyWalk( const Image< llint > &img, const Vector< bool > &seed );
+  template std::tuple< Image< llint >, Image< int > > 
+  Edge::LazyWalk( const Image< llint > &img, const Image< llint > &msk, const Vector< bool > &seed );
 
-  template std::tuple< Image< float >, Image< int > > Edge::LazyWalk( const Image< float > &img,
-                                                                      const Vector< bool > &seed );
-  template std::tuple< Image< float >, Image< int > > Edge::LazyWalk( const Image< float > &img,
-                                                                      const Image< float > &msk,
-                                                                      const Vector< bool > &seed );
+  template std::tuple< Image< float >, Image< int > > 
+  Edge::LazyWalk( const Image< float > &img, const Vector< bool > &seed );
+  template std::tuple< Image< float >, Image< int > > 
+  Edge::LazyWalk( const Image< float > &img, const Image< float > &msk, const Vector< bool > &seed );
 
-  template std::tuple< Image< double >, Image< int > > Edge::LazyWalk( const Image< double > &img,
-                                                                       const Vector< bool > &seed );
-  template std::tuple< Image< double >, Image< int > > Edge::LazyWalk( const Image< double > &img,
-                                                                       const Image< double > &msk,
-                                                                       const Vector< bool > &seed );
+  template std::tuple< Image< double >, Image< int > > 
+  Edge::LazyWalk( const Image< double > &img, const Vector< bool > &seed );
+  template std::tuple< Image< double >, Image< int > > 
+  Edge::LazyWalk( const Image< double > &img, const Image< double > &msk, const Vector< bool > &seed );
 
 #endif
 

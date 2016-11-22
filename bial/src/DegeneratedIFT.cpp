@@ -68,8 +68,7 @@ namespace Bial {
         queue->Finished( index );
         if( capable ) {
           for( size_t adj_index = 0; adj_index < value.size( ); ++adj_index ) {
-            if( ( queue->State( adj_index ) != BucketState::REMOVED ) &&
-                ( function->Capable( index, adj_index, queue->State( adj_index ) ) ) ) {
+            if( function->Capable( index, adj_index, queue->State( adj_index ) ) ) {
               D previous_value = value( adj_index );
               if( function->Propagate( index, adj_index ) ) {
                 queue->Update( adj_index, previous_value, value( adj_index ) );

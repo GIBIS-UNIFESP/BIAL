@@ -178,9 +178,10 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline bool MaxPathFunction< C, D >::Capable( int index, int adj_index, BucketState ) {
+  inline bool MaxPathFunction< C, D >::Capable( int index, int adj_index, BucketState adj_state ) {
     try {
-      return( this->value->operator()( index ) < this->value->operator()( adj_index ) );
+      return( ( adj_state != BucketState::REMOVED ) &&
+              ( this->value->operator()( index ) < this->value->operator()( adj_index ) ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -234,6 +235,12 @@ namespace Bial {
   bool MaxPathFunction< C, D >::Increasing( ) {
     return( true );
   }
+
+  template< template< class D > class C, class D >
+  D MaxPathFunction< C, D >::BestValue( int index ) {
+    return( handicap[ index ] );
+  }
+
 
 #ifdef BIAL_EXPLICIT_MaxPathFunction
 

@@ -130,8 +130,8 @@ namespace Bial {
 
     /**
      * @date 2013/Oct/14
-     * @param source: Source pixel index.
-     * @param target: Adjacent pixel index.
+     * @param index: Source pixel index.
+     * @param adj_index: Adjacent pixel index.
      * @return True if it is possible to propagate.
      * @brief Checks if index can offer better value to adj_index, prior to computing it by Propagate
      * function. This function makes IFT faster.
@@ -141,8 +141,8 @@ namespace Bial {
 
     /**
      * @date 2013/Jun/28
-     * @param source: Source pixel index.
-     * @param target: Adjacent pixel index.
+     * @param index: Source pixel index.
+     * @param adj_index: Adjacent pixel index.
      * @return True if path-value is propagated.
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
@@ -157,6 +157,16 @@ namespace Bial {
      * @warning none.
      */
     virtual bool Increasing( ) = 0;
+
+    /**
+     * @date 2016/Nov/17
+     * @param index: Index of an element.
+     * @return The best value that this element can achieve.
+     * @brief Function used for IFT with backtracking. It usually returns the handicap of pathfunctions that contain
+     *        this kind of map.
+     * @warning none.
+     */
+    virtual D BestValue( int index );
 
     /**
      * @date 2013/Jun/28

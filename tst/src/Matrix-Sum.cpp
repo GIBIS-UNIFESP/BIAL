@@ -13,6 +13,7 @@ using namespace std;
 using namespace Bial;
 
 int main( int, char** ) {
+  COMMENT( "Creating matrices.", 0 );
   Matrix< double > M1( 10, 8 );
   Matrix< double > M2( 2, 3 );
   Matrix< double > M3( 1, 2 );

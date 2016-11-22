@@ -1,17 +1,19 @@
-/* Biomedical Image Analysis Library */
-/* See README file in the root instalation directory for more information. */
+/* Biomedical Image Analysis Library 
+ * See README file in the root instalation directory for more information. 
+ */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
-/* Date: 2012/Sep/06 */
-/* Version: 1.0.00 */
-/* Content: Bucket-sort queue class */
-/* Description: A bucket-sort queue. It is useful to sort a large set
+/**
+ * @date 2012/Sep/06 
+ * @brief
+ * Content: Bucket-sort queue class 
+ * <br> Description: A bucket-sort queue. It is useful to sort a large set
  * of elements whose weight domain is not very large,
- * e.g. IFT and OPF algorithms over MR images. */
-/* Future add-on's: Deal with negative values. */
-/*                  Add fast operation functions in which queue does not grow. */
-/* Warning: In Boost library, there is a class named circular_buffer
- * that may do exactly the same as Vector< WeightNode >. */
+ * e.g. IFT and OPF algorithms over MR images. 
+ * <br> Future add-on's: Deal with negative values. 
+ *                  Add fast operation functions in which queue does not grow. 
+ * Warning: In Boost library, there is a class named circular_buffer
+ * that may do exactly the same as Vector< WeightNode >. 
+ */
 
 #ifndef BIALBUCKETQUEUE_C
 #define BIALBUCKETQUEUE_C
@@ -316,7 +318,7 @@ namespace Bial {
         Remove( idt, cur_wgt );
       }
       else {
-        COMMENT( "Inserting element: " << idt << " from " << cur_wgt << " to " << new_wgt << ".", 3 );
+        COMMENT( "Inserting element: " << idt << " with weight: " << new_wgt << ".", 3 );
       }
       identity( idt ).state = BucketState::REMOVED;
       Insert( idt, new_wgt );

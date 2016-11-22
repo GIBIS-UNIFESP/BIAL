@@ -127,6 +127,16 @@ namespace Bial {
      */
     bool Increasing( );
 
+    /**
+     * @date 2016/Nov/17
+     * @param index: Index of an element.
+     * @return The best value that this element can achieve.
+     * @brief Function used for IFT with backtracking. It usually returns the handicap of pathfunctions that contain
+     *        this kind of map.
+     * @warning none.
+     */
+    D BestValue( int index );
+
   };
 
 }
