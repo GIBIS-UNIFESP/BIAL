@@ -1,4 +1,9 @@
 #include "FFmpegIO.hpp"
+
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55,28,1)
+#define av_frame_alloc  avcodec_alloc_frame
+#endif
+
 namespace Bial {
   Image< Color >* FFmpegIO::AVFrame2Image( ) {
     static struct SwsContext *img_convert_ctx;
@@ -107,7 +112,7 @@ namespace Bial {
      */
 
     /* Allocate video frame. */
-    pFrame = nullptr;//av_frame_alloc( ); /* avcodec_alloc_frame(); */
+    pFrame = av_frame_alloc( ); /* avcodec_alloc_frame(); */
 
     video_clock = 0.0;
     frame_count = 1;
