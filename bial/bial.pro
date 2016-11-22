@@ -143,7 +143,6 @@ HEADERS += \
     inc/Feature.hpp \
     inc/FeaturePathFunction.hpp \
     inc/FeatureResize.hpp \
-    inc/FFmpegIO.hpp \
     inc/File.hpp \
     inc/FileBMP.hpp \
     inc/FileDicom.hpp \
@@ -338,7 +337,6 @@ SOURCES += \
     src/Feature.cpp \
     src/FeaturePathFunction.cpp \
     src/FeatureResize.cpp \
-    src/FFmpegIO.cpp \
     src/File.cpp \
     src/FileFeature.cpp \
     src/FileSignal.cpp \
@@ -470,6 +468,11 @@ SOURCES += \
 
 DISTFILES += \
     uncrustify.cfg
+
+#TODO: Verify if FFMPEG is available
+#HEADERS += inc/FFmpegIO.hpp
+#SOURCES += src/FFmpegIO.cpp
+
 
 ## INSTALL LIBRARY
 headersDataFiles.path = $$[QT_INSTALL_HEADERS]/bial/
