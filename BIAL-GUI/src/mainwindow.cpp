@@ -40,7 +40,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   loadQss( );
   containerUpdated( );
 
-  ui->toolBar->setVisible( true );
+  ui->toolBar->setVisible( false );
 
   QActionGroup *group = new QActionGroup( this );
   actionDefaultTool = group->addAction( "Default Tool" );

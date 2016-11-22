@@ -44,7 +44,7 @@ namespace Bial {
     /** @brief  Feature label.*/
     Vector< int > label; 
     /** @brief  Number of different labels. */
-    size_t nlabels; 
+    size_t nlabels;
 
   public:
 

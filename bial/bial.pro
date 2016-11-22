@@ -1,11 +1,13 @@
 TARGET = bial
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += shared_and_static build_all
+CONFIG += c++11
+
 
 QT       -= core gui
 
 QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
--I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc \
+-I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc -I$$PWD/description/inc\
 -I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
 debug {
@@ -38,13 +40,13 @@ QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++17
 QMAKE_LFLAGS += -stdlib=libc++
 }
 
-CONFIG += c++11
 
 QMAKE_CXXFLAGS -= -pipe
+LIBS += -lavutil -lavformat -lavcodec -lswscale -lm
 
 win32{
 QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp  -lavutil -lavformat -lavcodec -lswscale -lm
 
 Release:DESTDIR = $$PWD/../build/win/release/lib/
 Release:OBJECTS_DIR = $$PWD/../build/win/release/obj
@@ -87,8 +89,9 @@ bial.depends += createDirs
 
 include(cpplex/cpplex.pri)
 include(lsh/lsh.pri)
-#include(SLIC/SLIC.pri)
+include(SLIC/SLIC.pri)
 include(zlib/zlib.pri)
+include(description/description.pri)
 
 HEADERS += \
     inc/Adjacency.hpp \
@@ -145,6 +148,7 @@ HEADERS += \
     inc/Feature.hpp \
     inc/FeaturePathFunction.hpp \
     inc/FeatureResize.hpp \
+    inc/FFmpegIO.hpp \
     inc/File.hpp \
     inc/FileBMP.hpp \
     inc/FileDicom.hpp \
@@ -280,12 +284,13 @@ HEADERS += \
     inc/StatisticsPosNeg.hpp \
     inc/StatisticsStdDev.hpp \
     inc/SumPathFunction.hpp \
+    inc/Superpixel.hpp \
     inc/Table.hpp \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
-    inc/Vector.hpp
-
-#inc/Superpixel.hpp \
+    inc/Vector.hpp \
+    inc/VideoIO.hpp \
+    inc/Errors.hpp
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -338,6 +343,7 @@ SOURCES += \
     src/Feature.cpp \
     src/FeaturePathFunction.cpp \
     src/FeatureResize.cpp \
+    src/FFmpegIO.cpp \
     src/File.cpp \
     src/FileFeature.cpp \
     src/FileSignal.cpp \
@@ -416,6 +422,7 @@ SOURCES += \
     src/OrientedExternPathFunction.cpp \
     src/OrientedInternPathFunction.cpp \
     src/PathFunction.cpp \
+    src/ParameterInterpreter.cpp \
     src/PixelInterpolation.cpp \
     src/Plotting.cpp \
     src/PNMHeader.cpp \
@@ -461,11 +468,10 @@ SOURCES += \
     src/StatisticsPosNeg.cpp \
     src/StatisticsStdDev.cpp \
     src/SumPathFunction.cpp \
+    src/Superpixel.cpp \
     src/Table.cpp \
     src/TransformEuclDist.cpp \
     src/TransformEuclDistInv.cpp
-
-#src/Superpixel.cpp \
 
 DISTFILES += \
     uncrustify.cfg

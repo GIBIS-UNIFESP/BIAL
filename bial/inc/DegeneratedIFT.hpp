@@ -63,7 +63,7 @@ namespace Bial {
      * @warning none.
      */
     ~DegeneratedIFT( );
-    
+
     /**
      * @date 2012/Sep/19
      * @param none.

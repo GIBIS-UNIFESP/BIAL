@@ -4,12 +4,12 @@
 // All rights reserved
 // Email: firstname.lastname@epfl.ch
 //////////////////////////////////////////////////////////////////////
-#include "stdafx.h"
+//#include "stdafx.h"
 #include <cfloat>
 #include <cmath>
 #include <iostream>
 #include <fstream>
-#include "SLIC.h"
+#include "SLIC.hpp"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ void SLIC::DoRGBtoLABConversion(
 /// statement inside the loop that looks at neighbourhood.
 //=================================================================================
 void SLIC::DrawContoursAroundSegments(
-	unsigned int*&			ubuff,
+	unsigned int*			ubuff,
 	int*&					labels,
 	const int&				width,
 	const int&				height,
@@ -262,7 +262,7 @@ void SLIC::DrawContoursAroundSegments(
 	for( int j = 0; j < numboundpix; j++ )
 	{
 		int ii = contoury[j]*width + contourx[j];
-		ubuff[ii] = 0xffffff;
+		ubuff[ii] = color; //0xffffff;
 
 		for( int n = 0; n < 8; n++ )
 		{
@@ -412,6 +412,8 @@ void SLIC::GetLABXYSeeds_ForGivenStepSize(
             if(hexgrid){ seedx = x*STEP+(xoff<<(y&0x1))+xe; seedx = min(m_width-1,seedx); }//for hex grid sampling
             int seedy = (y*STEP+yoff+ye);
             int i = seedy*m_width + seedx;
+
+	    //printf("slic Seed: (%d,%d)\n",seedx, seedy);
 			
 			kseedsl[n] = m_lvec[i];
 			kseedsa[n] = m_avec[i];
@@ -443,7 +445,7 @@ void SLIC::GetKValues_LABXYZ(
 	vector<double>&				kseedsz,
         const int&				STEP)
 {
-    const bool hexgrid = false;
+  //const bool hexgrid = false;
 	int numseeds(0);
 	int n(0);
 
@@ -1131,8 +1133,8 @@ void SLIC::DoSuperpixelSegmentation_ForGivenSuperpixelSize(
 	int sz = m_width*m_height;
 	//klabels.resize( sz, -1 );
 	//--------------------------------------------------
-	klabels = new int[sz];
-	for( int s = 0; s < sz; s++ ) klabels[s] = -1;
+	//klabels = new int[sz];
+	//for( int s = 0; s < sz; s++ ) klabels[s] = -1;
     //--------------------------------------------------
     if(1)//LAB, the default option
     {
