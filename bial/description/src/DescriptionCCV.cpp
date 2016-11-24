@@ -96,7 +96,8 @@ namespace Bial {
                 for( size_t pos = 1; pos < adjpixels.size( ); ++pos ) {
                   int v_x = u_x + adjpixels( pos, 0 );
                   int v_y = u_y + adjpixels( pos, 1 );
-                  if( ( v_x >= 0 ) && ( v_x < quantized.size( 0 ) ) && ( v_y >= 0 ) && ( v_y < quantized.size( 1 ) ) ) {
+                  if( ( v_x >= 0 ) && ( v_x < static_cast< int >( quantized.size( 0 ) ) ) &&
+                          ( v_y >= 0 ) && ( v_y < static_cast< int >( quantized.size( 1 ) ) ) ) {
                     int q = v_x + v_y * quantized.size( 0 );
                     if( ( labels[ q ] == NIL ) && ( quantized[ p ] == quantized[ q ] ) ) {
                       labels[ q ] = labels[ p ];
@@ -120,7 +121,7 @@ namespace Bial {
         area[ labels[ p ] ]++;
       }
       for( p = 0; p < quantized.size( ); p++ ) {
-        if( 100 * area[ labels[ p ] ] < MIN_AREA * quantized.size( ) ) {
+        if( 100 * area[ labels[ p ] ] < static_cast< int >( MIN_AREA * quantized.size( ) ) ) {
           frequency[ p ] = LOW;
         }
         else {

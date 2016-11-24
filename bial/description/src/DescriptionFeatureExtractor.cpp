@@ -156,7 +156,7 @@ namespace Bial {
     FixAdj( A );
 
     Image< int > bndr( img.size( 0 ), img.size( 1 ) );
-    for( p = 0; p < img.size( ); p++ ) {
+    for( p = 0; p < static_cast< int >( img.size( ) ); p++ ) {
       if( img[ p ] == 1 ) {
         u_x = p % img.size( 0 );
         u_y = p / img.size( 0 );
@@ -208,7 +208,7 @@ namespace Bial {
             v_y = u_y + A( i, 1 );
             if( bndr.ValidCoordinate( v_x, v_y ) ) {
               q = v_x + bndr.size( 0 ) * v_y;
-              if( ( q == j ) && ( pred[ p ] != j ) ) {
+              if( ( q == static_cast< int >( j ) ) && ( pred[ p ] != static_cast< int >( j ) ) ) {
                 last = -1;
                 break;
               }
@@ -315,7 +315,7 @@ namespace Bial {
     int k;
 
     Image< Color > nova( img.size( 0 ), img.size( 1 ) );
-    for( int i = 0; i < img.size( ); i++ ) {
+    for( int i = 0; i < static_cast< int >( img.size( ) ); i++ ) {
       r = ( float ) img[ i ].channel[ 1 ] / 255.0;
       g = ( float ) img[ i ].channel[ 2 ] / 255.0;
       b = ( float ) img[ i ].channel[ 3 ] / 255.0;
@@ -347,7 +347,7 @@ namespace Bial {
     int k;
 
     Image< Color > nova( img.size( 0 ), img.size( 1 ) );
-    for( int i = 0; i < img.size( ); i++ ) {
+    for( int i = 0; i < static_cast< int >( img.size( ) ); i++ ) {
       r = ( float ) img[ i ].channel[ 1 ] / 255.0;
       g = ( float ) img[ i ].channel[ 2 ] / 255.0;
       b = ( float ) img[ i ].channel[ 3 ] / 255.0;

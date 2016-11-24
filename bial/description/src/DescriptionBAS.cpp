@@ -86,7 +86,7 @@ namespace Bial {
         bearing_array[ 0 ] = ( int ) angle_curve;
 
         previous = angle_curve;
-        for( size_t k = 2; k < curvelength; k++ ) {
+        for( size_t k = 2; k < static_cast< size_t >( curvelength ); k++ ) {
           std::tie( x1, y1 ) = contour[ ( ( j - k ) + contour.size( ) ) % contour.size( ) ];
           std::tie( x2, y2 ) = contour[ j ];
           std::tie( x3, y3 ) = contour[ ( ( j + k ) + contour.size( ) ) % contour.size( ) ];
@@ -118,13 +118,13 @@ namespace Bial {
         mean[ j ] = ( int ) ( total / ( double ) ( curvelength - 1 ) );
 
         total = 0.0;
-        for( size_t k = 0; k < curvelength - 1; k++ ) {
+        for( size_t k = 0; k < static_cast< size_t >( curvelength - 1 ); k++ ) {
           total += pow( ( bearing_array[ k ] - mean[ j ] ), 2.0 );
         }
         second[ j ] = pow( total / ( double ) ( curvelength - 2 ), 0.5 );
 
         total = 0.0;
-        for( size_t k = 0; k < curvelength - 1; k++ ) {
+        for( size_t k = 0; k < static_cast< size_t >( curvelength - 1 ); k++ ) {
           total += pow( abs( bearing_array[ k ] - mean[ j ] ), 3.0 );
         }
         third[ j ] = pow( total / ( double ) ( curvelength - 2 ), ( 1.0 / 3.0 ) );

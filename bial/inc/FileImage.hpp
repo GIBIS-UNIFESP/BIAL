@@ -108,7 +108,7 @@ namespace Bial {
           ( extension.find( ".ppm" ) != std::string::npos ) || ( extension.find( ".pnm" ) != std::string::npos ) ||
           ( extension.find( ".scn" ) != std::string::npos ) || ( extension.find( ".nii" ) != std::string::npos ) ||
           ( extension.find( ".img" ) != std::string::npos ) || ( extension.find( ".hdr" ) != std::string::npos ) ||
-          ( extension.find( ".dcm" ) != std::string::npos ) ) {
+          ( extension.find( ".dcm" ) != std::string::npos ) || ( extension.find( ".bmat" ) != std::string::npos ) ) {
         return( true );
       }
       return( false );
@@ -195,11 +195,14 @@ namespace Bial {
       if( extension.rfind( ".dcm" ) != std::string::npos ) {
         return( ReadDicom< D >( filename ) );
       }
+      if( extension.rfind( ".bmat" ) != std::string::npos ) {
+        return( ReadMatrixImage< D >( filename ) );
+      }
       COMMENT( "Call here other image extensions.", 2 );
       std::string msg( BIAL_ERROR(
                          "Unsupported extension for file " + filename + ". Currently supported: .scn(.gz), " +
                          ".img(.gz), .hdr(.gz), .nii(.gz), .pnm(.gz), .ppm(.gz), .pgm(.gz), .pbm(.gz), " +
-                         ".dcm(.gz)" ) );
+                         ".dcm(.gz), .bmat(.gz)" ) );
       throw( std::invalid_argument( msg ) );
     }
     catch( std::ios_base::failure &e ) {
@@ -228,9 +231,9 @@ namespace Bial {
   Image< Color > Read( const std::string &filename ) {
     try {
       COMMENT( "Checking file type.", 2 );
-      std::string extension( File::ToLowerExtension( filename, static_cast< size_t >( std::max( 0,
-                                                                                                static_cast< int >( filename.size( ) ) -
-                                                                                                8 ) ) ) );
+      std::string extension
+        ( File::ToLowerExtension
+          ( filename, static_cast< size_t >( std::max( 0, static_cast< int >( filename.size( ) ) - 8 ) ) ) );
       if( ( extension.rfind( ".hdr" ) != std::string::npos ) | ( extension.rfind( ".img" ) != std::string::npos ) |
           ( extension.rfind( ".nii" ) != std::string::npos ) ) {
         return( ReadNifti< Color >( filename ) );
@@ -253,11 +256,14 @@ namespace Bial {
       if( extension.rfind( ".dcm" ) != std::string::npos ) {
         return( ReadDicom< Color >( filename ) );
       }
+      if( extension.rfind( ".bmat" ) != std::string::npos ) {
+        return( ReadMatrixImage< Color >( filename ) );
+      }
       COMMENT( "Call here other image extensions.", 2 );
       std::string msg( BIAL_ERROR(
                          "Unsupported extension for file " + filename + ". Currently supported: .scn(.gz), " +
                          ".img(.gz), .hdr(.gz), .nii(.gz), .pnm(.gz), .ppm(.gz), .pgm(.gz), .pbm(.gz), " +
-                         ".dcm(.gz)" ) );
+                         ".dcm(.gz), .bmat(.gz)" ) );
       throw( std::invalid_argument( msg ) );
     }
     catch( std::ios_base::failure &e ) {
@@ -320,10 +326,14 @@ namespace Bial {
         WriteBMP( img, filename );
         return;
       }
+      if( extension.rfind( ".bmat" ) != std::string::npos ) {
+        WriteMatrixImage( img, filename );
+        return;
+      }
       COMMENT( "Call here other image extensions.", 2 );
       std::string msg( BIAL_ERROR(
                          "Unsupported extension. Currently supported: .scn(.gz), .bmp(.gz) .img(.gz), .hdr(.gz), "
-                         + ".nii(.gz), .pnm(.gz), .ppm(.gz), .pgm(.gz), .pbm(.gz)." ) );
+                         + ".nii(.gz), .pnm(.gz), .ppm(.gz), .pgm(.gz), .pbm(.gz), .bmat(.gz)." ) );
       throw( std::invalid_argument( msg ) );
     }
     catch( std::ios_base::failure &e ) {
@@ -385,10 +395,14 @@ namespace Bial {
         WriteBMP( img, filename );
         return;
       }
+      if( extension.rfind( ".bmat" ) != std::string::npos ) {
+        WriteMatrixImage( img, filename );
+        return;
+      }
       COMMENT( "Call here other image extensions.", 2 );
       std::string msg( BIAL_ERROR(
                          "Unsupported extension. Currently supported: .scn(.gz), .bmp(.gz) .img(.gz), .hdr(.gz), "
-                         + ".nii(.gz), .pnm(.gz), .ppm(.gz), .pgm(.gz), .pbm(.gz)." ) );
+                         + ".nii(.gz), .pnm(.gz), .ppm(.gz), .pgm(.gz), .pbm(.gz), .bmat(.gz)." ) );
       throw( std::invalid_argument( msg ) );
     }
     catch( std::ios_base::failure &e ) {
@@ -416,14 +430,12 @@ namespace Bial {
   template< class D >
   void Write( const Image< D > &img, const std::string &filename, const std::string &headername ) {
     try {
-      std::string file_extension( File::ToLowerExtension( filename, static_cast< size_t >(
-                                                            std::max( 0,
-                                                                      static_cast< int >( filename.size( ) ) -
-                                                                      8 ) ) ) );
-      std::string header_extension( File::ToLowerExtension( headername, static_cast< size_t >(
-                                                              std::max( 0,
-                                                                        static_cast< int >( headername.size( ) ) -
-                                                                        8 ) ) ) );
+      std::string file_extension
+        ( File::ToLowerExtension( filename, static_cast< size_t >
+                                  ( std::max( 0, static_cast< int >( filename.size( ) ) - 8 ) ) ) );
+      std::string header_extension
+        ( File::ToLowerExtension( headername, static_cast< size_t >
+                                  ( std::max( 0, static_cast< int >( headername.size( ) ) - 8 ) ) ) );
       if( ( file_extension.rfind( ".hdr" ) != std::string::npos ) ||
           ( file_extension.rfind( ".img" ) != std::string::npos ) ||
           ( file_extension.rfind( ".nii" ) != std::string::npos ) ) {

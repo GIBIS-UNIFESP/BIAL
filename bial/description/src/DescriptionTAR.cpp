@@ -33,7 +33,7 @@ namespace Bial {
     int nscales = ( n - 1 ) / 2;
 
     Vector< Vector< double > > tar( nscales );
-    for( size_t ts = 0; ts < nscales; ts++ ) {
+    for( size_t ts = 0; ts < static_cast< size_t >( nscales ); ts++ ) {
       Vector< double > scale = ComputeScale( contour, n, ts + 1 );
 
       Vector< double > abs_scale( scale );
@@ -58,12 +58,12 @@ namespace Bial {
     int nscales = ( samples - 1 ) / 2;
 
     Vector< Vector< double > > reverse_tar( samples );
-    for( size_t i = 0; i < samples; i++ ) {
-      for( size_t ts = 0; ts < nscales; ts++ ) {
+    for( size_t i = 0; i < static_cast< size_t >( samples ); i++ ) {
+      for( size_t ts = 0; ts < static_cast< size_t >( nscales ); ts++ ) {
         reverse_tar[ i ].push_back( tar[ ts ][ i ] );
       }
     }
-    for( size_t i = 0; i < samples; i++ ) {
+    for( size_t i = 0; i < static_cast< size_t >( samples ); i++ ) {
       double max = reverse_tar[ i ].Maximum( );
       double min = reverse_tar[ i ].Minimum( );
 

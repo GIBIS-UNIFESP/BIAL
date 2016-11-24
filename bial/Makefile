@@ -145,7 +145,6 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/Feature.cpp \
 		src/FeaturePathFunction.cpp \
 		src/FeatureResize.cpp \
-		src/FFmpegIO.cpp \
 		src/File.cpp \
 		src/FileFeature.cpp \
 		src/FileSignal.cpp \
@@ -374,7 +373,6 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/Feature.o \
 		../build/linux/release/obj/FeaturePathFunction.o \
 		../build/linux/release/obj/FeatureResize.o \
-		../build/linux/release/obj/FFmpegIO.o \
 		../build/linux/release/obj/File.o \
 		../build/linux/release/obj/FileFeature.o \
 		../build/linux/release/obj/FileSignal.o \
@@ -1151,9 +1149,6 @@ compiler_clean:
 
 ../build/linux/release/obj/FeatureResize.o: src/FeatureResize.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FeatureResize.o src/FeatureResize.cpp
-
-../build/linux/release/obj/FFmpegIO.o: src/FFmpegIO.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FFmpegIO.o src/FFmpegIO.cpp
 
 ../build/linux/release/obj/File.o: src/File.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/File.o src/File.cpp

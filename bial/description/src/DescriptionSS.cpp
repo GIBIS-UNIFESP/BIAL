@@ -115,7 +115,7 @@ namespace Bial {
 
       size_t Lmax = 0;
       for( size_t j = 0; j < label.size( ); j++ ) {
-        if( Lmax < label[ j ] ) {
+        if( static_cast< int >( Lmax ) < label[ j ] ) {
           Lmax = label[ j ];
         }
       }
@@ -131,7 +131,7 @@ namespace Bial {
       double nin, nout;
       nin = nout = 0.0;
       for( size_t p = 0; p < bin.size( ); p++ ) {
-        if( ( label[ p ] > 0 ) && ( cost[ p ] <= maxcost ) ) {
+        if( ( label[ p ] > 0 ) && ( cost[ p ] <= static_cast< int >( maxcost ) ) ) {
           if( bin[ p ] != 0 ) {
             nin++;
             get< 1 >( inner[ label[ p ] - 1 ] )++;
