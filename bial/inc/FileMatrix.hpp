@@ -191,7 +191,8 @@ namespace Bial {
       int mgc_nbr = 5023;
       Vector< int > size( mtx.Dim( ) );
       file.write( reinterpret_cast< const char* >( &mgc_nbr ), sizeof( int ) );
-      file.write( reinterpret_cast< const char* >( &size[ 0 ] ), sizeof( int ) * 2 );
+      file.write( reinterpret_cast< const char* >( &size[ 0 ] ), sizeof( int ) );
+      file.write( reinterpret_cast< const char* >( &size[ 1 ] ), sizeof( int ) );
       COMMENT( "Getting maximum intensity.", 2 );
       D Imax = mtx.Maximum( );
       COMMENT( "Writing data.", 2 );
