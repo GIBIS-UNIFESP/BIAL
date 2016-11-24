@@ -224,7 +224,7 @@ namespace Bial {
   void Write( const Matrix< D > &mtx, const std::string &filename ) {
     try {
       COMMENT( "Insert here matrix type control.", 2 );
-      if( mtx.Dims( ) != 2 ) {
+      if( ( mtx.Dims( ) != 2 ) && ( ( mtx.Dims( ) != 3 ) && ( mtx.size( 2 ) != 1 ) ) ) {
         std::string msg( BIAL_ERROR( "Invalid number of dimensions. Expected 2." ) );
         throw( std::logic_error( msg ) );
       }
