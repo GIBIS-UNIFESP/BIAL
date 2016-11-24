@@ -70,7 +70,8 @@ namespace Bial {
       if( mgc_nbr == 5023 ) {
         COMMENT( "Reading dimension size.", 2 );
         Vector< int > size( 2 );
-        file.read( reinterpret_cast< char* >( &size[ 0 ] ), sizeof( int ) * 2 );
+        file.read( reinterpret_cast< char* >( &size[ 0 ] ), sizeof( int ) );
+        file.read( reinterpret_cast< char* >( &size[ 1 ] ), sizeof( int ) );
         COMMENT( "Read size: " << size, 2 );
         COMMENT( "Creating matrix.", 2 );
         Matrix< D > res( size );
