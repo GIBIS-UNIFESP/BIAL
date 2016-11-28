@@ -14,9 +14,8 @@
 #include <QTime>
 #include <QTime>
 #include <QtMath>
-GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ), image( GDCM::OpenGImage(
-                                                                                   fname.toStdString( ) ) ), m_fileName(
-    fname ), m_contrast( 0 ), m_brightness( 0 ) {
+GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
+        image( GDCM::OpenGImage( fname.toStdString( ) ) ), m_fileName( fname ), m_contrast( 0 ), m_brightness( 0 ) {
   qDebug( ) << "guiimage.";
 
   COMMENT( "GuiImage 0.", 2 );
@@ -31,34 +30,58 @@ GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ), image(
   Bial::MultiImageType img_type( image.Type( ) );
   switch( img_type ) {
       case Bial::MultiImageType::int_img: {
-      Bial::Image< int > &img( getIntImage( ) );
-      m_fmax = m_max = img.Maximum( );
-      histogram = Bial::SignalType::ZeroStartHistogram( img );
-      break;
-    }
+        Bial::Image< int > &img( getIntImage( ) );
+        m_fmax = m_max = img.Maximum( );
+        if( m_max <= 66000 )
+            histogram = Bial::SignalType::ZeroStartHistogram( img );
+        else {
+            histogram = Bial::Signal( 1 );
+            histogram( 0 ) = 1;
+            BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
+        }
+        break;
+      }
       case Bial::MultiImageType::flt_img: {
-      Bial::Image< float > &img( getFltImage( ) );
-      m_max = m_fmax = img.Maximum( );
-      histogram = Bial::SignalType::ZeroStartHistogram( img );
-      break;
-    }
+        Bial::Image< float > &img( getFltImage( ) );
+        m_max = m_fmax = img.Maximum( );
+        if( m_fmax <= 66000 )
+            histogram = Bial::SignalType::ZeroStartHistogram( img );
+        else {
+            histogram = Bial::Signal( 1 );
+            histogram( 0 ) = 1;
+            BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
+        }
+        break;
+      }
       case Bial::MultiImageType::clr_img: {
-      Bial::Image< Bial::Color > &clr_img( getClrImage( ) );
-      Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyBrightness< int >( clr_img ) );
-      histogram = Bial::SignalType::ZeroStartHistogram( img );
-      Bial::Color clr( clr_img.Maximum( ) );
-      m_fmax = m_max = std::max( clr[ 0 ], std::max( clr[ 1 ], clr[ 2 ] ) );
-      break;
-    }
+        Bial::Image< Bial::Color > &clr_img( getClrImage( ) );
+        Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyBrightness< int >( clr_img ) );
+        Bial::Color clr( clr_img.Maximum( ) );
+        m_fmax = m_max = std::max( clr[ 0 ], std::max( clr[ 1 ], clr[ 2 ] ) );
+        if( m_max <= 66000 )
+            histogram = Bial::SignalType::ZeroStartHistogram( img );
+        else {
+            histogram = Bial::Signal( 1 );
+            histogram( 0 ) = 1;
+            BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
+        }
+        break;
+      }
       case Bial::MultiImageType::rcl_img: {
-      /* Supposing HSV. Getting V channel. */
-      Bial::Image< Bial::RealColor > &rcl_img( getRclImage( ) );
-      Bial::Image< float > img( Bial::ColorSpace::Channel< float >( rcl_img, 2 ) );
-      histogram = Bial::SignalType::ZeroStartHistogram( img );
-      Bial::RealColor rcl( rcl_img.Maximum( ) );
-      m_max = m_fmax = rcl[ 2 ];
-      break;
-    }
+        /* Supposing HSV. Getting V channel. */
+        Bial::Image< Bial::RealColor > &rcl_img( getRclImage( ) );
+        Bial::Image< float > img( Bial::ColorSpace::Channel< float >( rcl_img, 2 ) );
+        Bial::RealColor rcl( rcl_img.Maximum( ) );
+        m_max = m_fmax = rcl[ 2 ];
+        if( m_max <= 66000 )
+            histogram = Bial::SignalType::ZeroStartHistogram( img );
+        else {
+            histogram = Bial::Signal( 1 );
+            histogram( 0 ) = 1;
+            BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
+        }
+        break;
+      }
       default:
       std::string msg( BIAL_ERROR( "Accessing non-initialized multi-image." ) );
       throw( std::runtime_error( msg ) );
