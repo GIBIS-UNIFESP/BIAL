@@ -15,14 +15,14 @@ void LabelsWidget::setTool( Tool *sTool ) {
     setEnabled( true );
     switch( tool->getLabelType( ) ) {
         case LabelType::none:
-        ui->none->setChecked( true );
-        break;
+          ui->none->setChecked( true );
+          break;
         case LabelType::solid:
-        ui->solid->setChecked( true );
-        break;
+          ui->solid->setChecked( true );
+          break;
         case LabelType::translucent:
-        ui->translucent->setChecked( true );
-        break;
+          ui->translucent->setChecked( true );
+          break;
 /*
  *        case LabelType::multilabel:
  *        ui->multiLabel->setChecked( true );

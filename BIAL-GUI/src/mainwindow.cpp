@@ -234,10 +234,14 @@ void MainWindow::on_actionOpen_image_triggered( ) {
 QString MainWindow::getFileDialog( ) {
   return( QFileDialog::getOpenFileName(
             this, tr( "Open" ), defaultFolder,
-            tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.dcm "
-                "*.dcm.gz *.nii *.nii.gz *.scn *.scn.gz);; PBM images (*.pbm *.pbm.gz);; PGM images "
-                "(*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);; DICOM images "
-                "(*.dcm *.dcm.gz);; NIfTI images (*.nii *.nii.gz);; SCN Files (*.scn *.scn.gz);; All files (*)" ) ) );
+            tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.dcm *.dcm.gz *.nii *.nii.gz "
+                "*.scn *.scn.gz *.bmat *.bmat.gz);; PBM images (*.pbm *.pbm.gz);;"
+                "PGM images (*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);;"
+                "DICOM images (*.dcm *.dcm.gz);;"
+                "NIfTI images (*.nii *.nii.gz);;"
+                "SCN Files (*.scn *.scn.gz);;"
+                "BMAT images (*.bmat *.bmat.gz);;"
+                "All files (*)" ) ) );
 }
 
 bool MainWindow::loadFile( QString filename ) {
