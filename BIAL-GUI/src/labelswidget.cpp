@@ -23,11 +23,11 @@ void LabelsWidget::setTool( Tool *sTool ) {
         case LabelType::translucent:
           ui->translucent->setChecked( true );
           break;
-/*
- *        case LabelType::multilabel:
- *        ui->multiLabel->setChecked( true );
- *        break;
- */
+        case LabelType::multilabel:{
+        //TODO: Implement Multilabel support
+          throw  std::logic_error("Function not yet implemented.");
+        break;
+      }
     }
     int tf = static_cast< int >( tool->getFactor( ) );
     ui->translucentSlider->setValue( tf );
