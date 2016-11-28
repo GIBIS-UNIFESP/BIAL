@@ -288,7 +288,7 @@ bool MainWindow::checkExtension( const QString &suffix ) { /* receive to lower *
   if( suffix == "scn" or suffix == "scn.gz" or suffix == "img" or suffix == "img.gz" or suffix == "hdr" or
       suffix == "hdr.gz" or suffix == "nii" or suffix == "nii.gz" or suffix == "pnm" or suffix == "pnm.gz" or
       suffix == "pgm" or suffix == "pgm.gz" or suffix == "pbm" or suffix == "pbm.gz" or suffix == "dcm" or
-      suffix == "dcm.gz" ) {
+      suffix == "dcm.gz" or suffix == "bmat" or suffix == "bmat.gz" ) {
     return( true );
   }
   else {
