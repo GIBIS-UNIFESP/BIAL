@@ -36,7 +36,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
             histogram = Bial::SignalType::ZeroStartHistogram( img );
         else {
             histogram = Bial::Signal( 1 );
-            histogram( 0 ) = 1;
+            histogram[ 0 ] = 1;
             BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
         }
         break;
@@ -48,7 +48,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
             histogram = Bial::SignalType::ZeroStartHistogram( img );
         else {
             histogram = Bial::Signal( 1 );
-            histogram( 0 ) = 1;
+            histogram[ 0 ] = 1;
             BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
         }
         break;
@@ -62,7 +62,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
             histogram = Bial::SignalType::ZeroStartHistogram( img );
         else {
             histogram = Bial::Signal( 1 );
-            histogram( 0 ) = 1;
+            histogram[ 0 ] = 1;
             BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
         }
         break;
@@ -73,11 +73,11 @@ GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
         Bial::Image< float > img( Bial::ColorSpace::Channel< float >( rcl_img, 2 ) );
         Bial::RealColor rcl( rcl_img.Maximum( ) );
         m_max = m_fmax = rcl[ 2 ];
-        if( m_max <= 66000 )
+        if( m_fmax <= 66000 )
             histogram = Bial::SignalType::ZeroStartHistogram( img );
         else {
             histogram = Bial::Signal( 1 );
-            histogram( 0 ) = 1;
+            histogram[ 0 ] = 1;
             BIAL_WARNING( "Image intensity range greater than 66000. Not displaying histogram information." );
         }
         break;
