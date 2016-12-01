@@ -172,6 +172,7 @@ namespace Bial {
           }
         }
       }
+      this->queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

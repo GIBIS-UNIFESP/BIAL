@@ -340,7 +340,7 @@ namespace Bial {
     return( type );
   }
 
-  Image< int > &MultiImage::IntImage( ) const {
+  Image< int > &MultiImage::IntImage( ) {
 #ifdef BIAL_DEBUG
     if( int_img == nullptr ) {
       std::string msg( BIAL_ERROR( "Integer image is null." ) );
@@ -350,7 +350,7 @@ namespace Bial {
     return( *int_img );
   }
 
-  Image< float > &MultiImage::FltImage( ) const {
+  Image< float > &MultiImage::FltImage( ) {
 #ifdef BIAL_DEBUG
     if( flt_img == nullptr ) {
       std::string msg( BIAL_ERROR( "Float image is null." ) );
@@ -360,7 +360,7 @@ namespace Bial {
     return( *flt_img );
   }
 
-  Image< Color > &MultiImage::ClrImage( ) const {
+  Image< Color > &MultiImage::ClrImage( ) {
 #ifdef BIAL_DEBUG
     if( clr_img == nullptr ) {
       std::string msg( BIAL_ERROR( "Color image is null." ) );
@@ -370,7 +370,7 @@ namespace Bial {
     return( *clr_img );
   }
 
-  Image< RealColor > &MultiImage::RclImage( ) const {
+  Image< RealColor > &MultiImage::RclImage( ) {
 #ifdef BIAL_DEBUG
     if( rcl_img == nullptr ) {
       std::string msg( BIAL_ERROR( "RealColor image is null." ) );

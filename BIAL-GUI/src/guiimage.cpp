@@ -14,7 +14,7 @@
 #include <QTime>
 #include <QTime>
 #include <QtMath>
-GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
+GuiImage::GuiImage( QString fname, QObject *parent ) try : QObject( parent ),
         image( GDCM::OpenGImage( fname.toStdString( ) ) ), m_fileName( fname ), m_contrast( 0 ), m_brightness( 0 ) {
   qDebug( ) << "guiimage.";
 
@@ -165,6 +165,23 @@ GuiImage::GuiImage( QString fname, QObject *parent ) : QObject( parent ),
   COMMENT( "Image " << fileName( ).toStdString( ) << " size = (" << width( 0 ) << ", " << heigth( 0 ) << ", " <<
            depth( 0 ) << ")", 0 );
 }
+catch( std::bad_alloc &e ) {
+  std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+  throw( std::runtime_error( msg ) );
+}
+catch( std::runtime_error &e ) {
+  std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+  throw( std::runtime_error( msg ) );
+}
+catch( const std::out_of_range &e ) {
+  std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+  throw( std::out_of_range( msg ) );
+}
+catch( const std::logic_error &e ) {
+  std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+  throw( std::logic_error( msg ) );
+}
+
 
 GuiImage::~GuiImage( ) {
   qDeleteAll( tools );
@@ -396,23 +413,23 @@ Bial::MultiImageType GuiImage::getImageType( ) const {
   return( image.Type( ) );
 }
 
-Bial::Image< int > &GuiImage::getIntImage( ) const {
+Bial::Image< int > &GuiImage::getIntImage( ) {
   return( image.IntImage( ) );
 }
 
-Bial::Image< float > &GuiImage::getFltImage( ) const {
+Bial::Image< float > &GuiImage::getFltImage( ) {
   return( image.FltImage( ) );
 }
 
-Bial::Image< Bial::Color > &GuiImage::getClrImage( ) const {
+Bial::Image< Bial::Color > &GuiImage::getClrImage( ) {
   return( image.ClrImage( ) );
 }
 
-Bial::Image< Bial::RealColor > &GuiImage::getRclImage( ) const {
+Bial::Image< Bial::RealColor > &GuiImage::getRclImage( ) {
   return( image.RclImage( ) );
 }
 
-size_t GuiImage::getDims( ) const {
+size_t GuiImage::getDims( ) {
   switch( image.Type( ) ) {
       case Bial::MultiImageType::int_img:
       return( getIntImage( ).Dims( ) );
@@ -428,7 +445,7 @@ size_t GuiImage::getDims( ) const {
   }
 }
 
-Bial::Vector< size_t > GuiImage::getDim( ) const {
+Bial::Vector< size_t > GuiImage::getDim( ) {
   switch( image.Type( ) ) {
       case Bial::MultiImageType::int_img:
       return( getIntImage( ).Dim( ) );

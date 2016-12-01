@@ -23,11 +23,11 @@ void SegmentationWidget::setTool( Tool *sTool ) {
     ui->pushButtonShowMask->setChecked( tool->getMaskVisible( ) );
     switch( tool->getDrawType( ) ) {
         case 0:
-        ui->eraserButton->setChecked( true );
+          ui->eraserButton->setChecked( true );
         break;
         case 1:
         case 2:
-        ui->drawButton->setChecked( true );
+          ui->drawButton->setChecked( true );
         break;
     }
   }
@@ -41,7 +41,7 @@ void SegmentationWidget::on_SegmentationButton_clicked( ) {
   double beta = ui->BetaSpinBox->value( );
   int pf_type = ( ui->pfmaxgeo->isChecked( ) ? 0 : ( ui->pfmax->isChecked( ) ? 1 : 2 ) );
   try {
-    tool->segmentationOGS( pf_type, alpha, beta );
+    tool->connect( pf_type, alpha, beta );
   }
   catch( std::runtime_error &err ) {
     QMessageBox::warning( this, "ERROR", err.what( ) );
@@ -81,3 +81,28 @@ void SegmentationWidget::on_pushButtonShowMask_clicked( bool checked ) {
 void SegmentationWidget::on_thickDoubleSpinBox_valueChanged( double arg1 ) {
   tool->setThickness( arg1 );
 }
+
+void SegmentationWidget::on_pfmaxgeo_toggled( bool checked ) {
+    if( tool->isInitiated( ) ) {
+      QMessageBox messageBox;
+      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+      messageBox.setFixedSize(500,200);
+    }
+}
+
+void SegmentationWidget::on_pfmax_toggled( bool checked ) {
+    if( tool->isInitiated( ) ) {
+      QMessageBox messageBox;
+      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+      messageBox.setFixedSize(500,200);
+    }
+}
+
+void SegmentationWidget::on_pfsum_toggled( bool checked ) {
+    if( tool->isInitiated( ) ) {
+      QMessageBox messageBox;
+      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+      messageBox.setFixedSize(500,200);
+    }
+}
+

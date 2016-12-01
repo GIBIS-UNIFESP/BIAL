@@ -125,7 +125,7 @@ namespace Bial {
      * @brief Returns a reference to the integer image.
      * @warning Does not verify if integer image exists.
      */
-    Image< int > &IntImage( ) const;
+    Image< int > &IntImage( );
 
     /**
      * @date 2016/Sep/29
@@ -134,7 +134,7 @@ namespace Bial {
      * @brief Returns a reference to the float image.
      * @warning Does not verify if float image exists.
      */
-    Image< float > &FltImage( ) const;
+    Image< float > &FltImage( );
 
     /**
      * @date 2016/Sep/29
@@ -143,7 +143,7 @@ namespace Bial {
      * @brief Returns a reference to the Color image.
      * @warning Does not verify if Color image exists.
      */
-    Image< Color > &ClrImage( ) const;
+    Image< Color > &ClrImage( );
 
     /**
      * @date 2016/Sep/29
@@ -152,7 +152,7 @@ namespace Bial {
      * @brief Returns a reference to the RealColor image.
      * @warning Does not verify if RealColor image exists.
      */
-    Image< RealColor > &RclImage( ) const;
+    Image< RealColor > &RclImage( );
 
   };
 

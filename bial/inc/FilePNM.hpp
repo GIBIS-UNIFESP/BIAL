@@ -277,7 +277,7 @@ namespace Bial {
         getline( file, ignore );
       }
       COMMENT( "Reading maximum intensity.", 2 );
-      unsigned int maxval;
+      int maxval;
       file >> maxval;
       COMMENT( "Maximum intensity: " << maxval, 2 );
       COMMENT( "Creating resultant image.", 2 );
@@ -290,7 +290,7 @@ namespace Bial {
       if( pgm_type.find( "P2" ) != std::string::npos ) {
         COMMENT( "reading text file data.", 2 );
         for( size_t pxl = 0; ( pxl < img_size ) && ( !file.eof( ) ); ++pxl ) {
-          unsigned int val;
+          int val;
           file >> val;
           if( val <= maxval ) {
             res( pxl ) = static_cast< D >( val );
@@ -310,7 +310,7 @@ namespace Bial {
         COMMENT( "Reading 8 bit binary file data.", 2 );
         if( maxval < 256 ) {
           COMMENT( "Read 8 bit integer contents of binary file.", 2 );
-          Vector< unsigned char > data8( img_size );
+          Vector< char > data8( img_size );
           file.read( reinterpret_cast< char* >( &( data8[ 0 ] ) ), img_size );
           COMMENT( "Copying to image.", 2 );
           for( size_t pxl = 0; pxl < img_size; ++pxl ) {
@@ -325,7 +325,7 @@ namespace Bial {
         }
         else if( maxval < 65536 ) {
           COMMENT( "Read 16 bit integer contents of binary file.", 2 );
-          Vector< unsigned short > data16( img_size );
+          Vector< short > data16( img_size );
           file.read( reinterpret_cast< char* >( &( data16[ 0 ] ) ), img_size * 2 );
           COMMENT( "Copying to image.", 2 );
           for( size_t pxl = 0; pxl < img_size; ++pxl ) {
@@ -340,7 +340,7 @@ namespace Bial {
         }
         else { /* if( maxval < 4294967296 ) { */
           COMMENT( "Read 32 bit integer contents of binary file.", 2 );
-          Vector< unsigned int > data32( img_size );
+          Vector< int > data32( img_size );
           file.read( reinterpret_cast< char* >( &( data32[ 0 ] ) ), img_size * 4 );
           COMMENT( "Copying to image.", 2 );
           for( size_t pxl = 0; pxl < img_size; ++pxl ) {

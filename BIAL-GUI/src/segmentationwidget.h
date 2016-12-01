@@ -34,6 +34,12 @@ private slots:
 
   void on_thickDoubleSpinBox_valueChanged( double arg1 );
 
+  void on_pfmaxgeo_toggled(bool checked);
+
+  void on_pfmax_toggled(bool checked);
+
+  void on_pfsum_toggled(bool checked);
+
 private:
   Ui::Segmentationwidget *ui;
   SegmentationTool *tool;

@@ -188,21 +188,21 @@ private:
    * @brief get*Image
    * @return a reference to the input image.
    */
-  Bial::Image< int > &getIntImage( ) const;
-  Bial::Image< float > &getFltImage( ) const;
-  Bial::Image< Bial::Color > &getClrImage( ) const;
-  Bial::Image< Bial::RealColor > &getRclImage( ) const;
+  Bial::Image< int > &getIntImage( );
+  Bial::Image< float > &getFltImage( );
+  Bial::Image< Bial::Color > &getClrImage( );
+  Bial::Image< Bial::RealColor > &getRclImage( );
 
   /**
    * @brief getDims
    * @return the number of dimensions
    */
-  size_t getDims( ) const;
+  size_t getDims( );
   /**
    * @brief getDim
    * @return a vector with bial image dimensions.
    */
-  Bial::Vector< size_t > getDim( ) const;
+  Bial::Vector< size_t > getDim( );
   /**
    * @brief rotateAll90 rotates all views in 90 degrees.
    */

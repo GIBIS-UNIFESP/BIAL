@@ -110,30 +110,48 @@ Bial::Image< int > GDCM::OpenGImage( const std::string &filename ) {
 #else
 
 Bial::MultiImage GDCM::OpenGImage( const std::string &filename ) {
-  std::string extension( Bial::File::ToLowerExtension( filename ) );
-  if( ( extension.rfind( ".nii" ) != std::string::npos ) || ( extension.rfind( ".img" ) != std::string::npos ) ||
-      ( extension.rfind( ".hdr" ) != std::string::npos ) ) {
-    Bial::NiftiHeader hdr( filename );
-    Bial::NiftiType type( hdr.DataType( ) );
-    switch( type ) {
-        case Bial::NiftiType::INT8:
-        case Bial::NiftiType::INT16:
-        case Bial::NiftiType::INT32:
-        case Bial::NiftiType::UINT8:
-        case Bial::NiftiType::UINT16:
-        case Bial::NiftiType::UINT32:
+    try {
+        std::string extension( Bial::File::ToLowerExtension( filename ) );
+        if( ( extension.rfind( ".nii" ) != std::string::npos ) || ( extension.rfind( ".img" ) != std::string::npos ) ||
+                ( extension.rfind( ".hdr" ) != std::string::npos ) ) {
+            Bial::NiftiHeader hdr( filename );
+            Bial::NiftiType type( hdr.DataType( ) );
+            switch( type ) {
+            case Bial::NiftiType::INT8:
+            case Bial::NiftiType::INT16:
+            case Bial::NiftiType::INT32:
+            case Bial::NiftiType::UINT8:
+            case Bial::NiftiType::UINT16:
+            case Bial::NiftiType::UINT32:
+                return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
+            case Bial::NiftiType::FLOAT32:
+                return( Bial::MultiImage( Bial::Read< float >( filename ) ) );
+            default:
+                std::string msg( BIAL_ERROR( "Could not open Nifti image. Unsupported data type." ) );
+                throw( std::runtime_error( msg ) );
+            }
+        }
+        if( ( extension.rfind( ".ppm" ) != std::string::npos ) || ( extension.rfind( ".pnm" ) != std::string::npos ) ) {
+            return( Bial::MultiImage( Bial::Read< Bial::Color >( filename ) ) );
+        }
         return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
-        case Bial::NiftiType::FLOAT32:
-        return( Bial::MultiImage( Bial::Read< float >( filename ) ) );
-        default:
-        std::string msg( BIAL_ERROR( "Could not open Nifti image. Unsupported data type." ) );
+    }
+    catch( std::bad_alloc &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
         throw( std::runtime_error( msg ) );
     }
-  }
-  if( ( extension.rfind( ".ppm" ) != std::string::npos ) || ( extension.rfind( ".pnm" ) != std::string::npos ) ) {
-    return( Bial::MultiImage( Bial::Read< Bial::Color >( filename ) ) );
-  }
-  return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
+    catch( std::runtime_error &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+        throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+        throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+        throw( std::logic_error( msg ) );
+    }
 }
 
 #endif

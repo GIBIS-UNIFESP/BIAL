@@ -27,12 +27,9 @@ namespace Bial {
     BucketQueue *queue;
     C< D > &value;
     PathFunction< C, D > *function;
-    const Vector< bool > *seed;
     C< int > *label;
     C< int > *predecessor;
-    bool sequential_label;
     long double bucket_size;
-    bool fifo_tie;
     typename PathFunction< C, D >::RemoveFn RemoveData;
     typename PathFunction< C, D >::UpdateFn UpdateData;
 
@@ -45,6 +42,7 @@ namespace Bial {
      * @param seed: A boolean Vector indicating the seeds.
      * @param label: label map.
      * @param predecessor: predecessor map.
+     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
      * @param bucket_size: Size of a bucket in the bucket queue.
      * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
      * @return none.
@@ -73,24 +71,33 @@ namespace Bial {
      */
     void Run( );
 
+    /**
+     * @date 2013/Dec/04
+     * @param seed: A boolean Vector indicating the seeds.
+     * @param bucket_size: Size of a bucket in the bucket queue.
+     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
+     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+     * @return none.
+     * @brief Inserts the seeds into the bucket queue. Mostly used to continue IFT in multiple iterations.
+     * @warning none.
+     */
+    void InsertSeeds( const Vector< bool > &seed );
+
+
   protected:
 
     /**
      * @date 2013/Dec/04
-     * @param value: Value map used in path propagation. It contains the input values and also the output values
-     * after running IFT.
-     * @param function: Function used to initialize and propagate values.
      * @param seed: A boolean Vector indicating the seeds.
-     * @param label: label map.
-     * @param predecessor: predecessor map.
      * @param bucket_size: Size of a bucket in the bucket queue.
+     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
      * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
      * @return none.
-     * @brief Initialization of all IFT functions.
-     * @warning Label, and predecessor maps are optional.
+     * @brief Initialization of all IFT functionality including path function and bucket queue.
+     * @warning none.
      */
-    BucketQueue* Initialize( C< D > &value, PathFunction< C, D > *function, const Vector< bool > *seed, C< int > *label,
-                             C< int > *predecessor, bool sequential_label, long double bucket_size, bool fifo_tie );
+    void Initialize( const Vector< bool > *seed, bool sequential_label, ldbl bucket_size, bool fifo_tie );
+
   };
 
 }

@@ -57,14 +57,15 @@ namespace Bial {
   template< class D >
   void ImageIFT< D >::Run( ) {
     try {
-      COMMENT( "Running.", 1 );
+      COMMENT( "Running Image IFT. Queue: " << ( this->queue->Empty( ) ? "empty" : "not empty" ), 0 );
       size_t size = this->value.size( );
       while( ( !this->queue->Empty( ) ) && 
              ( ( !dift_enb ) || ( this->queue->State( dift_elm ) != BucketState::REMOVED ) ) ) {
         COMMENT( "Initializing removed data.", 4 );
         int index = this->queue->Remove( );
         bool capable = ( this->function->*( this->RemoveData ) )( index, this->queue->State( index ) );
-        COMMENT( "Index: " << index << ", value: " << this->value[ index ], 4 );
+        COMMENT( "Index: " << index << ", value: " << this->value[ index ] << ", is capable: " <<
+                 ( capable ? "true" : "false" ), 4 );
         this->queue->Finished( index );
         if( capable ) {
           for( AdjacencyIterator adj = begin( adjacency, this->value, index ); *adj < size; ++adj ) {
@@ -80,6 +81,8 @@ namespace Bial {
           }
         }
       }
+      COMMENT( "Reseting queue.", 0 );
+      this->queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

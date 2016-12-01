@@ -31,13 +31,19 @@ cout << "Usage: " << argv[ 0 ] << " <input image> <predecessor map image> <outpu
   Image< Color > cres( Read< Color >( argv[ 1 ] ) );
   
   COMMENT( "Running though the image backwards to the root.", 0 );
+  res( coord ) = 1;
+  cres( coord )[ 3 ] = 255;
   int leaf = static_cast< int >( pred.Position( coord ) );
   do {
     res[ leaf ] = 1;
     cres[ leaf ][ 1 ] = 128;
     cres[ leaf ][ 2 ] = 128;
     leaf = pred[ leaf ];
-  } while( pred[ leaf ] != leaf );
+    cout << leaf << endl;
+  } 
+  while( ( pred[ leaf ] != leaf ) && ( pred[ leaf ] != -1 ) );
+  res[ leaf ] = 1;
+  cres[ leaf ][ 1 ] = 255;
   
   COMMENT( "Writing result.", 0 );
   Write( res, string( argv[ 3 ] ) + ".pgm", argv[ 2 ] );

@@ -22,14 +22,11 @@ namespace Bial {
 
   template< template< class D > class C, class D >
   DegeneratedIFT< C, D >::
-  DegeneratedIFT( C< D > &value, PathFunction< C, D > *function, const Vector< bool > *seed,
-                  C< int > *label, C< int > *predecessor, bool sequential_label, 
-                  long double bucket_size, bool fifo_tie ) try :
-    value( value ), function( function ), seed( seed ), label( label ), predecessor( predecessor ),
-      sequential_label( sequential_label ), bucket_size( bucket_size ), fifo_tie( fifo_tie ) {
+  DegeneratedIFT( C< D > &value, PathFunction< C, D > *function, const Vector< bool > *seed, C< int > *label, 
+                  C< int > *predecessor, bool sequential_label, ldbl bucket_size, bool fifo_tie ) try :
+    value( value ), function( function ), label( label ), predecessor( predecessor ) {
       COMMENT( "Initializing.", 1 );
-      queue = DegeneratedIFT::Initialize( value, function, seed, label, predecessor, sequential_label, bucket_size,
-                                          fifo_tie );
+      Initialize( seed, sequential_label, bucket_size, fifo_tie );
       RemoveData = function->RemoveFunction( );
       UpdateData = function->UpdateFunction( );
     }
@@ -78,6 +75,7 @@ namespace Bial {
           }
         }
       }
+      queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -99,11 +97,10 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  BucketQueue* DegeneratedIFT< C, D >::
-  Initialize( C< D > &value, PathFunction< C, D > *function, const Vector< bool > *seed, C< int > *label, 
-              C< int > *predecessor, bool sequential_label,  long double bucket_size, bool fifo_tie ) {
+  void DegeneratedIFT< C, D >::Initialize( const Vector< bool > *seed, bool sequential_label, ldbl bucket_size, 
+                                           bool fifo_tie ) {
     try {
-      BucketQueue *queue = new BucketQueue( value.size( ), bucket_size, function->Increasing( ), fifo_tie );
+      queue = new BucketQueue( value.size( ), bucket_size, function->Increasing( ), fifo_tie );
       COMMENT( "Initializing data in path function.", 1 );
       function->Initialize( value, label, predecessor, sequential_label );
       COMMENT( "Initializing the maps.", 1 );
@@ -114,11 +111,7 @@ namespace Bial {
       }
       if( seed != nullptr ) {
         COMMENT( "Initializing data with seeds.", 1 );
-        for( size_t it = 0; it < value.size( ); ++it ) {
-          if( seed->operator()( it ) ) {
-            queue->Insert( it, value( it ) );
-          }
-        }
+        InsertSeeds( *seed );
       }
       else {
         COMMENT( "Initializing data without seeds.", 1 );
@@ -127,7 +120,41 @@ namespace Bial {
         }
       }
       COMMENT( "value: " << value, 5 );
-      return( queue );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR(
+                         "Image, window end, and/or window size dimensions do not match." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  void DegeneratedIFT< C, D >::InsertSeeds( const Vector< bool > &seed ) {
+    try {
+      COMMENT( "Inserting seeds.", 1 );
+      for( size_t it = 0; it < value.size( ); ++it ) {
+        if( seed[ it ] )
+          queue->Insert( it, value( it ) );
+      }
+      if( predecessor != nullptr ) {
+        COMMENT( "Setting seed predecessor", 1 );
+        for( size_t it = 0; it < predecessor->size( ); ++it ) {
+          if( seed[ it ] )
+            predecessor->operator()( it ) = -1;
+        }
+      }
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
