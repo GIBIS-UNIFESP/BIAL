@@ -28,6 +28,7 @@ namespace Bial {
   class BucketQueue {
 
   protected:
+
     Vector< IdentityNode > identity; /** @brief vector containing information about each element ( state, previous, next ). */
     Vector< WeightNode > weight; /** @brief vector containing pointers to elements that fall into each bucket weight. */
     ldbl minimum; /** @brief maximum element currently inserted in the queue. */

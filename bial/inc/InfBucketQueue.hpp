@@ -3,10 +3,7 @@
  */
 
 /**
- * @file BucketQueue.hpp
- * @author Fábio Augusto Menocci Cappabianco 
  * @date 2012/Sep/06 
- * @version 1.0.00
  * @brief
  * Content: Bucket-sort queue class 
  * <br> Description: A bucket-sort queue. It is useful to sort a large set
