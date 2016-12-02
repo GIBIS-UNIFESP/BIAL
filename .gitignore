@@ -2,8 +2,6 @@
 
 build/*
 
-build-bial-Desktop_Qt_5_6_0_GCC_64bit-Release/*
-
 tst/vrf/*
 tst/res/*
 tst/dat/*
