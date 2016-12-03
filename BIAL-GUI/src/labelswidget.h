@@ -21,7 +21,7 @@ private slots:
 
   void on_solid_clicked( );
 
-//  void on_multiLabel_clicked( );
+  void on_multilabel_clicked( );
 
   void on_translucentSlider_valueChanged( int value );
 
