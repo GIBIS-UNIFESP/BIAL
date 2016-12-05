@@ -203,13 +203,17 @@ namespace Bial {
   template< template< class D > class C, class D >
   bool MaxPathFunction< C, D >::Propagate( int index, int adj_index ) {
     try {
+      COMMENT( "Propagating!", 4 );
       D src_value = this->value->operator()( adj_index );
       D arc_weight = handicap( adj_index );
       D prp_value = std::max( this->value->operator()( index ), arc_weight );
-      if( ( this->predecessor->operator()( adj_index ) == index ) || ( src_value > prp_value ) ) {
+      if( ( ( this->predecessor != nullptr ) && ( this->predecessor->operator()( adj_index ) == index ) ) 
+          || ( src_value > prp_value ) ) {
+        COMMENT( "propagated!", 4 );
         this->value->operator()( adj_index ) = prp_value;
         return( true );
       }
+      COMMENT( "Not propagated!", 4 );
       return( false );
     }
     catch( std::bad_alloc &e ) {

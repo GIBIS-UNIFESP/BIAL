@@ -234,6 +234,7 @@ namespace Bial {
       else {
         identity( next ).prev = -1;
       }
+      COMMENT( "Remove done.", 3 );
       return( idt );
     }
     catch( std::bad_alloc &e ) {

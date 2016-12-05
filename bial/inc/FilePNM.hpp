@@ -310,7 +310,7 @@ namespace Bial {
         COMMENT( "Reading 8 bit binary file data.", 2 );
         if( maxval < 256 ) {
           COMMENT( "Read 8 bit integer contents of binary file.", 2 );
-          Vector< char > data8( img_size );
+          Vector< unsigned char > data8( img_size );
           file.read( reinterpret_cast< char* >( &( data8[ 0 ] ) ), img_size );
           COMMENT( "Copying to image.", 2 );
           for( size_t pxl = 0; pxl < img_size; ++pxl ) {
@@ -325,7 +325,7 @@ namespace Bial {
         }
         else if( maxval < 65536 ) {
           COMMENT( "Read 16 bit integer contents of binary file.", 2 );
-          Vector< short > data16( img_size );
+          Vector< unsigned short > data16( img_size );
           file.read( reinterpret_cast< char* >( &( data16[ 0 ] ) ), img_size * 2 );
           COMMENT( "Copying to image.", 2 );
           for( size_t pxl = 0; pxl < img_size; ++pxl ) {

@@ -60,11 +60,13 @@ namespace Bial {
       }
       int errors = 0;
       for( size_t pxl = 0; pxl < img1.size( ); ++pxl ) {
-        if( img1[ pxl ] != img2[ pxl ] )
+        if( img1[ pxl ] != img2[ pxl ] ) {
+          COMMENT( "Different pixel " << pxl << ". Values: " << img1[ pxl ] << ", " << img2[ pxl ], 4 );
           errors++;
+        }
       }
       if( errors != 0 ) {
-        COMMENT( errors << " pixels do not match.", 0 );
+        COMMENT( errors << " pixels do not match. Errors: " << errors, 0 );
         return( false );
       }
       return( true );

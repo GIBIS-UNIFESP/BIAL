@@ -23,21 +23,21 @@ int main( int argc, char **argv ) {
     cout << "input: .............. original image" << endl;
     return( 0 );
   }
-  /* Reading data contents */
+  COMMENT( "Reading data contents.", 0 );
   Image< float > scn( Read< float >( argv[ 1 ] ) );
   NiftiHeader nii( argv[ 1 ] );
 
-  /* Getting image orientation */
+  COMMENT( "Getting image orientation", 0 );
   string orientation = nii.Orientation( );
 
-  /* Initializing output files */
+  COMMENT( "Initializing output files", 0 );
   Vector< Box > best_rectangles;
   Image< float > similarity( scn );
 
-  /* Computing COG */
+  COMMENT( "Computing COG", 0 );
   Vector< size_t > COG = Heart::WeightedCOG( scn, orientation, best_rectangles, similarity );
 
-  /* Drawing regions to an image */
+  COMMENT( "Drawing regions to an image", 0 );
   Image< int > regions( scn );
   regions.Set( 0 );
   std::cout << "Rectangles: " << std::endl;
@@ -46,10 +46,10 @@ int main( int argc, char **argv ) {
     best_rectangles[ rtg ].Print( std::cout );
     best_rectangles[ rtg ].Draw( regions );
   }
-  /* Printing COG value */
+  COMMENT( "Printing COG value", 0 );
   cout << COG[ 0 ] << " " << COG[ 1 ] << " " << COG[ 2 ] << endl;
 
-  /* Writting output images */
+  COMMENT( "Writting output images", 0 );
   Write( similarity, "dat/similarity.nii.gz", argv[ 1 ] );
   Write( regions, "dat/regions.nii.gz", argv[ 1 ] );
 

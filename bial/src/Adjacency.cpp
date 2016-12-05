@@ -741,16 +741,16 @@ namespace Bial {
   Vector< size_t > Adjacency::Adj3( const Vector< size_t > &dim, const Vector< size_t > &index,
                                     size_t adj_index ) const {
     try {
-      COMMENT( "Creating resultant vector.", 4 );
+      COMMENT( "Creating resultant vector.", 5 );
       Vector< size_t > result( 3, 0 );
-      COMMENT( "Computing dimension coordinate.", 4 );
+      COMMENT( "Computing dimension coordinate.", 5 );
       float adj_coord_0 = index[ 0 ] + ( *this )( 0, adj_index );
       result[ 0 ] = static_cast< size_t >( adj_coord_0 );
       float adj_coord_1 = index[ 1 ] + ( *this )( 1, adj_index );
       result[ 1 ] = static_cast< size_t >( adj_coord_1 );
       float adj_coord_2 = index[ 2 ] + ( *this )( 2, adj_index );
       result[ 2 ] = static_cast< size_t >( adj_coord_2 );
-      COMMENT( "Checking if coordinate is valid.", 4 );
+      COMMENT( "Checking if coordinate is valid.", 5 );
       if( ( adj_coord_0 < 0.0 ) || ( adj_coord_1 < 0.0 ) || ( adj_coord_2 < 0.0 ) ||
           ( result[ 0 ] >= dim[ 0 ] ) || ( result[ 1 ] >= dim[ 1 ] ) || ( result[ 2 ] >= dim[ 2 ] ) )
         return( Vector< size_t >( dim[ 0 ] * dim[ 1 ] * dim[ 2 ] ) );
@@ -776,12 +776,12 @@ namespace Bial {
 
   size_t Adjacency::Adj3( const Vector< size_t > &dim, size_t position, size_t adj_index ) const {
     try {
-      COMMENT( "Computing coordinates.", 4 );
+      COMMENT( "Computing coordinates.", 5 );
       size_t xydim = dim[ 0 ] * dim[ 1 ];
       int x = ( position % dim[ 0 ] ) + relation[ relation.dim_size[ 0 ] * adj_index ];
       int y = ( ( position % xydim ) / dim[ 0 ] ) + relation[ relation.dim_size[ 0 ] * adj_index + 1 ];
       int z = ( position / xydim ) + relation[ relation.dim_size[ 0 ] * adj_index + 2 ];
-      COMMENT( "Checking if coordinates are valid.", 4 );
+      COMMENT( "Checking if coordinates are valid.", 5 );
       if( ( x < 0 ) || ( x >= static_cast< int >( dim[ 0 ] ) ) ||
           ( y < 0 ) || ( y >= static_cast< int >( dim[ 1 ] ) ) ||
           ( z < 0 ) || ( z >= static_cast< int >( dim[ 2 ] ) ) )

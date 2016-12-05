@@ -229,7 +229,7 @@ namespace Bial {
   template< class D >
   Image< D > ReadNifti( const std::string &filename ) {
     try {
-      COMMENT( "Reading nifti file from given name: " << filename, 2 );
+      COMMENT( "Reading nifti file from given name: " << filename, 0 );
       COMMENT( "Reading header for image and pixel dimensions, and for data type.", 2 );
       NiftiHeader hdr( filename );
       COMMENT( "Header: " << hdr, 2 );
@@ -247,7 +247,7 @@ namespace Bial {
       if( dim.size( ) > 4 ) {
         channels = dim[ 4 ];
       }
-      COMMENT( "Channels: " << channels << ". Creating resultant image.", 2 );
+      COMMENT( "Channels: " << channels << ". Creating resultant image.", 0 );
       if( channels > 4 ) {
         std::string msg( BIAL_ERROR( "Cannot handle more than 4 channel Nifti image." ) );
         throw( std::runtime_error( msg ) );
@@ -278,7 +278,7 @@ namespace Bial {
         offset = NiftiHeader::NIFTI_HEADER_SIZE + 4u;
         file.ignore( offset );
       }
-      COMMENT( "Reading data.", 2 );
+      COMMENT( "Reading data.", 0 );
       size_t single_bytes = hdr.BitPix( ) / 8;
       size_t total_bytes = single_bytes * res.size( );
       char *dataptr = new char[ total_bytes ];
