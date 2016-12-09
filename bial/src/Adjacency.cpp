@@ -147,7 +147,7 @@ namespace Bial {
       std::string msg( BIAL_ERROR( "Empty adjacency relation. Null matrix." ) );
       throw( std::logic_error( msg ) );
     }
-    relation = Matrix< float >( mat.dims, size );
+    relation = Matrix< int >( mat.dims, size );
 
     COMMENT( "Setting adjacency displacements.", 1 );
     size_t adj = 0;
@@ -193,7 +193,7 @@ namespace Bial {
       std::string msg( BIAL_ERROR( "Empty adjacency relation. Null matrix." ) );
       throw( std::logic_error( msg ) );
     }
-    relation = Matrix< float >( img.Dims( ), size );
+    relation = Matrix< int >( img.Dims( ), size );
 
     COMMENT( "Setting adjacency displacements.", 1 );
     size_t adj = 0;
@@ -249,7 +249,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  float Adjacency::operator()( size_t elem, size_t dim ) const {
+  int Adjacency::operator()( size_t elem, size_t dim ) const {
     try {
       return( relation[ relation.dim_size[ 0 ] * elem + dim ] );
     }
@@ -263,7 +263,7 @@ namespace Bial {
     }
   }
 
-  float &Adjacency::operator()( size_t elem, size_t dim ) {
+  int &Adjacency::operator()( size_t elem, size_t dim ) {
     try {
       return( relation[ relation.dim_size[ 0 ] * elem + dim ] );
     }
@@ -297,7 +297,7 @@ namespace Bial {
       for( size_t dms = 0; dms < relation.dim_size[ 0 ]; ++dms ) {
 
         COMMENT( "Computing adjacent coordinate.", 4 );
-        float adjacent_coord = index( dms ) + ( *this )( dms, adj_index );
+        int adjacent_coord = index( dms ) + ( *this )( dms, adj_index );
         adjacent( dms ) = static_cast< size_t >( adjacent_coord );
 
         COMMENT( "Verifying if adjacent coordinate is valid.", 4 );
@@ -344,7 +344,7 @@ namespace Bial {
       int dms = dim.size( ) - 1;
       for( size_t factor = mat_size / dim( dms ); dms >= 0; --dms ) {
         COMMENT( "Computing dimension coordinate.", 4 );
-        float adjacent_coord = position / factor + ( *this )( dms, adj_index );
+        int adjacent_coord = position / factor + ( *this )( dms, adj_index );
         COMMENT( "Checking if coordinate is valid.", 4 );
         if( ( adjacent_coord < 0.0 ) || ( static_cast< size_t >( adjacent_coord ) >= dim( dms ) ) ) {
           return( mat_size );
@@ -522,7 +522,7 @@ namespace Bial {
     }
   }
 
-  float Adjacency::Displacement( size_t dim, size_t elem ) const {
+  int Adjacency::Displacement( size_t dim, size_t elem ) const {
     try {
       return( relation( dim, elem ) );
     }
@@ -584,9 +584,9 @@ namespace Bial {
       COMMENT( "Creating resultant vector.", 4 );
       Vector< size_t > result( 2, 0 );
       COMMENT( "Computing dimension coordinate.", 4 );
-      float adj_coord_0 = index[ 0 ] + ( *this )( 0, adj_index );
+      int adj_coord_0 = index[ 0 ] + ( *this )( 0, adj_index );
       result[ 0 ] = static_cast< size_t >( adj_coord_0 );
-      float adj_coord_1 = index[ 1 ] + ( *this )( 1, adj_index );
+      int adj_coord_1 = index[ 1 ] + ( *this )( 1, adj_index );
       result[ 1 ] = static_cast< size_t >( adj_coord_1 );
       COMMENT( "Checking if coordinate is valid.", 4 );
       if( ( adj_coord_0 < 0.0 ) || ( adj_coord_1 < 0.0 ) || ( result[ 0 ] >= dim[ 0 ] ) || ( result[ 1 ] >= dim[ 1 ] ) )
@@ -744,11 +744,11 @@ namespace Bial {
       COMMENT( "Creating resultant vector.", 5 );
       Vector< size_t > result( 3, 0 );
       COMMENT( "Computing dimension coordinate.", 5 );
-      float adj_coord_0 = index[ 0 ] + ( *this )( 0, adj_index );
+      int adj_coord_0 = index[ 0 ] + ( *this )( 0, adj_index );
       result[ 0 ] = static_cast< size_t >( adj_coord_0 );
-      float adj_coord_1 = index[ 1 ] + ( *this )( 1, adj_index );
+      int adj_coord_1 = index[ 1 ] + ( *this )( 1, adj_index );
       result[ 1 ] = static_cast< size_t >( adj_coord_1 );
-      float adj_coord_2 = index[ 2 ] + ( *this )( 2, adj_index );
+      int adj_coord_2 = index[ 2 ] + ( *this )( 2, adj_index );
       result[ 2 ] = static_cast< size_t >( adj_coord_2 );
       COMMENT( "Checking if coordinate is valid.", 5 );
       if( ( adj_coord_0 < 0.0 ) || ( adj_coord_1 < 0.0 ) || ( adj_coord_2 < 0.0 ) ||
@@ -774,20 +774,64 @@ namespace Bial {
     }
   }
 
-  size_t Adjacency::Adj3( const Vector< size_t > &dim, size_t position, size_t adj_index ) const {
+  size_t Adjacency::Adj3( const Vector< size_t > &dim, size_t position, size_t adj_index ) const { 
     try {
       COMMENT( "Computing coordinates.", 5 );
       size_t xydim = dim[ 0 ] * dim[ 1 ];
-      int x = ( position % dim[ 0 ] ) + relation[ relation.dim_size[ 0 ] * adj_index ];
-      int y = ( ( position % xydim ) / dim[ 0 ] ) + relation[ relation.dim_size[ 0 ] * adj_index + 1 ];
-      int z = ( position / xydim ) + relation[ relation.dim_size[ 0 ] * adj_index + 2 ];
+      size_t adj_position = ( adj_index << 1 ) + adj_index;  // adj_position = adj_index * 3
+      div_t div_pos_by_xy = std::div( static_cast< int >( position ), static_cast< int >( xydim ) );
+      div_t div_rem_by_x =  std::div( div_pos_by_xy.rem, static_cast< int >( dim[ 0 ] ) );
+      size_t x = static_cast< size_t >( div_rem_by_x.rem + relation[ adj_position ] );
+      size_t y = static_cast< size_t >( div_rem_by_x.quot + relation[ adj_position + 1 ] );
+      size_t z = static_cast< size_t >( div_pos_by_xy.quot + relation[ adj_position + 2 ] );
+      // int x = ( position % dim[ 0 ] ) + relation[ adj_position ];
+      // int y = ( div_pos_xydim.rem / dim[ 0 ] ) + relation[ adj_position + 1 ];
+      // int z = div_pos_xydim.quot + relation[ adj_position + 2 ];
       COMMENT( "Checking if coordinates are valid.", 5 );
-      if( ( x < 0 ) || ( x >= static_cast< int >( dim[ 0 ] ) ) ||
-          ( y < 0 ) || ( y >= static_cast< int >( dim[ 1 ] ) ) ||
-          ( z < 0 ) || ( z >= static_cast< int >( dim[ 2 ] ) ) )
-        return( xydim * dim[ 2 ] );
+      if( ( x >= dim[ 0 ] ) || ( y >= dim[ 1 ] ) || ( z >= dim[ 2 ] ) )
+      // if( ( x < 0 ) || ( y < 0 ) || ( z < 0 ) || ( x >= static_cast< int >( dim[ 0 ] ) ) || 
+      //     ( y >= static_cast< int >( dim[ 1 ] ) ) || ( z >= static_cast< int >( dim[ 2 ] ) ) )
+        return( dim.size( ) );
       else
-        return( x + y * dim[ 0 ] + z * xydim );
+        return( x + y * dim[ 0 ] + z * xydim ); // Usar tabela aqui.
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  size_t Adjacency::Adj3( const Vector< size_t > &dim, size_t xydim, size_t position, size_t adj_index ) const { 
+    try {
+      COMMENT( "Computing coordinates.", 5 );
+      size_t adj_position = ( adj_index << 1 ) + adj_index; // adj_position = adj_index * 3
+      div_t div_pos_by_xy = std::div( static_cast< int >( position ), static_cast< int >( xydim ) );
+      div_t div_rem_by_x =  std::div( div_pos_by_xy.rem, static_cast< int >( dim[ 0 ] ) );
+      size_t x = static_cast< size_t >( div_rem_by_x.rem + relation[ adj_position ] );
+      size_t y = static_cast< size_t >( div_rem_by_x.quot + relation[ adj_position + 1 ] );
+      size_t z = static_cast< size_t >( div_pos_by_xy.quot + relation[ adj_position + 2 ] );
+      // int x = ( position % dim[ 0 ] ) + relation[ adj_position ];
+      // int y = ( div_xydim.rem / dim[ 0 ] ) + relation[ adj_position + 1 ];
+      // int z = div_xydim.quot + relation[ adj_position + 2 ];
+      COMMENT( "Checking if coordinates are valid.", 5 );
+      if( ( x >= dim[ 0 ] ) || ( y >= dim[ 1 ] ) || ( z >= dim[ 2 ] ) )
+      // if( ( x < 0 ) || ( y < 0 ) || ( z < 0 ) || ( x >= static_cast< int >( dim[ 0 ] ) ) || 
+      //     ( y >= static_cast< int >( dim[ 1 ] ) ) || ( z >= static_cast< int >( dim[ 2 ] ) ) )
+        return( dim.size( ) );
+      else
+        return( x + y * dim[ 0 ] + z * xydim ); // Usar tabela aqui.
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -833,7 +877,7 @@ namespace Bial {
   template< class D >
   size_t Adjacency::Adj3( const Matrix< D > &mat, size_t position, size_t adj_index ) const {
     try {
-      return( this->Adj3( mat.Dim( ), position, adj_index ) );
+      return( this->Adj3( mat.Dim( ), mat.Displacement( 1 ), position, adj_index ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -879,7 +923,20 @@ namespace Bial {
   template< class D >
   size_t Adjacency::Adj3( const Image< D > &img, size_t position, size_t adj_index ) const {
     try {
-      return( this->Adj3( img.Dim( ), position, adj_index ) );
+      return( this->Adj3( img.Dim( ), img.Displacement( 1 ), position, adj_index ) );
+      // COMMENT( "Computing coordinates.", 5 );
+      // Vector< size_t > dim( img.Dim( ) );
+      // size_t xydim = img.Displacement( 1 );
+      // size_t adj_position = ( adj_index << 1 ) + adj_index; // adj_position = adj_index * 3
+      // div_t div_xydim = std::div( static_cast< int >( position ), static_cast< int >( xydim ) );
+      // size_t x = static_cast< size_t >( ( position % dim[ 0 ] ) + relation[ adj_position ] );
+      // size_t y = static_cast< size_t >( ( div_xydim.rem / dim[ 0 ] ) + relation[ adj_position + 1 ] );
+      // size_t z = static_cast< size_t >( div_xydim.quot + relation[ adj_position + 2 ] );
+      // COMMENT( "Checking if coordinates are valid.", 5 );
+      // if( ( x >= dim[ 0 ] ) || ( y >= dim[ 1 ] ) || ( z >= dim[ 2 ] ) )
+      //   return( dim.size( ) );
+      // else
+      //   return( img.Position( x, y, z ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

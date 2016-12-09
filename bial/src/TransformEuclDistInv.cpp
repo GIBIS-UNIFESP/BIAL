@@ -20,7 +20,7 @@
 
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
-#include "BucketQueue.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "IntensityLocals.hpp"
 #include "TransformEuclDist.hpp"
@@ -36,7 +36,7 @@ namespace Bial {
       Adjacency adj = AdjacencyType::HyperSpheric( 1.8, mask.Dims( ) );
       COMMENT( "Seeds are local maxima from value map. May be a pixel in a plateau.", 2 );
       Vector< bool > seeds( Intensity::LocalMaxima( value, mask, adj ) );
-      BucketQueue queue( value.size( ), 255, false );
+      GrowingBucketQueue queue( value.size( ), 255, false );
       for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
         if( seeds[ pxl ] == true ) {
           queue.Insert( pxl, value[ pxl ] );

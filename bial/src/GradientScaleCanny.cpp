@@ -19,12 +19,12 @@
 
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
-#include "BucketQueue.hpp"
 #ifdef BIAL_DEBUG
 #include "FileImage.hpp"
 #endif
 #include "FilteringGaussian.hpp"
 #include "GradientCanny.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "SegmentationConnectedComponents.hpp"
 #include "Signal.hpp"
@@ -119,7 +119,7 @@ namespace Bial {
             D lower_intensity = histogram.Data( lower_bin );
             D higher_intensity = histogram.Data( higher_bin );
             edge.Set( 0.0 );
-            BucketQueue queue( edge.size( ) );
+            GrowingBucketQueue queue( edge.size( ) );
             COMMENT( "Avoid getting all window pixels as edges.", 4 );
             if( lower_intensity != 0 ) {
               COMMENT( "Computing higher threshold seeds.", 4 );
@@ -286,7 +286,7 @@ namespace Bial {
             COMMENT( "Getting lower and higher intensities.", 4 );
             D lower_intensity = histogram.Data( lower_bin );
             edge.Set( 0.0 );
-            BucketQueue queue( edge.size( ) );
+            GrowingBucketQueue queue( edge.size( ) );
 
             COMMENT( "Avoid getting all window pixels as edges.", 4 );
             if( lower_intensity != 0 ) {

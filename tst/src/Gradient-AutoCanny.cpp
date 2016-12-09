@@ -7,11 +7,11 @@
 
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
-#include "BucketQueue.hpp"
 #include "FileImage.hpp"
 #include "FilteringGaussian.hpp"
 #include "GradientCanny.hpp"
 #include "GradientSobel.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "Matrix.hpp"
 #include "SegmentationHysteresis.hpp"
@@ -481,7 +481,7 @@ Image< D > AutoScaleCanny( const Image< D > &smooth, size_t window_scale, float 
 
             COMMENT( "Computing the hysteresis.", 2 );
             edge.Set( 0.0 );
-            BucketQueue queue( edge.size( ) );
+            GrowingBucketQueue queue( edge.size( ) );
             COMMENT( "Avoid getting all window pixels as edges.", 4 );
             if( lower_intensity != 0 ) {
               COMMENT( "Computing higher threshold seeds.", 4 );

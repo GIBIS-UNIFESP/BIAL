@@ -1,13 +1,11 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2012/Sep/21 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with BucketQueue class. */
 
-#include "BucketQueue.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Vector.hpp"
 
 using namespace std;
@@ -16,7 +14,7 @@ using namespace Bial;
 int main( int, char** ) {
   size_t size = 10000;
   Vector< float > vec( size, 0.0 );
-  BucketQueue queue( size, 0.01, false, false );
+  GrowingBucketQueue queue( size, 0.01, false, false );
 
   cout << "Buckets: " << queue.Buckets( ) << endl;
 

@@ -2,7 +2,7 @@ TARGET = bial
 TEMPLATE = lib
 #CONFIG += shared_and_static build_all
 CONFIG += c++11
-
+#CONFIG += static
 
 QT       -= core gui
 
@@ -30,7 +30,7 @@ DEFINES += BIAL_EXPLICIT_LIB
 
 QMAKE_CXXFLAGS_RELEASE -= -O2 -O0
 QMAKE_CXXFLAGS_RELEASE += -O3
-QMAKE_CXXFLAGS_RELEASE -= -g
+QMAKE_CXXFLAGS_RELEASE -= -pg
 
 macx{
 QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++17
@@ -141,7 +141,13 @@ HEADERS += \
     inc/EdgeLiveWire.hpp \
     inc/EdgeMaxPathFunction.hpp \
     inc/EdgeRiverBed.hpp \
+    inc/Errors.hpp \
     inc/EuclideanDistanceFunction.hpp \
+    inc/FastBucketQueue.hpp \
+    inc/FastDecreasingFifoBucketQueue.hpp \
+    inc/FastDecreasingLifoBucketQueue.hpp \
+    inc/FastIncreasingFifoBucketQueue.hpp \
+    inc/FastIncreasingLifoBucketQueue.hpp \
     inc/Feature.hpp \
     inc/FeaturePathFunction.hpp \
     inc/FeatureResize.hpp \
@@ -179,6 +185,7 @@ HEADERS += \
     inc/GradientSobel.hpp \
     inc/Graph.hpp \
     inc/GraphAdjacency.hpp \
+    inc/GrowingBucketQueue.hpp \
     inc/gzstream.hpp \
     inc/HeartCOG.hpp \
     inc/HeartSegmentation.hpp \
@@ -285,8 +292,7 @@ HEADERS += \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
     inc/Vector.hpp \
-    inc/VideoIO.hpp \
-    inc/Errors.hpp
+    inc/VideoIO.hpp
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -336,6 +342,11 @@ SOURCES += \
     src/EdgeMaxPathFunction.cpp \
     src/EdgeRiverBed.cpp \
     src/EuclideanDistanceFunction.cpp \
+    src/FastBucketQueue.cpp \
+    src/FastDecreasingFifoBucketQueue.cpp \
+    src/FastDecreasingLifoBucketQueue.cpp \
+    src/FastIncreasingFifoBucketQueue.cpp \
+    src/FastIncreasingLifoBucketQueue.cpp \
     src/Feature.cpp \
     src/FeaturePathFunction.cpp \
     src/FeatureResize.cpp \
@@ -364,6 +375,7 @@ SOURCES += \
     src/GradientScaleCanny.cpp \
     src/GradientSobel.cpp \
     src/Graph.cpp \
+    src/GrowingBucketQueue.cpp \
     src/HeartCOG.cpp \
     src/HeartSegmentation.cpp \
     src/HierarchicalGraph.cpp \

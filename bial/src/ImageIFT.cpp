@@ -55,6 +55,37 @@ namespace Bial {
   }
 
   template< class D >
+  ImageIFT< D >::ImageIFT( Image< D > &value, const Adjacency &adjacency, PathFunction< Image, D > *function,
+                           D minimum_value, size_t value_range, const Vector< bool > *seed, Image< int > *label, 
+                           Image< int > *predecessor, bool sequential_label, bool fifo_tie ) try :
+    DegeneratedIFT< Image, D >( value, function, minimum_value, value_range, seed, label, predecessor, sequential_label,
+                                fifo_tie ), adjacency( adjacency ), dift_enb( false ), dift_elm( 0 ) {
+      if( value.Dims( ) != adjacency.Dims( ) ) {
+        std::string msg( BIAL_ERROR( "Image and adjacency relation dimensions do not match. Image dimensions: " +
+                                     std::to_string( value.Dims( ) ) + ", adjacency dimensions: " +
+                                     std::to_string( adjacency.Dims( ) ) ) );
+        throw( std::logic_error( msg ) );
+      }
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR(
+                                                                  "Image, window end, and/or window size dimensions do not match." ) );
+    throw( std::logic_error( msg ) );
+  }
+
+  template< class D >
   void ImageIFT< D >::Run( ) {
     try {
       COMMENT( "Running Image IFT. Queue: " << ( this->queue->Empty( ) ? "empty" : "not empty" ), 0 );

@@ -17,8 +17,8 @@
 #endif
 #if defined ( BIAL_EXPLICIT_SegmentationMST ) || ( BIAL_IMPLICIT_BIN )
 
-#include "BucketQueue.hpp"
 #include "Feature.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "MinimumSpanningTree.hpp"
 #include "SortingSort.hpp"
@@ -61,7 +61,7 @@ namespace Bial {
         }
       }
       COMMENT( "Setting the other labels.", 0 );
-      BucketQueue queue( img.size( ) );
+      GrowingBucketQueue queue( img.size( ) );
       for( size_t elm = 0; elm < label.size( ); ++elm ) {
         COMMENT( "Looking for root, while inserting all elements in queue.", 3 );
         size_t root = elm;

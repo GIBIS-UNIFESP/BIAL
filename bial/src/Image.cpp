@@ -28,25 +28,22 @@ namespace Bial {
     DestroyTables( );
     size_t x_size = _data.dim_size( 0 );
     size_t y_size = _data.dim_size( 1 );
-    size_t pos;
     size_t z_size = _data.dim_size( 2 );
     y_table = new D*[ y_size * z_size ];
     z_table = new D**[ z_size ];
-      
-    COMMENT( "Setting z table: ", 2 );
-    pos = 0;
-    for( size_t z = 0; z < z_size; ++z ) {
-      z_table[ z ] = &y_table[ pos ];
-      pos += y_size;
-    }
-
     COMMENT( "Setting y table: ", 2 );
-    pos = 0;
+    size_t pos = 0;
     for( size_t z = 0; z < z_size; ++z ) {
       for( size_t y = 0; y < y_size; ++y ) {
         y_table[ y + z * y_size ] = &qk_data[ pos ];
         pos += x_size;
       }
+    }
+    COMMENT( "Setting z table: ", 2 );
+    pos = 0;
+    for( size_t z = 0; z < z_size; ++z ) {
+      z_table[ z ] = &y_table[ pos ];
+      pos += y_size;
     }
   }
 

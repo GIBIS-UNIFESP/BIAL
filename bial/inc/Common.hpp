@@ -168,6 +168,14 @@ namespace Bial {
 #define QK_DATA( elm ) qk_data[ elm ]
 #endif
 
+#ifdef BIAL_DEBUG
+#define IF_DEBUG( exp ) if( exp )
+#else
+#define IF_DEBUG( exp ) if( false )
+#endif
+
+
+
 #define BIAL_ASSERT( value, exp )                                       \
   { if( !( value ) ) {                                                  \
       throw std::logic_error( BIAL_ERROR( std::string( "ASSERT failed : " ) + exp ) ) } }

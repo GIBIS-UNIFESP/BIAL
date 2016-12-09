@@ -19,7 +19,7 @@
 
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
-#include "BucketQueue.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 
 namespace Bial {
@@ -34,7 +34,7 @@ namespace Bial {
       }
       COMMENT( "Computing higher threshold seeds.", 2 );
       Image< D > edge( img );
-      BucketQueue queue( img.size( ) );
+      GrowingBucketQueue queue( img.size( ) );
       for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
         if( img[ pxl ] < higher ) {
           edge[ pxl ] = 0;

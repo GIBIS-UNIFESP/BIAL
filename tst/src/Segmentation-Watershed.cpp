@@ -17,10 +17,10 @@ int main( int argc, char **argv ) {
     cout << "Usage: " << argv[ 0 ] << " <input image> <radius> <output image>" << endl;
     return( 0 );
   }
+
   Image< int > gradient( Read< int >( argv[ 1 ] ) );
   float radius = atof( argv[ 2 ] );
   Image< int > label = Segmentation::Watershed( gradient, radius );
-
   Write( label, argv[ 3 ], argv[ 1 ] );
 
   return( 0 );

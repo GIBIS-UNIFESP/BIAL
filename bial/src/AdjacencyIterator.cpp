@@ -25,18 +25,19 @@
 
 namespace Bial {
 
-  /* AdjacencyIterator ------------------------------------------------------------------------------------------------
-  **/
-
   AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Vector< size_t > &dim, size_t index )
-  try : adjacency( adj ), dim_size( dim ), data_limit( 0 ), pixel_index( index ), adj_index( index ), position( 0 ) {
-    if( dim.size( ) == 0 ) {
+  try : adjacency( adj ), dim_size( dim ), data_limit( 1 ), pixel_index( index ), adj_index( index ), position( 0 ) {//,
+          //displacement( adj.size( ) ) {
+    IF_DEBUG( dim.size( ) == 0 ) {
       std::string msg( BIAL_ERROR( "Empty space dimention vector." ) );
       throw( std::logic_error( msg ) );
     }
-    data_limit = dim( 0 );
+    COMMENT( "Computing data_limit and displacement vectors.", 3 );
     for( size_t idx = 0; idx < dim.size( ); ++idx ) {
-      data_limit *= dim( idx );
+      size_t dim_size = dim[ idx ];
+      // for( size_t adj_idx = 0; adj_idx < adj.size( ); ++adj_idx )
+      //   displacement[ adj_idx ] += adj( adj_idx, idx ) * data_limit;
+      data_limit *= dim_size;
     }
   }
   catch( std::bad_alloc &e ) {
@@ -57,12 +58,18 @@ namespace Bial {
   }
 
   template< class D > AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Matrix< D > &mat, size_t index )
-    try : adjacency( adj ), dim_size( mat.Dim( ) ), data_limit( mat.size( ) ), pixel_index( index ),
-            adj_index( index ), position( 0 ) {
-      if( mat.size( ) == 0 ) {
+    try : adjacency( adj ), dim_size( mat.Dim( ) ), data_limit( mat.size( ) ), pixel_index( index ), adj_index( index ),
+            position( 0 ) { //, displacement( adj.size( ) ) {
+      IF_DEBUG( mat.size( ) == 0 ) {
         std::string msg( BIAL_ERROR( "Empty matrix." ) );
         throw( std::logic_error( msg ) );
       }
+      // COMMENT( "Computing displacement vector.", 3 );
+      // for( size_t dms = 0; dms < mat.Dims( ); ++dms ) {
+      //   size_t acc_dim_size = mat.acc_dim_size( dms );
+      //   for( size_t adj_idx = 0; adj_idx < adj.size( ); ++adj_idx )
+      //     displacement[ adj_idx ] += adj( adj_idx, dms ) * acc_dim_size;
+      // }
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -83,13 +90,19 @@ namespace Bial {
 
   template< class D > AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< D > &img, size_t index )
     try : adjacency( adj ), dim_size( img.Dim( ) ), data_limit( img.size( ) ), pixel_index( index ), adj_index( index ),
-            position( 0 ) {
+            position( 0 ) { //, displacement( adj.size( ) ) {
       if( img.Dims( ) == 2 )
         dim_size.pop_back( );
-      if( img.size( ) == 0 ) {
+      IF_DEBUG( img.size( ) == 0 ) {
         std::string msg( BIAL_ERROR( "Empty image." ) );
         throw( std::logic_error( msg ) );
       }
+      // COMMENT( "Computing displacement vector.", 3 );
+      // for( size_t dms = 0; dms < img.Dims( ); ++dms ) {
+      //   size_t acc_dim_size = img.acc_dim_size( dms );
+      //   for( size_t adj_idx = 0; adj_idx < adj.size( ); ++adj_idx )
+      //     displacement[ adj_idx ] += adj( adj_idx, dms ) * acc_dim_size;
+      // }
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

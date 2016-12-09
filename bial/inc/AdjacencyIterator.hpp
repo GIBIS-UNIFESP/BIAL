@@ -35,12 +35,14 @@ namespace Bial {
     Vector< size_t > dim_size;
     /** @brief Size of the image or matrix. */
     size_t data_limit;
-    /** @brief Position of the source element in the image or matrix. */
+    /** @brief Index of the source element in the image or matrix. */
     size_t pixel_index;
-    /** @brief Position of the adjacent element in the image or matrix. */
+    /** @brief Index of the adjacent element in the image or matrix. */
     size_t adj_index;
-    /** @brief Index of the current adjacent element. */
+    /** @brief Index of the current adjacent element in adjacency relation matrix. */
     size_t position; 
+    /** @brief Vector containing the displacements to the adjacent pixels. */
+    // Vector< int > displacement;
 
   public:
 

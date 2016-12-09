@@ -18,6 +18,13 @@
 
 #if defined ( BIAL_EXPLICIT_DegeneratedIFT ) || ( BIAL_IMPLICIT_BIN )
 
+#include "FastBucketQueue.hpp"
+#include "FastDecreasingFifoBucketQueue.hpp"
+#include "FastDecreasingLifoBucketQueue.hpp"
+#include "FastIncreasingFifoBucketQueue.hpp"
+#include "FastIncreasingLifoBucketQueue.hpp"
+#include "GrowingBucketQueue.hpp"
+
 namespace Bial {
 
   template< template< class D > class C, class D >
@@ -47,12 +54,40 @@ namespace Bial {
                      BIAL_ERROR( "Image, window end, and/or window size dimensions do not match." ) );
     throw( std::logic_error( msg ) );
   }
+
+  template< template< class D > class C, class D >
+  DegeneratedIFT< C, D >::
+  DegeneratedIFT( C< D > &value, PathFunction< C, D > *function, D minimum_value, size_t value_range, 
+                    const Vector< bool > *seed, C< int > *label, C< int > *predecessor, bool sequential_label,
+                    bool fifo_tie ) try :
+    value( value ), function( function ), label( label ), predecessor( predecessor ) {
+      COMMENT( "Initializing.", 1 );
+      Initialize( seed, sequential_label, minimum_value, value_range, fifo_tie );
+      RemoveData = function->RemoveFunction( );
+      UpdateData = function->UpdateFunction( );
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + 
+                     BIAL_ERROR( "Image, window end, and/or window size dimensions do not match." ) );
+    throw( std::logic_error( msg ) );
+  }
   
   template< template< class D > class C, class D >
   DegeneratedIFT< C, D >::~DegeneratedIFT( ) {
     delete ( queue );
   }
-  
 
   template< template< class D > class C, class D >
   void DegeneratedIFT< C, D >::Run( ) {
@@ -100,7 +135,7 @@ namespace Bial {
   void DegeneratedIFT< C, D >::Initialize( const Vector< bool > *seed, bool sequential_label, ldbl bucket_size, 
                                            bool fifo_tie ) {
     try {
-      queue = new BucketQueue( value.size( ), bucket_size, function->Increasing( ), fifo_tie );
+      queue = new GrowingBucketQueue( value.size( ), bucket_size, function->Increasing( ), fifo_tie );
       COMMENT( "Initializing data in path function.", 1 );
       function->Initialize( value, label, predecessor, sequential_label );
       COMMENT( "Initializing the maps.", 1 );
@@ -136,6 +171,62 @@ namespace Bial {
     catch( const std::logic_error &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR(
                          "Image, window end, and/or window size dimensions do not match." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  void DegeneratedIFT< C, D >::Initialize( const Vector< bool > *seed, bool sequential_label, ldbl minimum_value, 
+                                           size_t value_range, bool fifo_tie ) {
+    try {
+      //queue = new FastBucketQueue( value.size( ), minimum_value, value_range, function->Increasing( ), fifo_tie );
+      if( fifo_tie ) {
+        if( function->Increasing( ) ) 
+          queue = new FastIncreasingFifoBucketQueue( value.size( ), minimum_value, value_range );
+        else
+          queue = new FastDecreasingFifoBucketQueue( value.size( ), minimum_value, value_range );
+      }
+      else {
+        if( function->Increasing( ) ) 
+          queue = new FastIncreasingLifoBucketQueue( value.size( ), minimum_value, value_range );
+        else
+          queue = new FastDecreasingLifoBucketQueue( value.size( ), minimum_value, value_range );
+      }
+      COMMENT( "Initializing data in path function.", 1 );
+      function->Initialize( value, label, predecessor, sequential_label );
+      COMMENT( "Initializing the maps.", 1 );
+      if( predecessor != nullptr ) {
+        for( size_t it = 0; it < predecessor->size( ); ++it ) {
+          predecessor->operator()( it ) = -1;
+        }
+      }
+      if( seed != nullptr ) {
+        COMMENT( "Initializing data with seeds.", 1 );
+        InsertSeeds( *seed );
+      }
+      else {
+        COMMENT( "Initializing data without seeds.", 1 );
+        for( size_t it = 0; it < value.size( ); ++it ) {
+          queue->Insert( it, value( it ) );
+        }
+      }
+      COMMENT( "value: " << value, 5 );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR(
+                                                                    "Image, window end, and/or window size dimensions do not match." ) );
       throw( std::logic_error( msg ) );
     }
   }

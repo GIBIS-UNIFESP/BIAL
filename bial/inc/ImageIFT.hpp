@@ -52,6 +52,27 @@ namespace Bial {
 
     /**
      * @date 2012/Sep/19
+     * @param value: Value map used in path propagation. It contains the input and output values.
+     * @param mask: Valid image domain. Pixels out of the domain (i.e. mask = 0), are not computed.
+     * @param adjacency: adjacency relation defining neighborhood. Assumes central element being at position 0.
+     * @param function: Function used to initialize and propagate values.
+     * @param minimum_value: Minimum value to be processed by IFT.
+     * @param value_range: The total range from minimum to maximum value processed by IFT.
+     * @param seed: A boolean Vector indicating the seeds.
+     * @param label_image: label map.
+     * @param predecessor_image: predecessor map.
+     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+     * @return none.
+     * @brief Constructor of IFT object to run over images.
+     * @warning Input image and adjacency must have compatible dimensions. Label, and predecessor maps are
+     * optional.
+     */
+    ImageIFT( Image< D > &value, const Adjacency &adjacency, PathFunction< Image, D > *function, D minimum_value, 
+              size_t value_range, const Vector< bool > *seed = nullptr, Image< int > *label = nullptr,
+              Image< int > *predecessor = nullptr, bool sequential_label = false, bool fifo_tie = true );
+
+    /**
+     * @date 2012/Sep/19
      * @param none.
      * @return none.
      * @brief Runs IFT algorithm over image.

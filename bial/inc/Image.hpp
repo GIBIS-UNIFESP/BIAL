@@ -52,6 +52,14 @@ namespace Bial {
      * @brief Pointer to y_table element in the case of 3D image access by coordinates.
      */
     D ***z_table;
+    // /**
+    //  * @brief Global index of a y coordinate.
+    //  */
+    // Vector< size_t > y_index;
+    // /**
+    //  * @brief Global index of a z coordinate.
+    //  */
+    // Vector< size_t > z_index;
 
     /**
      * @date 2016/Oct/30

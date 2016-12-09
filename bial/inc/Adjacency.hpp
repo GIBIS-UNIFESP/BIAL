@@ -32,9 +32,9 @@ namespace Bial {
      * @brief
      * 2D matrix. First dimension refers to the number of dimensions of adjacency relation and the second dimension
      * refers to the size of the adjacency relation, that is, the number of elements in it.
-     * Example: relation(dims, size)
+     * Definition: relation(dims, size)
      */
-    Matrix< float > relation;
+    Matrix< int > relation;
 
   public:
 
@@ -97,7 +97,7 @@ namespace Bial {
      * @brief Returns data pointed by index ( elem, dim ). 
      * @warning Adjacency dimensions and bounds are not verified. 
      */
-    float operator()( size_t elem, size_t dim ) const;
+    int operator()( size_t elem, size_t dim ) const;
 
     /**
      * @date 2012/Jul/06
@@ -107,7 +107,7 @@ namespace Bial {
      * @brief Returns the reference for data pointed by index ( elem, dim ). 
      * @warning Adjacency dimensions and bounds are not verified. 
      */
-    float &operator()( size_t elem, size_t dim );
+    int &operator()( size_t elem, size_t dim );
 
     /**
      * @date 2013/Oct/23
@@ -223,7 +223,7 @@ namespace Bial {
      * @brief Returns the displacement in dimention dim for adjacent elem. 
      * @warning none.
      */
-    float Displacement( size_t elem, size_t dim ) const;
+    int Displacement( size_t elem, size_t dim ) const;
 
     /**
      * @date 2012/Jul/13
@@ -375,6 +375,22 @@ namespace Bial {
      * same number of dimensions. No validation is done. 
      */
     size_t Adj3( const Vector< size_t > &dim, size_t position, size_t adj_index ) const;
+
+    /**
+     * @date 2016/Dec/07
+     * @param dim: Dimensions of the space where the element should be defined.
+     * @param xy_size: Accumulated size of dimensions 0 and 1 of the image. I.e. size( 0 ) * size( 1 ).
+     * @param position: The global position of the source element.
+     * @param adj_index: Adjacency relation index in the displacement dimensions.
+     * @return The global index of the element in space 'dim' that is adjacent to element 'position' with respect to
+     * index 'adj_index'.
+     * @brief Returns the global index of the element in space 'dim' that is adjacent to element 'position' with
+     * respect to index 'adj_index'. If the adjacent element is out of the space bounds, than matrix size
+     * is returned.
+     * @warning Input space must have three dimentions, and 'this' adjacency relation and the space 'dim' must have the
+     * same number of dimensions. No validation is done. Faster than the version that does not require xy_size.
+     */
+    size_t Adj3( const Vector< size_t > &dim, size_t xy_size, size_t position, size_t adj_index ) const;
 
     /**
      * @date 2012/Jul/13

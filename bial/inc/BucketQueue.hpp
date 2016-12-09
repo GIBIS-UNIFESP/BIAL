@@ -31,9 +31,6 @@ namespace Bial {
 
     Vector< IdentityNode > identity; /** @brief vector containing information about each element ( state, previous, next ). */
     Vector< WeightNode > weight; /** @brief vector containing pointers to elements that fall into each bucket weight. */
-    ldbl minimum; /** @brief maximum element currently inserted in the queue. */
-    ldbl maximum; /** @brief minimum element currently inserted in the queue. */
-    ldbl delta; /** @brief step between two consecutive buckets. */
     size_t elements; /** @brief Number of elements currently in the queue. */
     bool increasing; /** @brief Whether this queue removes elements increasingly or decreasingly. */
     bool fifo; /** @brief Whether this queue implements FIFO or LIFO tie-break policy. */
@@ -51,7 +48,7 @@ namespace Bial {
      * @brief Basic Constructor. 
      * @warning none. 
      */
-    BucketQueue( size_t size, ldbl bucket_size = 1.0, bool increasing_order = true, bool fifo_tie = true );
+    BucketQueue( size_t size, bool increasing_order = true, bool fifo_tie = true );
 
     /**
      * @date 2015/Jun/24 
@@ -73,16 +70,7 @@ namespace Bial {
      * weight falls. 
      * @warning none. 
      */
-    virtual size_t Index( ldbl value );
-
-    /**
-     * @date 2012/Sep/06 
-     * @param new_size: new weight bucket queue size. 
-     * @return none. 
-     * @brief Grows bucket queue size to new_size. 
-     * @warning none. 
-     */
-    virtual void Grow( size_t new_size );
+    virtual size_t Index( ldbl value ) = 0;
 
   public:
 
@@ -95,7 +83,7 @@ namespace Bial {
      * into the bucket queue. 
      * @warning none. 
      */
-    virtual void Insert( size_t idt, ldbl wgt );
+    virtual void Insert( size_t idt, ldbl wgt ) = 0;
 
     /**
      * @date 2012/Sep/06 
@@ -104,7 +92,7 @@ namespace Bial {
      * @brief Removes the next element in the bucket queue. 
      * @warning none. 
      */
-    virtual int Remove( );
+    virtual int Remove( ) = 0;
 
   protected:
 
@@ -116,7 +104,7 @@ namespace Bial {
      * @brief Removes element of identity idt and weight wgt of the bucket queue. 
      * @warning none. 
      */
-    virtual void Remove( size_t idt, ldbl wgt );
+    virtual void Remove( size_t idt, ldbl wgt ) = 0;
 
   public:
 
@@ -130,7 +118,7 @@ namespace Bial {
      * idt. 
      * @warning none. 
      */
-    virtual void Update( size_t idt, ldbl cur_wgt, ldbl new_wgt );
+    virtual void Update( size_t idt, ldbl cur_wgt, ldbl new_wgt ) = 0;
 
     /**
      * @date 2012/Sep/06 
@@ -139,7 +127,7 @@ namespace Bial {
      * @brief Returns true if bucket queue is empty. 
      * @warning none. 
      */
-    virtual bool Empty( );
+    bool Empty( ) const;
 
     /**
      * @date 2013/Oct/14 
@@ -148,7 +136,7 @@ namespace Bial {
      * @brief Returns the number of elements in queue. 
      * @warning none. 
      */
-    virtual size_t Elements( );
+    size_t Elements( ) const;
 
     /**
      * @date 2012/Sep/06 
@@ -157,8 +145,8 @@ namespace Bial {
      * @brief Returns increasing attribute value. 
      * @warning none. 
      */
-    virtual bool Increasing( ) const;
-
+    bool Increasing( ) const;
+    
     /**
      * @date 2012/Sep/19 
      * @param idt: identity of the element. 
@@ -166,7 +154,7 @@ namespace Bial {
      * @brief Returns element state in queue. 
      * @warning none. 
      */
-    virtual BucketState State( size_t idt ) const;
+    BucketState State( size_t idt ) const;
 
     /**
      * @date 2012/Sep/25 
@@ -176,7 +164,7 @@ namespace Bial {
      * @brief Sets new state to element of index idt. 
      * @warning none. 
      */
-    virtual void State( size_t idt, BucketState new_state );
+    void State( size_t idt, BucketState new_state );
 
     /**
      * @date 2012/Sep/25 
@@ -185,7 +173,7 @@ namespace Bial {
      * @brief Sets finished state to element of index idt. 
      * @warning none. 
      */
-    virtual void Finished( size_t idt );
+    void Finished( size_t idt );
 
     /**
      * @date 2012/Sep/21 
@@ -194,7 +182,7 @@ namespace Bial {
      * @brief Returns the current number of buckets. 
      * @warning none. 
      */
-    virtual size_t Buckets( ) const;
+    size_t Buckets( ) const;
 
     /**
      * @date 2016/Jan/27 
@@ -203,7 +191,7 @@ namespace Bial {
      * @brief Sets all element states to NOT_VISITED. 
      * @warning none. 
      */
-    virtual void ResetState( );
+    void ResetState( );
   };
 
 }
