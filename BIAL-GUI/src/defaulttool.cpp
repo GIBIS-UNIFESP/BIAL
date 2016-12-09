@@ -7,7 +7,7 @@
 #include <QRgb>
 
 DefaultTool::DefaultTool( GuiImage *guiImage, ImageViewer *viewer ) : Tool( guiImage, viewer ), m_max( 0 ), labelType(
-    LabelType::translucent ), m_factor( 64.0 ) {
+    LabelType::multilabel ), m_factor( 64.0 ) {
   setObjectName( "DefaultTool" );
 
 }
@@ -89,7 +89,7 @@ float DefaultTool::getFactor( ) const {
   return( m_factor );
 }
 
-bool validLabel( const Bial::Image<int> &label, GuiImage* guiImage, int max ) {
+bool validLabel( const Bial::Image< int > &label, GuiImage *guiImage, int max ) {
   bool valid = true;
   if( max == 0 ) {
     valid = false;
@@ -98,15 +98,15 @@ bool validLabel( const Bial::Image<int> &label, GuiImage* guiImage, int max ) {
   else {
     if( label.Dims( ) == guiImage->getDims( ) ) {
       for( size_t dim = 0; dim < label.Dims( ); ++dim ) {
-        valid &= ( label.Dim().at( dim ) == guiImage->getDim( ).at( dim ) );
+        valid &= ( label.Dim( ).at( dim ) == guiImage->getDim( ).at( dim ) );
       }
     }
     else {
-      BIAL_WARNING( "Label image should have same dimensions. " << label.Dims( ) << " != " << guiImage->getDims( ));
+      BIAL_WARNING( "Label image should have same dimensions. " << label.Dims( ) << " != " << guiImage->getDims( ) );
       valid = false;
     }
   }
-  return valid;
+  return( valid );
 }
 
 bool DefaultTool::addLabel( QString filename ) {
@@ -114,12 +114,11 @@ bool DefaultTool::addLabel( QString filename ) {
   std::cout << "Loading Label: " << filename.toStdString( ) << std::endl;
   Bial::Image< int > label = Bial::Read< int >( filename.toStdString( ) );
   int max = label.Maximum( );
-
-  if( ! validLabel(label, guiImage, max)) {
+  if( !validLabel( label, guiImage, max ) ) {
     return( false );
   }
-  m_label = std::move(label);
-  m_max = std::move(max);
+  m_label = std::move( label );
+  m_max = std::move( max );
   setHasLabel( true );
   for( int axis = 0; axis < 4; ++axis ) {
     needUpdate[ axis ] = true;
@@ -169,6 +168,39 @@ void DefaultTool::sliceChanged( size_t axis, size_t slice ) {
   needUpdate[ axis ] = true;
 }
 
+QRgb mapcolor( double v, double vmin, double vmax, int alpha ) {
+  double r, g, b;
+  r = g = b = 1.0;
+  double dv;
+  if( v < vmin ) {
+    v = vmin;
+  }
+  if( v > vmax ) {
+    v = vmax;
+  }
+  dv = vmax - vmin;
+  if( v < ( vmin + 0.25 * dv ) ) {
+    r = 0;
+    g = 4 * ( v - vmin ) / dv;
+  }
+  else if( v < ( vmin + 0.5 * dv ) ) {
+    r = 0;
+    b = 1 + 4 * ( vmin + 0.25 * dv - v ) / dv;
+  }
+  else if( v < ( vmin + 0.75 * dv ) ) {
+    r = 4 * ( v - vmin - 0.5 * dv ) / dv;
+    b = 0;
+  }
+  else {
+    g = 1 + 4 * ( vmin + 0.75 * dv - v ) / dv;
+    b = 0;
+  }
+  int ir, ig, ib;
+  ir = qMin( ( int ) ( 255 * r ), 255 );
+  ig = qMin( ( int ) ( 255 * g ), 255 );
+  ib = qMin( ( int ) ( 255 * b ), 255 );
+  return( qRgba( ir, ig, ib, alpha ) );
+}
 
 QPixmap DefaultTool::getLabel( size_t axis ) {
   if( !needUpdate[ axis ] || !hasLabel( ) ) {
@@ -204,13 +236,27 @@ QPixmap DefaultTool::getLabel( size_t axis ) {
         int xx, yy, zz;
         transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
         int color = m_label( xx, yy, zz ) * factor;
-        scanLine[ x ] = qRgba( color, color, color, alpha );
+        if( color != 0 ) {
+          scanLine[ x ] = qRgba( color, color, color, alpha );
+        }
       }
     }
   }
   else if( labelType == LabelType::multilabel ) {
     res.fill( qRgba( 0, 0, 0, 0 ) );
-    /* TODO: Multilabel */
+    int alpha = qMin( static_cast< int >( m_factor ), 255 );
+#pragma omp parallel for firstprivate(axis, xsz, alpha, ysz, transf) shared(res)
+    for( size_t y = 0; y < ysz; ++y ) {
+      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+      for( size_t x = 0; x < xsz; ++x ) {
+        int xx, yy, zz;
+        transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
+        int color = m_label( xx, yy, zz );
+        if( color != 0 ) {
+          scanLine[ x ] = mapcolor( color, 0, m_max, alpha );
+        }
+      }
+    }
   }
   pixmaps[ axis ] = QPixmap::fromImage( res );
   return( pixmaps[ axis ] );

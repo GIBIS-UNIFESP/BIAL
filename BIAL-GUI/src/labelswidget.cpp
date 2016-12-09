@@ -15,17 +15,16 @@ void LabelsWidget::setTool( Tool *sTool ) {
     setEnabled( true );
     switch( tool->getLabelType( ) ) {
         case LabelType::none:
-          ui->none->setChecked( true );
-          break;
+        ui->none->setChecked( true );
+        break;
         case LabelType::solid:
-          ui->solid->setChecked( true );
-          break;
+        ui->solid->setChecked( true );
+        break;
         case LabelType::translucent:
-          ui->translucent->setChecked( true );
-          break;
-        case LabelType::multilabel:{
-        //TODO: Implement Multilabel support
-          throw  std::logic_error("Function not yet implemented.");
+        ui->translucent->setChecked( true );
+        break;
+        case LabelType::multilabel: {
+        ui->multilabel->setChecked( true );
         break;
       }
     }
@@ -49,11 +48,10 @@ void LabelsWidget::on_translucent_clicked( ) {
   tool->setLabelType( LabelType::translucent );
 }
 
-/*
- * void LabelsWidget::on_multiLabel_clicked( ) {
- *  tool->setLabelType( LabelType::multilabel );
- * }
- */
+void LabelsWidget::on_multilabel_clicked( ) {
+  tool->setLabelType( LabelType::multilabel );
+}
+
 
 void LabelsWidget::on_translucentSlider_valueChanged( int value ) {
   tool->setTranslucentFactor( ui->translucentSlider->value( ) );
