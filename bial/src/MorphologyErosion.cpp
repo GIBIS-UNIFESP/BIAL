@@ -49,7 +49,7 @@ namespace Bial {
   template< class D >
   Image< D > Morphology::Erode( const Image< D > &image, const Adjacency &adjacency ) {
     try {
-      if( image.Dims( ) != adjacency.Dims( ) ) {
+      IF_DEBUG( image.Dims( ) != adjacency.Dims( ) ) {
         std::string msg( std::string( __FILE__ ) + ": " + std::to_string( __LINE__ ) + ": " + std::string(
 													  __FUNCTION__ ) +
                          ": error: Image and adjacency relation dimensions do not match." );
@@ -59,13 +59,11 @@ namespace Bial {
       try {
         size_t total_threads = 12;
         Vector< std::thread > threads;
-        for( size_t thd = 0; thd < total_threads; ++thd ) {
+        for( size_t thd = 0; thd < total_threads; ++thd )
           threads.push_back( std::thread( &Morphology::ErodeThreads< D >, std::ref( image ), std::ref( adjacency ),
                                           std::ref( result ), thd, total_threads ) );
-        }
-        for( size_t thd = 0; thd < total_threads; ++thd ) {
+        for( size_t thd = 0; thd < total_threads; ++thd )
           threads( thd ).join( );
-        }
       }
       catch( std::exception &e ) {
         std::cout << "Warning: Failed to run in multi-thread. Exception: " << e.what( ) << std::endl;
@@ -98,12 +96,14 @@ namespace Bial {
       COMMENT( "Dealing with thread limits.", 3 );
       size_t min_index = thread * image.Size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * image.Size( ) / total_threads;
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t adj_index;
       for( size_t img_index = min_index; img_index < max_index; ++img_index ) {
-        for( AdjacencyIterator adj_it = begin( adjacency, image, img_index ); *adj_it != image.size( ); ++adj_it ) {
-          size_t adj_index = *adj_it;
-          if( result[ img_index ] > image[ adj_index ] ) {
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( ( adj_itr.*adj_itr.AdjIdx )( img_index, idx, adj_index ) ) &&
+              ( result[ img_index ] > image[ adj_index ] ) )
             result[ img_index ] = image[ adj_index ];
-          }
         }
       }
     }
@@ -131,22 +131,19 @@ namespace Bial {
       COMMENT( "Inserting pixels into the priority queue.", 2 );
       Vector< size_t > seeds;
       for( size_t pxl = 0; pxl < image.size( ); ++pxl ) {
-        if( image[ pxl ] != 0 ) {
+        if( image[ pxl ] != 0 )
           seeds.push_back( pxl );
-        }
       }
       COMMENT( "Computing erosion result.", 2 );
       Image< D > res( image );
       try {
         size_t total_threads = 12;
         Vector< std::thread > threads;
-        for( size_t thd = 0; thd < total_threads; ++thd ) {
+        for( size_t thd = 0; thd < total_threads; ++thd )
           threads.push_back( std::thread( &Morphology::ErodeBinThreads< D >, std::ref( image ), std::ref( adjacency ),
                                           std::ref( seeds ), std::ref( res ), thd, total_threads ) );
-        }
-        for( size_t thd = 0; thd < total_threads; ++thd ) {
+        for( size_t thd = 0; thd < total_threads; ++thd )
           threads( thd ).join( );
-        }
       }
       catch( std::exception &e ) {
         std::cout << "Warning: Failed to run in multi-thread. Exception: " << e.what( ) << std::endl;
@@ -179,10 +176,12 @@ namespace Bial {
       COMMENT( "Dealing with thread limits.", 3 );
       size_t min_index = thread * seeds.size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * seeds.size( ) / total_threads;
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t adj_pxl;
       for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
-        for( AdjacencyIterator itr = begin( adjacency, image, seeds( pxl ) ); *itr != image.size( ); ++itr ) {
-          size_t adj_pxl = *itr;
-          if( image[ adj_pxl ] == 0 ) {
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) && ( image[ adj_pxl ] == 0 ) ) {
             result[ seeds( pxl ) ] = 0;
             break;
           }

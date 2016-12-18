@@ -50,27 +50,22 @@ Image< D > AutoCanny( const Image< D > &img, float lower_threshold, float higher
                                    std::to_string( higher_threshold ) + "." ) );
       throw( std::logic_error( msg ) );
     }
-
     COMMENT( "Computing the filtered image.", 0 );
     Image< D > smooth = Filtering::Gaussian( img, 2.0, sigma );
-
     COMMENT( "Computing sobel gradient.", 0 );
     Image< D > magnitude( smooth );
     Image< int > direction( smooth );
     Gradient::Sobel( smooth, &magnitude, &direction );
     size_t dimensions = magnitude.Dims( );
     size_t pixels = magnitude.size( );
-
     COMMENT( "Computing suppressed sobel.", 0 );
     Image< D > suppressed_sobel( magnitude.Dim( ), magnitude.PixelSize( ) );
     suppressed_sobel.Set( 0.0 );
-
     COMMENT( "Setting displacements.", 1 );
     Vector< size_t > max_coord( magnitude.Dim( ) );
     Vector< size_t > coord( max_coord );
     Vector< size_t > direct_adj( coord );
     Vector< size_t > opposed_adj( coord );
-
     if( dimensions == 2 ) {
       COMMENT( "2D image.", 3 );
       for( coord[ 1 ] = 1; coord[ 1 ] < max_coord[ 1 ] - 1; ++coord[ 1 ] ) {
@@ -139,7 +134,6 @@ Image< D > AutoCanny( const Image< D > &img, float lower_threshold, float higher
         }
       }
     }
-
     else { // if( dimensions == 3 ) {
       COMMENT( "3D image.", 3 );
       for( coord[ 2 ] = 1; coord[ 2 ] < max_coord[ 2 ] - 1; ++coord[ 2 ] ) {
@@ -178,7 +172,6 @@ Image< D > AutoCanny( const Image< D > &img, float lower_threshold, float higher
         }
       }
     }
-
     COMMENT( "Implementation of Medina 11 - PR. Automatic hysteresis detection.", 0 );
     const size_t THRES_NUMBER = 25;
     D max_grad = suppressed_sobel.Maximum( );
@@ -285,7 +278,6 @@ Image< D > AutoCanny( const Image< D > &img, float lower_threshold, float higher
     cout << "lower_intensity: " << lower_intensity << ", higher_intensity: " << higher_intensity << endl;
     // lower_threshold = lower_intensity / max_grad;
     // higher_threshold = higher_intensity / max_grad;
-
     COMMENT( "Computing the hysteresis and returning the result.", 0 );
     return( Segmentation::HighHysteresis( suppressed_sobel, lower_intensity, higher_intensity ) );
   }
@@ -322,7 +314,6 @@ Image< D > AutoScaleCanny( const Image< D > &smooth, size_t window_scale, float 
     if( dims == 2 )
       full_size.push_back( 1 );
     Vector< size_t > dim_size( full_size ); /* Maximum position to slide window on. */
-
     COMMENT( "Creating window with correct dimensions.", 0 );
     Vector< size_t > window_side( 3, 1 );
     for( size_t dms = 0; dms < 3; ++dms ) {
@@ -334,14 +325,15 @@ Image< D > AutoScaleCanny( const Image< D > &smooth, size_t window_scale, float 
     Signal histogram( suppressed_sobel.Maximum( ) + 1, 0.0, 1.0 );
     COMMENT( "Factor of the window size by which displacement over the image occurs.", 0 );
     size_t window_factor = 2;
-
     COMMENT( "Union of local hysteresis.", 0 );
     Image< D > edge( window_side );
-    Adjacency adj = AdjacencyType::HyperSpheric( 1.9, dims );
+    Adjacency adj( AdjacencyType::HyperSpheric( 1.9, dims ) );
+    AdjacencyIterator adj_itr( smooth, adj );
+    size_t adj_size = adj.size( );
+    size_t adj_pxl;
     for( size_t z_src = 0; z_src < dim_size( 2 ); ) {
       for( size_t y_src = 0; y_src < dim_size( 1 ); ) {
         for( size_t x_src = 0; x_src < dim_size( 0 ); ) {
-          
           COMMENT( "Implementation of Medina 11 - PR. Automatic hysteresis detection.", 0 );
           COMMENT( "Creating window histogram and getting the maximum value inside the window.", 4 );
           D max_grad = 0;
@@ -478,7 +470,6 @@ Image< D > AutoScaleCanny( const Image< D > &smooth, size_t window_scale, float 
             D higher_intensity = SignalOp::FirstLeftPeak( prob_f_ix, first_end_zero, last_init_zero, 2 );
             COMMENT( "lower_intensity: " << lower_intensity << ", higher_intensity: " << higher_intensity, 2 );
             cout << "lower_intensity: " << lower_intensity << ", higher_intensity: " << higher_intensity << endl;
-
             COMMENT( "Computing the hysteresis.", 2 );
             edge.Set( 0.0 );
             GrowingBucketQueue queue( edge.size( ) );
@@ -509,19 +500,19 @@ Image< D > AutoScaleCanny( const Image< D > &smooth, size_t window_scale, float 
                 COMMENT( "Removing  pixel from queue.", 4 );
                 size_t pxl = queue.Remove( );
                 COMMENT( "Searching for adjacents that must also be set as edge pixels.", 4 );
-                AdjacencyIterator idx = begin( adj, edge, pxl );
-                for( ++idx; *idx != edge.size( ); ++idx ) {
-                  COMMENT( "Getting adjacent local and global coordinates.", 4 );
-                  size_t adj_pxl = *idx;
-                  Vector< size_t > img_coord = edge.Coordinates( adj_pxl );
-                  img_coord( 0 ) += x_src;
-                  img_coord( 1 ) += y_src;
-                  img_coord( 2 ) += z_src;
-                  COMMENT( "Verifying if adjacent pixel is an edge pixel and adding it to the queue.", 4 );
-                  if( ( suppressed_sobel( img_coord ) >= lower_intensity ) && ( edge[ adj_pxl ] == 0 ) ) {
-                    edge[ adj_pxl ] = 1;
-                    canny_scale( img_coord ) = 1;
-                    queue.Insert( adj_pxl, 1 );
+                for( size_t idx = 1; idx < adj_size; ++idx ) {
+                  if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+                    COMMENT( "Getting adjacent local and global coordinates.", 4 );
+                    Vector< size_t > img_coord = edge.Coordinates( adj_pxl );
+                    img_coord( 0 ) += x_src;
+                    img_coord( 1 ) += y_src;
+                    img_coord( 2 ) += z_src;
+                    COMMENT( "Verifying if adjacent pixel is an edge pixel and adding it to the queue.", 4 );
+                    if( ( suppressed_sobel( img_coord ) >= lower_intensity ) && ( edge[ adj_pxl ] == 0 ) ) {
+                      edge[ adj_pxl ] = 1;
+                      canny_scale( img_coord ) = 1;
+                      queue.Insert( adj_pxl, 1 );
+                    }
                   }
                 }
               }
@@ -581,10 +572,8 @@ Image< D > AutoMultiScaleCanny( const Image< D > &img, float lower_threshold, fl
     }
     COMMENT( "Getting image maximum dimension.", 0 );
     Vector< size_t > full_size = img.Dim( );
-
     COMMENT( "Computing global Canny with medium and higher thresholds.", 0 );
     Image< D > global = AutoCanny( img, lower_threshold, higher_threshold, sigma );
-
     COMMENT( "Computing the filtered image.", 0 );
     Image< D > smooth = Filtering::Gaussian( img, 2.0, sigma );
     COMMENT( "Computing sobel gradient.", 0 );
@@ -616,7 +605,6 @@ Image< D > AutoMultiScaleCanny( const Image< D > &img, float lower_threshold, fl
   }
 }
 
-
 int main( int argc, char **argv ) {
   if( argc < 6 ) {
     cout << "Usage: " << argv[ 0 ] << " <input image> <output image> <lower threshold> <higher threshold> <sigma> " <<
@@ -635,7 +623,6 @@ int main( int argc, char **argv ) {
     size_t levels = 1;
     if( argc == 7 )
       levels = atoi( argv[ 6 ] );
-
     if( levels <= 1 ) {
       COMMENT( "Running Canny.", 0 );
       Image< int > res( AutoCanny( img, low_thres, hig_thres, sigma ) );
@@ -648,7 +635,6 @@ int main( int argc, char **argv ) {
       COMMENT( "Writing result.", 0 );
       Write( res, argv[ 2 ], argv[ 1 ] );
     }
-
   }
   catch( std::ios_base::failure &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "I/O error while writing to file." ) );

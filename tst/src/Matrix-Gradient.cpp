@@ -40,7 +40,7 @@ int main( int argc, char **argv ) {
       msk[ pxl ] = 1;
     }
   }
-  Adjacency spheric = AdjacencyType::HyperSpheric( 1.0, img.Dims( ) );
+  Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, img.Dims( ) ) );
   COMMENT( "Computing morphological gradient: ", 0 );
   Image< float > res( Gradient::Morphological( img, msk, spheric ) );
 

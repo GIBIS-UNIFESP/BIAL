@@ -191,13 +191,16 @@ void SegmentationTool::drawSeed( Bial::Point3D last, Bial::Point3D current ) {
   }
   Bial::Line imgLine( vLast, vCurrent, Bial::Color( 255, 255, 255, 255 ) );
   imgLine.Draw( seeds );
-  Bial::Adjacency adj = Bial::AdjacencyType::HyperSpheric( thickness, dims );
+  Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( thickness, dims ) );
+  Bial::AdjacencyIterator it( seeds, adj );
+  size_t adj_size = adj.size( );
   size_t size = seeds.size( );
-  for( size_t px = 0; px < size; px++ ) {
+  size_t adj_px;
+  for( size_t px = 0; px < size; ++px ) {
     if( seeds[ px ] == 255 ) {
-      Bial::AdjacencyIterator it( adj, seeds, px );
-      for( it.begin( ); *it < seeds.size( ); ++it ) {
-        seeds[ *it ] = drawType;
+      for( size_t idx = 0; idx < adj_size; ++idx ) {
+        if( ( it.*it.AdjIdx )( px, idx, adj_px ) )
+          seeds[ adj_px ] = drawType;
       }
     }
   }

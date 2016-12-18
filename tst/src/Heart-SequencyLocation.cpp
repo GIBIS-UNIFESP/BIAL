@@ -136,7 +136,7 @@ int main( int argc, char *argv[] ) {
     }
     Image< int > value( cgrad );
     Image< int > pred( value );
-    Adjacency adj = AdjacencyType::Circular( 1.9 );
+    Adjacency adj( AdjacencyType::Circular( 1.9 ) );
     SumPathFunction< Image, int > pf( value );
     size_t size = value.size( );
     for( size_t elm = 0; elm < size; ++elm ) {

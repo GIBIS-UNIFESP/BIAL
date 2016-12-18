@@ -30,8 +30,9 @@ namespace Bial {
       const Vector< Vector< int > > line_point( line.Pixels( ) );
 
       COMMENT( "Searching for intersection.", 2 );
-      const Adjacency adj = AdjacencyType::Circular( 1.45 );
-      for( size_t adj_idx = 0; adj_idx < adj.size( ); ++adj_idx ) {
+      const Adjacency adj( AdjacencyType::Circular( 1.45 ) );
+      size_t adj_size = adj.size( );
+      for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
         COMMENT( "Running through all adjacency.", 4 );
         for( size_t crv_pos = 0; crv_pos < sequence.point.size( ); ++crv_pos ) {
           COMMENT( "Running through all specified circunference sequence pixels.", 4 );

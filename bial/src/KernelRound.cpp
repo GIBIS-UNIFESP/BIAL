@@ -23,8 +23,7 @@ namespace Bial {
 
   Kernel KernelType::Circular( float radius ) {
     try {
-      Adjacency adj = AdjacencyType::Circular( radius );
-      return( Kernel( adj ) );
+      return( AdjacencyType::Circular( radius ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -46,8 +45,7 @@ namespace Bial {
 
   Kernel KernelType::Elliptic( float x_radius, float y_radius ) {
     try {
-      Adjacency adj = AdjacencyType::Elliptic( x_radius, y_radius );
-      return( Kernel( adj ) );
+      return( AdjacencyType::Elliptic( x_radius, y_radius ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -69,8 +67,7 @@ namespace Bial {
 
   Kernel KernelType::Spheric( float radius ) {
     try {
-      Adjacency adj = AdjacencyType::Spheric( radius );
-      return( Kernel( adj ) );
+      return( AdjacencyType::Spheric( radius ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -92,8 +89,7 @@ namespace Bial {
 
   Kernel KernelType::HyperSpheric( float radius, size_t dims ) {
     try {
-      Adjacency adj = AdjacencyType::HyperSpheric( radius, dims );
-      return( Kernel( adj ) );
+      return( AdjacencyType::HyperSpheric( radius, dims ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -115,8 +111,7 @@ namespace Bial {
 
   Kernel KernelType::Ellipsoid( float x_radius, float y_radius, float z_radius ) {
     try {
-      Adjacency adj = AdjacencyType::Ellipsoid( x_radius, y_radius, z_radius );
-      return( Kernel( adj ) );
+      return( AdjacencyType::Ellipsoid( x_radius, y_radius, z_radius ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

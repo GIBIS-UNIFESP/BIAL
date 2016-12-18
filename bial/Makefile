@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DBIAL_EXPLICIT_LIB -DQT_NO_DEBUG
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -m64 -Wno-unused-function -Wno-unused-parameter -I/media/fabio/experimentos/bial-git/bial/inc -I/media/fabio/experimentos/bial-git/bial/src -I/media/fabio/experimentos/bial-git/bial/lsh/inc -I/media/fabio/experimentos/bial-git/bial/SLIC/inc -I/media/fabio/experimentos/bial-git/bial/description/inc -I/media/fabio/experimentos/bial-git/bial/cpplex/inc -I/media/fabio/experimentos/bial-git/bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@))) -DBIAL_DEBUG=4 -fopenmp -std=c++11 -DBIAL_EXPLICIT_LIB -fopenmp -std=c++11 -O3 -std=c++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -m64 -Wno-unused-function -Wno-unused-parameter -I/media/fabio/experimentos/bial-git/bial/inc -I/media/fabio/experimentos/bial-git/bial/src -I/media/fabio/experimentos/bial-git/bial/lsh/inc -I/media/fabio/experimentos/bial-git/bial/SLIC/inc -I/media/fabio/experimentos/bial-git/bial/description/inc -I/media/fabio/experimentos/bial-git/bial/cpplex/inc -I/media/fabio/experimentos/bial-git/bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@))) -fopenmp -std=c++11 -DBIAL_EXPLICIT_LIB -fopenmp -std=c++11 -O3 -std=c++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I.
 LINK          = g++
 LFLAGS        = -m64 -std=c++11 -fopenmp -std=c++11 -Wl,-O1 -shared -Wl,-soname,libbial.so.1
@@ -100,6 +100,7 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/AdjacencyIterator.cpp \
 		src/AdjacencyMarchingCube.cpp \
 		src/AdjacencyRound.cpp \
+		src/AdjacencySquare.cpp \
 		src/BinaryCOG.cpp \
 		src/BinaryComplement.cpp \
 		src/Bit.cpp \
@@ -142,6 +143,11 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/EdgeMaxPathFunction.cpp \
 		src/EdgeRiverBed.cpp \
 		src/EuclideanDistanceFunction.cpp \
+		src/FastBucketQueue.cpp \
+		src/FastDecreasingFifoBucketQueue.cpp \
+		src/FastDecreasingLifoBucketQueue.cpp \
+		src/FastIncreasingFifoBucketQueue.cpp \
+		src/FastIncreasingLifoBucketQueue.cpp \
 		src/Feature.cpp \
 		src/FeaturePathFunction.cpp \
 		src/FeatureResize.cpp \
@@ -170,6 +176,7 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/GradientScaleCanny.cpp \
 		src/GradientSobel.cpp \
 		src/Graph.cpp \
+		src/GrowingBucketQueue.cpp \
 		src/HeartCOG.cpp \
 		src/HeartSegmentation.cpp \
 		src/HierarchicalGraph.cpp \
@@ -197,6 +204,7 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/KernelIterator.cpp \
 		src/KernelRound.cpp \
 		src/KernelSobel.cpp \
+		src/KernelSquare.cpp \
 		src/KnnGraphAdjacency.cpp \
 		src/LocalMaxPathFunction.cpp \
 		src/LSHGraphAdjacency.cpp \
@@ -328,6 +336,7 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/AdjacencyIterator.o \
 		../build/linux/release/obj/AdjacencyMarchingCube.o \
 		../build/linux/release/obj/AdjacencyRound.o \
+		../build/linux/release/obj/AdjacencySquare.o \
 		../build/linux/release/obj/BinaryCOG.o \
 		../build/linux/release/obj/BinaryComplement.o \
 		../build/linux/release/obj/Bit.o \
@@ -370,6 +379,11 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/EdgeMaxPathFunction.o \
 		../build/linux/release/obj/EdgeRiverBed.o \
 		../build/linux/release/obj/EuclideanDistanceFunction.o \
+		../build/linux/release/obj/FastBucketQueue.o \
+		../build/linux/release/obj/FastDecreasingFifoBucketQueue.o \
+		../build/linux/release/obj/FastDecreasingLifoBucketQueue.o \
+		../build/linux/release/obj/FastIncreasingFifoBucketQueue.o \
+		../build/linux/release/obj/FastIncreasingLifoBucketQueue.o \
 		../build/linux/release/obj/Feature.o \
 		../build/linux/release/obj/FeaturePathFunction.o \
 		../build/linux/release/obj/FeatureResize.o \
@@ -398,6 +412,7 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/GradientScaleCanny.o \
 		../build/linux/release/obj/GradientSobel.o \
 		../build/linux/release/obj/Graph.o \
+		../build/linux/release/obj/GrowingBucketQueue.o \
 		../build/linux/release/obj/HeartCOG.o \
 		../build/linux/release/obj/HeartSegmentation.o \
 		../build/linux/release/obj/HierarchicalGraph.o \
@@ -425,6 +440,7 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/KernelIterator.o \
 		../build/linux/release/obj/KernelRound.o \
 		../build/linux/release/obj/KernelSobel.o \
+		../build/linux/release/obj/KernelSquare.o \
 		../build/linux/release/obj/KnnGraphAdjacency.o \
 		../build/linux/release/obj/LocalMaxPathFunction.o \
 		../build/linux/release/obj/LSHGraphAdjacency.o \
@@ -1015,6 +1031,9 @@ compiler_clean:
 ../build/linux/release/obj/AdjacencyRound.o: src/AdjacencyRound.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/AdjacencyRound.o src/AdjacencyRound.cpp
 
+../build/linux/release/obj/AdjacencySquare.o: src/AdjacencySquare.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/AdjacencySquare.o src/AdjacencySquare.cpp
+
 ../build/linux/release/obj/BinaryCOG.o: src/BinaryCOG.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/BinaryCOG.o src/BinaryCOG.cpp
 
@@ -1141,6 +1160,21 @@ compiler_clean:
 ../build/linux/release/obj/EuclideanDistanceFunction.o: src/EuclideanDistanceFunction.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/EuclideanDistanceFunction.o src/EuclideanDistanceFunction.cpp
 
+../build/linux/release/obj/FastBucketQueue.o: src/FastBucketQueue.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FastBucketQueue.o src/FastBucketQueue.cpp
+
+../build/linux/release/obj/FastDecreasingFifoBucketQueue.o: src/FastDecreasingFifoBucketQueue.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FastDecreasingFifoBucketQueue.o src/FastDecreasingFifoBucketQueue.cpp
+
+../build/linux/release/obj/FastDecreasingLifoBucketQueue.o: src/FastDecreasingLifoBucketQueue.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FastDecreasingLifoBucketQueue.o src/FastDecreasingLifoBucketQueue.cpp
+
+../build/linux/release/obj/FastIncreasingFifoBucketQueue.o: src/FastIncreasingFifoBucketQueue.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FastIncreasingFifoBucketQueue.o src/FastIncreasingFifoBucketQueue.cpp
+
+../build/linux/release/obj/FastIncreasingLifoBucketQueue.o: src/FastIncreasingLifoBucketQueue.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FastIncreasingLifoBucketQueue.o src/FastIncreasingLifoBucketQueue.cpp
+
 ../build/linux/release/obj/Feature.o: src/Feature.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/Feature.o src/Feature.cpp
 
@@ -1225,6 +1259,9 @@ compiler_clean:
 ../build/linux/release/obj/Graph.o: src/Graph.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/Graph.o src/Graph.cpp
 
+../build/linux/release/obj/GrowingBucketQueue.o: src/GrowingBucketQueue.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/GrowingBucketQueue.o src/GrowingBucketQueue.cpp
+
 ../build/linux/release/obj/HeartCOG.o: src/HeartCOG.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/HeartCOG.o src/HeartCOG.cpp
 
@@ -1305,6 +1342,9 @@ compiler_clean:
 
 ../build/linux/release/obj/KernelSobel.o: src/KernelSobel.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/KernelSobel.o src/KernelSobel.cpp
+
+../build/linux/release/obj/KernelSquare.o: src/KernelSquare.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/KernelSquare.o src/KernelSquare.cpp
 
 ../build/linux/release/obj/KnnGraphAdjacency.o: src/KnnGraphAdjacency.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/KnnGraphAdjacency.o src/KnnGraphAdjacency.cpp
@@ -1543,6 +1583,7 @@ install_headersDataFiles: first FORCE
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyIterator.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyMarchingCube.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyRound.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencySquare.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Array.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BinaryCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BinaryComplement.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
@@ -1590,6 +1631,11 @@ install_headersDataFiles: first FORCE
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EdgeRiverBed.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Errors.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastDecreasingFifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastDecreasingLifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastIncreasingFifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastIncreasingLifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Feature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FeaturePathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FeatureResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
@@ -1628,6 +1674,7 @@ install_headersDataFiles: first FORCE
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientSobel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Graph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GrowingBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/gzstream.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HeartCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HeartSegmentation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
@@ -1656,6 +1703,7 @@ install_headersDataFiles: first FORCE
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelIterator.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelRound.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelSobel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelSquare.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KnnGraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/LocalMaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/LSHGraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
@@ -1816,6 +1864,7 @@ uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/LSHGraphAdjacency.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/LocalMaxPathFunction.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KnnGraphAdjacency.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelSquare.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelSobel.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelRound.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelIterator.hpp
@@ -1844,6 +1893,7 @@ uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/HeartSegmentation.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/HeartCOG.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/gzstream.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/GrowingBucketQueue.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/GraphAdjacency.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/Graph.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/GradientSobel.hpp
@@ -1882,6 +1932,11 @@ uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FeatureResize.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FeaturePathFunction.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/Feature.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FastIncreasingLifoBucketQueue.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FastIncreasingFifoBucketQueue.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FastDecreasingLifoBucketQueue.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FastDecreasingFifoBucketQueue.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FastBucketQueue.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/EuclideanDistanceFunction.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/Errors.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/EdgeRiverBed.hpp
@@ -1929,6 +1984,7 @@ uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/BinaryComplement.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/BinaryCOG.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/Array.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/AdjacencySquare.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/AdjacencyRound.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/AdjacencyMarchingCube.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/AdjacencyIterator.hpp

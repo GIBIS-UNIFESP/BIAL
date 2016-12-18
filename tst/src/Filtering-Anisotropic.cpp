@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Caio Augusto Palma */
 /* Date: 2012/Sep/21 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with filtering. */
 

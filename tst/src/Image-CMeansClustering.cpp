@@ -26,8 +26,7 @@ int main( int argc, char **argv ) {
   }
   Image< int > img( Read< int >( argv[ 1 ] ) );
   Image< int > msk( Read< int >( argv[ 2 ] ) );
-  Feature< int > feats = MedianFeature( img.DataMatrix( ), msk.DataMatrix( ), 
-                                        AdjacencyType::HyperSpheric( 1.5, img.Dims( ) ), 0.34 );
+  Feature< int > feats = MedianFeature( img, msk, AdjacencyType::HyperSpheric( 1.5, img.Dims( ) ), 0.34 );
 
   float m = 2.0f;
   if( argc > 4 ) {

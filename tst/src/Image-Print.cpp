@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Cappabianco */
 /* Date: 2015/Dec/22 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test . */
 

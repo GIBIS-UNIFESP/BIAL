@@ -18,6 +18,7 @@
 
 #if defined ( BIAL_EXPLICIT_FilteringAnisotropicDiffusion ) || ( BIAL_IMPLICIT_BIN )
 
+#include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
 #include "DiffusionFunction.hpp"
 #ifdef BIAL_DEBUG
@@ -37,10 +38,8 @@ namespace Bial {
       }
       COMMENT( "Initial filtering with kappa: " << init_kappa, 1 );
       Image< D > res = Filtering::AnisotropicDiffusion( img, diff_func, init_kappa, 1, radius );
-      Adjacency adj = AdjacencyType::HyperSpheric( radius, img.Dims( ) );
       COMMENT( "Reducing kappa.", 1 );
       float kappa = init_kappa - diff_func->Reduction( init_kappa );
-
       COMMENT( "Filtering until low value of kappa is reached.", 1 );
       while( kappa > 50.0 ) {
         COMMENT( "New kappa: " << kappa, 2 );
@@ -73,20 +72,18 @@ namespace Bial {
                                               size_t iterations, float radius ) {
     try {
       Image< D > res( img );
-      Adjacency adj = AdjacencyType::HyperSpheric( radius, img.Dims( ) );
-
+      Adjacency adj( AdjacencyType::HyperSpheric( radius, img.Dims( ) ) );
+      size_t adj_size = adj.size( );
       COMMENT( "Computing integration constant.", 2 );
       double integration_constant = 0.0;
-      for( size_t idx = 1; idx < adj.Size( ); ++idx ) {
+      for( size_t idx = 1; idx < adj_size; ++idx ) {
         double distance = 0.0;
-        for( size_t dim = 0; dim < img.Dims( ); ++dim ) {
-          distance += std::abs( adj.Displacement( dim, idx ) );
-        }
+        for( size_t dim = 0; dim < img.Dims( ); ++dim )
+          distance += std::abs( adj( idx, dim ) );
         integration_constant += 1.0 / distance;
       }
       integration_constant = 1.0 / integration_constant;
       for( size_t itr = 0; itr < iterations; ++itr ) {
-
         COMMENT( "Computing diffusion filter.", 2 );
         try {
           size_t total_threads = 12;
@@ -104,7 +101,6 @@ namespace Bial {
           BIAL_WARNING( "Failed to run in multi-thread. Exception: " << e.what( ) );
           Filtering::AnisotropicDiffusionThread( img, res, integration_constant, diff_func, kappa, adj, 0, 1 );
         }
-
         COMMENT( "Updating image.", 2 );
         std::swap( img, res );
       }
@@ -136,10 +132,9 @@ namespace Bial {
       COMMENT( "Dealing with thread limits.", 3 );
       size_t min_index = thread * img.Size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * img.Size( ) / total_threads;
-      for( size_t img_index = min_index; img_index < max_index; ++img_index ) {
-        res[ img_index ] = img[ img_index ] + integration_constant*
-                           Filtering::Flow( img, diff_func, kappa, img_index, adj );
-      }
+      for( size_t img_index = min_index; img_index < max_index; ++img_index )
+        res[ img_index ] = img[ img_index ] + integration_constant *
+          Filtering::Flow( img, diff_func, kappa, img_index, adj );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -164,14 +159,16 @@ namespace Bial {
                           const size_t pxl, const Adjacency &adj ) {
     try {
       double flow = 0.0;
-      for( size_t idx = 1; idx < adj.Size( ); ++idx ) {
+      AdjacencyIterator adj_itr( img, adj );
+      size_t adj_size = adj.size( );
+      size_t img_dims = img.Dims( );
+      size_t adj_pxl;
+      for( size_t idx = 1; idx < adj_size; ++idx ) {
         double distance = 0.0;
-        size_t adj_pxl = adj( img, pxl, idx );
-        if( adj_pxl < img.Size( ) ) {
+        if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
           COMMENT( "Computing distance.", 4 );
-          for( size_t dim = 0; dim < img.Dims( ); ++dim ) {
-            distance += pow( adj.Displacement( dim, idx ), 2.0 );
-          }
+          for( size_t dim = 0; dim < img_dims; ++dim )
+            distance += pow( adj( idx, dim ), 2.0 );
           COMMENT( "Computing flow.", 4 );
           if( distance != 0.0 ) {
             double weight = 1.0 / distance;

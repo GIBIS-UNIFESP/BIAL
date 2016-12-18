@@ -10,7 +10,6 @@
 #ifndef BIALCLUSTERINGIFT_H
 #define BIALCLUSTERINGIFT_H
 
-#include "Adjacency.hpp"
 #include "BucketQueue.hpp"
 #include "DegeneratedIFT.hpp"
 #include "Image.hpp"

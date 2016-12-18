@@ -122,19 +122,22 @@ namespace Bial {
                              float &max_distance, size_t thread, size_t total_threads ) {
     try {
       size_t size = label.size( );
+      size_t adj_size = adjacency.size( );
       size_t min_pxl = thread * size / total_threads;
       size_t max_pxl = ( thread + 1 ) * size / total_threads;
+      AdjacencyIterator adj_itr( label, adjacency );
+      size_t adj_pxl;
       COMMENT( "Computing distance from all samples.", 2 );
       for( size_t pxl = min_pxl; pxl < max_pxl; ++pxl ) {
-        for( AdjacencyIterator itr = begin( adjacency, label, pxl ); *itr != size; ++itr ) {
-          size_t adj_pxl = *itr;
-          double distance = DFIDE::Distance( feature, pxl * feature.Features( ), adj_pxl * feature.Features( ),
-                                             feature.Features( ) );
-          /* float distance = ( *BialDistanceFunction )( &feature( pxl, 0 ), &feature( adj_pxl, 0 ), feature.Features( )
-           * ); 
-	   */
-          if( max_distance < distance ) {
-            max_distance = distance;
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+            double distance = DFIDE::Distance( feature, pxl * feature.Features( ), adj_pxl * feature.Features( ),
+                                               feature.Features( ) );
+            /* float distance = ( *BialDistanceFunction )( &feature( pxl, 0 ), &feature( adj_pxl, 0 ), 
+               feature.Features( ) ); 
+            */
+            if( max_distance < distance )
+              max_distance = distance;
           }
         }
       }
@@ -195,24 +198,28 @@ namespace Bial {
   float OPF::PDFThread( const Feature< D > &feature, const Adjacency &adjacency, Image< float > &density, float sigma,
                         float &max_dens_diff, size_t thread, size_t total_threads ) {
     try {
+      size_t adj_size = adjacency.size( );
       size_t size = density.size( );
       size_t min_pxl = thread * size / total_threads;
       size_t max_pxl = ( thread + 1 ) * size / total_threads;
       float mindens = std::numeric_limits< float >::max( );
       float maxdens = std::numeric_limits< float >::min( );
+      AdjacencyIterator adj_itr( density, adjacency );
+      size_t adj_pxl;
       COMMENT( "Computing nodes density and the minimal and maximal densities.", 2 );
       for( size_t pxl = min_pxl; pxl < max_pxl; ++pxl ) {
         density[ pxl ] = 1.0;
         size_t pixels = 1;
-        for( AdjacencyIterator itr = begin( adjacency, density, pxl ); *itr != size; ++itr ) {
-          size_t adj_pxl = *itr;
-          double arc_weight = DFIDE::Distance( feature, pxl * feature.Features( ), adj_pxl * feature.Features( ),
-                                               feature.Features( ) );
-          /* float arc_weight = ( *BialDistanceFunction )( &feature( pxl, 0 ), &feature( adj_pxl, 0 ), feature.Features(
-           * ) ); 
-	   */
-          ++pixels;
-          density[ pxl ] += exp( -arc_weight / sigma );
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+            double arc_weight = DFIDE::Distance( feature, pxl * feature.Features( ), adj_pxl * feature.Features( ),
+                                                 feature.Features( ) );
+            /* float arc_weight = ( *BialDistanceFunction )( &feature( pxl, 0 ), &feature( adj_pxl, 0 ), feature.Features(
+             * ) ); 
+             */
+            ++pixels;
+            density[ pxl ] += exp( -arc_weight / sigma );
+          }
         }
         density[ pxl ] /= pixels;
         if( mindens > density[ pxl ] ) {

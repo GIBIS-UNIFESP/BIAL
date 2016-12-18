@@ -1,6 +1,5 @@
 #include "DescriptionCLD.hpp"
 
-#include "Adjacency.hpp"
 #include "Signal.hpp"
 
 #include <fstream>

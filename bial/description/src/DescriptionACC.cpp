@@ -114,10 +114,8 @@ namespace Bial {
               for( size_t pos = 1; pos < adjpixels.size( ); ++pos ) {
                 int x_dsp = x + raio * adjpixels( pos, 0 );
                 int y_dsp = y + raio * adjpixels( pos, 1 );
-                if( quantized.ValidCoordinate( x_dsp,
-                                               y_dsp ) &&
-                    ( mask( x_dsp,
-                            y_dsp ) == 1 ) && ( quantized( x, y ) == quantized( x_dsp, y_dsp ) ) && ( raio != 0 ) ) {
+                if( quantized.ValidCoordinate( x_dsp, y_dsp ) && ( mask( x_dsp, y_dsp ) == 1 ) &&
+                  ( quantized( x, y ) == quantized( x_dsp, y_dsp ) ) && ( raio != 0 ) ) {
                   frequency[ d ][ p ]++;
                 }
               }

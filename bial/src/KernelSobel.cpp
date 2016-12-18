@@ -30,19 +30,17 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Creating kernel.", 2 );
-      Kernel krn = KernelType::Box( dimensions, 3 );
+      Kernel krn( KernelType::Box( dimensions, 3 ) );
       COMMENT( "Computing kernel coefficients and displacements.", 2 );
       for( size_t elm = 0; elm < krn.size( ); ++elm ) {
         float coef = 1.0f;
         for( size_t dms = 0; dms < krn.Dims( ); ++dms ) {
           COMMENT( "Gradient direction.", 4 );
           if( dms == direction ) {
-            if( krn.Displacement( dms, elm ) < -0.1f ) {
+            if( krn( elm, dms ) < 0 )
               coef *= -1.0f;
-            }
-            else if( krn.Displacement( dms, elm ) > 0.1f ) {
+            else if( krn( elm, dms ) > 0 )
               coef *= 1.0f;
-            }
             else {
               coef = 0.0f;
               break;
@@ -50,12 +48,11 @@ namespace Bial {
           }
           else {
             COMMENT( "Smoothing direction.", 4 );
-            if( ( krn.Displacement( dms, elm ) > -0.1f ) && ( krn.Displacement( dms, elm ) < 0.1f ) ) {
+            if( krn( elm, dms ) == 0 )
               coef *= 2.0f;
-            }
           }
         }
-        krn.Value( elm, coef );
+        krn.Value( elm ) = coef;
       }
       return( krn );
     }
@@ -79,7 +76,7 @@ namespace Bial {
 
   Kernel KernelType::NormalizedSobel( size_t dimensions, size_t direction ) {
     try {
-      Kernel krn = KernelType::Sobel( dimensions, direction );
+      Kernel krn( KernelType::Sobel( dimensions, direction ) );
       krn.SignalNormalize( );
       return( krn );
     }

@@ -26,21 +26,18 @@ int main( int argc, char *argv[ ] ) {
     cout << "\t<energy threshold>:\tA value greater than or equal to zero." << endl;
     return( 0 );
   }
-
   COMMENT( "Reading input image.", 0 );
   Image< int > src_cst( Read< int >( argv[ 1 ] ) );
   Image< int > bkg_cst( src_cst );
   size_t size = src_cst.size( );
   COMMENT( "Creating path function.", 0 );
   EdgeMaxPathFunction< int > pf( src_cst, true, 1 );
-
   COMMENT( "Reading seeds.", 0 );
   Image< int > seed_img( Read< int >( argv[ 2 ] ) );
   if( src_cst.size( ) != seed_img.size( ) ) {
     cout << "Error: seed image and image dimensions do not match." << endl;
     return( 0 );
   }
-
   COMMENT( "Defining seeds, seed labels, and initial IFT cost.", 0 );
   Vector< bool > seed( size, false );
   Vector< bool > bkg_seed( size, false );
@@ -58,25 +55,25 @@ int main( int argc, char *argv[ ] ) {
       bkg_cst[ pxl ] = 0;
     }
   }
-
   Adjacency adj( AdjacencyType::HyperSpheric( 1.1, src_cst.Dims( ) ) );
+  AdjacencyIterator adj_itr( src_cst, adj );
+  size_t adj_size = adj.size( );
+  size_t adj_pxl;
   ImageIFT< int > ift( src_cst, adj, &pf, &seed, &label, nullptr, false, 1, false );
   ift.Run( );
-
   if( argc >= 5 )
     Write( label, argv[ 4 ] );
   Write( src_cst, "connected_ift_cst.pgm" );
-
   COMMENT( "Checking if there are adjacent pixels from distinct object.", 0 );
   bool has_adjacent = false;
   for( size_t src_pxl = 0; src_pxl < size; ++src_pxl ) {
     int src_lbl = label[ src_pxl ];
     if( src_lbl != 0 ) {
-      for( AdjacencyIterator itr = begin( adj, src_cst, src_pxl ); *itr < size; ++itr ) {
-        size_t adj_pxl = *itr;
-        int adj_lbl = label[ adj_pxl ];
-        if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
-          has_adjacent = true;
+      for( size_t idx = 0; idx < adj_size; ++idx ) {
+        if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, idx, adj_pxl ) ) {
+          int adj_lbl = label[ adj_pxl ];
+          if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) )
+            has_adjacent = true;
         }
       }
     }
@@ -87,12 +84,10 @@ int main( int argc, char *argv[ ] ) {
     DEBUG_WRITE( src_cst, "disconnected_ift_cst", 0 );
     return( 0 );
   }
-
   COMMENT( "Running the same IFT but this time only with background seeds.", 0 );  
   ImageIFT< int > ift2( bkg_cst, adj, &pf, &bkg_seed, nullptr, nullptr, false, 1, false );
   ift2.Run( );
   Write( bkg_cst, "backgorund_ift_cst.pgm" );
-
   COMMENT( "Finding new backgournd seeds.", 0 );
   int thres = 0;
   if( argc == 6 )
@@ -108,17 +103,18 @@ int main( int argc, char *argv[ ] ) {
       if( src_energy > thres ) {
         continue;
       }
-      for( AdjacencyIterator itr = begin( adj, src_cst, src_pxl ); *itr < size; ++itr ) {
-        size_t adj_pxl = *itr;
-        int adj_lbl = label[ adj_pxl ];
-        if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
-          has_adjacent = true;
-          COMMENT( "intersection point.", 4 );
-          COMMENT( "If pixel have the same variation of energy of adjancents, both become bkg seeds.", 4 );
-          int adj_energy = bkg_cst( adj_pxl ) - src_cst( adj_pxl );
-          if( adj_energy < src_energy ) {
-            lower_energy = false;
-            break;
+      for( size_t idx = 0; idx < adj_size; ++idx ) {
+        if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, idx, adj_pxl ) ) {
+          int adj_lbl = label[ adj_pxl ];
+          if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
+            has_adjacent = true;
+            COMMENT( "intersection point.", 4 );
+            COMMENT( "If pixel have the same variation of energy of adjancents, both become bkg seeds.", 4 );
+            int adj_energy = bkg_cst( adj_pxl ) - src_cst( adj_pxl );
+            if( adj_energy < src_energy ) {
+              lower_energy = false;
+              break;
+            }
           }
         }
       }
@@ -130,20 +126,19 @@ int main( int argc, char *argv[ ] ) {
       }
     }
   }
-
   // COMMENT( "Finding new backgournd seeds from the same object.", 0 );
   // for( size_t src_pxl = 0; src_pxl < size; ++src_pxl ) {
   //   bool lower_label = true;
   //   has_adjacent = false;
   //   int src_lbl = label[ src_pxl ];
   //   if( src_lbl != 0 ) {
-  //     for( AdjacencyIterator itr = begin( adj, src_cst, src_pxl ); *itr < size; ++itr ) {
-  //       size_t adj_pxl = *itr;
-  //       int adj_lbl = label[ adj_pxl ];
-  //       if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
-  //         has_adjacent = true;
-  //         if( adj_lbl < src_lbl ) {
-  //           lower_label = false;
+  //     for( size_t idx = 0; idx < adj_size; ++idx ) {
+  //       if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, idx, adj_pxl ) ) {
+  //         int adj_lbl = label[ adj_pxl ];
+  //         if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
+  //           has_adjacent = true;
+  //           if( adj_lbl < src_lbl )
+  //             lower_label = false;
   //         }
   //       }
   //     }
@@ -155,7 +150,6 @@ int main( int argc, char *argv[ ] ) {
   //     }
   //   }
   // }
-
   COMMENT( "final_seeds.", 0 );
   Image< int > print_seed( src_cst );
   print_seed.Set( 255 );
@@ -168,11 +162,9 @@ int main( int argc, char *argv[ ] ) {
     }
   }
   Write( print_seed, "final_seeds.pgm" );
-
   ImageIFT< int > ift3( src_cst, adj, &pf, &seed, &label, nullptr, false, 1, false );
   ift3.Run( );
   Write( label, argv[ 3 ] );
   Write( src_cst, "disconnected_ift_cst.pgm" );
-  
   return( 0 );
 }

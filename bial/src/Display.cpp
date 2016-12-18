@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2015/Oct/06 */
-/* Version: 2.0.00 */
 /* Content: Image display class implementation. */
 /* Description: class to handle visualization. */
 /* Future add-on's: unknown. */

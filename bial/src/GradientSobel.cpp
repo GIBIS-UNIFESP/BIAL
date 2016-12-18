@@ -37,7 +37,7 @@ namespace Bial {
 				    std::to_string( dimensions ) ) );
         throw( std::logic_error( msg ) );
       }
-      Kernel krn = KernelType::NormalizedSobel( dimensions, direction );
+      Kernel krn( KernelType::NormalizedSobel( dimensions, direction ) );
       return( Correlation( img, krn ) );
     }
     catch( std::bad_alloc &e ) {
@@ -66,7 +66,7 @@ namespace Bial {
 
       Vector< Image< D > > dir_sobel;
       for( size_t dir = 0; dir < dimensions; ++dir ) {
-        Kernel krn = KernelType::NormalizedSobel( dimensions, dir );
+        Kernel krn( KernelType::NormalizedSobel( dimensions, dir ) );
         dir_sobel.push_back( Correlation( img, krn ) );
       }
       COMMENT( "Computing Sobel magnitude.", 1 );

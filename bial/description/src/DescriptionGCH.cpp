@@ -1,6 +1,5 @@
 #include "DescriptionGCH.hpp"
 
-#include "Adjacency.hpp"
 #include "Signal.hpp"
 
 namespace Bial {

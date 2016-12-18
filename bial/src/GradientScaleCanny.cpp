@@ -45,12 +45,10 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Computing suppressed Sobel.", 0 );
-      Image< D > suppressed_sobel = Gradient::NonMaxSobelSuppression( img );
-      // DEBUG_WRITE( suppressed_sobel, "suppressed_sobel", 1 );
-
+      Image< D > suppressed_sobel( Gradient::NonMaxSobelSuppression( img ) );
+      DEBUG_WRITE( suppressed_sobel, "suppressed_sobel", 0 );
       COMMENT( "Creating resultant image.", 0 );
-      Image< D > canny_scale( img );
-      canny_scale.Set( 0.0 );
+      Image< D > canny_scale( img.Dim( ), img.PixelSize( ) );
       COMMENT( "Getting image dimensions.", 0 );
       Vector< size_t > full_size = img.Dim( );
       Vector< size_t > dim_size( full_size ); /* Maximum position to slide window on. */
@@ -67,26 +65,26 @@ namespace Bial {
       size_t window_factor = 4;
       COMMENT( "Sum of local hysteresis.", 0 );
       Image< D > edge( window_side );
-      Adjacency adj = AdjacencyType::HyperSpheric( 1.9, edge.Dims( ) );
+      Vector< size_t > step( window_side / window_factor );
+      if( step[ 0 ] < 1 ) step[ 0 ] = 1;
+      if( step[ 1 ] < 1 ) step[ 1 ] = 1;
+      if( step[ 2 ] < 1 ) step[ 2 ] = 1;
+      Adjacency adj( AdjacencyType::HyperSpheric( 1.9, edge.Dims( ) ) );
+      AdjacencyIterator adj_itr( edge, adj );
+      size_t adj_size = adj.size( );
+      Vector< size_t > adj_pxl( 3 );
+      size_t hist_size = histogram.size( );
       for( size_t z_src = 0; z_src < dim_size( 2 ); ) {
         for( size_t y_src = 0; y_src < dim_size( 1 ); ) {
           COMMENT( "z_src: " << z_src << ", y_src: " << y_src, 4 );
           for( size_t x_src = 0; x_src < dim_size( 0 ); ) {
-
-            COMMENT( "Computing window source coordinate.", 4 );
-            //size_t src_coord = x_src + y_src*img.size( 0 ) + z_src*img.Displacement( 1 );
             COMMENT( "Creating window histogram.", 4 );
-            for( size_t bin = 0; bin < histogram.size( ); ++bin ) {
+            for( size_t bin = 0; bin < hist_size; ++bin )
               histogram[ bin ] = 0.0;
-            }
             for( size_t z_wdw = 0; z_wdw < window_side( 2 ); ++z_wdw ) {
               for( size_t y_wdw = 0; y_wdw < window_side( 1 ); ++y_wdw ) {
-                for( size_t x_wdw = 0; x_wdw < window_side( 0 ); ++x_wdw ) {
-                  // size_t wdw_coord = x_wdw + y_wdw * suppressed_sobel.size( 0 ) + 
-                  // z_wdw * suppressed_sobel.Displacement( 1 );
-                  //++histogram[ suppressed_sobel[ src_coord + wdw_coord ] ];
+                for( size_t x_wdw = 0; x_wdw < window_side( 0 ); ++x_wdw )
                   ++histogram[ suppressed_sobel( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) ];
-                }
               }
             }
             COMMENT( "Computing normalized accumulated histogram to get low and high intensity thresholds.", 4 );
@@ -95,25 +93,21 @@ namespace Bial {
             SignalOp::Accumulate( histogram );
             COMMENT( "Getting lower bin for threshold.", 4 );
             size_t lower_bin = 0;
-            for( size_t bin = 1; bin < histogram.size( ); ++bin ) {
+            for( size_t bin = 1; bin < hist_size; ++bin ) {
               if( std::abs( lower_threshold - histogram[ bin ] ) <=
-                  std::abs( lower_threshold - histogram[ lower_bin ] ) ) {
+                  std::abs( lower_threshold - histogram[ lower_bin ] ) )
                 lower_bin = bin;
-              }
-              else {
+              else
                 break;
-              }
             }
             COMMENT( "Getting higher bin for threshold.", 4 );
             size_t higher_bin = lower_bin;
-            for( size_t bin = lower_bin + 1; bin < histogram.size( ); ++bin ) {
+            for( size_t bin = lower_bin + 1; bin < hist_size; ++bin ) {
               if( std::abs( higher_threshold - histogram[ bin ] ) <=
-                  std::abs( higher_threshold - histogram[ higher_bin ] ) ) {
+                  std::abs( higher_threshold - histogram[ higher_bin ] ) )
                 higher_bin = bin;
-              }
-              else {
+              else
                 break;
-              }
             }
             COMMENT( "Getting lower and higher intensities.", 4 );
             D lower_intensity = histogram.Data( lower_bin );
@@ -126,11 +120,12 @@ namespace Bial {
               for( size_t z_wdw = 0; z_wdw < window_side( 2 ); ++z_wdw ) {
                 for( size_t y_wdw = 0; y_wdw < window_side( 1 ); ++y_wdw ) {
                   for( size_t x_wdw = 0; x_wdw < window_side( 0 ); ++x_wdw ) {
-                    COMMENT( "Getting local and global coordinates.", 4 );
+                    COMMENT( "Getting local and global coordinates.", 5 );
                     //size_t wdw_coord = x_wdw + y_wdw*suppressed_sobel.size( 0 ) +
                     //z_wdw*suppressed_sobel.Displacement( 1 );
                     size_t edge_coord = x_wdw + y_wdw * edge.size( 0 ) + z_wdw * edge.Displacement( 1 );
-                    COMMENT( "Verifying if pixel is an edge pixel and adding it to the queue.", 4 );
+                    COMMENT( "Verifying if pixel is an edge pixel and adding it to the queue.", 5 );
+                    //if( base_grad( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) > 0 ) {
                     if( suppressed_sobel( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) >= higher_intensity ) {
                       edge[ edge_coord ] = 1;
                       canny_scale( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) = 1;
@@ -140,27 +135,27 @@ namespace Bial {
                 }
               }
             }
-            COMMENT( "If lower and higher intensities are equal, there is no need for hysteresis.", 4 );
+            COMMENT( "Lower and higher intensities: ." << lower_intensity << ", " higher_intensity, 4 );
             if( lower_intensity != higher_intensity ) {
-
               COMMENT( "Propagating to connected lower threshold pixels.", 4 );
               while( !queue.Empty( ) ) {
                 COMMENT( "Removing  pixel from queue.", 4 );
                 size_t pxl = queue.Remove( );
+                Vector< size_t > pxl_coords( edge.Coordinates( pxl ) );
                 COMMENT( "Searching for adjacents that must also be set as edge pixels.", 4 );
-                AdjacencyIterator idx = begin( adj, edge, pxl );
-                for( ++idx; *idx != edge.size( ); ++idx ) {
-                  COMMENT( "Getting adjacent local and global coordinates.", 4 );
-                  size_t adj_pxl = *idx;
-                  Vector< size_t > img_coord = edge.Coordinates( adj_pxl );
-                  img_coord( 0 ) += x_src;
-                  img_coord( 1 ) += y_src;
-                  img_coord( 2 ) += z_src;
-                  COMMENT( "Verifying if adjacent pixel is an edge pixel and adding it to the queue.", 4 );
-                  if( ( suppressed_sobel( img_coord ) >= lower_intensity ) && ( edge[ adj_pxl ] == 0 ) ) {
-                    edge[ adj_pxl ] = 1;
-                    canny_scale( img_coord ) = 1;
-                    queue.Insert( adj_pxl, 1 );
+                for( size_t idx = 1; idx < adj_size; ++idx ) {
+                  if( ( adj_itr.*adj_itr.AdjVct )( pxl_coords, idx, adj_pxl ) ) {
+                    COMMENT( "Getting adjacent local and global coordinates.", 5 );
+                    Vector< size_t > img_coord( adj_pxl );
+                    img_coord[ 0 ] += x_src;
+                    img_coord[ 1 ] += y_src;
+                    img_coord[ 2 ] += z_src;
+                    COMMENT( "Verifying if adjacent pixel is an edge pixel and adding it to the queue.", 5 );
+                    if( ( suppressed_sobel( img_coord ) >= lower_intensity ) && ( edge( adj_pxl ) == 0 ) ) {
+                      edge( adj_pxl ) = 1;
+                      canny_scale( img_coord ) = 1;
+                      queue.Insert( edge.Position( adj_pxl ), 1 );
+                    }
                   }
                 }
               }
@@ -168,38 +163,32 @@ namespace Bial {
             COMMENT( "x step to the window.", 4 );
             COMMENT( "Checking the last step, if it requires a smaller displacement to include the edges in " <<
                      "the extremity of the image.", 4 );
-            if( ( x_src >= dim_size( 0 ) - std::max( 1, static_cast< int >( window_side( 0 ) / window_factor ) ) ) &&
-                ( x_src < dim_size( 0 ) - 1 ) ) {
+            if( ( x_src >= dim_size( 0 ) - step[ 0 ] ) && ( x_src < dim_size( 0 ) - 1 ) ) {
               x_src = dim_size( 0 ) - 1;
               COMMENT( "Other steps.", 4 );
             }
-            else {
-              x_src += std::max( 1, static_cast< int >( window_side( 0 ) / window_factor ) );
-            }
+            else
+              x_src += step[ 0 ];
           }
           COMMENT( "y step to the window.", 4 );
           COMMENT( "Checking the last step, if it requires a smaller displacement to include the edges in " <<
                    "the extremity of the image.", 4 );
-          if( ( y_src >= dim_size( 1 ) - std::max( 1, static_cast< int >( window_side( 1 ) / window_factor ) ) ) &&
-              ( y_src < dim_size( 1 ) - 1 ) ) {
+          if( ( y_src >= dim_size( 1 ) - step[ 1 ] ) && ( y_src < dim_size( 1 ) - 1 ) ) {
             y_src = dim_size( 1 ) - 1;
             COMMENT( "Other steps.", 4 );
           }
-          else {
-            y_src += std::max( 1, static_cast< int >( window_side( 1 ) / window_factor ) );
-          }
+          else
+            y_src += step[ 1 ];
         }
         COMMENT( "z step to the window.", 4 );
         COMMENT( "Checking the last step, if it requires a smaller displacement to include the edges in " <<
                  "the extremity of the image.", 4 );
-        if( ( z_src >= dim_size( 2 ) - std::max( 1, static_cast< int >( window_side( 2 ) / window_factor ) ) ) &&
-            ( z_src < dim_size( 2 ) - 1 ) ) {
+        if( ( z_src >= dim_size( 2 ) - step[ 2 ] ) && ( z_src < dim_size( 2 ) - 1 ) ) {
           z_src = dim_size( 2 ) - 1;
           COMMENT( "Other steps.", 4 );
         }
-        else {
-          z_src += std::max( 1, static_cast< int >( window_side( 2 ) / window_factor ) );
-        }
+        else
+          z_src += step[ 2 ];
       }
       return( canny_scale );
     }
@@ -229,11 +218,10 @@ namespace Bial {
       Image< D > suppressed_sobel = Gradient::NonMaxSobelSuppression( img );
       DEBUG_WRITE( suppressed_sobel, "suppressed_sobel", 0 );
       COMMENT( "Creating resultant image.", 0 );
-      Image< D > canny_scale( img ); /* ( img.Dim( ), img.PixelSize( ), img.Frames( ), img.FrameTime( ) ); */
-      canny_scale.Set( 0.0 );
+      Image< D > canny_scale( img.Dim( ), img.PixelSize( ) );
       COMMENT( "Getting image dimensions.", 0 );
       Vector< size_t > full_size = img.Dim( );
-      Vector< size_t > dim_size( full_size );
+      Vector< size_t > dim_size( full_size ); /* Maximum position to slide window on. */
       COMMENT( "Creating window with correct dimensions.", 0 );
       Vector< size_t > window_side( 3, 1 );
       for( size_t dms = 0; dms < 3; ++dms ) {
@@ -245,27 +233,28 @@ namespace Bial {
       Signal histogram( suppressed_sobel.Maximum( ) + 1, 0.0, 1.0 );
       COMMENT( "Factor of the window size by which displacement over the image occurs.", 0 );
       size_t window_factor = 4;
-
       COMMENT( "Sum of local hysteresis.", 0 );
       Image< D > edge( window_side );
-      Adjacency adj = AdjacencyType::HyperSpheric( 1.9, edge.Dims( ) );
+      Vector< size_t > step( window_side / window_factor );
+      if( step[ 0 ] < 1 ) step[ 0 ] = 1;
+      if( step[ 1 ] < 1 ) step[ 1 ] = 1;
+      if( step[ 2 ] < 1 ) step[ 2 ] = 1;
+      Adjacency adj( AdjacencyType::HyperSpheric( 1.9, edge.Dims( ) ) );
+      AdjacencyIterator adj_itr( edge, adj );
+      size_t adj_size = adj.size( );
+      Vector< size_t > adj_pxl( 3 );
+      size_t hist_size = histogram.size( );
       for( size_t z_src = 0; z_src < dim_size( 2 ); ) {
-        COMMENT( "z_src: " << z_src << " of " << dim_size( 2 ), 1 );
         for( size_t y_src = 0; y_src < dim_size( 1 ); ) {
           COMMENT( "z_src: " << z_src << ", y_src: " << y_src, 4 );
           for( size_t x_src = 0; x_src < dim_size( 0 ); ) {
-            COMMENT( "Computing window source coordinate.", 4 );
-            //size_t src_coord = x_src + y_src*img.size( 0 ) + z_src*img.Displacement( 1 );
             COMMENT( "Creating window histogram.", 4 );
-            for( size_t bin = 0; bin < histogram.size( ); ++bin ) {
+            for( size_t bin = 0; bin < hist_size; ++bin )
               histogram[ bin ] = 0.0;
-            }
             for( size_t z_wdw = 0; z_wdw < window_side( 2 ); ++z_wdw ) {
               for( size_t y_wdw = 0; y_wdw < window_side( 1 ); ++y_wdw ) {
-                for( size_t x_wdw = 0; x_wdw < window_side( 0 ); ++x_wdw ) {
-                  //size_t wdw_coord = x_wdw + y_wdw*suppressed_sobel.size( 0 ) + z_wdw*suppressed_sobel.Displacement( 1 );
+                for( size_t x_wdw = 0; x_wdw < window_side( 0 ); ++x_wdw )
                   ++histogram[ suppressed_sobel( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) ];
-                }
               }
             }
             COMMENT( "Computing normalized accumulated histogram to get low and high intensity thresholds.", 4 );
@@ -274,20 +263,27 @@ namespace Bial {
             SignalOp::Accumulate( histogram );
             COMMENT( "Getting lower bin for threshold.", 4 );
             size_t lower_bin = 0;
-            for( size_t bin = 1; bin < histogram.size( ); ++bin ) {
+            for( size_t bin = 1; bin < hist_size; ++bin ) {
               if( std::abs( lower_threshold - histogram[ bin ] ) <=
-                  std::abs( lower_threshold - histogram[ lower_bin ] ) ) {
+                  std::abs( lower_threshold - histogram[ lower_bin ] ) )
                 lower_bin = bin;
-              }
-              else {
+              else
                 break;
-              }
             }
+            // COMMENT( "Getting higher bin for threshold.", 4 );
+            // size_t higher_bin = lower_bin;
+            // for( size_t bin = lower_bin + 1; bin < histogram.size( ); ++bin ) {
+            //   if( std::abs( higher_threshold - histogram[ bin ] ) <=
+            //       std::abs( higher_threshold - histogram[ higher_bin ] ) )
+            //     higher_bin = bin;
+            //   else
+            //     break;
+            // }
             COMMENT( "Getting lower and higher intensities.", 4 );
             D lower_intensity = histogram.Data( lower_bin );
+            // D higher_intensity = histogram.Data( higher_bin );
             edge.Set( 0.0 );
             GrowingBucketQueue queue( edge.size( ) );
-
             COMMENT( "Avoid getting all window pixels as edges.", 4 );
             if( lower_intensity != 0 ) {
               COMMENT( "Getting seeds from base gradient.", 4 );
@@ -300,6 +296,7 @@ namespace Bial {
                     size_t edge_coord = x_wdw + y_wdw * edge.size( 0 ) + z_wdw * edge.Displacement( 1 );
                     COMMENT( "Verifying if pixel is an edge pixel and adding it to the queue.", 4 );
                     if( base_grad( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) > 0 ) {
+                    //if( suppressed_sobel( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) >= higher_intensity ) {
                       edge[ edge_coord ] = 1;
                       canny_scale( x_src + x_wdw, y_src + y_wdw, z_src + z_wdw ) = 1;
                       queue.Insert( edge_coord, 1 );
@@ -307,24 +304,28 @@ namespace Bial {
                   }
                 }
               }
+            // }
+            // COMMENT( "If lower and higher intensities are equal, there is no need for hysteresis.", 4 );
+            // if( lower_intensity != higher_intensity ) {
               COMMENT( "Propagating to connected lower threshold pixels.", 4 );
               while( !queue.Empty( ) ) {
                 COMMENT( "Removing  pixel from queue.", 4 );
                 size_t pxl = queue.Remove( );
+                Vector< size_t > pxl_coords( edge.Coordinates( pxl ) );
                 COMMENT( "Searching for adjacents that must also be set as edge pixels.", 4 );
-                AdjacencyIterator idx = begin( adj, edge, pxl );
-                for( ++idx; *idx != edge.size( ); ++idx ) {
-                  COMMENT( "Getting adjacent local and global coordinates.", 4 );
-                  size_t adj_pxl = *idx;
-                  Vector< size_t > img_coord = edge.Coordinates( adj_pxl );
-                  img_coord( 0 ) += x_src;
-                  img_coord( 1 ) += y_src;
-                  img_coord( 2 ) += z_src;
-                  COMMENT( "Verifying if adjacent pixel is an edge pixel and adding it to the queue.", 4 );
-                  if( ( suppressed_sobel( img_coord ) >= lower_intensity ) && ( edge[ adj_pxl ] == 0 ) ) {
-                    edge[ adj_pxl ] = 1;
-                    canny_scale( img_coord ) = 1;
-                    queue.Insert( adj_pxl, 1 );
+                for( size_t idx = 1; idx < adj_size; ++idx ) {
+                  if( ( adj_itr.*adj_itr.AdjVct )( pxl_coords, idx, adj_pxl ) ) {
+                    COMMENT( "Getting adjacent local and global coordinates.", 5 );
+                    Vector< size_t > img_coord( adj_pxl );
+                    img_coord[ 0 ] += x_src;
+                    img_coord[ 1 ] += y_src;
+                    img_coord[ 2 ] += z_src;
+                    COMMENT( "Verifying if adjacent pixel is an edge pixel and adding it to the queue.", 5 );
+                    if( ( suppressed_sobel( img_coord ) >= lower_intensity ) && ( edge( adj_pxl ) == 0 ) ) {
+                      edge( adj_pxl ) = 1;
+                      canny_scale( img_coord ) = 1;
+                      queue.Insert( edge.Position( adj_pxl ), 1 );
+                    }
                   }
                 }
               }
@@ -332,38 +333,32 @@ namespace Bial {
             COMMENT( "x step to the window.", 4 );
             COMMENT( "Checking the last step, if it requires a smaller displacement to include the edges in " <<
                      "the extremity of the image.", 4 );
-            if( ( x_src >= dim_size( 0 ) - std::max( 1, static_cast< int >( window_side( 0 ) / window_factor ) ) ) &&
-                ( x_src < dim_size( 0 ) - 1 ) ) {
+            if( ( x_src >= dim_size( 0 ) - step[ 0 ] ) && ( x_src < dim_size( 0 ) - 1 ) ) {
               x_src = dim_size( 0 ) - 1;
               COMMENT( "Other steps.", 4 );
             }
-            else {
-              x_src += std::max( 1, static_cast< int >( window_side( 0 ) / window_factor ) );
-            }
+            else
+              x_src += step[ 0 ];
           }
           COMMENT( "y step to the window.", 4 );
           COMMENT( "Checking the last step, if it requires a smaller displacement to include the edges in " <<
                    "the extremity of the image.", 4 );
-          if( ( y_src >= dim_size( 1 ) - std::max( 1, static_cast< int >( window_side( 1 ) / window_factor ) ) ) &&
-              ( y_src < dim_size( 1 ) - 1 ) ) {
+          if( ( y_src >= dim_size( 1 ) - step[ 1 ] ) && ( y_src < dim_size( 1 ) - 1 ) ) {
             y_src = dim_size( 1 ) - 1;
             COMMENT( "Other steps.", 4 );
           }
-          else {
-            y_src += std::max( 1, static_cast< int >( window_side( 1 ) / window_factor ) );
-          }
+          else
+            y_src += step[ 1 ];
         }
         COMMENT( "z step to the window.", 4 );
         COMMENT( "Checking the last step, if it requires a smaller displacement to include the edges in " <<
                  "the extremity of the image.", 4 );
-        if( ( z_src >= dim_size( 2 ) - std::max( 1, static_cast< int >( window_side( 2 ) / window_factor ) ) ) &&
-            ( z_src < dim_size( 2 ) - 1 ) ) {
+        if( ( z_src >= dim_size( 2 ) - step[ 2 ] ) && ( z_src < dim_size( 2 ) - 1 ) ) {
           z_src = dim_size( 2 ) - 1;
           COMMENT( "Other steps.", 4 );
         }
-        else {
-          z_src += std::max( 1, static_cast< int >( window_side( 2 ) / window_factor ) );
-        }
+        else
+          z_src += step[ 2 ];
       }
       return( canny_scale );
     }
@@ -494,11 +489,9 @@ namespace Bial {
       }
       COMMENT( "Computing multscale Canny.", 1 );
       Image< D > mult( MultiScaleCanny( img, lower_threshold, higher_threshold, sigma, scales ) );
-
       COMMENT( "Computing connected components.", 1 );
-      Adjacency spheric = AdjacencyType::HyperSpheric( 1.9, img.Dims( ) );
+      Adjacency spheric( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
       Image< int > label( Segmentation::ConnectedComponents( mult, spheric ) );
-
       COMMENT( "Removing components with less than min_size.", 1 );
       Image< int > res( Segmentation::RemoveSmallComponents( label, fraction ) );
       return( res );

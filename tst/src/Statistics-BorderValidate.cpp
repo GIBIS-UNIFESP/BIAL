@@ -5,7 +5,6 @@
 /* Content: Test file. */
 /* Description: Implementation of multiclass labeling from segmentation result. */
 
-#include "Adjacency.hpp"
 #include "Image.hpp"
 #include "FileImage.hpp"
 #include "TransformEuclDist.hpp"

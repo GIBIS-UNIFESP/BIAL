@@ -32,6 +32,7 @@
 #include <deque>
 #include <exception>
 #include <fstream>
+#include <functional>
 #include <future>
 #include <iomanip>
 #include <iostream>

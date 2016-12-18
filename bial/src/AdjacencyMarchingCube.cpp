@@ -27,7 +27,7 @@ namespace Bial {
       COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
       /* Lorensen's marching cube: */
       /* http://paulbourke.net/geometry/polygonise/ marching cube: */
-      Adjacency adj( 3, 8 );
+      Adjacency adj( 8, 3 );
       //adj.relation.Set( 0.f );
       adj( 0, 2 ) = 1.f; /* V0 = (0,0,1) */
       adj( 1, 0 ) = adj( 1, 2 ) = 1.f; /* V1 = (1,0,1) */

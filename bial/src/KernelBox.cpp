@@ -23,7 +23,7 @@ namespace Bial {
     try {
       COMMENT( "Creating kernel.", 2 );
       size_t elements = std::pow( side_lenght, dimensions );
-      Kernel krn = Kernel( dimensions, elements );
+      Kernel krn = Kernel( elements, dimensions );
       COMMENT( "Setting kernel displacements.", 2 );
       int max_side = side_lenght / 2;
       int min_side = -max_side + ( ( side_lenght + 1 ) % 2 ); /* Even lenghts contain one less element. */

@@ -17,11 +17,12 @@
 
 #if defined ( BIAL_EXPLICIT_Correlation ) || ( BIAL_IMPLICIT_BIN )
 
+#include "AdjacencyIterator.hpp"
 #ifdef BIAL_DEBUG
 #include "FileImage.hpp"
 #endif
 #include "Image.hpp"
-#include "KernelIterator.hpp"
+#include "Kernel.hpp"
 
 namespace Bial {
 
@@ -80,15 +81,18 @@ namespace Bial {
                            size_t total_threads ) {
     try {
       size_t img_size = img.Size( );
+      size_t adj_size = krn.size( );
+      AdjacencyIterator adj_itr( img, krn );
+      size_t adj_pxl;
       COMMENT( "Dealing with thread limits.", 1 );
       size_t min_index = thread * img_size / total_threads;
       size_t max_index = ( thread + 1 ) * img_size / total_threads;
       COMMENT( "Running algorithm.", 1 );
       for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
         double sum = 0.0;
-        for( KernelIterator itr = krn.begin( img, pxl ); *itr < img_size; ++itr ) {
-          size_t adj_pxl = *itr;
-          sum += static_cast< double >( img[ adj_pxl ] ) * itr.Value( );
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) )
+            sum += static_cast< double >( img[ adj_pxl ] ) * krn.Value( idx );
         }
         res[ pxl ] = static_cast< D >( sum );
       }

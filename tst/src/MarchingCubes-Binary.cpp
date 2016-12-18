@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Lucas Santana Lellis */
 /* Date: 2015/Aug/15 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test marching cubes algorithm. */
 
@@ -32,7 +30,7 @@ int main( int argc, char **argv ) {
     float radius = atof( argv[ 5 ] );
     mask = Gradient::Morphological( mask );
 
-    Adjacency adj = AdjacencyType::Spheric( radius );
+    Adjacency adj( AdjacencyType::Spheric( radius ) );
     mask = Morphology::DilateBin( mask, adj );
     /* img *= mask; */
 

@@ -5,7 +5,6 @@
 /* Content: Test file. */
 /* Description: Implementation of multiclass labeling from segmentation result. */
 
-#include "Adjacency.hpp"
 #include "FileImage.hpp"
 #include "Image.hpp"
 #include "SegmentationIntensityThreshold.hpp"

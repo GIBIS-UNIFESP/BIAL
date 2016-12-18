@@ -32,7 +32,6 @@ namespace Bial {
 
   template< class D > std::tuple< Image< D >, Image< int > > 
   Edge::LiveWire( const Image< D > &img, const Vector< bool > &seed, float weight ) {
-    
     COMMENT( "Computing gradient.", 0 );
     Image< D > grad = Gradient::Morphological( img );
     COMMENT( "Computing gradient complement.", 0 );
@@ -52,7 +51,6 @@ namespace Bial {
     D delta = 1;
     MaxSumPathFunction< Image, D > pf( img, grad, 0.0, delta );
     grad += delta;
-
     COMMENT( "Computing IFT.", 0 );
     COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
              "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
@@ -64,14 +62,12 @@ namespace Bial {
     }
     ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
     ift.Run( );
-
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
   }
 
   template< class D > std::tuple< Image< D >, Image< int > > 
   Edge::LiveWire( const Image< D > &img, const Image< D > &msk, const Vector< bool > &seed, float weight ) {
-
     COMMENT( "Computing gradient.", 0 );
     Image< D > grad = Gradient::Morphological( img );
     COMMENT( "Computing gradient complement.", 0 );
@@ -93,7 +89,6 @@ namespace Bial {
     D delta = 1;
     MaxSumPathFunction< Image, D > pf( img, grad, 0.0, delta );
     grad += 1;
-
     COMMENT( "Computing IFT.", 0 );
     COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
              "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
@@ -109,7 +104,6 @@ namespace Bial {
     }
     ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
     ift.Run( );
-
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
   }

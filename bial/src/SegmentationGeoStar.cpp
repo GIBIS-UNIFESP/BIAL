@@ -49,8 +49,8 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Initializing maps.", 0 );
-      Adjacency adj = AdjacencyType::HyperSpheric( 1.5, image.Dims( ) );
-      Image< D > grad = Gradient::Directional( image, adj ); /* Gradient::Morphological( image ); */
+      Adjacency adj( AdjacencyType::HyperSpheric( 1.5, image.Dims( ) ) );
+      Image< D > grad( Gradient::Directional( image, adj ) );
       Image< int > pred( image );
       Image< D > value( grad );
       Image< int > label( image );

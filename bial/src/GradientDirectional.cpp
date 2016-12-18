@@ -31,11 +31,15 @@ namespace Bial {
   Image< D > Gradient::Directional( const Image< D > &img, const Adjacency &adj ) {
     try {
       Image< D > grad( img );
-      for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
+      AdjacencyIterator adj_itr( img, adj );
+      size_t adj_size = adj.size( );
+      size_t img_size = img.size( );
+      size_t adj_pxl;
+      for( size_t pxl = 0; pxl < img_size; ++pxl ) {
         double sum = 0;
-        for( AdjacencyIterator itr = begin( adj, img, pxl ); *itr != img.size( ); ++itr ) {
-          size_t adj_pxl = *itr;
-          sum += ( img[ pxl ] > img[ adj_pxl ] ) ? img[ pxl ] - img[ adj_pxl ] : img[ adj_pxl ] - img[ pxl ];
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) )
+            sum += ( img[ pxl ] > img[ adj_pxl ] ) ? img[ pxl ] - img[ adj_pxl ] : img[ adj_pxl ] - img[ pxl ];
         }
         grad[ pxl ] = static_cast< D >( sum );
       }

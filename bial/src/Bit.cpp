@@ -88,6 +88,15 @@ namespace Bial {
   template bool Bit::IsZero( int num, size_t bit );
   template int Bit::Value( int num, size_t bit );
 
+  template size_t Bit::Invert( size_t num, size_t bit );
+  template size_t Bit::Set( size_t num, size_t bit, char val );
+  template size_t Bit::Preset( size_t num, size_t bit );
+  template size_t Bit::Reset( size_t num, size_t bit );
+  template size_t Bit::Flip( size_t num, size_t bit );
+  template bool Bit::IsOne( size_t num, size_t bit );
+  template bool Bit::IsZero( size_t num, size_t bit );
+  template size_t Bit::Value( size_t num, size_t bit );
+
   template llint Bit::Invert( llint num, size_t bit );
   template llint Bit::Set( llint num, size_t bit, char val );
   template llint Bit::Preset( llint num, size_t bit );

@@ -20,6 +20,7 @@
 #if defined ( BIAL_EXPLICIT_ColorMedianFeature ) || ( BIAL_IMPLICIT_BIN )
 
 #include "Adjacency.hpp"
+#include "AdjacencyIterator.hpp"
 #include "Color.hpp"
 #include "Feature.hpp"
 #include "Image.hpp"
@@ -30,11 +31,11 @@ namespace Bial {
   template< class D >
   Feature< D > ColorMedianFeature( const Image< Color > &src, const Adjacency &adj_rel, float proportion ) {
     try {
-      if( ( proportion > 1.0 ) || ( proportion <= 0.0 ) ) {
+      IF_DEBUG( ( proportion > 1.0 ) || ( proportion <= 0.0 ) ) {
         std::string msg( BIAL_ERROR( "Invalid proportion. Expected: 0 < proportion <= 1." ) );
         throw( std::logic_error( msg ) );
       }
-      if( src.Dims( ) != adj_rel.Dims( ) ) {
+      IF_DEBUG( src.Dims( ) != adj_rel.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Image and adjacency relation dimensions do not match." ) );
         throw( std::logic_error( msg ) );
       }
@@ -85,23 +86,23 @@ namespace Bial {
   Feature< D > ColorMedianFeature( const Image< Color > &src, const Image< D > &msk, const Adjacency &adj_rel, 
                                    float proportion ) {
     try {
-      if( ( proportion > 1.0 ) || ( proportion <= 0.0 ) ) {
+      size_t adj_size = adj_rel.size( );
+      IF_DEBUG( ( proportion > 1.0 ) || ( proportion <= 0.0 ) ) {
         std::string msg( BIAL_ERROR( "Invalid proportion. Expected: 0 < proportion <= 1." ) );
         throw( std::logic_error( msg ) );
       }
-      if( src.Dims( ) != adj_rel.Dims( ) ) {
+      IF_DEBUG( src.Dims( ) != adj_rel.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Image and adjacency relation dimensions do not match." ) );
         throw( std::logic_error( msg ) );
       }
-      if( src.Dims( ) != msk.Dims( ) ) {
+      IF_DEBUG( src.Dims( ) != msk.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Source image and mask image dimensions do not match." ) );
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Creating feature vector.", 0 );
-      size_t features = adj_rel.size( ) * proportion * 3;
-      if( features == 0 ) {
+      size_t features = adj_size * proportion * 3;
+      if( features == 0 )
         features = 3;
-      }
       size_t elements = 0;
       for( size_t elm = 0; elm < msk.size( ); ++elm ) {
         if( msk( elm ) != 0 ) 
@@ -110,24 +111,26 @@ namespace Bial {
       //Bial::Elements( msk, static_cast< D >( 1 ), msk.Maximum( ) );
       Feature< D > res( elements, features );
       COMMENT( "Computing median pixels.", 0 );
-      Vector< double > median( adj_rel.size( ) );
-      Vector< size_t > index( adj_rel.size( ) );
-      size_t adj_base = ( adj_rel.size( ) / 2 ) - ( features / ( 2 * 3 ) );
+      Vector< double > median( adj_size );
+      Vector< size_t > index( adj_size );
+      size_t adj_base = ( adj_size / 2 ) - ( features / ( 2 * 3 ) );
+      size_t adj_elm = 0;
       size_t tgt_elm = 0;
+      AdjacencyIterator adj_itr( src, adj_rel );
       for( size_t src_elm = 0; src_elm < src.size( ); ++src_elm ) {
         if( msk[ src_elm ] != 0 ) {
           COMMENT( "Computing the sum of the distances of all channels from adjacent to source pixels.", 4 );
-          for( size_t adj = 0; adj < adj_rel.size( ); ++adj ) {
-            size_t elm_adj = adj_rel( src, src_elm, adj );
-            index( adj ) = elm_adj;
-            if( ( elm_adj < src.size( ) ) && ( msk[ elm_adj ] != 0 ) ) {
+          for( size_t adj = 0; adj < adj_size; ++adj ) {
+            if( ( ( adj_itr.*adj_itr.AdjIdx )( src_elm, adj, adj_elm ) ) && ( msk[ adj_elm ] != 0 ) ) {
+              index( adj ) = adj_elm;
               for( size_t chn = 1; chn < 4; ++chn ) {
-                D adj_value = src( elm_adj )( chn );
+                D adj_value = src( adj_elm )( chn );
                 D src_value = src( src_elm )( chn );
                 median( adj ) += ( adj_value > src_value ) ? adj_value - src_value : src_value - adj_value;
               }
             }
             else {
+              index( adj ) = src_elm;
               median( adj ) = 0;
             }
           }
@@ -135,9 +138,8 @@ namespace Bial {
           Sorting::Sort( index, Sorting::Sort( median ) );
           COMMENT( "Getting the features from the median distances.", 4 );
           for( size_t ftr = 0; ftr < features / 3; ++ftr ) {
-            for( size_t chn = 1; chn < 4; ++chn ) {
+            for( size_t chn = 1; chn < 4; ++chn )
               res( tgt_elm, ftr * 3 + ( chn - 1 ) ) = src( index( adj_base + ftr ) )( chn );
-            }
             res.Index( tgt_elm ) = src_elm;
             ++tgt_elm;
           }
@@ -168,35 +170,32 @@ namespace Bial {
                                  size_t total_threads ) {
     try {
       COMMENT( "Dealing with thread limits.", 2 );
+      size_t adj_size = adj_rel.size( );
       size_t features = res.Features( );
       size_t min_index = thread * src.size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * src.size( ) / total_threads;
       COMMENT( "Computing median features.", 2 );
-      Vector< double > median( adj_rel.size( ) );
-      Vector< size_t > index( adj_rel.size( ) );
-      size_t adj_base = ( adj_rel.size( ) / 2 ) - ( features / ( 2 * 3 ) );
+      Vector< double > median( adj_size );
+      Vector< size_t > index( adj_size );
+      size_t adj_base = ( adj_size / 2 ) - ( features / ( 2 * 3 ) );
+      size_t adj_elm;
+      AdjacencyIterator adj_itr( src, adj_rel );
       for( size_t src_elm = min_index; src_elm < max_index; ++src_elm ) {
         COMMENT( "Setting index.", 4 );
         res.Index( src_elm ) = src_elm;
         COMMENT( "Computing the sum of the distances of all channels from adjacent to source pixels.", 4 );
-        for( size_t adj = 0; adj < adj_rel.size( ); ++adj ) {
+        for( size_t adj = 0; adj < adj_size; ++adj ) {
           COMMENT( "Computing index of elements.", 4 );
-          size_t elm_adj = adj_rel( src, src_elm, adj );
-          if( elm_adj < src.size( ) ) {
-            index( adj ) = elm_adj;
-          }
-          else {
-            index( adj ) = src_elm;
-          }
-          COMMENT( "Computing the median vector fo the distances from the source element to target elements.", 4 );
-          if( elm_adj < src.size( ) ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( src_elm, adj, adj_elm ) ) {
+            index( adj ) = adj_elm;
             for( size_t chn = 1; chn < 4; ++chn ) {
-              D adj_value = src( elm_adj )( chn );
+              D adj_value = src( adj_elm )( chn );
               D src_value = src( src_elm )( chn );
               median( adj ) += ( adj_value > src_value ) ? adj_value - src_value : src_value - adj_value;
             }
           }
           else {
+            index( adj ) = src_elm;
             median( adj ) = 0;
           }
         }
@@ -204,9 +203,8 @@ namespace Bial {
         Sorting::Sort( index, Sorting::Sort( median ) );
         COMMENT( "Getting the features from the median distances.", 4 );
         for( size_t ftr = 0; ftr < features / 3; ++ftr ) {
-          for( size_t chn = 1; chn < 4; ++chn ) {
+          for( size_t chn = 1; chn < 4; ++chn )
             res( src_elm, ftr * 3 + ( chn - 1 ) ) = src( index( adj_base + ftr ) )( chn );
-          }
         }
       }
     }

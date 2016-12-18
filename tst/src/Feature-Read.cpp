@@ -1,3 +1,10 @@
+/* Biomedical Image Analysis Library */
+/* See README file in the root instalation directory for more information. */
+
+/* Date: 2014/Jun/09 */
+/* Content: Test file. */
+/* Description: Test with feature vectors. */
+
 #include "Common.hpp"
 #include "Feature.hpp"
 #include "FileFeature.hpp"

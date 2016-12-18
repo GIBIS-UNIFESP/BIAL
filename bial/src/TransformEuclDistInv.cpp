@@ -43,21 +43,25 @@ namespace Bial {
         }
       }
       Image< float > dist( value );
+      size_t adj_pxl;
+      size_t adj_size = adj.size( );
+      AdjacencyIterator adj_itr( border, adj );
       while( !queue.Empty( ) ) {
         size_t pxl = queue.Remove( );
         if( value[ pxl ] >= root_dist ) {
           root[ pxl ] = pxl;
         }
         queue.Finished( pxl );
-        for( AdjacencyIterator itr = begin( adj, value, pxl ); *itr != value.size( ); ++itr ) {
-          size_t adj_pxl = *itr;
-          if( ( mask[ adj_pxl ] != 0 ) && ( queue.State( adj_pxl ) != BucketState::REMOVED ) &&
-              ( dist[ pxl ] > dist[ adj_pxl ] ) ) {
-            if( queue.State( adj_pxl ) == BucketState::NOT_VISITED ) {
-              queue.Insert( adj_pxl, dist[ adj_pxl ] );
+        for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, adj_idx, adj_pxl ) ) {
+            if( ( mask[ adj_pxl ] != 0 ) && ( queue.State( adj_pxl ) != BucketState::REMOVED ) &&
+                ( dist[ pxl ] > dist[ adj_pxl ] ) ) {
+              if( queue.State( adj_pxl ) == BucketState::NOT_VISITED ) {
+                queue.Insert( adj_pxl, dist[ adj_pxl ] );
+              }
+              dist[ adj_pxl ] = dist[ pxl ];
+              root[ adj_pxl ] = root[ pxl ];
             }
-            dist[ adj_pxl ] = dist[ pxl ];
-            root[ adj_pxl ] = root[ pxl ];
           }
         }
       }

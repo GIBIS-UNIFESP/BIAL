@@ -5,7 +5,6 @@
 /* Content: Evaluation of edge detection algorithm accorging to Baddeley method.  */
 /* Description: See Statistics.cpp and Statistics.hpp. Based on Euclidean distance of borders. */
 
-#include "Adjacency.hpp"
 #include "FileImage.hpp"
 #include "Image.hpp"
 #include "StatisticsBaddeley.hpp"

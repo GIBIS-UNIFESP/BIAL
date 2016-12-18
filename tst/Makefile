@@ -18,6 +18,10 @@ ifneq ($(debug), 0)
 	OBJ=../build/linux/debug/obj
 	LIB=../build/linux/debug/lib
 endif
+ifneq ($(profile), 0)
+	OBJ=../build/linux/profile/obj
+	LIB=../build/linux/profile/lib
+endif
 
 BIAL_LINK_FLAGS= -L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -fopenmp -lpthread -lz -lm
 ifneq ($(profile), 0)
@@ -34,6 +38,10 @@ endif
 ifneq ($(test), 0)
 	BIAL_CC_FLAGS=-g -Wno-unused-function -Wno-literal-conversion -O0 -I../bial/inc -I../bial/src -I../bial/SLIC/inc -I../bial/cpplex/inc -I../bial/lsh/inc -DREAL_FLOAT
 endif
+ifneq ($(profile), 0)
+	BIAL_CC_FLAGS=-pg -Wno-unused-function -Wno-literal-conversion -O0 -I../bial/inc -I../bial/src -I../bial/SLIC/inc -I../bial/cpplex/inc -I../bial/lsh/inc -DREAL_FLOAT
+endif
+
 
 ifeq ($(debug), 1)
 	QMAKE_PARAMS=../master.pro -r -spec linux-g++ CONFIG+=debug -o ../Makefile

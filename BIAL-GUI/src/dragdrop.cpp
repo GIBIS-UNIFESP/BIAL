@@ -1236,7 +1236,7 @@ Bial::Image< int > DragDrop::gradient_morphological( ) {
   Image< int > img = m_img->getIntImage( );
 
 
-  Adjacency spheric = AdjacencyType::HyperSpheric( 1.0, img.Dims( ) );
+  Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, img.Dims( ) ) );
   Image< int > gradient( Image< int >( Gradient::Morphological( img, spheric ) ) );
 
 

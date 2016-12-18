@@ -40,19 +40,20 @@ int main( int argc, char **argv ) {
     ++nlabels;
   }
   /* computing multi-label image */
-  Adjacency adj = AdjacencyType::Ellipsoid( 1.01 / img.PixelSize( 0 ), 1.01 / img.PixelSize( 1 ), 
-                                            1.01 / img.PixelSize( 2 ) );
-  res.Set( 0 );
+  Adjacency adj( AdjacencyType::Ellipsoid( 1.01 / img.PixelSize( 0 ), 1.01 / img.PixelSize( 1 ), 
+                                           1.01 / img.PixelSize( 2 ) ) );
+  AdjacencyIterator adj_itr( img, adj );
+  size_t adj_size = adj.size( );
+  size_t adj_pxl;
   for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
     Vector< size_t > used_labels( nlabels + 1, false );
-    for( AdjacencyIterator idx = begin( adj, img, pxl ); *idx != img.size( ); ++idx ) {
-      size_t adj_pxl = *idx;
-      used_labels[ label[ img[ adj_pxl ] ] ] = true;
+    for( size_t idx = 0; idx < adj_size; ++idx ) {
+      if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) )
+        used_labels[ label[ img[ adj_pxl ] ] ] = true;
     }
     for( size_t lbl = 0; lbl < used_labels.size( ); ++lbl ) {
-      if( used_labels[ lbl ] == true ) {
+      if( used_labels[ lbl ] == true )
         res[ pxl ] += pow( 2, lbl - 1 );
-      }
     }
   }
   Write( res, argv[ 2 ], argv[ 1 ] );

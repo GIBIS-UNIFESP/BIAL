@@ -74,8 +74,7 @@ namespace Bial {
               int x_dsp = x + adjpixels( pos, 0 );
               int y_dsp = y + adjpixels( pos, 1 );
               int p_dsp = x_dsp + y_dsp * quantized.size( 0 );
-              if( quantized.ValidCoordinate( x_dsp,
-                                             y_dsp ) && ( mask[ p_dsp ] == 1 ) &&
+              if( quantized.ValidCoordinate( x_dsp, y_dsp ) && ( mask[ p_dsp ] == 1 ) &&
                   ( quantized[ p ] == quantized[ p_dsp ] ) ) {
                 ++same_color;
               }

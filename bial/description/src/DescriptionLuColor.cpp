@@ -1,6 +1,5 @@
 #include "DescriptionLuColor.hpp"
 
-#include "Adjacency.hpp"
 #include "Signal.hpp"
 
 #include <fstream>

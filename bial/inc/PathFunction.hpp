@@ -89,11 +89,10 @@ namespace Bial {
     virtual void Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
                              bool sequential_label );
 
-    /** @brief  Initialization functions of IFT. It will operate on valid maps among value, label, predecessor, and. */
-
+    /** @brief  Remove functions of IFT. They will operate on valid maps among value, label, and predecessor. */
     typedef bool ( PathFunction< C, D >::*RemoveFn )( size_t index, BucketState state );
 
-    /** @brief  Update functions of IFT. It will operate on valid maps among value, label, and predecessor. */
+    /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
     typedef void ( PathFunction< C, D >::*UpdateFn )( size_t index, size_t adj_index );
 
     /**

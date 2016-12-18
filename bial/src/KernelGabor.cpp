@@ -41,21 +41,23 @@ namespace Bial {
       float max_dist = sigma * std::sqrt( -2.0f * std::log( 0.05f * gabor_dist_1 ) );
       COMMENT( "max dist: " << max_dist, 1 );
       COMMENT( "Creating kernel.", 2 );
-      Kernel krn = KernelType::HyperSpheric( max_dist, dimensions );
+      Kernel krn( KernelType::HyperSpheric( max_dist, dimensions ) );
       COMMENT( "Computing kernel coefficients and displacements.", 2 );
-      for( size_t elm = 0; elm < krn.size( ); ++elm ) {
+      size_t adj_size = krn.size( );
+      size_t dims = krn.Dims( );
+      for( size_t elm = 0; elm < adj_size; ++elm ) {
         float dist = 0.0f;
         float signal = 1.0f;
-        for( size_t dms = 0; dms < krn.Dims( ); ++dms ) {
+        for( size_t dms = 0; dms < dims; ++dms ) {
           if( dms == direction ) {
             COMMENT( "Gradient direction.", 4 );
-            if( krn.Displacement( dms, elm ) < -0.01f ) {
+            if( krn( elm, dms ) < 0 ) {
               signal = -1.0f;
-              dist += std::abs( krn.Displacement( dms, elm ) );
+              dist += std::abs( krn( elm, dms ) );
             }
-            else if( krn.Displacement( dms, elm ) > 0.01f ) {
+            else if( krn( elm, dms ) > 0 ) {
               signal = 1.0f;
-              dist += std::abs( krn.Displacement( dms, elm ) );
+              dist += std::abs( krn( elm, dms ) );
             }
             else {
               COMMENT( "Zero displacement.", 4 );
@@ -65,15 +67,13 @@ namespace Bial {
           }
           else {
             COMMENT( "Smoothing direction.", 4 );
-            dist += std::abs( krn.Displacement( dms, elm ) );
+            dist += std::abs( krn( elm, dms ) );
           }
         }
-        if( dist == 0.0f ) {
-          krn.Value( elm, 0.0f );
-        }
-        else {
-          krn.Value( elm, signal * gabor_norm * std::exp( -( dist * dist ) / ( 2.0f * sigma * sigma ) ) );
-        }
+        if( dist == 0.0f )
+          krn.Value( elm ) = 0.0f;
+        else
+          krn.Value( elm ) = signal * gabor_norm * std::exp( -( dist * dist ) / ( 2.0f * sigma * sigma ) );
         COMMENT( "Element: " << elm << ", distance: " << dist << ", coefficient: " << krn.Value( elm ), 4 );
       }
       COMMENT( "Final kernel: " << krn, 2 );

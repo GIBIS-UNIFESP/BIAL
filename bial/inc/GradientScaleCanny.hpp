@@ -16,7 +16,7 @@ namespace Bial {
 
   template< class D >
   class Image;
-  class Adjacency;
+
   /**
    * @brief Computes image gradients.
    */

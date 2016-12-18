@@ -27,14 +27,18 @@ namespace Bial {
   Image< D > Segmentation::BorderPixels( const Image< D > &img, const Adjacency &adj ) {
     try {
       Image< D > res( img );
+      AdjacencyIterator adj_itr( img, adj );
+      size_t adj_size = adj.size( );
+      size_t adj_pxl;
       res.Set( 0 );
       COMMENT( "Setting border pixels.", 0 );
       for( size_t pxl = 0; pxl < res.size( ); ++pxl ) {
-        for( AdjacencyIterator idx = begin( adj, img, pxl ); *idx != img.size( ); ++idx ) {
-          size_t adj_pxl = *idx;
-          if( img[ pxl ] != img[ adj_pxl ] ) {
-            res[ pxl ] = img[ pxl ];
-            break;
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+            if( img[ pxl ] != img[ adj_pxl ] ) {
+              res[ pxl ] = img[ pxl ];
+              break;
+            }
           }
         }
       }

@@ -31,11 +31,11 @@ int main( ) {
 
   string filename( "dat/init_graph.svg" );
   Adjacency adj( AdjacencyType::Circular( 1.1f ) );
-  SVGDGraph( img, seed, label, adj, filename );
+  SVGDGraph( img, adj, filename, &seed, &label );
 
   tie( res, pred ) = Edge::RiverBed( img, seed );
 
   filename = string( "dat/forest.svg" );
-  SVGDForest( res, pred, label, filename );
+  SVGDForest( res, pred, filename, &label );
   return( 0 );
 }

@@ -2,14 +2,23 @@ TARGET = bial
 TEMPLATE = lib
 #CONFIG += shared_and_static build_all
 CONFIG += c++11
-#CONFIG += static
+
 
 QT       -= core gui
 
 QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc -I$$PWD/description/inc\
 -I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
-QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=1
+
+Profile {
+  CONFIG+=static
+  message( "Profile" )
+}
+
+Debug {
+  QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=3
+  message( "Debug" )
+}
 
 #-I$$PWD/SLIC/inc
 
@@ -31,6 +40,10 @@ DEFINES += BIAL_EXPLICIT_LIB
 QMAKE_CXXFLAGS_RELEASE -= -O2 -O0
 QMAKE_CXXFLAGS_RELEASE += -O3
 QMAKE_CXXFLAGS_RELEASE -= -pg
+
+QMAKE_CXXFLAGS_DEBUG += -O0
+QMAKE_CXXFLAGS_DEBUG -= -O2 -O3
+QMAKE_CXXFLAGS_DEBUG += -pg
 
 macx{
 QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++17
@@ -73,8 +86,16 @@ unix{
 CONFIG(release, debug|release):DESTDIR = $$PWD/../build/linux/release/lib/
 CONFIG(release, debug|release):OBJECTS_DIR = $$PWD/../build/linux/release/obj
 
+message( "Debug Dir" )
 CONFIG(debug, debug|release):DESTDIR = $$PWD/../build/linux/debug/lib/
 CONFIG(debug, debug|release):OBJECTS_DIR = $$PWD/../build/linux/debug/obj
+
+Profile {
+message( "Profile Dir" )
+CONFIG(debug, debug|release):DESTDIR = $$PWD/../build/linux/profile/lib/
+CONFIG(debug, debug|release):OBJECTS_DIR = $$PWD/../build/linux/profile/obj
+}
+
 }
 
 QMAKE_EXTRA_TARGETS += createDirs
@@ -96,6 +117,7 @@ HEADERS += \
     inc/AdjacencyIterator.hpp \
     inc/AdjacencyMarchingCube.hpp \
     inc/AdjacencyRound.hpp \
+    inc/AdjacencySquare.hpp \
     inc/Array.hpp \
     inc/BinaryCOG.hpp \
     inc/BinaryComplement.hpp \
@@ -211,9 +233,9 @@ HEADERS += \
     inc/KernelBox.hpp \
     inc/KernelGabor.hpp \
     inc/KernelGaussian.hpp \
-    inc/KernelIterator.hpp \
     inc/KernelRound.hpp \
     inc/KernelSobel.hpp \
+    inc/KernelSquare.hpp \
     inc/KnnGraphAdjacency.hpp \
     inc/LocalMaxPathFunction.hpp \
     inc/LSHGraphAdjacency.hpp \
@@ -300,6 +322,7 @@ SOURCES += \
     src/AdjacencyIterator.cpp \
     src/AdjacencyMarchingCube.cpp \
     src/AdjacencyRound.cpp \
+    src/AdjacencySquare.cpp \
     src/BinaryCOG.cpp \
     src/BinaryComplement.cpp \
     src/Bit.cpp \
@@ -400,9 +423,9 @@ SOURCES += \
     src/KernelBox.cpp \
     src/KernelGabor.cpp \
     src/KernelGaussian.cpp \
-    src/KernelIterator.cpp \
     src/KernelRound.cpp \
     src/KernelSobel.cpp \
+    src/KernelSquare.cpp \
     src/KnnGraphAdjacency.cpp \
     src/LocalMaxPathFunction.cpp \
     src/LSHGraphAdjacency.cpp \

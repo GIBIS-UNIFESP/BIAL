@@ -23,7 +23,7 @@ namespace Bial {
 
   Adjacency AdjacencyType::Gray8( ) {
     try {
-      Adjacency result( 2, 8 );
+      Adjacency result( 8, 2 );
       COMMENT( "Upper left with index 0.", 4 );
       result( 0, 0 ) = -1.0f;
       result( 0, 1 ) = -1.0f;

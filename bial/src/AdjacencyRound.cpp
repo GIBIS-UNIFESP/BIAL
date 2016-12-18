@@ -35,7 +35,7 @@ namespace Bial {
         }
       }
       COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
-      Adjacency result( 2, size );
+      Adjacency result( size, 2 );
       result( 0, 0 ) = 0.0f;
       result( 0, 1 ) = 0.0f;
       size_t i = 1;
@@ -86,7 +86,7 @@ namespace Bial {
         }
       }
       COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
-      Adjacency result( 2, size );
+      Adjacency result( size, 2 );
       result( 0, 0 ) = 0.0f;
       result( 0, 1 ) = 0.0f;
       size_t i = 1;
@@ -130,14 +130,13 @@ namespace Bial {
       for( int dz = -max_radius; dz <= static_cast< int >( max_radius ); ++dz ) {
         for( int dy = -max_radius; dy <= static_cast< int >( max_radius ); ++dy ) {
           for( int dx = -max_radius; dx <= static_cast< int >( max_radius ); ++dx ) {
-            if( ( dx * dx ) + ( dy * dy ) + ( dz * dz ) <= static_cast< int >( max_radius_2 ) ) {
+            if( ( dx * dx ) + ( dy * dy ) + ( dz * dz ) <= static_cast< int >( max_radius_2 ) )
               ++size;
-            }
           }
         }
       }
       COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
-      Adjacency result( 3, size );
+      Adjacency result( size, 3 );
       result( 0, 0 ) = 0.0f;
       result( 0, 1 ) = 0.0f;
       result( 0, 2 ) = 0.0f;
@@ -177,66 +176,13 @@ namespace Bial {
 
   Adjacency AdjacencyType::HyperSpheric( float radius, size_t dims ) {
     try {
-      COMMENT( "Computing adjacency boundary box size.", 3 );
-      size_t max_radius = static_cast< size_t >( radius );
-      size_t max_radius_2 = static_cast< size_t >( radius * radius );
-      size_t square_size = pow( 2 * max_radius + 1, dims );
-      size_t size = 0;
-      COMMENT( "Computing the number of adjacents.", 3 );
-      Vector< int > pxl_coord( dims, -max_radius );
-      for( size_t elm = 0; elm < square_size; ++elm ) {
-        COMMENT( "Verifying if pixel is inside sphere.", 4 );
-        size_t radius_2 = 0;
-        for( size_t dms = 0; dms < dims; ++dms ) {
-          radius_2 += static_cast< size_t >( pxl_coord( dms ) * pxl_coord( dms ) );
-        }
-        if( radius_2 <= max_radius_2 ) {
-          ++size;
-        }
-        COMMENT( "Updating coordinates.", 4 );
-        for( size_t dms = 0; dms < dims; ++dms ) {
-          if( pxl_coord( dms ) < static_cast< int >( max_radius ) ) {
-            ++pxl_coord( dms );
-            break;
-          }
-          else {
-            pxl_coord( dms ) = -max_radius;
-          }
-        }
+      IF_DEBUG( ( dims > 3 ) || ( dims < 2 ) ) {
+        std::string msg( BIAL_ERROR( "Adjacency relation must have 2 or 3 dimensions." ) );
+        throw( std::logic_error( msg ) );
       }
-      COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 3 );
-      Adjacency result( dims, size );
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        result( 0, dms ) = 0.0f;
-      }
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        pxl_coord( dms ) = -max_radius;
-      }
-      size_t adj_index = 1;
-      for( size_t elm = 0; elm < square_size; ++elm ) {
-        COMMENT( "Assigning adjacency coordinates.", 4 );
-        COMMENT( "elm: " << elm << ", size: " << square_size, 3 );
-        size_t radius_2 = 0;
-        for( size_t dms = 0; dms < dims; ++dms ) {
-          radius_2 += static_cast< size_t >( pxl_coord( dms ) * pxl_coord( dms ) );
-        }
-        if( ( radius_2 > 0 ) && ( radius_2 <= max_radius_2 ) ) {
-          for( size_t dms = 0; dms < dims; ++dms ) {
-            result( adj_index, dms ) = pxl_coord( dms );
-          }
-          ++adj_index;
-        }
-        COMMENT( "Updating coordinates.", 3 );
-        for( int dms = static_cast< int >( dims ) - 1; dms >= 0; --dms ) {
-          if( pxl_coord( dms ) < static_cast< int >( max_radius ) ) {
-            ++pxl_coord( dms );
-            break;
-          }
-          else
-            pxl_coord( dms ) = -max_radius;
-        }
-      }
-      return( result );
+      if( dims == 2 )
+        return( AdjacencyType::Circular( radius ) );
+      return( AdjacencyType::Spheric( radius ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -270,14 +216,13 @@ namespace Bial {
         for( int dy = -y_max_radius; dy <= static_cast< int >( y_max_radius ); ++dy ) {
           for( int dx = -x_max_radius; dx <= static_cast< int >( x_max_radius ); ++dx ) {
             if( ( static_cast< float >( dx * dx ) / x_max_radius_2 + static_cast< float >( dy * dy ) / y_max_radius_2 +
-                  static_cast< float >( dz * dz ) / z_max_radius_2 ) <= 1.0 ) {
+                  static_cast< float >( dz * dz ) / z_max_radius_2 ) <= 1.0 )
               ++size;
-            }
           }
         }
       }
       COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
-      Adjacency result( 3, size );
+      Adjacency result( size, 3 );
       result( 0, 0 ) = 0.0f;
       result( 0, 1 ) = 0.0f;
       result( 0, 2 ) = 0.0f;
@@ -319,78 +264,13 @@ namespace Bial {
 
   Adjacency AdjacencyType::HyperEllipsoid( const Vector< float > &radius ) {
     try {
-      COMMENT( "Computing adjacency boundary box size.", 3 );
-      size_t dims = radius.size( );
-      Vector< size_t > max_radius( dims );
-      size_t box_size = 1;
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        max_radius( dms ) = static_cast< size_t >( radius( dms ) );
-        box_size *= 2 * max_radius( dms ) + 1;
+      IF_DEBUG( ( radius.size( ) > 3 ) || ( radius.size( ) < 2 ) ) {
+        std::string msg( BIAL_ERROR( "Adjacency relation must have 2 or 3 dimensions." ) );
+        throw( std::logic_error( msg ) );
       }
-      COMMENT( "Computing the square of the radius to speedup processing.", 3 );
-      Vector< double > max_radius_2( dims );
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        max_radius_2( dms ) = radius( dms ) * radius( dms );
-      }
-      COMMENT( "Computing the number of adjacents.", 3 );
-      size_t size = 0;
-      Vector< int > pxl_coord( dims );
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        pxl_coord( dms ) = -max_radius( dms );
-      }
-      for( size_t pxl = 0; pxl < box_size; ++pxl ) {
-        COMMENT( "Verifying if pixel is inside the ellipsoid.", 3 );
-        double radius_2 = 0;
-        for( size_t dms = 0; dms < dims; ++dms ) {
-          radius_2 += static_cast< double >( pxl_coord( dms ) * pxl_coord( dms ) ) / max_radius_2( dms );
-        }
-        if( radius_2 <= 1.0 ) {
-          ++size;
-        }
-        COMMENT( "Updating coordinates.", 3 );
-        for( size_t dms = 0; dms < dims; ++dms ) {
-          if( pxl_coord( dms ) < static_cast< int >( max_radius( dms ) ) ) {
-            ++pxl_coord( dms );
-            break;
-          }
-          else {
-            pxl_coord( dms ) = -max_radius( dms );
-          }
-        }
-      }
-      COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
-      Adjacency result( dims, size );
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        result( 0, dms ) = 0.0f;
-      }
-      for( size_t dms = 0; dms < dims; ++dms ) {
-        pxl_coord( dms ) = -max_radius( dms );
-      }
-      size_t adj_index = 1;
-      for( size_t pxl = 0; pxl < box_size; ++pxl ) {
-        COMMENT( "Assigning adjacency coordinates.", 3 );
-        float radius_2 = 0;
-        for( size_t dms = 0; dms < dims; ++dms ) {
-          radius_2 += static_cast< double >( pxl_coord( dms ) * pxl_coord( dms ) ) / max_radius_2( dms );
-        }
-        if( ( radius_2 > 0.0 ) && ( radius_2 <= 1.0 ) ) {
-          for( size_t dms = 0; dms < dims; ++dms ) {
-            result( adj_index, dms ) = pxl_coord( dms );
-          }
-          ++adj_index;
-        }
-        COMMENT( "Updating coordinates.", 3 );
-        for( int dms = static_cast< int >( dims ) - 1; dms >= 0; dms-- ) {
-          if( pxl_coord( dms ) < static_cast< int >( max_radius( dms ) ) ) {
-            ++pxl_coord( dms );
-            break;
-          }
-          else {
-            pxl_coord( dms ) = -max_radius( dms );
-          }
-        }
-      }
-      return( result );
+      IF_DEBUG( radius.size( ) == 2 )
+        return( AdjacencyType::Elliptic( radius[ 0 ], radius[ 1 ] ) );
+      return( AdjacencyType::Ellipsoid( radius[ 0 ], radius[ 1 ], radius[ 2 ] ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

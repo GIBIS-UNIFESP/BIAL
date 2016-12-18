@@ -1,6 +1,5 @@
 #include "DescriptionSCD.hpp"
 
-#include "Adjacency.hpp"
 #include "Signal.hpp"
 
 #include <fstream>

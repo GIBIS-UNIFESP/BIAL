@@ -408,7 +408,7 @@ namespace Bial {
       if( nrows % 2 == 0 ) {
         nrows++;
       }
-      Adjacency B( 2, ncols * nrows );
+      Adjacency B( ncols * nrows, 2 );
 
       int i = 1;
       for( int dy = -nrows / 2; dy <= nrows / 2; dy++ ) {
@@ -431,7 +431,7 @@ namespace Bial {
 
   Adjacency LeftSide( Adjacency adj ) {
 
-    Adjacency L( 2, adj.size( ) );
+    Adjacency L( adj.size( ), 2 );
     for( size_t i = 0; i < L.size( ); i++ ) {
       float d = sqrt( adj( i, 0 ) * adj( i, 0 ) + adj( i, 1 ) * adj( i, 1 ) );
       if( d != 0 ) {
@@ -444,7 +444,7 @@ namespace Bial {
 
   Adjacency RightSide( Adjacency adj ) {
 
-    Adjacency R( 2, adj.size( ) );
+    Adjacency R( adj.size( ), 2 );
     for( size_t i = 0; i < R.size( ); i++ ) {
       float d = sqrt( adj( i, 0 ) * adj( i, 0 ) + adj( i, 1 ) * adj( i, 1 ) );
       if( d != 0 ) {

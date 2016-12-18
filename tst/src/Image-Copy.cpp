@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Lucas Santana Lellis */
 /* Date: 2015/Apr/16 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test . */
 

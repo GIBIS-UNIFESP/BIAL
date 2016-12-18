@@ -21,7 +21,6 @@
 
 #if defined ( BIAL_EXPLICIT_Feature ) || ( BIAL_IMPLICIT_BIN )
 
-#include "Adjacency.hpp"
 #include "Color.hpp"
 #include "Image.hpp"
 #include "Sample.hpp"

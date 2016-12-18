@@ -34,15 +34,17 @@ namespace Bial {
       res.Set( 0 );
       Adjacency adj( AdjacencyType::Ellipsoid( 1.5 * img.PixelSize( 0 ), 1.5 * img.PixelSize( 1 ),
                                                1.5 * img.PixelSize( 2 ) ) );
+      AdjacencyIterator adj_itr( img, adj );
+      size_t adj_size = adj.size( );
+      size_t adj_pxl;
       COMMENT( "Setting border pixels.", 0 );
       for( size_t pxl = 0; pxl < res.size( ); ++pxl ) {
         if( img[ pxl ] != 0 ) {
           size_t adjs = 0;
-          AdjacencyIterator idx = begin( adj, img, pxl );
-          for( ++idx; *idx != img.size( ); ++idx ) {
-            size_t adj_pxl = *idx;
-            if( img[ adj_pxl ] != 0 ) {
-              ++adjs;
+          for( size_t idx = 1; idx < adj_size; ++idx ) {
+            if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+              if( img[ adj_pxl ] != 0 )
+                ++adjs;
             }
           }
           if( adjs < 3 ) {

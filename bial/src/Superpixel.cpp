@@ -68,7 +68,6 @@ namespace Bial {
                                    std::to_string( img.Dims( ) ) + ", pixels: " + std::to_string( img.size( ) ) + "." ) );
       throw( std::logic_error( msg ) );
     }
-
     COMMENT( "Preparing parameters to run SLIC.", 0 );
     int width = img.size( 0 );
     int height = img.size( 1 );
@@ -77,7 +76,6 @@ namespace Bial {
     uint **ubuffvec = NULL;
     int **klabels = NULL;
     int numlabels;
-
     COMMENT( "Converting image to ARGB video format.", 0 );
     uchar *c;
     ubuffvec = new uint*[ depth ];
@@ -93,25 +91,24 @@ namespace Bial {
         c[ 0 ] = 0;
       }
     }
-
     COMMENT( "Running SLIC.", 0 );
     SLIC segment;
-    segment.DoSupervoxelSegmentation( ubuffvec, width, height, depth, klabels, numlabels, sup_pixel_size,
-                                      compactness );
-
+    segment.DoSupervoxelSegmentation( ubuffvec, width, height, depth, klabels, numlabels, sup_pixel_size, compactness );
     COMMENT( "Converting result to Image.", 0 );
     Adjacency adj( AdjacencyType::Spheric( 1.1 ) );
     Image< int > label( img.Dim( ), img.PixelSize( ) );
+    AdjacencyIterator adj_itr( img, adj );
+    size_t adj_size = adj.size( );
+    size_t img_size = img.size( );
+    size_t adj_pxl;
     for( int slc = 0; slc < depth; ++slc ) {
       for( int pxl = 0; pxl < slc_size; ++pxl )
         label[ pxl + slc * slc_size ] = klabels[ slc ][ pxl ];
     }
-
-    for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
+    for( size_t pxl = 0; pxl < img_size; ++pxl ) {
       bool border = false;
-      for( AdjacencyIterator itr = begin( adj, img, pxl ); *itr != img.size( ); ++itr ) {
-        size_t adj_pxl = *itr;
-        if( label[ pxl ] != label[ adj_pxl ] ) {
+      for( size_t idx = 0; idx < adj_size; ++idx ) {
+        if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) && ( label[ pxl ] != label[ adj_pxl ] ) ) {
           border = true;
           break;
         }
@@ -121,8 +118,6 @@ namespace Bial {
       else
         img[ pxl ] = 0;
     }
-
-
     COMMENT( "Destroying structures.", 0 );
     if( klabels ) {
       for( int slc = 0; slc < depth; ++slc ) {
@@ -136,7 +131,6 @@ namespace Bial {
       }
       delete[ ] ubuffvec;
     }
-
     return( label );
   }
 

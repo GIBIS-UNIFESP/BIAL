@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 14/10/2014 */
-/* Version: 1.0 */
 /* Content: Brain segmentation test. */
 /* Description: Segmentation of the brain in CT image. */
 

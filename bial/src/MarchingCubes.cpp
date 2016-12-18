@@ -32,11 +32,10 @@ namespace Bial {
       Image< int > direction( img.Dim( ) );
       Gradient::Sobel( img, mag, &direction );
       const Adjacency adj = AdjacencyType::MarchingCube( );
-      AdjacencyIterator itr = begin( adj, img, 0 );
+      AdjacencyIterator itr( img, adj );
       std::array< size_t, 8 > displacement;
-      for( size_t vtx = 0; vtx < 8; ++vtx ) {
-        displacement[ vtx ] = *( itr++ );
-      }
+      for( size_t vtx = 0; vtx < 8; ++vtx )
+        ( itr.*itr.AdjIdx )( 0, vtx, displacement[ vtx ] );
       const size_t x_sz = img.size( 0 ) - 1;
       const size_t y_sz = img.size( 1 ) - 1;
       const size_t z_sz = img.size( 2 ) - 1;
@@ -90,11 +89,10 @@ namespace Bial {
       Image< int > direction( img.Dim( ) );
       Gradient::Sobel( img, mag, &direction );
       const Adjacency adj = AdjacencyType::MarchingCube( );
-      AdjacencyIterator itr = begin( adj, img, 0 );
+      AdjacencyIterator itr( img, adj );
       std::array< size_t, 8 > displacement;
-      for( size_t vtx = 0; vtx < 8; ++vtx ) {
-        displacement[ vtx ] = *( itr++ );
-      }
+      for( size_t vtx = 0; vtx < 8; ++vtx )
+        ( itr.*itr.AdjIdx )( 0, vtx, displacement[ vtx ] );
       const size_t x_sz = img.size( 0 ) - 1;
       const size_t y_sz = img.size( 1 ) - 1;
       const size_t z_sz = img.size( 2 ) - 1;

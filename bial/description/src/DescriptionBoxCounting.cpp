@@ -1,6 +1,5 @@
 #include "DescriptionBoxCounting.hpp"
 
-#include "Adjacency.hpp"
 #include "GeometricsScale.hpp"
 #include "Signal.hpp"
 

@@ -20,6 +20,7 @@
 #if defined ( BIAL_EXPLICIT_ColorFeature ) || ( BIAL_IMPLICIT_BIN )
 
 #include "Adjacency.hpp"
+#include "AdjacencyIterator.hpp"
 #include "Color.hpp"
 #include "Feature.hpp"
 #include "Image.hpp"
@@ -29,15 +30,14 @@ namespace Bial {
   template< class D >
   Feature< D > ColorFeature( const Image< Color > &src, const Adjacency &adj_rel ) {
     try {
-      if( src.Dims( ) != adj_rel.Dims( ) ) {
+      IF_DEBUG( src.Dims( ) != adj_rel.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Image and adjacency relation dimensions do not match." ) );
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Creating feature vector.", 0 );
       size_t features = adj_rel.size( ) * 3;
-      if( features == 0 ) {
+      if( features == 0 )
         features = 3;
-      }
       size_t elements = src.size( );
       Feature< D > res( elements, features );
       COMMENT( "Computing median features.", 0 );
@@ -81,23 +81,25 @@ namespace Bial {
                            size_t total_threads ) {
     try {
       COMMENT( "Dealing with thread limits.", 2 );
-      size_t min_index = thread * src.size( ) / total_threads;
-      size_t max_index = ( thread + 1 ) * src.size( ) / total_threads;
+      size_t img_size = src.size( );
+      size_t adj_size = adj_rel.size( );
+      size_t min_index = thread * img_size / total_threads;
+      size_t max_index = ( thread + 1 ) * img_size / total_threads;
+      COMMENT( "Creating adjacency iterator.", 2 );
+      AdjacencyIterator adj_itr( src, adj_rel );
+      size_t adj_elm;
       COMMENT( "Computing features.", 2 );
       for( size_t src_elm = min_index; src_elm < max_index; ++src_elm ) {
         COMMENT( "Setting indexes.", 4 );
         res.Index( src_elm ) = src_elm;
         COMMENT( "Computing neighbors.", 4 );
         for( size_t chn = 1; chn < 4; ++chn ) {
-          for( size_t adj = 0; adj < adj_rel.size( ); ++adj ) {
-            size_t elm_adj = adj_rel( src, src_elm, adj );
+          for( size_t adj_position = 0; adj_position < adj_size; ++adj_position ) {
             COMMENT( "Assigning adjacent colors if it is valid and src element colors otherwise.", 4 );
-            if( elm_adj < src.size( ) ) {
-              res( src_elm, adj + adj_rel.size( ) * ( chn - 1 ) ) = src( elm_adj )( chn );
-            }
-            else {
-              res( src_elm, adj + adj_rel.size( ) * ( chn - 1 ) ) = src( src_elm )( chn );
-            }
+            if( ( adj_itr.*adj_itr.AdjIdx )( src_elm, adj_position, adj_elm ) )
+              res( src_elm, adj_position + adj_size * ( chn - 1 ) ) = src( adj_elm )( chn );
+            else
+              res( src_elm, adj_position + adj_size * ( chn - 1 ) ) = src( src_elm )( chn );
           }
         }
       }

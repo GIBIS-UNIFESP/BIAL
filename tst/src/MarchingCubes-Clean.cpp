@@ -1,13 +1,10 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Lucas Santana Lellis */
 /* Date: 2015/Aug/31 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Triangle mesh cleaning algorithm. */
 
-#include "Adjacency.hpp"
 #include "DrawShape.hpp"
 
 using namespace std;

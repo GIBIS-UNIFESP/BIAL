@@ -104,9 +104,9 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Computing the filtered image.", 0 );
-      Image< D > smooth = Filtering::Gaussian( img, 2.0, sigma );
+      Image< D > smooth( Filtering::Gaussian( img, 2.0, sigma ) );
       COMMENT( "Computing Sobel, suppressing non-edges pixels.", 0 );
-      Image< D > suppressed_sobel = Gradient::NonMaxSobelSuppression( smooth );
+      Image< D > suppressed_sobel( Gradient::NonMaxSobelSuppression( smooth ) );
       // DEBUG_WRITE( suppressed_sobel, "suppressed_sobel", 1 );
       return( Gradient::Canny( suppressed_sobel, lower_threshold, higher_threshold ) );
     }

@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2015/Apr/10 */
-/* Version: 1.0.00 */
 /* Content: Tests bit operations. */
 /* Description: Test with Bit class. */
 

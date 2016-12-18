@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2015/May/03 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with Filtering classes. */
 

@@ -18,8 +18,6 @@
 
 #if defined ( BIAL_EXPLICIT_DrawShape ) || ( BIAL_IMPLICIT_BIN )
 
-#include "AdjacencyRound.hpp"
-#include "AdjacencyIterator.hpp"
 #include "Image.hpp"
 
 namespace Bial {

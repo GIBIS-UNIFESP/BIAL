@@ -21,17 +21,16 @@ namespace Bial {
 
   Kernel KernelType::Gaussian( size_t dimensions, float radius, float std_dev, float amplitude ) {
     try {
-      if( radius <= 0.0f ) {
+      IF_DEBUG( radius <= 0.0f ) {
         std::string msg( BIAL_ERROR( "Non positive radius given." ) );
         throw( std::logic_error( msg ) );
       }
-      if( std_dev <= 0.0f ) {
+      IF_DEBUG( std_dev <= 0.0f ) {
         std::string msg( BIAL_ERROR( "Non positive standard deviation." ) );
         throw( std::logic_error( msg ) );
       }
-      if( amplitude < 0.0f ) {
+      if( amplitude < 0.0f )
         amplitude = 1.0f / std::pow( std::sqrt( 2 * M_PI ) * std_dev, dimensions );
-      }
       /* amplitude = 1.0f / ( std_dev * std::sqrt( 2 * M_PI ) ); */
       COMMENT( "Computing number of adjacents.", 0 );
       size_t adjacents = 0;
@@ -49,19 +48,16 @@ namespace Bial {
         }
         COMMENT( "Computing distance.", 4 );
         size_t distance = 0;
-        for( size_t dms = 0; dms < dimensions; ++dms ) {
+        for( size_t dms = 0; dms < dimensions; ++dms )
           distance += delta( dms ) * delta( dms );
-        }
         COMMENT( "Verify if pixel is inside the hypersphere.", 4 );
-        if( static_cast< float >( distance ) <= radius * radius ) {
+        if( static_cast< float >( distance ) <= radius * radius )
           ++adjacents;
-        }
       }
       COMMENT( "Setting kernel coefficients and displacements.", 0 );
-      Kernel krn( dimensions, adjacents );
-      for( size_t dms = 0; dms < dimensions; ++dms ) {
+      Kernel krn( adjacents, dimensions );
+      for( size_t dms = 0; dms < dimensions; ++dms )
         delta( dms ) = discrete_radius;
-      }
       size_t adj = 0;
       for( size_t elm = 0; elm < box_size; ++elm ) {
         COMMENT( "Updating coordinates.", 4 );
@@ -70,9 +66,8 @@ namespace Bial {
             ++delta( dms );
             break;
           }
-          else {
+          else
             delta( dms ) = -discrete_radius;
-          }
         }
         COMMENT( "Computing distance.", 4 );
         size_t distance = 0;
@@ -82,11 +77,10 @@ namespace Bial {
         COMMENT( "Verify if pixel is inside the hypersphere.", 4 );
         if( static_cast< float >( distance ) <= radius * radius ) {
           COMMENT( "Assigning coefficients and displacements.", 4 );
-          for( size_t dms = 0; dms < dimensions; ++dms ) {
+          for( size_t dms = 0; dms < dimensions; ++dms )
             krn( adj, dms ) = delta( dms );
-          }
           float value = amplitude * std::exp( -static_cast< float >( distance ) / ( 2.0f * std_dev * std_dev ) );
-          krn.Value( adj, value );
+          krn.Value( adj ) = value;
           ++adj;
         }
       }
@@ -112,7 +106,7 @@ namespace Bial {
 
   Kernel KernelType::NormalizedGaussian( size_t dimensions, float radius, float std_dev ) {
     try {
-      Kernel krn = KernelType::Gaussian( dimensions, radius, std_dev, 1.0f );
+      Kernel krn( KernelType::Gaussian( dimensions, radius, std_dev, 1.0f ) );
       krn.Normalize( );
       return( krn );
     }

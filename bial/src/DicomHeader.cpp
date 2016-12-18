@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2012/Jun/21 */
-/* Version: 1.0.00 */
 /* Content: Dicom header reader */
 /* Description: Reads Dicom file and header containts. Based on Fabio Kawaoka Takase implementation. */
 /* Future add-on's: - Translate all comments to English. Reformat code to Bial standard. */

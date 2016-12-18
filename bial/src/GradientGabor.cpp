@@ -33,20 +33,18 @@ namespace Bial {
       size_t dimensions = img.Dims( );
       Vector< Image< D > > dir_gabor;
       for( size_t dir = 0; dir < dimensions; ++dir ) {
-        Kernel krn = KernelType::NormalizedGabor( sigma, dimensions, dir );
+        Kernel krn( KernelType::NormalizedGabor( sigma, dimensions, dir ) );
         dir_gabor.push_back( Correlation( img, krn ) );
       }
       COMMENT( "Computing Gabor magnitude.", 1 );
       if( magnitude != nullptr ) {
         for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
           ( *magnitude )[ pxl ] = 0.0;
-          for( size_t dms = 0; dms < dimensions; ++dms ) {
+          for( size_t dms = 0; dms < dimensions; ++dms )
             ( *magnitude )[ pxl ] += dir_gabor( dms )[ pxl ] * dir_gabor( dms )[ pxl ];
-          }
           ( *magnitude )[ pxl ] = std::sqrt( ( *magnitude )[ pxl ] );
         }
       }
-
       COMMENT( "Computing gabor direction.", 1 );
       if( direction != nullptr ) {
         for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
@@ -62,19 +60,16 @@ namespace Bial {
           }
           COMMENT( "Computing gradient angle.", 3 );
           ( *direction )[ pxl ] = 0;
-          if( max_grad_dir == -1 ) {
+          if( max_grad_dir == -1 )
             continue;
-          }
           for( size_t dms = 0; dms < dimensions; ++dms ) {
             D dir_gbr = ( dir_gabor( dms )[ pxl ] > 0 ) ? dir_gabor( dms )[ pxl ] : -dir_gabor( dms )[ pxl ];
             double tangent = dir_gbr / max_grad_val;
             if( tangent > TAN_22_5 ) {
-              if( dir_gabor( dms )[ pxl ] > 0 ) {
+              if( dir_gabor( dms )[ pxl ] > 0 )
                 ( *direction )[ pxl ] += static_cast< int >( std::pow( 2, dms * 2 ) );
-              }
-              else {
+              else
                 ( *direction )[ pxl ] += static_cast< int >( std::pow( 2, dms * 2 + 1 ) );
-              }
             }
           }
         }

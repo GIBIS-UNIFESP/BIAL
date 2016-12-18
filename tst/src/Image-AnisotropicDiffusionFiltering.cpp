@@ -1,8 +1,6 @@
-/** Universidade Federal de São Paulo
- *   Biblioteca: BIAL
- *   Método:     Nonlinear Anisotropic Diffusion
- *   Autores:    Caio Augusto Palma
- *               Fábio Menocci Cappabianco
+/** 
+ *   BIAL
+ *   Method:     Nonlinear Anisotropic Diffusion
  */
 
 #include "FileImage.hpp"

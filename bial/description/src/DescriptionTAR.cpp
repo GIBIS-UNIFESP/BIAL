@@ -1,6 +1,5 @@
 #include "DescriptionTAR.hpp"
 
-#include "Adjacency.hpp"
 #include "Geometrics.hpp"
 #include "Signal.hpp"
 #include "SortingSort.hpp"

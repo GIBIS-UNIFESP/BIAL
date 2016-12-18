@@ -1,6 +1,5 @@
 #include "DescriptionEHD.hpp"
 
-#include "Adjacency.hpp"
 #include "Signal.hpp"
 
 #include <fstream>

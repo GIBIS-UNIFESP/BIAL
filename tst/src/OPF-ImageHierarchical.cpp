@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2014/Oct/23 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with OPF class. */
 
@@ -50,7 +48,7 @@ int main( int argc, char *argv[] ) {
   else {
     COMMENT( "Adjacency based features.", 0 );
     Image< int > img( Read< int >( argv[ 1 ] ) );
-    Adjacency adj = AdjacencyType::HyperSpheric( 1.9, img.Dims( ) );
+    Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
     feature = MedianFeature( img, adj );
     label = Image< int >( img.Dim( ) );
   }

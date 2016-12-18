@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2012/Jun/27 */
-/* Version: 1.0.00 */
 /* Content: Application. */
 /* Description: Copies Nifti header information from an image to other. Keeps only pixel dimensions and number of
  *pixels. */

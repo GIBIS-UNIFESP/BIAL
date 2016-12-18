@@ -20,7 +20,6 @@ namespace Bial {
 
   template< class D >
   class Image;
-  class Adjacency;
 
   class Shape {
 public:
@@ -344,9 +343,8 @@ public:
 
 }
 
-/* Implementation ----------------------------------------------------------------------------------------------------
- **/
-#include "Adjacency.hpp"
+/* Implementation ------------------------------------------------------------------------------------------------- **/
+
 #include "Image.hpp"
 #include "Signal.hpp"
 

@@ -98,13 +98,16 @@ namespace Bial {
                                   size_t thread, size_t total_threads ) {
     try {
       COMMENT( "Dealing with thread limits.", 3 );
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t adj_index;
       size_t min_index = thread * image.Size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * image.Size( ) / total_threads;
       for( size_t img_index = min_index; img_index < max_index; ++img_index ) {
-        for( AdjacencyIterator adj_it = begin( adjacency, image, img_index ); *adj_it != image.size( ); ++adj_it ) {
-          size_t adj_index = *adj_it;
-          if( result[ img_index ] < image[ adj_index ] ) {
-            result[ img_index ] = image[ adj_index ];
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( img_index, idx, adj_index ) ) {
+            if( result[ img_index ] < image[ adj_index ] )
+              result[ img_index ] = image[ adj_index ];
           }
         }
       }
@@ -181,12 +184,16 @@ namespace Bial {
       COMMENT( "Dealing with thread limits.", 3 );
       size_t min_index = thread * seeds.size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * seeds.size( ) / total_threads;
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t adj_pxl;
       for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
-        for( AdjacencyIterator itr = begin( adjacency, image, seeds( pxl ) ); *itr != image.size( ); ++itr ) {
-          size_t adj_pxl = *itr;
-          if( image[ adj_pxl ] != 0 ) {
-            result[ seeds( pxl ) ] = image[ adj_pxl ];
-            break;
+        for( size_t idx = 0; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+            if( image[ adj_pxl ] != 0 ) {
+              result[ seeds( pxl ) ] = image[ adj_pxl ];
+              break;
+            }
           }
         }
       }

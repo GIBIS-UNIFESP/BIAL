@@ -30,16 +30,16 @@ namespace Bial {
   template< class D >
   Image< D > Filtering::Gaussian( const Image< D > &img, float radius, float std_dev ) {
     try {
-      if( radius <= 0.0 ) {
+      IF_DEBUG( radius <= 0.0 ) {
         std::string msg( BIAL_ERROR( "Radius must be greater than 0.0. Given: " + std::to_string( radius ) ) );
         throw( std::logic_error( msg ) );
       }
-      if( std_dev <= 0.0 ) {
+      IF_DEBUG( std_dev <= 0.0 ) {
         std::string msg( BIAL_ERROR( "Standard deviation must be greater than 0.0. Given: " + std::to_string( std_dev ) ) );
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Kernel generation.", 1 );
-      Kernel krn = KernelType::Gaussian( img.Dims( ), radius, std_dev );
+      Kernel krn( KernelType::Gaussian( img.Dims( ), radius, std_dev ) );
       COMMENT( "Running correlation.", 1 );
       return( Correlation( img, krn ) );
     }

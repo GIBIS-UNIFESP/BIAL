@@ -19,6 +19,7 @@
 #if defined ( BIAL_EXPLICIT_IntensityLocals ) || ( BIAL_IMPLICIT_BIN )
 
 #include "Adjacency.hpp"
+#include "AdjacencyIterator.hpp"
 
 namespace Bial {
 
@@ -26,11 +27,15 @@ namespace Bial {
   Vector< bool > Intensity::LocalMinima( const Image< D > &image, const Adjacency &adjacency ) {
     try {
       Vector< bool > res( image.size( ) );
-      for( size_t img_idx = 0; img_idx < image.size( ); ++img_idx ) {
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t img_size = image.size( );
+      size_t adj_idx;
+      for( size_t img_idx = 0; img_idx < img_size; ++img_idx ) {
         bool minima = true;
-        for( size_t adj_it = 1; adj_it < adjacency.size( ); ++adj_it ) {
-          size_t adj_idx = adjacency( image, img_idx, adj_it );
-          if( ( adj_idx < image.size( ) ) && ( image[ img_idx ] > image[ adj_idx ] ) ) {
+        for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
+          if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+              ( image[ img_idx ] > image[ adj_idx ] ) ) {
             minima = false;
             break;
           }
@@ -62,11 +67,15 @@ namespace Bial {
   Vector< bool > Intensity::LocalMaxima( const Image< D > &image, const Adjacency &adjacency ) {
     try {
       Vector< bool > res( image.size( ) );
-      for( size_t img_idx = 0; img_idx < image.size( ); ++img_idx ) {
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t img_size = image.size( );
+      size_t adj_idx;
+      for( size_t img_idx = 0; img_idx < img_size; ++img_idx ) {
         bool maxima = true;
-        for( size_t adj_it = 1; adj_it < adjacency.size( ); ++adj_it ) {
-          size_t adj_idx = adjacency( image, img_idx, adj_it );
-          if( ( adj_idx < image.size( ) ) && ( image[ img_idx ] < image[ adj_idx ] ) ) {
+        for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
+          if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+              ( image[ img_idx ] < image[ adj_idx ] ) ) {
             maxima = false;
             break;
           }
@@ -99,12 +108,16 @@ namespace Bial {
                                          const Adjacency &adjacency ) {
     try {
       Vector< bool > res( image.size( ) );
-      for( size_t img_idx = 0; img_idx < image.size( ); ++img_idx ) {
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t img_size = image.size( );
+      size_t adj_idx;
+      for( size_t img_idx = 0; img_idx < img_size; ++img_idx ) {
         if( mask[ img_idx ] != 0 ) {
           bool minima = true;
-          for( size_t adj_it = 1; adj_it < adjacency.size( ); ++adj_it ) {
-            size_t adj_idx = adjacency( image, img_idx, adj_it );
-            if( ( adj_idx < image.size( ) ) && ( image[ img_idx ] > image[ adj_idx ] ) ) {
+          for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
+            if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+                ( image[ img_idx ] > image[ adj_idx ] ) ) {
               minima = false;
               break;
             }
@@ -138,12 +151,16 @@ namespace Bial {
                                          const Adjacency &adjacency ) {
     try {
       Vector< bool > res( image.size( ) );
-      for( size_t img_idx = 0; img_idx < image.size( ); ++img_idx ) {
+      AdjacencyIterator adj_itr( image, adjacency );
+      size_t adj_size = adjacency.size( );
+      size_t img_size = image.size( );
+      size_t adj_idx;
+      for( size_t img_idx = 0; img_idx < img_size; ++img_idx ) {
         if( mask[ img_idx ] != 0 ) {
           bool maxima = true;
-          for( size_t adj_it = 1; adj_it < adjacency.size( ); ++adj_it ) {
-            size_t adj_idx = adjacency( image, img_idx, adj_it );
-            if( ( adj_idx < image.size( ) ) && ( image[ img_idx ] < image[ adj_idx ] ) ) {
+          for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
+            if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+                ( image[ img_idx ] < image[ adj_idx ] ) ) {
               maxima = false;
               break;
             }

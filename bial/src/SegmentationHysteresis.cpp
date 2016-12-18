@@ -19,7 +19,7 @@
 
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
-#include "GrowingBucketQueue.hpp"
+#include "FastIncreasingFifoBucketQueue.hpp"
 #include "Image.hpp"
 
 namespace Bial {
@@ -34,26 +34,28 @@ namespace Bial {
       }
       COMMENT( "Computing higher threshold seeds.", 2 );
       Image< D > edge( img );
-      GrowingBucketQueue queue( img.size( ) );
+      FastIncreasingFifoBucketQueue queue( img.size( ), 0, 2 );
       for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-        if( img[ pxl ] < higher ) {
+        if( img[ pxl ] < higher )
           edge[ pxl ] = 0;
-        }
         else {
           queue.Insert( pxl, 1 );
           edge[ pxl ] = 1;
         }
       }
       COMMENT( "Propagating to connected lower threshold pixels.", 2 );
-      Adjacency adj = AdjacencyType::HyperSpheric( 1.9, img.Dims( ) );
+      Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
+      AdjacencyIterator adj_itr( img, adj );
+      size_t adj_size = adj.size( );
+      size_t adj_pxl;
       while( !queue.Empty( ) ) {
         size_t pxl = queue.Remove( );
-        AdjacencyIterator idx = begin( adj, img, pxl );
-        for( ++idx; *idx != img.size( ); ++idx ) {
-          size_t adj_pxl = *idx;
-          if( ( img[ adj_pxl ] >= lower ) && ( edge[ adj_pxl ] == 0 ) ) {
-            queue.Insert( adj_pxl, 1 );
-            edge[ adj_pxl ] = 1;
+        for( size_t idx = 1; idx < adj_size; ++idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+            if( ( img[ adj_pxl ] >= lower ) && ( edge[ adj_pxl ] == 0 ) ) {
+              queue.Insert( adj_pxl, 1 );
+              edge[ adj_pxl ] = 1;
+            }
           }
         }
       }

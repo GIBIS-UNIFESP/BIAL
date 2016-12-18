@@ -1,13 +1,10 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2016/Feb/04 */
-/* Version: 1.0.00 */
 /* Content: Rotates image in 90 degrees clockwise. */
 /* Description: */
 
-#include "Adjacency.hpp"
 #include "FileImage.hpp"
 #include "Image.hpp"
 

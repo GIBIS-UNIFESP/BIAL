@@ -5,7 +5,6 @@
 /* Content: Test file. */
 /* Description: Test with superpixels. */
 
-#include "Adjacency.hpp"
 #include "FileImage.hpp"
 #include "Image.hpp"
 #include "Matrix.hpp"

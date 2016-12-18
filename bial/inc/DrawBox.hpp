@@ -19,7 +19,6 @@ namespace Bial {
 
   template< class D >
   class Image;
-  class Adjacency;
 
   /**
    * @brief Box Figure class.

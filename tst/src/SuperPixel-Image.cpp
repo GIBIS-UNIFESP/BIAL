@@ -1,13 +1,10 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2015/Sep/15 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with superpixels. */
 
-#include "Adjacency.hpp"
 #include "Color.hpp"
 #include "FileImage.hpp"
 #include "Image.hpp"

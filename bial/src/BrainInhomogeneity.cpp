@@ -101,27 +101,29 @@ namespace Bial {
         Image< D > edt = Transform::InverseEDT( border, msk, radius );
         COMMENT( "Adjacency relation computing and result scene creating.", 0 );
         Vector< float > input_radius( img.Dims( ), radius );
-        Vector< float > large_radius( img.Dims( ), 1.1 );
+        //Vector< float > large_radius( img.Dims( ), 1.1 );
         for( size_t dms = 0; dms < img.Dims( ); ++dms ) {
           input_radius( dms ) /= img.PixelSize( dms );
-          large_radius( dms ) /= img.PixelSize( dms );
+          //large_radius( dms ) /= img.PixelSize( dms );
         }
         Adjacency input_adj = AdjacencyType::HyperEllipsoid( input_radius );
-        Adjacency large_adj = AdjacencyType::HyperEllipsoid( large_radius );
+        //Adjacency large_adj = AdjacencyType::HyperEllipsoid( large_radius );
         Image< D > res( msk );
-        res.Set( 0.0 );
         COMMENT( "Creating histogram of potential reference pixel region.", 0 );
         size_t histo_size = ( img * cln_msk ).Maximum( ) + 1;
         Signal histo( histo_size );
         COMMENT( "Computing the bias estimation scene.", 0 );
-        for( size_t pxl = 0; pxl < msk.size( ); ++pxl ) {
+        AdjacencyIterator adj_itr( img, input_adj );
+        size_t adj_size = input_adj.size( );
+        size_t img_size = img.size( );
+        size_t adj_pxl;
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
           if( msk[ pxl ] != 0 ) {
             size_t total_voxels = 0;
             size_t root = edt[ pxl ];
             COMMENT( "Looking for the best value in each adjacency.", 4 );
-            for( AdjacencyIterator itr = begin( input_adj,msk, root ); *itr != msk.size( ); ++itr ) {
-              size_t adj_pxl = *itr;
-              if( cln_msk[ adj_pxl ] != 0 ) {
+            for( size_t idx = 0; idx < adj_size; ++idx ) {
+              if( ( ( adj_itr.*adj_itr.AdjIdx )( root, idx, adj_pxl ) ) && ( cln_msk[ adj_pxl ] != 0 ) ) {
                 ++total_voxels;
                 ++histo[ img[ adj_pxl ] ];
               }
@@ -171,10 +173,11 @@ namespace Bial {
                                    MRIModality modality ) {
       try {
         Image< D > res( msk );
+        size_t img_size = img.size( );
         if( modality == MRIModality::T1 ) {
           D max_img = ( img * msk ).Maximum( );
           D max_bias = ( bias * msk ).Maximum( );
-          for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
+          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
             if( msk[ pxl ] != 0 ) {
               res[ pxl ] = std::min( max_img, static_cast< D >( img[ pxl ] * static_cast< float >
                                                                 ( ( max_bias + 1.0 ) / ( bias[ pxl ] + 1.0 ) ) ) );
@@ -184,7 +187,7 @@ namespace Bial {
         else {
           D min_img = ( img * msk ).Minimum( );
           D min_bias = ( bias * msk ).Minimum( );
-          for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
+          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
             if( msk[ pxl ] != 0 ) {
               res[ pxl ] = std::max( min_img, static_cast< D >( img[ pxl ] * static_cast< float >
                                                                 ( ( min_bias + 1.0 ) / ( bias[ pxl ] + 1.0 ) ) ) );

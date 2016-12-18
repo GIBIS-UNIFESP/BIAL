@@ -30,7 +30,7 @@ namespace Bial {
   template< class D >
   Image< int > Segmentation::Watershed( Image< D > &gradient, float radius ) {
     try {
-      Adjacency spheric = AdjacencyType::HyperSpheric( radius, gradient.Dims( ) );
+      Adjacency spheric( AdjacencyType::HyperSpheric( radius, gradient.Dims( ) ) );
       Vector< bool > local_minima = Intensity::LocalMinima( gradient, spheric );
       return( Segmentation::Watershed( gradient, local_minima ) );
     }
@@ -61,7 +61,7 @@ namespace Bial {
         std::string msg( BIAL_ERROR( "Gradient image and seed vector must have the same number of elements." ) );
         throw( std::logic_error( msg ) );
       }
-      Adjacency spheric = AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) );
+      Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
       Image< int > label( gradient );
       label.Set( 0.0 );
       MaxPathFunction< Image, D > max_function( gradient, 1.0 );
@@ -91,6 +91,48 @@ namespace Bial {
           queue.Insert( it, gradient( it ) );
       }
 
+      // AdjacencyIterator adj_itr( gradient, spheric );
+      // size_t adj_size = spheric.size( );
+      // size_t adj_index;
+      // COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
+      // while( !queue.Empty( ) ) {
+      //   COMMENT( "Initializing removed data.", 4 );
+      //   int index = queue.Remove( );
+      //   bool capable = max_function.RemoveLabel( index, queue.State( index ) );
+      //   COMMENT( "Index: " << index << ", value: " << gradient[ index ] << ", is capable: " <<
+      //            ( capable ? "true" : "false" ), 4 );
+      //   queue.Finished( index );
+      //   if( capable ) {
+      //     for( size_t adj = 0; adj < adj_size; ++adj ) {
+      //       if( ( ( adj_itr.*adj_itr.AdjIdx )( index, adj, adj_index ) ) &&
+      //           ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
+      //         COMMENT( "Conquering: " << adj_index, 4 );
+      //         D previous_value = gradient[ adj_index ];
+      //         COMMENT( "previous_value: " << previous_value, 4 );
+      //         if( max_function.Propagate( index, adj_index ) ) {
+      //           COMMENT( "propagated!", 4 );
+      //           queue.Update( adj_index, previous_value, gradient[ adj_index ] );
+      //           COMMENT( "queue updated!", 4 );
+      //           label( adj_index ) = label( index );
+      //           COMMENT( "function updated!", 4 );
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+
+      AdjacencyIterator adj_itr( gradient, spheric );
+      size_t adj_size = spheric.size( );
+      size_t adj_index;
+      size_t xy_size = gradient.Displacement( 1 );
+      size_t x_size = gradient.size( 0 );
+      size_t y_size = gradient.size( 1 );
+      size_t z_size = gradient.size( 2 );
+      size_t x_size_1 = x_size - 1;
+      size_t y_size_1 = y_size - 1;
+      size_t z_size_1 = z_size - 1;
+      Vector< size_t > src_vector( 3 );
+      Vector< size_t > adj_vector( 3 );
       COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
       while( !queue.Empty( ) ) {
         COMMENT( "Initializing removed data.", 4 );
@@ -100,18 +142,44 @@ namespace Bial {
                  ( capable ? "true" : "false" ), 4 );
         queue.Finished( index );
         if( capable ) {
-          for( AdjacencyIterator adj = begin( spheric, gradient, index ); *adj < size; ++adj ) {
-            size_t adj_index = *adj;
-            if( queue.State( adj_index ) != BucketState::REMOVED ) { // Verificar se acelera.
-              COMMENT( "Conquering: " << adj_index, 4 );
-              D previous_value = gradient[ adj_index ];
-              COMMENT( "previous_value: " << previous_value, 4 );
-              if( max_function.Propagate( index, adj_index ) ) {
-                COMMENT( "propagated!", 4 );
-                queue.Update( adj_index, previous_value, gradient[ adj_index ] );
-                COMMENT( "queue updated!", 4 );
-                label( adj_index ) = label( index );
-                COMMENT( "function updated!", 4 );
+          div_t div_index_by_xy = std::div( static_cast< int >( index ), static_cast< int >( xy_size ) );
+          div_t div_rem_by_x =  std::div( div_index_by_xy.rem, static_cast< int >( x_size ) );
+          src_vector[ 0 ] = static_cast< size_t >( div_rem_by_x.rem );
+          src_vector[ 1 ] = static_cast< size_t >( div_rem_by_x.quot );
+          src_vector[ 2 ] = static_cast< size_t >( div_index_by_xy.quot );
+          if( ( src_vector[ 0 ] > 0 ) && ( src_vector[ 0 ] < x_size_1 ) && ( src_vector[ 1 ] > 0 ) && 
+              ( src_vector[ 1 ] < y_size_1 ) && ( src_vector[ 2 ] > 0 ) && ( src_vector[ 2 ] < z_size_1 ) ) {
+            for( size_t adj = 0; adj < adj_size; ++adj ) {
+              adj_index = adj_itr( index, adj );
+              if( queue.State( adj_index ) != BucketState::REMOVED ) {
+                COMMENT( "Conquering: " << adj_index, 4 );
+                D previous_value = gradient[ adj_index ];
+                COMMENT( "previous_value: " << previous_value, 4 );
+                if( max_function.Propagate( index, adj_index ) ) {
+                  COMMENT( "propagated!", 4 );
+                  queue.Update( adj_index, previous_value, gradient[ adj_index ] );
+                  COMMENT( "queue updated!", 4 );
+                  label( adj_index ) = label( index );
+                  COMMENT( "function updated!", 4 );
+                }
+              }
+            }
+          }
+          else {
+            for( size_t adj = 0; adj < adj_size; ++adj ) {
+              adj_index = adj_itr( index, adj );
+              if( ( ( adj_itr.*adj_itr.AdjVct )( src_vector, adj, adj_vector ) ) &&
+                  ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
+                COMMENT( "Conquering: " << adj_index, 4 );
+                D previous_value = gradient[ adj_index ];
+                COMMENT( "previous_value: " << previous_value, 4 );
+                if( max_function.Propagate( index, adj_index ) ) {
+                  COMMENT( "propagated!", 4 );
+                  queue.Update( adj_index, previous_value, gradient[ adj_index ] );
+                  COMMENT( "queue updated!", 4 );
+                  label( adj_index ) = label( index );
+                  COMMENT( "function updated!", 4 );
+                }
               }
             }
           }
@@ -151,7 +219,7 @@ namespace Bial {
       }
       D min_val = gradient.Minimum( );
       size_t value_range = gradient.Maximum( ) - gradient.Minimum( ) + 1;
-      Adjacency spheric = AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) );
+      Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
       Image< int > label( gradient );
       size_t size = gradient.size( );
       Vector< bool > seeds( size, false );

@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2013/Sep/21 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test with OPF class and LSH. */
 
@@ -26,7 +24,7 @@ int main( int argc, char *argv[] ) {
     return( 0 );
   }
   Image< int > img( Read< int >( argv[ 1 ] ) );
-  Adjacency adj = AdjacencyType::HyperSpheric( 0.1, img.Dims( ) );
+  Adjacency adj( AdjacencyType::HyperSpheric( 0.1, img.Dims( ) ) );
   Feature< int > feature = ColorFeature< int >( img, adj );
   Vector< float > radius( 1, 5.0 );
 

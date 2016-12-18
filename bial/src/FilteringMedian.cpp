@@ -31,24 +31,21 @@ namespace Bial {
   Image< D > Filtering::Median( const Image< D > &img, float radius ) {
     try {
       Image< D > res( img );
-      Adjacency adj = AdjacencyType::HyperSpheric( radius, img.Dims( ) );
+      Adjacency adj( AdjacencyType::HyperSpheric( radius, img.Dims( ) ) );
 
       try {
         size_t total_threads = 12;
         Vector< std::thread > threads;
-        for( size_t thd = 0; thd < total_threads; ++thd ) {
+        for( size_t thd = 0; thd < total_threads; ++thd )
           threads.push_back( std::thread( &Filtering::MedianThreads< D >, std::ref( img ), std::ref( adj ),
                                           std::ref( res ), thd, total_threads ) );
-        }
-        for( size_t thd = 0; thd < total_threads; ++thd ) {
+        for( size_t thd = 0; thd < total_threads; ++thd )
           threads[ thd ].join( );
-        }
       }
       catch( std::exception &e ) {
         BIAL_WARNING( "Failed to run in multi-thread. Exception: " << e.what( ) );
         Filtering::MedianThreads( img, adj, res, 0, 1 );
       }
-
       return( res );
     }
     catch( std::bad_alloc &e ) {
@@ -76,16 +73,18 @@ namespace Bial {
       COMMENT( "Dealing with thread limits.", 2 );
       size_t min_index = thread * img.Size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * img.Size( ) / total_threads;
-
+      AdjacencyIterator adj_itr( img, adj );
+      size_t adj_size = adj.size( );
+      size_t adj_pxl;
       COMMENT( "Computing median filter.", 2 );
       for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
-        size_t adjs = adj.size( );
-        Vector< float > queue( adjs );
+        Vector< float > queue( adj_size );
         size_t idx = 0;
-        for( AdjacencyIterator itr = begin( adj, img, pxl ); *itr < img.size( ); ++itr ) {
-          size_t adj_pxl = *itr;
-          queue[ idx ] = img[ adj_pxl ];
-          ++idx;
+        for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
+          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, adj_idx, adj_pxl ) ) {
+            queue[ idx ] = img[ adj_pxl ];
+            ++idx;
+          }
         }
         sort( queue.begin( ), queue.begin( ) + idx );
         res[ pxl ] = queue[ ( idx - 1 ) / 2 ];

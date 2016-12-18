@@ -18,8 +18,6 @@
 
 #if defined ( BIAL_EXPLICIT_ClusteringIFT ) || ( BIAL_IMPLICIT_BIN )
 
-#include "Adjacency.hpp"
-#include "AdjacencyIterator.hpp"
 #include "BucketQueue.hpp"
 #include "PathFunction.hpp"
 

@@ -1,9 +1,7 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Author: Fábio Augusto Menocci Cappabianco */
 /* Date: 2013/Oct/31 */
-/* Version: 1.0.00 */
 /* Content: Test file. */
 /* Description: Test Dicom, Directories and Merging process. */
 

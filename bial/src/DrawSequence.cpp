@@ -155,7 +155,7 @@ namespace Bial {
       RealColor max_color( img.Maximum( ) );
       float maximum = std::max( 255.0f, std::max( max_color( 1 ), std::max( max_color( 2 ), max_color( 3 ) ) ) );
       COMMENT( "maximum: " << maximum, 0 );
-      RealColor assgn_color( this->color( 0 ), this->color( 1 ) * maximum / 255.0f, 
+      RealColor assgn_color( this->color( 0 ), this->color( 1 ) * maximum / 255.0f,
                              this->color( 2 ) * maximum / 255.0f, this->color( 3 ) * maximum / 255.0f );
       float alpha = assgn_color( 0 ) / 255.0f;
 
@@ -289,11 +289,12 @@ namespace Bial {
       point.push_back( label.Coordinates( start_pxl ) );
       visited[ start_pxl ] = 1;
       const D value = label[ start_pxl ];
-      const size_t imgSz = label.size( );
-      AdjacencyIterator itr = begin( adj, label, start_pxl );
-      for( ++itr; *itr != imgSz; ++itr ) {
-        const size_t adj_pxl = *itr;
-        if( ( adj_pxl < imgSz ) && ( label[ adj_pxl ] == value ) && ( !visited[ adj_pxl ] ) ) {
+      AdjacencyIterator adj_itr( label, adj );
+      size_t adj_size = adj.size( );
+      size_t adj_pxl;
+      for( size_t idx = 1; idx < adj_size; ++idx ) {
+        if( ( ( adj_itr.*adj_itr.AdjIdx )( start_pxl, idx, adj_pxl ) ) && ( label[ adj_pxl ] == value ) &&
+            ( !visited[ adj_pxl ] ) ) {
           SequenceCreator( label, adj_pxl, visited, adj );
           return;
         }
@@ -335,7 +336,7 @@ namespace Bial {
   }
 
   bool Sequence::ValidateCircularity( Vector< float > &center, float min_center_dist, float max_center_dist,
-                                      float min_radius, float max_radius, float min_circularity, 
+                                      float min_radius, float max_radius, float min_circularity,
                                       float max_circularity ) {
     try {
       COMMENT( "Verifying input parameters.", 1 );
@@ -517,7 +518,7 @@ namespace Bial {
   template void Sequence::SequenceCreator( const Image< double > &label, size_t start_pxl,
                                            Image< int > &visited, Adjacency &adj );
   template Sequence::Sequence( const Image< Color > &label, size_t start_pxl, Adjacency &adj, const Color color );
-  template void Sequence::SequenceCreator( const Image< Color > &label, size_t start_pxl, 
+  template void Sequence::SequenceCreator( const Image< Color > &label, size_t start_pxl,
                                            Image< int > &visited, Adjacency &adj );
 
   template void Sequence::Print( OFile &os ) const;

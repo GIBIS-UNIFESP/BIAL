@@ -1110,15 +1110,6 @@ namespace Bial {
     template< class D2 >
     bool SameDimensions( const Matrix< D2 > &src ) const;
 
-    /**
-     * @date 2012/Jun/27
-     * @param adj: Adjacency relation to compare to.
-     * @return Weather adj has the same dimensions as 'this' matrix.
-     * @brief Compares the dimensions of adj adjacency relation to the dimensions of 'this' matrix.
-     * @warning none.
-     */
-    bool SameDimensions( const Adjacency &adj ) const;
-
   };
   /**
    * @param os: output stream.
@@ -2293,36 +2284,30 @@ namespace Bial {
   template< class D >
   size_t Matrix< D >::Position( const Vector< size_t > &coordinates ) const {
     size_t position = 0;
-    if( coordinates.size( ) > 0 ) {
+    IF_DEBUG( coordinates.size( ) > 0 )
       position = coordinates[ 0 ];
-    }
-    for( size_t dms = 1; dms < dims; ++dms ) {
+    for( size_t dms = 1; dms < dims; ++dms )
       position += acc_dim_size( dms - 1 ) * coordinates[ dms ];
-    }
     return( position );
   }
 
   template< class D >
   size_t Matrix< D >::Position( const Vector< int > &coordinates ) const {
     size_t position = 0;
-    if( coordinates.size( ) > 0 ) {
+    IF_DEBUG( coordinates.size( ) > 0 )
       position = static_cast< size_t >( coordinates[ 0 ] );
-    }
-    for( size_t dms = 1; dms < dims; ++dms ) {
+    for( size_t dms = 1; dms < dims; ++dms )
       position += acc_dim_size( dms - 1 ) * static_cast< int >( coordinates[ dms ] );
-    }
     return( position );
   }
 
   template< class D >
   size_t Matrix< D >::Position( const Vector< float > &coordinates ) const {
     size_t position = 0;
-    if( coordinates.size( ) > 0 ) {
+    IF_DEBUG( coordinates.size( ) > 0 )
       position = static_cast< size_t >( coordinates[ 0 ] );
-    }
-    for( size_t dms = 1; dms < dims; ++dms ) {
+    for( size_t dms = 1; dms < dims; ++dms )
       position += acc_dim_size( dms - 1 ) * static_cast< size_t >( coordinates[ dms ] );
-    }
     return( position );
   }
 
@@ -2729,11 +2714,6 @@ namespace Bial {
       return( equal( dim_size.begin( ), dim_size.end( ), src.dim_size.begin( ) ) );
     }
     return( false );
-  }
-
-  template< class D >
-  bool Matrix< D >::SameDimensions( const Adjacency &adj ) const {
-    return( dims == adj.Dims( ) );
   }
 
 }
