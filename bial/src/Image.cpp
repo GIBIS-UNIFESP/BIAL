@@ -1253,9 +1253,14 @@ namespace Bial {
 
   template< class D >
   Vector< size_t > Image< D >::Coordinates( size_t position ) const {
-    Vector< size_t > index( _data.dim_size.size( ), position / _data.acc_dim_size( 1 ) );
-    index[ 0 ] = position % _data.dim_size( 0 );
-    index[ 1 ] = ( position / _data.dim_size( 0 ) ) % _data.dim_size( 1 );
+    // Vector< size_t > index( _data.dim_size.size( ), position / _data.acc_dim_size( 1 ) );
+    // index[ 0 ] = position % _data.dim_size( 0 );
+    // index[ 1 ] = ( position / _data.dim_size( 0 ) ) % _data.dim_size( 1 );
+    std::div_t pos_div_xy_size = std::div( static_cast< int >( position ), _data.acc_dim_size( 1 ) );
+    std::div_t xy_size_div_xsize = std::div( pos_div_xy_size.rem, _data.dim_size( 0 ) );
+    Vector< size_t > index( 3, pos_div_xy_size.quot );
+    index[ 0 ] = xy_size_div_xsize.rem;
+    index[ 1 ] = xy_size_div_xsize.quot;
     return( index );
   }
 

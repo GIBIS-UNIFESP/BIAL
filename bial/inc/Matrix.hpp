@@ -2283,9 +2283,11 @@ namespace Bial {
 
   template< class D >
   size_t Matrix< D >::Position( const Vector< size_t > &coordinates ) const {
-    size_t position = 0;
-    IF_DEBUG( coordinates.size( ) > 0 )
-      position = coordinates[ 0 ];
+    IF_DEBUG( coordinates.size( ) == 0 ) {
+      std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
+      throw( std::logic_error( msg ) );
+    }
+    size_t position = coordinates[ 0 ];
     for( size_t dms = 1; dms < dims; ++dms )
       position += acc_dim_size( dms - 1 ) * coordinates[ dms ];
     return( position );
@@ -2293,9 +2295,11 @@ namespace Bial {
 
   template< class D >
   size_t Matrix< D >::Position( const Vector< int > &coordinates ) const {
-    size_t position = 0;
-    IF_DEBUG( coordinates.size( ) > 0 )
-      position = static_cast< size_t >( coordinates[ 0 ] );
+    IF_DEBUG( coordinates.size( ) == 0 ) {
+      std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
+      throw( std::logic_error( msg ) );
+    }
+    size_t position = static_cast< size_t >( coordinates[ 0 ] );
     for( size_t dms = 1; dms < dims; ++dms )
       position += acc_dim_size( dms - 1 ) * static_cast< int >( coordinates[ dms ] );
     return( position );
@@ -2303,9 +2307,11 @@ namespace Bial {
 
   template< class D >
   size_t Matrix< D >::Position( const Vector< float > &coordinates ) const {
-    size_t position = 0;
-    IF_DEBUG( coordinates.size( ) > 0 )
-      position = static_cast< size_t >( coordinates[ 0 ] );
+    IF_DEBUG( coordinates.size( ) == 0 ) {
+      std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
+      throw( std::logic_error( msg ) );
+    }
+    size_t position = static_cast< size_t >( coordinates[ 0 ] );
     for( size_t dms = 1; dms < dims; ++dms )
       position += acc_dim_size( dms - 1 ) * static_cast< size_t >( coordinates[ dms ] );
     return( position );

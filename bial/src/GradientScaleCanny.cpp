@@ -135,7 +135,7 @@ namespace Bial {
                 }
               }
             }
-            COMMENT( "Lower and higher intensities: ." << lower_intensity << ", " higher_intensity, 4 );
+            COMMENT( "Lower and higher intensities: ." << lower_intensity << ", " << higher_intensity, 4 );
             if( lower_intensity != higher_intensity ) {
               COMMENT( "Propagating to connected lower threshold pixels.", 4 );
               while( !queue.Empty( ) ) {
