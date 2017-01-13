@@ -57,6 +57,8 @@ public:
   void setDrawType( int type );
   void clearSeeds( );
 
+  void InitiateSeeds( const Bial::Vector< size_t > &obj_seeds, const Bial::Vector< size_t > &bkg_seeds,
+                      Bial::Image< int > &grad );
   void Watershed( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                   const Bial::Vector< size_t > &bkg_seeds );
   void Watershed( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,

@@ -226,6 +226,44 @@ void SegmentationTool::clearSeeds( ) {
   emit guiImage->imageUpdated( );
 }
 
+void SegmentationTool::InitiateSeeds( const Bial::Vector< size_t > &obj_seeds, const Bial::Vector< size_t > &bkg_seeds,
+                                      Bial::Image< int > &grad ) {
+  try {
+    COMMENT( "Initialize seeds.", 0 );
+    COMMENT( "Initialize object seeds. Seeds: " << obj_seeds.size( ), 0 );
+    for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
+        size_t obj_elm = obj_seeds[ elm ];
+        label[ obj_elm ] = 1;
+        grad[ obj_elm ] = 0;
+        queue->Insert( obj_elm, grad[ obj_elm ] );
+    }
+    COMMENT( "Initialize background seeds. Seeds: " << bkg_seeds.size( ), 0 );
+    for( size_t elm = 0; elm < bkg_seeds.size( ); ++elm ) {
+        size_t bkg_elm = bkg_seeds[ elm ];
+        label[ bkg_elm ] = 0;
+        grad[ bkg_elm ] = 0;
+        queue->Insert( bkg_elm, grad[ bkg_elm ] );
+    }
+    COMMENT( "Fininished initializing seeds.", 0 );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
 void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                                   const Bial::Vector< size_t > &bkg_seeds ) {
     try {
@@ -240,44 +278,28 @@ void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< s
         COMMENT( "Getting initial parameters.", 0 );
         pf = 1;
         size_t size = img.size( );
-        Bial::Image< int > *grad;
         if( !initiated )  {
-            COMMENT( "Initialize maps and path function.", 0 );
-            grad = new Bial::Image< int >( Bial::Gradient::Morphological( img ) );
+            COMMENT( "Initialize maps.", 0 );
+            Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
             pred = Bial::Image< int >( img.Dim( ) );
             label = Bial::Image< int >( img.Dim( ) );
-            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred, false, *grad );
+            COMMENT( "Initialize path function.", 0 );
+            cost = Bial::MultiImage( grad );
+            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred, false, grad );
+            COMMENT( "Initialize queue.", 0 );
+            Bial::Image< int > &value( cost.IntImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
-                ( *grad )[ elm ] = std::numeric_limits< int >::max( );
-            queue = new Bial::GrowingBucketQueue( size, 1.0, int_path_func->Increasing( ), true );
-        }
-        else {
-            COMMENT( "Continuing segmentation.", 0 );
-            grad = &( cost.IntImage( ) );
-        }
-        COMMENT( "Initialize seeds.", 0 );
-        COMMENT( "Initialize object seeds. Seeds: " << obj_seeds.size( ), 0 );
-        for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
-            size_t obj_elm = obj_seeds[ elm ];
-            label[ obj_elm ] = 1;
-            ( *grad )[ obj_elm ] = 0;
-            queue->Insert( obj_elm, ( *grad )[ obj_elm ] );
-        }
-        COMMENT( "Initialize background seeds. Seeds: " << bkg_seeds.size( ), 0 );
-        for( size_t elm = 0; elm < bkg_seeds.size( ); ++elm ) {
-            size_t bkg_elm = bkg_seeds[ elm ];
-            label[ bkg_elm ] = 0;
-            ( *grad )[ bkg_elm ] = 0;
-            queue->Insert( bkg_elm, ( *grad )[ bkg_elm ] );
-        }
-        COMMENT( "Fininished initializing seeds.", 0 );
-        if( !initiated )  {
+                value[ elm ] = std::numeric_limits< int >::max( );
+            queue = new Bial::GrowingBucketQueue( size, 1.0, true, true );
+            InitiateSeeds( obj_seeds, bkg_seeds, value );
             COMMENT( "Initialize IFT.", 0 );
-            cost = Bial::MultiImage( *grad );
             adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
             int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func, queue );
             initiated = true;
-            delete grad;
+        }
+        else {
+            COMMENT( "Continuing segmentation.", 0 );
+            InitiateSeeds( obj_seeds, bkg_seeds, cost.IntImage( ) );
         }
         COMMENT( "Running IFT.", 0 );
         int_ift->Run( );
