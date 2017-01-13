@@ -23,18 +23,24 @@
 #include "FileImage.hpp"
 #endif
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< class D >
-  OrientedInternPathFunction< D >::OrientedInternPathFunction( const Image< D > &handicap, 
+  OrientedInternPathFunction< D >::OrientedInternPathFunction( Image< D > &init_value, Image< int > &init_label,
+                                                               Image< int > *init_predecessor, bool sequential_label, 
+                                                               const Image< D > &handicap, 
                                                                const Image< D > &new_intensity,
                                                                Image< int > *restriction, double new_alpha ) try :
-    PathFunction< Image, D >( ), intensity( new_intensity ), handicap( handicap ), geodesic_restriction( restriction ),
-      alpha( new_alpha ) {
-      if( ( geodesic_restriction != nullptr ) && ( intensity.Dims( ) != restriction->Dims( ) ) ) {
-        std::string msg( BIAL_ERROR( "Image dimensions do not match." ) );
+    PathFunction< Image, D >( init_value, &init_label, init_predecessor, sequential_label ), intensity( new_intensity ),
+      handicap( handicap ), geodesic_restriction( restriction ), alpha( new_alpha ) {
+      if( ( geodesic_restriction != nullptr ) && ( init_value.Dims( ) != geodesic_restriction->Dims( ) ) ) {
+        std::string msg( BIAL_ERROR( "Value and restriction image dimensions do not match." ) );
+        throw( std::logic_error( msg ) );
+      }
+      if( intensity.Dims( ) != init_value.Dims( ) ) {
+        std::string msg( BIAL_ERROR( "Intensity and value image dimensions do not match." ) );
         throw( std::logic_error( msg ) );
       }
       if( ( alpha < 0.0 ) || ( alpha > 1.0 ) ) {
@@ -61,7 +67,9 @@ namespace Bial {
 
   template< class D >
   OrientedInternPathFunction< D >::OrientedInternPathFunction( const OrientedInternPathFunction< D > &pf ) try :
-    OrientedInternPathFunction< D >( pf.handicap, pf.intensity, pf.geodesic_restriction, pf.alpha ) {
+    OrientedInternPathFunction< D >( *( pf.value ), *( pf.label ), pf.predecessor, true, pf.handicap,
+                                     pf.intensity, pf.geodesic_restriction, pf.alpha ) {
+      this->next_label = pf.next_label;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -107,26 +115,17 @@ namespace Bial {
   }
 
   template< class D >
-  void OrientedInternPathFunction< D >::Initialize( Image< D > &init_value, Image< int > *init_label,
-                                                    Image< int > *init_predecessor, bool sequential_label ) {
+  bool OrientedInternPathFunction< D >::RemoveSimple( size_t, BucketState ) {
+    return( true );
+  }
+
+  template< class D >
+  bool OrientedInternPathFunction< D >::RemovePredecessor( size_t index, BucketState state ) {
     try {
-      if( ( geodesic_restriction != nullptr ) && ( init_value.Dims( ) != geodesic_restriction->Dims( ) ) ) {
-        std::string msg( BIAL_ERROR( "Image dimensions do not match." ) );
-        throw( std::logic_error( msg ) );
+      if( state == BucketState::INSERTED ) {
+        this->predecessor->operator()( index ) = -1;
       }
-      if( init_label == nullptr ) {
-        std::string msg( BIAL_ERROR( "This path function requires label map." ) );
-        throw( std::logic_error( msg ) );
-      }
-      if( intensity.Dims( ) != init_value.Dims( ) ) {
-        std::string msg( BIAL_ERROR( "Image dimensions do not match." ) );
-        throw( std::logic_error( msg ) );
-      }
-      if( init_label == nullptr ) {
-        std::string msg( BIAL_ERROR( "This path-function requires label map." ) );
-        throw( std::logic_error( msg ) );
-      }
-      PathFunction< Image, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
+      return( true );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -147,15 +146,38 @@ namespace Bial {
   }
 
   template< class D >
-  bool OrientedInternPathFunction< D >::RemoveSimple( size_t, BucketState ) {
-    return( true );
-  }
-
-  template< class D >
   bool OrientedInternPathFunction< D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       if( state == BucketState::INSERTED ) {
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
+  bool OrientedInternPathFunction< D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      if( state == BucketState::INSERTED ) {
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       return( true );
@@ -206,33 +228,29 @@ namespace Bial {
   bool OrientedInternPathFunction< D >::Propagate( int index, int adj_index ) {
     try {
       D src_value = this->value->operator()( adj_index );
-      COMMENT( "Computing arc weight.", 3 );
+      COMMENT( "Computing arc weight of " << index << " to " << adj_index, 4 );
       double arc_weight = handicap( index ) + handicap( adj_index );
       COMMENT( "Orienting edges.", 3 );
       double fraction = 0;
-      if( intensity[ index ] > intensity[ adj_index ] ) {
+      if( intensity[ index ] > intensity[ adj_index ] )
         fraction = alpha;
-      }
-      else if( intensity[ index ] < intensity[ adj_index ] ) {
+      else if( intensity[ index ] < intensity[ adj_index ] )
         fraction = -alpha;
-      }
-      if( this->label->operator()( index ) != 0 ) {
+      if( this->label->operator()( index ) != 0 )
         fraction = -fraction;
-      }
       arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
-      COMMENT( "Suppressing non-zero.", 3 );
+      COMMENT( "Suppressing non-zero.", 4 );
       ++arc_weight;
-      COMMENT( "Zero weight edges.", 3 );
+      COMMENT( "Zero weight edges.", 4 );
       if( geodesic_restriction != nullptr ) {
         if( ( ( this->label->operator()( index ) != 0 ) && ( ( *geodesic_restriction )[ index ] == adj_index ) ) ||
-            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) ) {
+            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) )
           arc_weight = 0;
-        }
       }
       ++arc_weight;
-      COMMENT( "Propagated value.", 3 );
+      COMMENT( "Propagated value.", 4 );
       D prp_value = static_cast< D >( arc_weight );
-      COMMENT( "Updating path value.", 3 );
+      COMMENT( "Updating path value.", 4 );
       if( src_value > prp_value ) {
         this->value->operator()( adj_index ) = prp_value;
         return( true );

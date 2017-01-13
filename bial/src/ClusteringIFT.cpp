@@ -26,12 +26,9 @@ namespace Bial {
   template< template< class D > class C, class D >
   ClusteringIFT< C, D >::ClusteringIFT( C< D > &value, PathFunction< C, D > *function,
                                         const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-                                        const Vector< Vector< size_t > > &variable_adjacency, 
-                                        const Vector< bool > *seed, C< int > *label, C< int > *predecessor, 
-                                        bool sequential_label, long double bucket_size, bool fifo_tie ) try :
-    DegeneratedIFT< C, D >( value, function, seed, label, predecessor, sequential_label, bucket_size, fifo_tie ),
-      uniform_adjacency( &uniform_adjacency ), uniform_adjs( uniform_adjs ), variable_adjacency( variable_adjacency ),
-      variable_adjs( nullptr ) {
+                                        const Vector< Vector< size_t > > &variable_adjacency, BucketQueue *queue ) try :
+    DegeneratedIFT< C, D >( value, function, queue ), uniform_adjacency( &uniform_adjacency ), 
+      uniform_adjs( uniform_adjs ), variable_adjacency( variable_adjacency ), variable_adjs( nullptr ) {
       if( uniform_adjacency.size( ) == 0 ) {
         std::string msg( BIAL_ERROR( "Must have at last one adjacent in uniform adjacency." ) );
         throw( std::logic_error( msg ) );
@@ -73,12 +70,9 @@ namespace Bial {
   template< template< class D > class C, class D >
   ClusteringIFT< C, D >::ClusteringIFT( C< D > &value, PathFunction< C, D > *function,
                                         const Vector< Vector< size_t > > &variable_adjacency, 
-                                        const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-                                        C< int > *label, C< int > *predecessor, bool sequential_label,
-                                        long double bucket_size, bool fifo_tie ) try :
-    DegeneratedIFT< C, D >( value, function, seed, label, predecessor, sequential_label, bucket_size, fifo_tie ),
-      uniform_adjacency( nullptr ), uniform_adjs( 0 ), variable_adjacency( variable_adjacency ),
-      variable_adjs( &variable_adjs ) {
+                                        const Vector< size_t > &variable_adjs, BucketQueue *queue ) try :
+    DegeneratedIFT< C, D >( value, function, queue ), uniform_adjacency( nullptr ), uniform_adjs( 0 ), 
+      variable_adjacency( variable_adjacency ), variable_adjs( &variable_adjs ) {
       if( variable_adjacency.size( ) != value.size( ) ) {
         std::string msg( BIAL_ERROR( "Value and variable adjacency relation dimensions do not match." ) );
         throw( std::logic_error( msg ) );
@@ -111,7 +105,7 @@ namespace Bial {
         while( !this->queue->Empty( ) ) {
           size_t index = this->queue->Remove( );
           COMMENT( "Initializing removed data " << index, 4 );
-          bool capable = ( this->function->*( this->RemoveData ) )( index, this->queue->State( index ) );
+          bool capable = ( this->function->*( this->function->RemoveData ) )( index, this->queue->State( index ) );
           this->queue->Finished( index );
           if( capable ) {
             COMMENT( "Propagating to fixed size nighborhood.", 4 );
@@ -123,7 +117,7 @@ namespace Bial {
                 if( this->function->Propagate( index, adj_index ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
-                  ( this->function->*( this->UpdateData ) )( index, adj_index );
+                  ( this->function->*( this->function->UpdateData ) )( index, adj_index );
                 }
               }
             }
@@ -137,7 +131,7 @@ namespace Bial {
                 if( this->function->Propagate( index, adj_index ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
-                  ( this->function->*( this->UpdateData ) )( index, adj_index );
+                  ( this->function->*( this->function->UpdateData ) )( index, adj_index );
                 }
               }
             }
@@ -149,7 +143,7 @@ namespace Bial {
         while( !this->queue->Empty( ) ) {
           size_t index = this->queue->Remove( );
           COMMENT( "Initializing removed data " << index, 4 );
-          bool capable = ( this->function->*( this->RemoveData ) )( index, this->queue->State( index ) );
+          bool capable = ( this->function->*( this->function->RemoveData ) )( index, this->queue->State( index ) );
           this->queue->Finished( index );
           if( capable ) {
             COMMENT( "Propagating from " << index << " to variable nighborhood of size: " << 
@@ -163,7 +157,7 @@ namespace Bial {
                 if( this->function->Propagate( index, adj_index ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
-                  ( this->function->*( this->UpdateData ) )( index, adj_index );
+                  ( this->function->*( this->function->UpdateData ) )( index, adj_index );
                 }
               }
             }

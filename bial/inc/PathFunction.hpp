@@ -26,6 +26,12 @@ namespace Bial {
 
     friend class IFT;
 
+    /** @brief  Remove functions of IFT. They will operate on valid maps among value, label, and predecessor. */
+    typedef bool ( PathFunction< C, D >::*RemoveFn )( size_t index, BucketState state );
+
+    /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
+    typedef void ( PathFunction< C, D >::*UpdateFn )( size_t index, size_t adj_index );
+
   protected:
 
     /** @brief  Pointer to value container (Vector, Matrix, Image, etc). */
@@ -38,15 +44,22 @@ namespace Bial {
 
   public:
 
+    /** Removal and update functions. */
+    typename PathFunction< C, D >::RemoveFn RemoveData;
+    typename PathFunction< C, D >::UpdateFn UpdateData;
+
     /**
      * @date 2015/Mar/09
-     * @param none.
+     * @param init_value: Reference for initial value container.
+     * @param init_label: Reference for initial label container.
+     * @param init_predecessor: Reference for predecessor container.
+     * @param sequential_label: Sets labeling sequentially.
      * @return none.
      * @brief Basic constructor.
      * @warning none.
      */
-    PathFunction( );
-
+    PathFunction( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, bool sequential_label );
+    
     /**
      * @date 2015/Mar/09
      * @param pf: A queue.
@@ -77,25 +90,6 @@ namespace Bial {
     }
 
     /**
-     * @date 2012/Oct/02
-     * @param init_value: Reference for initial value container.
-     * @param init_label: Reference for initial label container.
-     * @param init_predecessor: Reference for predecessor container.
-     * @param sequential_label: Sets labeling sequentially.
-     * @return none.
-     * @brief Initializes object attributes.
-     * @warning This function is called automatically by IFT constructor.
-     */
-    virtual void Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
-                             bool sequential_label );
-
-    /** @brief  Remove functions of IFT. They will operate on valid maps among value, label, and predecessor. */
-    typedef bool ( PathFunction< C, D >::*RemoveFn )( size_t index, BucketState state );
-
-    /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
-    typedef void ( PathFunction< C, D >::*UpdateFn )( size_t index, size_t adj_index );
-
-    /**
      * @date 2013/Jun/28
      * @param index: Data index.
      * @param adj_index: Adjacent index;
@@ -122,10 +116,28 @@ namespace Bial {
      * @date 2014/Dec/05
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor value.
+     * @warning none.
+     */
+    virtual bool RemovePredecessor( size_t index, BucketState state ) = 0;
+
+    /**
+     * @date 2014/Dec/05
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'. Also sets its label value.
      * @warning none.
      */
     virtual bool RemoveLabel( size_t index, BucketState state ) = 0;
+
+    /**
+     * @date 2012/Sep/25
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor and label value.
+     * @warning none.
+     */
+    virtual bool RemoveComplete( size_t index, BucketState state ) = 0;
 
     /**
      * @date 2013/Oct/14

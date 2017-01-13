@@ -46,10 +46,10 @@ size_t Bisection( Image< int > img ) {
     for( size_t row = 0; row < img.size( 1 ); ++row ) {
       for( size_t lft_col = 0; lft_col < img.size( 0 ); ++lft_col ) {
 
-        COMMENT( "Computing mirror column coordinate, with respect to bisection line.", 2 );
+        COMMENT( "Computing mirror column coordinate, with respect to bisection line.", 4 );
         size_t rgt_col = 2 * bisec_col - lft_col;
 
-        COMMENT( "Updating difference between bipartition.", 2 );
+        COMMENT( "Updating difference between bipartition.", 4 );
         if( rgt_col < img.size( 0 ) ) {
           diff += std::abs( img( lft_col, row ) - img( rgt_col, row ) );
         }
@@ -58,7 +58,7 @@ size_t Bisection( Image< int > img ) {
         }
       }
     }
-    COMMENT( "Getting the lowest bisection difference.", 2 );
+    COMMENT( "Getting the lowest bisection difference.", 4 );
     if( diff < min_diff ) {
       min_diff = diff;
       best_bisec_col = bisec_col;
@@ -89,70 +89,74 @@ int main( int argc, char *argv[] ) {
   Vector< size_t > obj_seeds; /* = diff_max * sum_min; */
   Vector< size_t > bkg_seeds; /* = sum_max; */
 
-  {
-    Image< int > sum( img[ 0 ] );
-    Image< int > diff( img[ 0 ] );
-    diff.Set( 0 );
-    for( size_t slice = 1; slice < img.size( ); ++slice ) {
-      Image< int > local_diff( img[ slice ] - img[ slice - 1 ] );
-      for( size_t pxl = 0; pxl < local_diff.size( ); ++pxl ) {
-        if( local_diff[ pxl ] <= 0 )
-          local_diff[ pxl ] = -local_diff[ pxl ];
-      }
-      diff += local_diff;
-      sum += img[ slice ];
+  Image< int > sum( img[ 0 ] );
+  Image< int > diff( img[ 0 ] );
+  Vector< bool > bkg_seed_tbl( sum.size( ), false );
+  diff.Set( 0 );
+  for( size_t slice = 1; slice < img.size( ); ++slice ) {
+    Image< int > local_diff( img[ slice ] - img[ slice - 1 ] );
+    for( size_t pxl = 0; pxl < local_diff.size( ); ++pxl ) {
+      if( local_diff[ pxl ] <= 0 )
+        local_diff[ pxl ] = -local_diff[ pxl ];
     }
-    int maxval_sum = sum.Maximum( );
-    int maxval_diff = diff.Maximum( );
-    Image< int > sum_min( sum );
-    Segmentation::IntensityThreshold( sum_min, 0,
-                                      static_cast< int >( 0.1 * maxval_sum ) );
-    Image< int > sum_max( sum );
-    Segmentation::IntensityThreshold( sum_max, static_cast< int >( 0.3 * maxval_sum ),
-                                      static_cast< int >( maxval_sum ) );
-    Image< int > diff_max( diff );
-    Segmentation::IntensityThreshold( diff_max, static_cast< int >( 0.3 * maxval_diff ),
-                                      static_cast< int >( maxval_diff ) );
-    diff_max = Morphology::Dilate( diff_max, AdjacencyType::HyperSpheric( 2.0, sum.Dims( ) ) );
+    diff += local_diff;
+    sum += img[ slice ];
+  }
+  int maxval_sum = sum.Maximum( );
+  int maxval_diff = diff.Maximum( );
+  Image< int > sum_min( sum );
+  Segmentation::IntensityThreshold( sum_min, 0,
+                                    static_cast< int >( 0.1 * maxval_sum ) );
+  Image< int > sum_max( sum );
+  Segmentation::IntensityThreshold( sum_max, static_cast< int >( 0.3 * maxval_sum ),
+                                    static_cast< int >( maxval_sum ) );
+  Image< int > diff_max( diff );
+  Segmentation::IntensityThreshold( diff_max, static_cast< int >( 0.3 * maxval_diff ),
+                                    static_cast< int >( maxval_diff ) );
+  diff_max = Morphology::Dilate( diff_max, AdjacencyType::HyperSpheric( 2.0, sum.Dims( ) ) );
 
-    diff_max *= sum_min;
-    for( size_t pxl = 0; pxl < diff_max.size( ); ++pxl ) {
-      if( diff_max[ pxl ] != 0 ) {
-        obj_seeds.push_back( pxl );
-      }
-      if( sum_max[ pxl ] != 0 ) {
-        bkg_seeds.push_back( pxl );
-      }
+  diff_max *= sum_min;
+  for( size_t pxl = 0; pxl < diff_max.size( ); ++pxl ) {
+    if( diff_max[ pxl ] != 0 ) {
+      obj_seeds.push_back( pxl );
     }
-    COMMENT( "Getting maximum intensity position with given window size.", 0 );
-    size_t win_xsize = static_cast< size_t >( sum.size( 0 ) * 0.35 + 0.5 );
-    size_t win_ysize = win_xsize / 2;
-    size_t pxl = GetPosWindowMaxSum( diff, win_xsize, win_ysize );
-    size_t col = pxl % sum.size( 0 );
-    size_t row = pxl / sum.size( 0 );
+    if( sum_max[ pxl ] != 0 ) {
+      bkg_seeds.push_back( pxl );
+      bkg_seed_tbl[ pxl ] = true;
+    }
+  }
+  COMMENT( "Getting maximum intensity position with given window size.", 0 );
+  size_t win_xsize = static_cast< size_t >( sum.size( 0 ) * 0.35 + 0.5 );
+  size_t win_ysize = win_xsize / 2;
+  size_t pxl = GetPosWindowMaxSum( diff, win_xsize, win_ysize );
+  size_t col = pxl % sum.size( 0 );
+  size_t row = pxl / sum.size( 0 );
 
-    COMMENT( "Computing maximum distance that a seed could be located from the maximum intensity position.", 0 );
-    size_t max_distance = static_cast< size_t >( sum.size( 0 ) * 0.45 + 0.5 );
-    max_distance *= max_distance;
-    for( size_t adj_pxl = 0; adj_pxl < sum.size( ); ++adj_pxl ) {
-      size_t adj_col = adj_pxl % sum.size( 0 );
-      size_t adj_row = adj_pxl / sum.size( 0 );
-      size_t dist = ( adj_col - col ) * ( adj_col - col ) + ( adj_row - row ) * ( adj_row - row );
-      if( dist >= max_distance ) {
-        bkg_seeds.push_back( adj_pxl );
-      }
+  COMMENT( "Computing maximum distance that a seed could be located from the maximum intensity position.", 0 );
+  size_t max_distance = static_cast< size_t >( sum.size( 0 ) * 0.45 + 0.5 );
+  max_distance *= max_distance;
+  for( size_t adj_pxl = 0; adj_pxl < sum.size( ); ++adj_pxl ) {
+    size_t adj_col = adj_pxl % sum.size( 0 );
+    size_t adj_row = adj_pxl / sum.size( 0 );
+    size_t dist = ( adj_col - col ) * ( adj_col - col ) + ( adj_row - row ) * ( adj_row - row );
+    if( ( dist >= max_distance ) && ( bkg_seed_tbl[ adj_pxl ] == false ) ) {
+      bkg_seeds.push_back( adj_pxl );
+      bkg_seed_tbl[ adj_pxl ] = true;
     }
-    COMMENT( "Seeting seeds in bisection.", 0 );
-    size_t bisec_col = Bisection( sum );
-    for( size_t elm = 0; elm <= row; ++elm ) {
+  }
+  COMMENT( "Seeting seeds in bisection.", 0 );
+  size_t bisec_col = Bisection( sum );
+  for( size_t elm = 0; elm <= row; ++elm ) {
+    if( bkg_seed_tbl[ bisec_col + elm * sum.size( 0 ) ] == false ) {
       bkg_seeds.push_back( bisec_col + elm * sum.size( 0 ) );
+      bkg_seed_tbl[ bisec_col + elm * sum.size( 0 ) ] = true;
     }
   }
 
   COMMENT( "obj seeds: " << obj_seeds.size( ), 0 );
   COMMENT( "bkg seeds: " << bkg_seeds.size( ), 0 );
   for( size_t slice = 0; slice < img.size( ); ++slice ) {
-    COMMENT( "Oriented segmentation. Slice:" << slice, 2 );
+    COMMENT( "Oriented segmentation. Slice:" << slice, 4 );
     Image< int > res( Segmentation::OrientedGeodesicStar( img[ slice ], obj_seeds, bkg_seeds, alpha, beta ) );
     Write( res, argv[ 2 ] + string( "_" ) + to_string( slice + 1 ) + string( ".pgm" ) );
   }

@@ -24,13 +24,16 @@
 #endif
 #include "Image.hpp"
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< class D >
-  EdgeMaxPathFunction< D >::EdgeMaxPathFunction( const Image< D > &handicap, bool force_root, D new_bucket_size ) try
-    : PathFunction< Image, D >( ), handicap( handicap ), force_root( force_root ), bucket_size( new_bucket_size ) {
+  EdgeMaxPathFunction< D >::EdgeMaxPathFunction( Image< D > &init_value, Image< int > *init_label,
+                                                 Image< int > *init_predecessor, bool sequential_label, 
+                                                 const Image< D > &handicap, bool force_root ) try :
+    PathFunction< Image, D >( init_value, init_label, init_predecessor, sequential_label ), handicap( handicap ), 
+      force_root( force_root ) {
       DEBUG_WRITE( handicap, "handicap", 0 );
     }
   catch( std::bad_alloc &e ) {
@@ -52,7 +55,8 @@ namespace Bial {
 
   template< class D >
   EdgeMaxPathFunction< D >::EdgeMaxPathFunction( const EdgeMaxPathFunction< D > &pf ) try :
-    EdgeMaxPathFunction< D >( pf.handicap, pf.force_root, pf.bucket_size ) {
+    EdgeMaxPathFunction< D >( *( pf.value ), pf.label, pf.predecessor, true, pf.handicap, pf.force_root ) {
+      this->next_label = pf.next_label;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -79,30 +83,6 @@ namespace Bial {
     try {
       EdgeMaxPathFunction< D > new_pf( pf );
       return( new_pf );
-    }
-    catch( std::bad_alloc &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( std::runtime_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( const std::out_of_range &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-      throw( std::out_of_range( msg ) );
-    }
-    catch( const std::logic_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-      throw( std::logic_error( msg ) );
-    }
-  }
-
-  template< class D >
-  void EdgeMaxPathFunction< D >::Initialize( Image< D > &init_value, Image< int > *init_label,
-                                             Image< int > *init_predecessor, bool sequential_label ) {
-    try {
-      PathFunction< Image, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -176,10 +156,64 @@ namespace Bial {
   }
 
   template< class D >
+  bool EdgeMaxPathFunction< D >::RemovePredecessor( size_t index, BucketState state ) {
+    try {
+      if( state == BucketState::INSERTED ) {
+        this->predecessor->operator()( index ) = -1;
+      }
+      return( RemoveSimple( index, state ) );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
   bool EdgeMaxPathFunction< D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       if( state == BucketState::INSERTED ) {
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      return( RemoveSimple( index, state ) );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
+  bool EdgeMaxPathFunction< D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      if( state == BucketState::INSERTED ) {
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       return( RemoveSimple( index, state ) );

@@ -25,6 +25,8 @@
 #include "IntensityLocals.hpp"
 #include "TransformEuclDist.hpp"
 
+#include "FileImage.hpp"
+
 namespace Bial {
 
   template< class D >
@@ -32,11 +34,12 @@ namespace Bial {
     try {
       COMMENT( "root_dist: " << root_dist, 1 );
       Image< float > value = Transform::EDT( border, mask );
+      Write( value, "value.nii.gz" );
       Image< int > root( mask );
       Adjacency adj = AdjacencyType::HyperSpheric( 1.8, mask.Dims( ) );
       COMMENT( "Seeds are local maxima from value map. May be a pixel in a plateau.", 2 );
       Vector< bool > seeds( Intensity::LocalMaxima( value, mask, adj ) );
-      GrowingBucketQueue queue( value.size( ), 255, false );
+      GrowingBucketQueue queue( value.size( ), 256, false );
       for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
         if( seeds[ pxl ] == true ) {
           queue.Insert( pxl, value[ pxl ] );

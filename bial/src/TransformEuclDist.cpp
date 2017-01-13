@@ -19,6 +19,7 @@
 #if defined ( BIAL_EXPLICIT_TransformEuclDist ) || ( BIAL_IMPLICIT_BIN )
 
 #include "AdjacencyRound.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "GeodesicPathFunction.hpp"
@@ -28,23 +29,22 @@ namespace Bial {
   template< class D >
   Image< D > Transform::EDT( const Image< D > &border ) {
     try {
-      Image< float > value( border );
-      value.Set( 0.0f );
+      size_t size = border.size( );
+      Image< float > value( border.Dim( ), border.PixelSize( ) );
       Adjacency adj = AdjacencyType::HyperSpheric( 1.8, border.Dims( ) );
-      GeodesicDistancePathFunction< float > path_func( value );
+      GeodesicDistancePathFunction< float > path_func( value, nullptr, nullptr, false, value );
+      GrowingBucketQueue queue( size, 0.001f, true, true );
       COMMENT( "Setting seed pixels.", 0 );
-      Vector< bool > seed( border.size( ) );
-      for( size_t pxl = 0; pxl < border.size( ); ++pxl ) {
+      for( size_t pxl = 0; pxl < size; ++pxl ) {
         if( border[ pxl ] != 0 ) {
-          seed( pxl ) = true;
           value[ pxl ] = 0;
+          queue.Insert( pxl, value[ pxl ] );
         }
         else
-          value[ pxl ] = std::numeric_limits< D >::max( );          
+          value[ pxl ] = std::numeric_limits< float >::max( ); // Mudado de D para float.
       }
       COMMENT( "Computing distance transform with geodesic path function and image IFT.", 0 );
-      ImageIFT< float > ift( value, adj, &path_func, &seed, static_cast< Image< int >* >( nullptr ),
-                             static_cast< Image< int >* >( nullptr ), false, 0.001f, true );
+      ImageIFT< float > ift( value, adj, &path_func, &queue );
       ift.Run( );
       return( value );
     }
@@ -69,30 +69,24 @@ namespace Bial {
   template< class D >
   Image< D > Transform::EDT( const Image< D > &border, const Image< D > &mask ) {
     try {
+      size_t size = border.size( );
       Image< float > value( mask );
-      Adjacency adj = AdjacencyType::HyperSpheric( 1.8, mask.Dims( ) );
-      COMMENT( "Setting value for mask.", 0 );
-      for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
-        if( mask[ pxl ] == 0 ) {
-          value[ pxl ] = 0;
-        }
-      }
-      GeodesicDistancePathFunction< float > path_func( value );
+      Adjacency adj = AdjacencyType::HyperSpheric( 1.8, border.Dims( ) );
+      GeodesicDistancePathFunction< float > path_func( value, nullptr, nullptr, false, value );
+      GrowingBucketQueue queue( size, 0.001f, true, true );
       COMMENT( "Setting seed pixels.", 0 );
-      Vector< bool > seed( mask.size( ) );
-      for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
-        if( border[ pxl ] != 0 ) {
-          seed( pxl ) = true;
-          value[ pxl ] = 0;
-        }
-        else {
-          value[ pxl ] = std::numeric_limits< float >::max( );
-          seed( pxl ) = false;
+      for( size_t pxl = 0; pxl < size; ++pxl ) {
+        if( mask[ pxl ] != 0 ) {
+          if( border[ pxl ] != 0 ) {
+            value[ pxl ] = 0;
+            queue.Insert( pxl, value[ pxl ] );
+          }
+          else
+            value[ pxl ] = std::numeric_limits< float >::max( ); // Mudado de D para float.
         }
       }
       COMMENT( "Computing distance transform with geodesic path function and image IFT.", 0 );
-      ImageIFT< float > ift( value, adj, &path_func, &seed, static_cast< Image< int >* >( nullptr ),
-                             static_cast< Image< int >* >( nullptr ), false, 0.001f, true );
+      ImageIFT< float > ift( value, adj, &path_func, &queue );
       ift.Run( );
       return( value );
     }
@@ -113,6 +107,7 @@ namespace Bial {
       throw( std::logic_error( msg ) );
     }
   }
+
 
 #ifdef BIAL_EXPLICIT_TransformEuclDist
 

@@ -27,11 +27,8 @@ namespace Bial {
     BucketQueue *queue;
     C< D > &value;
     PathFunction< C, D > *function;
-    C< int > *label;
-    C< int > *predecessor;
-    long double bucket_size;
-    typename PathFunction< C, D >::RemoveFn RemoveData;
-    typename PathFunction< C, D >::UpdateFn UpdateData;
+    //typename PathFunction< C, D >::RemoveFn RemoveData;
+    //typename PathFunction< C, D >::UpdateFn UpdateData;
 
   public:
 
@@ -39,38 +36,12 @@ namespace Bial {
      * @date 2012/Sep/19
      * @param value: Value map used in path propagation. It contains the input and output values.
      * @param function: Function used to initialize and propagate values.
-     * @param seed: A boolean Vector indicating the seeds.
-     * @param label: label map.
-     * @param predecessor: predecessor map.
-     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
-     * @param bucket_size: Size of a bucket in the bucket queue.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+     * @param Queue: Bucket queue to propagate the paths.
      * @return none.
-     * @brief Constructor. Depending on the provided maps, propagation function is different.
+     * @brief Constructor.
      * @warning none.
      */
-    DegeneratedIFT( C< D > &value_image, PathFunction< C, D > *function, const Vector< bool > *seed = nullptr,
-                    C< int > *label = nullptr, C< int > *predecessor = nullptr, bool sequential_label = false,
-                    long double bucket_size = 1.0, bool fifo_tie = true );
-
-    /**
-     * @date 2016/Dec/06
-     * @param value: Value map used in path propagation. It contains the input and output values.
-     * @param function: Function used to initialize and propagate values.
-     * @param minimum_value: Minimum value to be processed by IFT.
-     * @param value_range: The total range from minimum to maximum value processed by IFT.
-     * @param seed: A boolean Vector indicating the seeds.
-     * @param label: label map.
-     * @param predecessor: predecessor map.
-     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
-     * @return none.
-     * @brief Constructor. Depending on the provided maps, propagation function is different.
-     * @warning none.
-     */
-    DegeneratedIFT( C< D > &value_image, PathFunction< C, D > *function, D minimum_value, size_t value_range,
-                    const Vector< bool > *seed = nullptr, C< int > *label = nullptr, C< int > *predecessor = nullptr,
-                    bool sequential_label = false, bool fifo_tie = true );
+    DegeneratedIFT( C< D > &value_image, PathFunction< C, D > *function, BucketQueue *queue );
 
     /**
      * @date 2012/Sep/19
@@ -93,43 +64,11 @@ namespace Bial {
     /**
      * @date 2013/Dec/04
      * @param seed: A boolean Vector indicating the seeds.
-     * @param bucket_size: Size of a bucket in the bucket queue.
-     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
      * @return none.
-     * @brief Inserts the seeds into the bucket queue. Mostly used to continue IFT in multiple iterations.
+     * @brief Inserts the seeds into the bucket queue.
      * @warning none.
      */
     void InsertSeeds( const Vector< bool > &seed );
-
-
-  protected:
-
-    /**
-     * @date 2013/Dec/04
-     * @param seed: A boolean Vector indicating the seeds.
-     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
-     * @param bucket_size: Size of a bucket in the bucket queue.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
-     * @return none.
-     * @brief Initialization of all IFT functionality including path function and bucket queue.
-     * @warning none.
-     */
-    void Initialize( const Vector< bool > *seed, bool sequential_label, ldbl bucket_size, bool fifo_tie );
-
-    /**
-     * @date 2013/Dec/04
-     * @param seed: A boolean Vector indicating the seeds.
-     * @param sequential_label: If true, automatically assigns and increases labels as roots are removed from queue.
-     * @param minimum_value: Minimum value to be processed by IFT.
-     * @param value_range: The total range from minimum to maximum value processed by IFT.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
-     * @return none.
-     * @brief Initialization of all IFT functionality including path function and bucket queue.
-     * @warning none.
-     */
-    void Initialize( const Vector< bool > *seed, bool sequential_label, ldbl minimum_value, size_t value_range, 
-                     bool fifo_tie );
 
   };
 
@@ -138,3 +77,30 @@ namespace Bial {
 #include "DegeneratedIFT.cpp"
 
 #endif
+
+
+  // protected:
+
+  //   /**
+  //    * @date 2013/Dec/04
+  //    * @param seed: A boolean Vector indicating the seeds.
+  //    * @param bucket_size: Size of a bucket in the bucket queue.
+  //    * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+  //    * @return none.
+  //    * @brief Initialization of all IFT functionality including path function and bucket queue.
+  //    * @warning none.
+  //    */
+  //   void Initialize( const Vector< bool > *seed, ldbl bucket_size, bool fifo_tie );
+
+  //   /**
+  //    * @date 2013/Dec/04
+  //    * @param seed: A boolean Vector indicating the seeds.
+  //    * @param minimum_value: Minimum value to be processed by IFT.
+  //    * @param value_range: The total range from minimum to maximum value processed by IFT.
+  //    * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+  //    * @return none.
+  //    * @brief Initialization of all IFT functionality including path function and bucket queue.
+  //    * @warning none.
+  //    */
+  //   void Initialize( const Vector< bool > *seed, ldbl minimum_value, size_t value_range, 
+  //                    bool fifo_tie );

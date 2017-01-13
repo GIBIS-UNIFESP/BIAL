@@ -98,19 +98,19 @@ namespace Bial {
   Vector< std::string > Directory::ListDirectories( const std::string &dir_name, bool recursive ) {
 
     try {
-      COMMENT( "Cheking if terminal is available.", 2 );
+      COMMENT( "Cheking if terminal is available.", 4 );
       if( !Terminal::Exists( ) ) {
         std::string msg( BIAL_ERROR( "Terminal not available." ) );
         throw( std::ios_base::failure( msg ) );
       }
-      COMMENT( "Reading root directory.", 2 );
+      COMMENT( "Reading root directory.", 4 );
       std::string command = DirectoryListCommand( dir_name );
       FILE *dirs = Bial_popen( &command[ 0 ], "r" );
       if( !dirs ) {
         std::string msg( BIAL_ERROR( "Directory " + dir_name + " does not exists or is not accessible." ) );
         throw( std::ios_base::failure( msg ) );
       }
-      COMMENT( "Listing directories.", 2 );
+      COMMENT( "Listing directories.", 4 );
       Vector< std::string > result;
       while( !std::feof( dirs ) ) {
         char buffer[ 128 ];
@@ -163,12 +163,12 @@ namespace Bial {
 
   Vector< std::string > Directory::ListFiles( const std::string &dir_name, bool recursive ) {
     try {
-      COMMENT( "Cheking if terminal is available.", 2 );
+      COMMENT( "Cheking if terminal is available.", 4 );
       if( !Terminal::Exists( ) ) {
         std::string msg( BIAL_ERROR( "Terminal not available." ) );
         throw( std::ios_base::failure( msg ) );
       }
-      COMMENT( "Recursive search.", 2 );
+      COMMENT( "Recursive search.", 4 );
       Vector< std::string > result;
       if( recursive ) {
         COMMENT( "Getting subdirectories recursively.", 4 );
@@ -513,7 +513,7 @@ namespace Bial {
 
   void IFile::open( const std::string &filename, std::ios_base::openmode mode ) {
     try {
-      COMMENT( "Opening file: " << filename, 1 );
+      COMMENT( "Opening file: " << filename, 4 );
       if( is_open( ) ) {
         if( gziped ) {
           gz_file.close( );
@@ -527,7 +527,7 @@ namespace Bial {
                                 static_cast< size_t >( std::max( 0, static_cast< int >( filename.size( ) ) - 4 ) ) );
       if( extension.rfind( ".gz" ) != std::string::npos ) {
 
-        COMMENT( "Check for random access in compressed file.", 2 );
+        COMMENT( "Check for random access in compressed file.", 4 );
         if( ( ( mode & std::ios::app ) == std::ios::app ) || ( ( mode & std::ios::ate ) == std::ios::ate ) ) {
           std::string msg( BIAL_ERROR( "No support for random access on gzip files." ) );
           throw( std::ios_base::failure( msg ) );

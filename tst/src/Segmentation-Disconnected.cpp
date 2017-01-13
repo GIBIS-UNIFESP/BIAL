@@ -8,6 +8,7 @@
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
 #include "Common.hpp"
+#include "FastIncreasingFifoBucketQueue.hpp"
 #include "FileImage.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
@@ -29,9 +30,12 @@ int main( int argc, char *argv[ ] ) {
   COMMENT( "Reading input image.", 0 );
   Image< int > src_cst( Read< int >( argv[ 1 ] ) );
   Image< int > bkg_cst( src_cst );
+  Image< int > init_value( src_cst );
   size_t size = src_cst.size( );
   COMMENT( "Creating path function.", 0 );
-  EdgeMaxPathFunction< int > pf( src_cst, true, 1 );
+  Image< int > label( src_cst.Dim( ), src_cst.PixelSize( ) );
+  EdgeMaxPathFunction< int > pf( src_cst, &label, nullptr, false, init_value, true );
+  FastIncreasingFifoBucketQueue queue( size, 0, src_cst.Maximum( ) + 2 );
   COMMENT( "Reading seeds.", 0 );
   Image< int > seed_img( Read< int >( argv[ 2 ] ) );
   if( src_cst.size( ) != seed_img.size( ) ) {
@@ -41,25 +45,24 @@ int main( int argc, char *argv[ ] ) {
   COMMENT( "Defining seeds, seed labels, and initial IFT cost.", 0 );
   Vector< bool > seed( size, false );
   Vector< bool > bkg_seed( size, false );
-  Image< int > label( src_cst.Dim( ) );
   src_cst.Set( std::numeric_limits< int >::max( ) );
-  bkg_cst.Set( std::numeric_limits< int >::max( ) );
   for( size_t pxl = 0; pxl < size; ++pxl ) {
     label[ pxl ] = seed_img[ pxl ];
     if( label[ pxl ] != 255 ) {
-      seed[ pxl ] = true;
       src_cst[ pxl ] = 0;
+      queue.Insert( pxl, src_cst[ pxl ] );
+      seed[ pxl ] = true;
     }
     if( label[ pxl ] == 0 ) {
       bkg_seed[ pxl ] = true;
-      bkg_cst[ pxl ] = 0;
+      seed[ pxl ] = true;
     }
   }
   Adjacency adj( AdjacencyType::HyperSpheric( 1.1, src_cst.Dims( ) ) );
   AdjacencyIterator adj_itr( src_cst, adj );
   size_t adj_size = adj.size( );
   size_t adj_pxl;
-  ImageIFT< int > ift( src_cst, adj, &pf, &seed, &label, nullptr, false, 1, false );
+  ImageIFT< int > ift( src_cst, adj, &pf, &queue );
   ift.Run( );
   if( argc >= 5 )
     Write( label, argv[ 4 ] );
@@ -84,8 +87,16 @@ int main( int argc, char *argv[ ] ) {
     DEBUG_WRITE( src_cst, "disconnected_ift_cst", 0 );
     return( 0 );
   }
+  pf = EdgeMaxPathFunction< int >( bkg_cst, nullptr, nullptr, false, init_value, true );
+  bkg_cst.Set( std::numeric_limits< int >::max( ) );
+  for( size_t pxl = 0; pxl < size; ++pxl ) {
+    if( bkg_seed[ pxl ] ) {
+      bkg_cst[ pxl ] = 0;
+      queue.Insert( pxl, bkg_cst[ pxl ] );
+    }
+  }
   COMMENT( "Running the same IFT but this time only with background seeds.", 0 );  
-  ImageIFT< int > ift2( bkg_cst, adj, &pf, &bkg_seed, nullptr, nullptr, false, 1, false );
+  ImageIFT< int > ift2( bkg_cst, adj, &pf, &queue );
   ift2.Run( );
   Write( bkg_cst, "backgorund_ift_cst.pgm" );
   COMMENT( "Finding new backgournd seeds.", 0 );
@@ -150,6 +161,7 @@ int main( int argc, char *argv[ ] ) {
   //     }
   //   }
   // }
+  pf = EdgeMaxPathFunction< int >( src_cst, &label, nullptr, false, init_value, true );
   COMMENT( "final_seeds.", 0 );
   Image< int > print_seed( src_cst );
   print_seed.Set( 255 );
@@ -159,10 +171,11 @@ int main( int argc, char *argv[ ] ) {
       COMMENT( "seed: " << src_cst.Coordinates( elm ), 3 );
       src_cst[ elm ] = 0;
       print_seed( elm ) = label( elm );
+      queue.Insert( elm, src_cst[ elm ] );
     }
   }
   Write( print_seed, "final_seeds.pgm" );
-  ImageIFT< int > ift3( src_cst, adj, &pf, &seed, &label, nullptr, false, 1, false );
+  ImageIFT< int > ift3( src_cst, adj, &pf, &queue );
   ift3.Run( );
   Write( label, argv[ 3 ] );
   Write( src_cst, "disconnected_ift_cst.pgm" );

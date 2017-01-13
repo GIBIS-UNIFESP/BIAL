@@ -23,7 +23,9 @@ int main( int argc, char **argv ) {
   Image< int > source( Read< int >( argv[ 1 ] ) );
   float radius = atof( argv[ 2 ] );
   Adjacency spheric( AdjacencyType::HyperSpheric( radius, source.Dims( ) ) );
+  COMMENT( "Starting process. ", 0 );
   Image< int > label = Segmentation::ConnectedComponents( source, spheric );
+  COMMENT( "Writing result. ", 0 );
   Write( label, argv[ 3 ], argv[ 1 ] );
   return( 0 );
 }

@@ -48,7 +48,7 @@ namespace Bial {
 
   void DicomHeader::readZeroPadding( ) {
     try {
-      COMMENT( "Reading zero padding.", 2 );
+      COMMENT( "Reading zero padding.", 4 );
       for( size_t i = 0; i < 128; ++i ) {
         file_pointer.ignore( );
       }
@@ -61,7 +61,7 @@ namespace Bial {
 
   void DicomHeader::readDICM( ) {
     try {
-      COMMENT( "Read DICM.", 2 );
+      COMMENT( "Read DICM.", 4 );
       char c[ 5 ];
       for( size_t i = 0; i < 4; i++ ) {
         file_pointer >> c[ i ];
@@ -101,7 +101,7 @@ namespace Bial {
 
         TElementId element;
 
-        COMMENT( "Reading groups.", 2 );
+        COMMENT( "Reading groups.", 4 );
         if( first ) {
           first = false;
           lastGroup = igroup;
@@ -112,7 +112,7 @@ namespace Bial {
           group = TGroupId( igroup ); /* cria novo group com novo Group ID */
           lastGroup = igroup; /* lastGroup deve ser atualizado */
         }
-        COMMENT( "Reading groups.", 2 );
+        COMMENT( "Reading groups.", 4 );
         if( first ) {
           first = false;
           lastGroup = igroup;
@@ -154,7 +154,7 @@ namespace Bial {
           element.set( isub, dataValue );
         }
         blockCounter = blockCounter + numberOfBytes;
-        COMMENT( "block: " << blockCounter, 2 );
+        COMMENT( "block: " << blockCounter, 4 );
         /* element.set( isub, dataValue ); // acerta o valor de Element e seu ID */
         group.push( igroup, element ); /* adiciona ao Group */
       }
@@ -380,10 +380,10 @@ namespace Bial {
     try {
       file_pointer.exceptions( std::fstream::failbit | std::fstream::badbit );
       file_pointer.open( filename );
-      COMMENT( "Reading Header.", 2 );
+      COMMENT( "Reading Header.", 4 );
       readZeroPadding( );
       readDICM( );
-      COMMENT( "Reading Data.", 2 );
+      COMMENT( "Reading Data.", 4 );
       Image< D > res( readData< D >( ) );
       file_pointer.close( );
       return( res );

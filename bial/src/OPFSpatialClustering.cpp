@@ -21,6 +21,7 @@
 #include "AdjacencyIterator.hpp"
 #include "DFIDE.hpp"
 #include "Feature.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "MinPathFunction.hpp"
@@ -28,16 +29,15 @@
 namespace Bial {
 
   template< class D >
-  size_t OPF::SpacialClustering( const Feature< D > &feature, Image< int > &label, const Adjacency &adjacency,
+  size_t OPF::SpatialClustering( const Feature< D > &feature, Image< int > &label, const Adjacency &adjacency,
                                  float intensity_fraction ) {
-    COMMENT(
-	    "Sanity check: verify if feature, label and adjacency dimensions are compatible, and if intensity_fraction"
-	    << " is in the expected range.",
-	    1 );
-    if( feature.Elements( ) > label.size( ) ) {
+    COMMENT( "Sanity check: verify if feature, label and adjacency dimensions are compatible, and if intensity_fraction"
+             << " is in the expected range.", 1 );
+    size_t elements = label.size( );
+    if( feature.Elements( ) > elements ) {
       std::string msg( BIAL_ERROR( "Number of samples in feature vector is greater than label image size. " +
                                    "Given: samples: " + std::to_string( feature.Elements( ) ) + ", label size: " +
-                                   std::to_string( label.size( ) ) + "." ) );
+                                   std::to_string( elements ) + "." ) );
       throw( std::logic_error( msg ) );
     }
     if( label.Dims( ) != adjacency.Dims( ) ) {
@@ -61,10 +61,14 @@ namespace Bial {
       float delta = OPF::PDF( feature, adjacency, density, max_weight );
       COMMENT( "delta: " << delta, 1 );
       COMMENT( "Clustering.", 1 );
-      MinPathFunction< Image, float > pf( density + delta, delta );
       Image< float > value( density );
-      ImageIFT< float > ift( value, adjacency, &pf, static_cast< Vector< bool >* >( nullptr ), &label,
-                             static_cast< Image< int >* >( nullptr ), true, delta, true );
+      density += delta;
+      GrowingBucketQueue queue( elements, delta, false, true );
+      COMMENT( "Inserting seeds.", 0 );
+      for( size_t elm = 0; elm < elements; ++elm )
+        queue.Insert( elm, value[ elm ] );
+      MinPathFunction< Image, float > pf( value, &label, nullptr, true, density );
+      ImageIFT< float > ift( value, adjacency, &pf, &queue );
       ift.Run( );
       COMMENT( "Getting the number of labels.", 0 );
       size_t nlabels = label.Maximum( ) + 1;
@@ -259,7 +263,7 @@ namespace Bial {
 
 #ifdef BIAL_EXPLICIT_OPFSpatialClustering
 
-  template size_t OPF::SpacialClustering( const Feature< int > &feature, Image< int > &label, 
+  template size_t OPF::SpatialClustering( const Feature< int > &feature, Image< int > &label, 
 				     const Adjacency &adjacency, float intensity_fraction );
   template float OPF::MaxWeight( const Feature< int > &feature, Image< int > &label,
 				 const Adjacency &adjacency, float intensity_fraction );
@@ -272,7 +276,7 @@ namespace Bial {
 				 Image< float > &density, float sigma, float &max_dens_diff, size_t thread,
 				 size_t total_threads );
 
-  template size_t OPF::SpacialClustering( const Feature< llint > &feature, Image< int > &label, 
+  template size_t OPF::SpatialClustering( const Feature< llint > &feature, Image< int > &label, 
 				     const Adjacency &adjacency, float intensity_fraction );
   template float OPF::MaxWeight( const Feature< llint > &feature, Image< int > &label,
 				 const Adjacency &adjacency, float intensity_fraction );
@@ -285,7 +289,7 @@ namespace Bial {
 				 Image< float > &density, float sigma, float &max_dens_diff, size_t thread,
 				 size_t total_threads );
 
-  template size_t OPF::SpacialClustering( const Feature< float > &feature, Image< int > &label,
+  template size_t OPF::SpatialClustering( const Feature< float > &feature, Image< int > &label,
                                           const Adjacency &adjacency, float intensity_fraction );
   template float OPF::MaxWeight( const Feature< float > &feature, Image< int > &label,
 				 const Adjacency &adjacency, float intensity_fraction );
@@ -298,7 +302,7 @@ namespace Bial {
 				 Image< float > &density, float sigma, float &max_dens_diff, size_t thread,
 				 size_t total_threads );
 
-  template size_t OPF::SpacialClustering( const Feature< double > &feature, Image< int > &label, 
+  template size_t OPF::SpatialClustering( const Feature< double > &feature, Image< int > &label, 
 				     const Adjacency &adjacency, float intensity_fraction );
   template float OPF::MaxWeight( const Feature< double > &feature, Image< int > &label,
 				 const Adjacency &adjacency, float intensity_fraction );

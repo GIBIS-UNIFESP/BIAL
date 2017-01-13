@@ -21,6 +21,7 @@
 #include "AdjacencyRound.hpp"
 #include "GeoSumPathFunction.hpp"
 #include "GradientDirectional.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "OrientedExternPathFunction.hpp"
@@ -53,55 +54,55 @@ namespace Bial {
       Image< D > grad( Gradient::Directional( image, adj ) );
       Image< int > pred( image );
       Image< D > value( grad );
-      Image< int > label( image );
+      Image< int > label( image.Dim( ), image.PixelSize( ) );
       label.Set( -1 );
+      size_t size = image.size( );
       Vector< bool > seeds( image.size( ), 0 );
+      COMMENT( "FIRST STEP. Running with foreground seeds.", 0 );
+      GeodesicRestrictionPathFunction< D > geo_path( grad, nullptr, &pred, false, grad, image, alpha, beta );
+      GrowingBucketQueue queue( size, 1, geo_path.Increasing( ), true );
+      for( size_t elm = 0; elm < size; ++elm )
+        grad[ elm ] = std::numeric_limits< D >::max( );
       for( size_t idx = 0; idx < obj_seeds.size( ); ++idx ) {
-        seeds( obj_seeds( idx ) ) = true;
-        label( obj_seeds( idx ) ) = 1;
+        size_t elm = obj_seeds( idx );
+        label( elm ) = 1;
+        grad[ elm ] = 0;
+        queue.Insert( elm, grad[ elm ] );
+        seeds[ elm ] = true;
       }
-      GeodesicRestrictionPathFunction< D > geo_path( grad, image, alpha, beta );
       COMMENT( "Running geodesic star restriction IFT.", 0 );
-      size_t size = grad.size( );
-      for( size_t elm = 0; elm < size; ++elm ) {
-        if( seeds[ elm ] )
-          grad[ elm ] = 0;
-        else
-          grad[ elm ] = std::numeric_limits< D >::max( );
-      }
-      ImageIFT< D > ift( grad, adj, &geo_path, &seeds, static_cast< Image< int >* >( nullptr ), &pred, false, 
-                         static_cast< D >( 1.0 ), true );
+      ImageIFT< D > ift( grad, adj, &geo_path, &queue );
       ift.Run( );
-      COMMENT( "Setting background seeds.", 0 );
+      COMMENT( "SECOND STEP. Running with background and foreground seeds.", 0 );
+      COMMENT( "Setting seeds with background.", 0 );
+      for( size_t elm = 0; elm < size; ++elm )
+        grad[ elm ] = std::numeric_limits< D >::max( );
+      COMMENT( "Inserting obj seeds:", 0 );
+      for( size_t idx = 0; idx < obj_seeds.size( ); ++idx ) {
+        size_t elm = obj_seeds( idx );
+        grad[ elm ] = 0;
+        queue.Insert( elm, grad[ elm ] );
+      }
+      COMMENT( "Inserting bkg seeds:", 0 );
       for( size_t idx = 0; idx < bkg_seeds.size( ); ++idx ) {
-        grad[ bkg_seeds( idx ) ] = 0;
-        seeds( bkg_seeds( idx ) ) = true;
-        pred[ bkg_seeds( idx ) ] = -1;
-        label( bkg_seeds( idx ) ) = 0;
+        size_t elm = bkg_seeds( idx );
+        label( elm ) = 0;
+        pred( elm ) = -1;
+        grad[ elm ] = 0;
+        queue.Insert( elm, grad[ elm ] );
+        seeds[ elm ] = true;
       }
       COMMENT( "Running oriented path function.", 0 );
       if( alpha >= 0.0 ) {
-        OrientedExternPathFunction< D > oriented_path( value, image, &pred, alpha );
-        for( size_t elm = 0; elm < size; ++elm ) {
-          if( seeds[ elm ] )
-            value[ elm ] = 0;
-          else
-            value[ elm ] = std::numeric_limits< D >::max( );
-        }
-        ImageIFT< D > ift( value, adj, &oriented_path, &seeds, &label, static_cast< Image< int >* >( nullptr ), false,
-                           static_cast< D >( 1.0 ), true );
+        COMMENT( "OrientedExternPathFunction.", 0 );
+        OrientedExternPathFunction< D > oriented_path( grad, label, nullptr, false, value, image, &pred, alpha );
+        ImageIFT< D > ift( grad, adj, &oriented_path, &queue );
         ift.Run( );
       }
       else {
-        OrientedInternPathFunction< D > oriented_path( value, image, &pred, -alpha );
-        for( size_t elm = 0; elm < size; ++elm ) {
-          if( seeds[ elm ] )
-            value[ elm ] = 0;
-          else
-            value[ elm ] = std::numeric_limits< D >::max( );
-        }
-        ImageIFT< D > ift( value, adj, &oriented_path, &seeds, &label, static_cast< Image< int >* >( nullptr ), false,
-                           static_cast< D >( 1.0 ), true );
+        COMMENT( "OrientedInternPathFunction.", 0 );
+        OrientedInternPathFunction< D > oriented_path( grad, label, nullptr, false, value, image, &pred, -alpha );
+        ImageIFT< D > ift( grad, adj, &oriented_path, &queue );
         ift.Run( );
       }
       return( label );

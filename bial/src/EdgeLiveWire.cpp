@@ -23,6 +23,7 @@
 #endif
 #include "AdjacencyRound.hpp"
 #include "GradientMorphological.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "IntensityGlobals.hpp"
@@ -33,7 +34,7 @@ namespace Bial {
   template< class D > std::tuple< Image< D >, Image< int > > 
   Edge::LiveWire( const Image< D > &img, const Vector< bool > &seed, float weight ) {
     COMMENT( "Computing gradient.", 0 );
-    Image< D > grad = Gradient::Morphological( img );
+    Image< D > grad( Gradient::Morphological( img ) );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
     size_t size = grad.size( );
@@ -49,18 +50,22 @@ namespace Bial {
       grad = grad_dbl;
     }
     D delta = 1;
-    MaxSumPathFunction< Image, D > pf( img, grad, 0.0, delta );
+    Image< D > handicap( grad );
     grad += delta;
+    Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
+    MaxSumPathFunction< Image, D > pf( grad, nullptr, &predecessor, false, img, handicap, 0.0, delta );
     COMMENT( "Computing IFT.", 0 );
     COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
              "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
-    Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
     Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
+    GrowingBucketQueue queue( size, delta, true, true );
     for( size_t elm = 0; elm < size; ++elm ) {
-      if( !seed[ elm ] )
+      if( seed[ elm ] )
+        queue.Insert( elm, grad[ elm ] );
+      else
         grad( elm ) = std::numeric_limits< D >::max( );
     }
-    ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
+    ImageIFT< D > ift( grad, adj, &pf, &queue );
     ift.Run( );
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
@@ -69,10 +74,9 @@ namespace Bial {
   template< class D > std::tuple< Image< D >, Image< int > > 
   Edge::LiveWire( const Image< D > &img, const Image< D > &msk, const Vector< bool > &seed, float weight ) {
     COMMENT( "Computing gradient.", 0 );
-    Image< D > grad = Gradient::Morphological( img );
+    Image< D > grad( Gradient::Morphological( img ) );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
-    DEBUG_WRITE( grad, "grad-ini", 0 );
     size_t size = grad.size( );
     if( weight > 1 ) {
       Image< double > grad_dbl( grad );
@@ -85,24 +89,25 @@ namespace Bial {
       grad_dbl.SetRange( min, max );
       grad = grad_dbl;
     }
-    DEBUG_WRITE( grad, "grad", 0 );
     D delta = 1;
-    MaxSumPathFunction< Image, D > pf( img, grad, 0.0, delta );
-    grad += 1;
+    Image< D > handicap( grad );
+    grad += delta;
+    Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
+    MaxSumPathFunction< Image, D > pf( grad, nullptr, &predecessor, false, img, handicap, 0.0, delta );
     COMMENT( "Computing IFT.", 0 );
     COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
              "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
-    Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
     Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
+    GrowingBucketQueue queue( size, delta, true, true );
     for( size_t elm = 0; elm < size; ++elm ) {
-      if( msk[ elm ] == 0 ) {
+      if( msk[ elm ] == 0 )
         grad[ elm ] = 0;
-        //seed[ elm ] = false;
-      }
-      else if( !seed[ elm ] )
+      else if( seed[ elm ] )
+        queue.Insert( elm, grad[ elm ] );
+      else
         grad( elm ) = std::numeric_limits< D >::max( );
     }
-    ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
+    ImageIFT< D > ift( grad, adj, &pf, &queue );
     ift.Run( );
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );

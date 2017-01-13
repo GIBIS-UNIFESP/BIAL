@@ -22,6 +22,7 @@
 #include "FileImage.hpp"
 #endif
 #include "AdjacencyRound.hpp"
+#include "FastIncreasingFifoBucketQueue.hpp"
 #include "GradientMorphological.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
@@ -33,21 +34,26 @@ namespace Bial {
   template< class D >
   std::tuple< Image< D >, Image< int > > Edge::LazyWalk( const Image< D > &img, const Vector< bool > &seed ) {
     COMMENT( "Computing gradient.", 0 );
-    Image< D > grad = Gradient::Morphological( img );
+    Image< D > grad( Gradient::Morphological( img ) );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
     COMMENT( "Computing IFT.", 0 );
     D delta = 1.0;
-    MaxPathFunction< Image, D > pf( grad, delta );
+    Image< D > handicap( grad );
     grad += delta;
+    D maximum = grad.Maximum( );
     Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
+    MaxPathFunction< Image, D > pf( grad, nullptr, &predecessor, false, handicap );
     Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
     size_t size = grad.size( );
+    FastIncreasingFifoBucketQueue queue( size, 0, maximum + 1 );
     for( size_t elm = 0; elm < size; ++elm ) {
-      if( !seed[ elm ] )
+      if( seed[ elm ] )
+        queue.Insert( elm, grad[ elm ] );
+      else
         grad( elm ) = std::numeric_limits< D >::max( );
     }
-    ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
+    ImageIFT< D > ift( grad, adj, &pf, &queue );
     ift.Run( );
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
@@ -60,23 +66,25 @@ namespace Bial {
     Image< D > grad = Gradient::Morphological( img );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
-    // DEBUG_WRITE( grad, "grad", 0 );
     COMMENT( "Computing IFT.", 0 );
     D delta = 1.0;
-    MaxPathFunction< Image, D > pf( grad, delta );
+    Image< D > handicap( grad );
     grad += delta;
+    D maximum = grad.Maximum( );
     Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
+    MaxPathFunction< Image, D > pf( grad, nullptr, &predecessor, false, handicap );
     Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
     size_t size = grad.size( );
+    FastIncreasingFifoBucketQueue queue( size, 0, maximum + 1 );
     for( size_t elm = 0; elm < size; ++elm ) {
-      if( msk[ elm ] == 0 ) {
+      if( msk[ elm ] == 0 )
         grad[ elm ] = 0;
-        //seed[ elm ] = false;
-      }
-      else if( !seed[ elm ] )
+      else if( seed[ elm ] )
+        queue.Insert( elm, grad[ elm ] );
+      else
         grad( elm ) = std::numeric_limits< D >::max( );
     }
-    ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false, delta );
+    ImageIFT< D > ift( grad, adj, &pf, &queue );
     ift.Run( );
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );

@@ -83,7 +83,7 @@ namespace Bial {
        */
       COMMENT( "Clustering image to separate background.", 0 );
       Image< int > label( filtered );
-      size_t nlabels = OPF::SpacialClustering( feats, label, AdjacencyType::HyperSpheric( 4.0, label.Dims( ) ), 0.01 );
+      size_t nlabels = OPF::SpatialClustering( feats, label, AdjacencyType::HyperSpheric( 4.0, label.Dims( ) ), 0.01 );
       COMMENT( "Computing average intensity of each cluster.", 0 );
       Vector< double > cluster_average( nlabels, 0.0 );
       Vector< size_t > cluster_size( nlabels, 0 );

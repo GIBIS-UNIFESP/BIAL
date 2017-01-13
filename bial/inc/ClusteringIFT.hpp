@@ -37,19 +37,14 @@ namespace Bial {
      * @param uniform_adjacency: fixed number of neighbors adjacency.
      * @param uniform_adjs: Number of uniform adjacents to be used. The matrix may contain more.
      * @param variable_adjacency: variable number of neighbors adjacency.
-     * @param seed: A boolean Vector indicating the seeds.
-     * @param label: label map.
-     * @param predecessor: predecessor map.
-     * @param bucket_size: Size of a bucket in the bucket queue.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+     * @param Queue: Bucket queue to propagate the paths.
      * @return none.
      * @brief IFT clustering used by Knn OPF method.
-     * @warning Label, and predecessor maps are optional. Must specify at least one of the adjacencies.
+     * @warning Must specify at least one of the adjacencies.
      */
      ClusteringIFT( C< D > &value, PathFunction< C, D > *function, const Matrix< size_t > &uniform_adjacency,
-                    const size_t uniform_adjs, const Vector< Vector< size_t > > &variable_adjacency,
-                    const Vector< bool > *seed = nullptr, C< int > *label = nullptr, C< int > *predecessor = nullptr,
-                    bool sequential_label = false,  long double bucket_size = 1.0, bool fifo_tie = true );
+                    const size_t uniform_adjs, const Vector< Vector< size_t > > &variable_adjacency, 
+                    BucketQueue *queue );
 
     /**
      * @date 2012/Sep/19
@@ -57,19 +52,13 @@ namespace Bial {
      * @param function: Function used to initialize and propagate values.
      * @param variable_adjacency: variable number of neighbors adjacency.
      * @param variable_adjs: Number of variable adjacents to be used. The matrix may contain more.
-     * @param seed: A boolean Vector indicating the seeds.
-     * @param label: label map.
-     * @param predecessor: predecessor map.
-     * @param bucket_size: Size of a bucket in the bucket queue.
-     * @param fifo_tie: true for fifo tiebreak, and false for lifo tiebreak.
+     * @param Queue: Bucket queue to propagate the paths.
      * @return none.
      * @brief IFT clustering used by LSH OPF method.
-     * @warning Label, and predecessor maps are optional. Must specify at least one of the adjacencies.
+     * @warning none.
      */
     ClusteringIFT( C< D > &value, PathFunction< C, D > *function, const Vector< Vector< size_t > > &variable_adjacency,
-                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed = nullptr, 
-                   C< int > *label = nullptr, C< int > *predecessor = nullptr, bool sequential_label = false, 
-                   long double bucket_size = 1.0, bool fifo_tie = true );
+                   const Vector< size_t > &variable_adjs, BucketQueue *queue );
 
     /**
      * @date 2012/Sep/19

@@ -24,13 +24,14 @@
 #endif
 #include "Image.hpp"
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< template< class D > class C, class D >
-  LocalMaxPathFunction< C, D >::LocalMaxPathFunction( ) try :
-    PathFunction< C, D >( ) {
+  LocalMaxPathFunction< C, D >::LocalMaxPathFunction( C< D > &init_value, C< int > *init_label, 
+                                                      C< int > *init_predecessor, bool sequential_label ) try :
+    PathFunction< C, D >( init_value, init_label, init_predecessor, sequential_label ) {
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -47,30 +48,6 @@ namespace Bial {
   catch( const std::logic_error &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Empty kernel." ) );
     throw( std::logic_error( msg ) );
-  }
-
-  template< template< class D > class C, class D >
-  void LocalMaxPathFunction< C, D >::Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor,
-                                                 bool sequential_label ) {
-    try {
-      PathFunction< C, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
-    }
-    catch( std::bad_alloc &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( std::runtime_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( const std::out_of_range &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-      throw( std::out_of_range( msg ) );
-    }
-    catch( const std::logic_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-      throw( std::logic_error( msg ) );
-    }
   }
 
   template< template< class D > class C, class D >
@@ -98,11 +75,67 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
+  bool LocalMaxPathFunction< C, D >::RemovePredecessor( size_t index, BucketState state ) {
+    try {
+      COMMENT( "Removing element.", 3 );
+      if( state == BucketState::INSERTED ) {
+        this->predecessor->operator()( index ) = -1;
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
   bool LocalMaxPathFunction< C, D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       COMMENT( "Removing element.", 3 );
       if( state == BucketState::INSERTED ) {
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool LocalMaxPathFunction< C, D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      COMMENT( "Removing element.", 3 );
+      if( state == BucketState::INSERTED ) {
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       return( true );

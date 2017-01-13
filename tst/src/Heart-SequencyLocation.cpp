@@ -11,6 +11,7 @@
 #include "DrawBox.hpp"
 #include "FileImage.hpp"
 #include "GradientSobel.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "ImageMerge.hpp"
@@ -137,16 +138,19 @@ int main( int argc, char *argv[] ) {
     Image< int > value( cgrad );
     Image< int > pred( value );
     Adjacency adj( AdjacencyType::Circular( 1.9 ) );
-    SumPathFunction< Image, int > pf( value );
+    SumPathFunction< Image, int > pf( value, nullptr, &pred, false, value );
     size_t size = value.size( );
+    GrowingBucketQueue queue( size, 1, true, true );
     for( size_t elm = 0; elm < size; ++elm ) {
-      if( seeds[ elm ] != 0 )
+      if( seeds[ elm ] != 0 ) {
         value[ elm ] += 1;
+        queue.Insert( elm, value[ elm ] );
+      }
       else
         value[ elm ] = std::numeric_limits< int >::max( );
     }
     COMMENT( "Creating and running IFT. Value dims: " << value.Dim( ), 0 );
-    ImageIFT< int > ift( value, adj, &pf, &seeds, nullptr, &pred );
+    ImageIFT< int > ift( value, adj, &pf, &queue );
     ift.Run( );
     COMMENT( "Finished IFT.", 0 );
     Write( value, "dat/ift_value.pgm" );
@@ -170,7 +174,6 @@ int main( int argc, char *argv[] ) {
     } while( prd >= 0 );
     sum_y = ( sum_y + 0.5 ) / value.size( 0 );
     Write( curve, "dat/curve.pgm" );
-
     COMMENT( "Creating res.", 0 );
     Vector< Image< Color > > res;
     prd = min_pxl;

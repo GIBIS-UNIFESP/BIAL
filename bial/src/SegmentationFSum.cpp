@@ -18,6 +18,7 @@
 #if defined ( BIAL_EXPLICIT_SegmentationFSum ) || ( BIAL_IMPLICIT_BIN )
 
 #include "AdjacencyRound.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "IntensityLocals.hpp"
@@ -53,25 +54,27 @@ namespace Bial {
   template< class D >
   Image< int > Segmentation::FSum( Image< D > &gradient, const Vector< bool > &seeds ) {
     try {
-      if( seeds.size( ) != gradient.size( ) ) {
+      size_t size = gradient.size( );
+      IF_DEBUG( seeds.size( ) != size ) {
         std::string msg( BIAL_ERROR( "Gradient image and seed vector must have the same number of elements." ) );
         throw( std::logic_error( msg ) );
       }
       Adjacency spheric = AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) );
-      Image< int > label( gradient );
-      label.Set( 0.0 );
-      SumPathFunction< Image, D > max_function( gradient );
-      size_t size = gradient.size( );
+      Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
+      Image< D > handicap( gradient );
+      SumPathFunction< Image, D > sum_function( gradient, &label, nullptr, true, handicap );
+      GrowingBucketQueue queue( size, 1.0, true, true );
       COMMENT( "Setting seeds. Image size: " << size, 0 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
-        if( !seeds[ pxl ] )
+        if( !seeds[ pxl ] ) {
           gradient[ pxl ] += 1.0;
+          queue.Insert( pxl, gradient[ pxl ] );
+        }
         else
           gradient[ pxl ] = std::numeric_limits< D >::max( );
       }
       COMMENT( "Running IFT.", 0 );
-      ImageIFT< D > ift( gradient, spheric, &max_function, &seeds, &label, static_cast< Image< int >* >( nullptr ), 
-                         true, static_cast< D >( 1.0 ), true );
+      ImageIFT< D > ift( gradient, spheric, &sum_function, &queue );
       ift.Run( );
       return( label );
     }
@@ -98,6 +101,7 @@ namespace Bial {
   Image< int > Segmentation::FSum( Image< D > &gradient, const Vector< size_t > &obj_seeds,
                                    const Vector< size_t > &bkg_seeds ) {
     try {
+      size_t size = gradient.size( );
       if( ( obj_seeds.size( ) == 0 ) || ( bkg_seeds.size( ) == 0 ) ) {
         std::string msg( BIAL_ERROR( "Object seeds and background seeds should not be empty vectors. Given: " +
                                      std::to_string( obj_seeds.size( ) ) + ", " +
@@ -105,27 +109,25 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       Adjacency spheric = AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) );
-      Image< int > label( gradient );
-      size_t size = gradient.size( );
-      Vector< bool > seeds( size, false );
-      label.Set( 0.0 );
-      SumPathFunction< Image, D > min_function( gradient );
+      Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
+      Image< D > handicap( gradient );
+      SumPathFunction< Image, D > sum_function( gradient, &label, nullptr, true, handicap );
+      GrowingBucketQueue queue( size, 1.0, true, true );
+      for( size_t elm = 0; elm < size; ++elm )
+        gradient[ elm ] = std::numeric_limits< D >::max( );
       for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
-        label[ obj_seeds[ elm ] ] = 1;
-        seeds[ obj_seeds[ elm ] ] = true;
-        gradient[ obj_seeds[ elm ] ] += 1.0;
+        size_t obj_elm = obj_seeds[ elm ];
+        label[ obj_elm ] = 1;
+        gradient[ obj_elm ] = handicap[ obj_elm ] + 1.0;
+        queue.Insert( obj_elm, gradient[ obj_elm ] );
       }
       for( size_t elm = 0; elm < bkg_seeds.size( ); ++elm ) {
-        label[ bkg_seeds[ elm ] ] = 0;
-        seeds[ bkg_seeds[ elm ] ] = true;
-        gradient[ bkg_seeds[ elm ] ] += 1.0;
+        size_t bkg_elm = bkg_seeds[ elm ];
+        label[ bkg_elm ] = 0;
+        gradient[ bkg_elm ] = handicap[ bkg_elm ] + 1.0;
+        queue.Insert( bkg_elm, gradient[ bkg_elm ] );
       }
-      for( size_t elm = 0; elm < size; ++elm ) {
-        if( !seeds[ elm ] )
-          gradient[ elm ] = std::numeric_limits< D >::max( );
-      }
-      ImageIFT< D > ift( gradient, spheric, &min_function, &seeds, &label, static_cast< Image< int >* >( nullptr ), 
-                         false, static_cast< D >( 1.0 ), true );
+      ImageIFT< D > ift( gradient, spheric, &sum_function, &queue );
       ift.Run( );
       return( label );
     }

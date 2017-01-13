@@ -2,6 +2,7 @@
 #define SEGMENTATIONTOOL_H
 
 #include "Common.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "ImageIFT.hpp"
 #include "PathFunction.hpp"
 #include "tool.h"
@@ -18,6 +19,7 @@ private:
   Bial::PathFunction< Bial::Image, int > *int_path_func;
   Bial::PathFunction< Bial::Image, float > *flt_path_func;
   Bial::Adjacency adj;
+  Bial::GrowingBucketQueue *queue;
   Bial::ImageIFT< int > *int_ift;
   Bial::ImageIFT< float > *flt_ift;
 

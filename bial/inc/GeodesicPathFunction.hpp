@@ -33,13 +33,17 @@ namespace Bial {
 
     /**
      * @date 2014/Jan/08
-     * @param new_beta: weight of the geodesic funtion. Closer to 0 is more similar to euclidean distance. Higher
-     * values is closer to SumPathFunction.
+     * @param init_value: Reference for initial value container.
+     * @param init_label: Reference for initial label container.
+     * @param init_predecessor: Reference for predecessor container.
+     * @param sequential_label: Sets labeling sequentially.
+     * @param handicap: Handicap value used to initiate cost.
      * @return none.
      * @brief Basic constructor.
      * @warning none.
      */
-    GeodesicDistancePathFunction( const Image< D > &handicap );
+    GeodesicDistancePathFunction( Image< D > &init_value, Image< int > *init_label, Image< int > *init_predecessor,
+                                  bool sequential_label, const Image< D > &handicap );
 
     /**
      * @date 2014/Jan/08
@@ -70,19 +74,6 @@ namespace Bial {
 
     /**
      * @date 2014/Jan/08
-     * @param init_value: Reference for initial value container.
-     * @param init_label: Reference for initial label container.
-     * @param init_predecessor: Reference for predecessor container.
-     * @param sequential_label: Sets labeling sequentially.
-     * @return none.
-     * @brief Initializes object attributes.
-     * @warning This function is called automatically by IFT constructor.
-     */
-    void Initialize( Image< D > &init_value, Image< int > *init_label, Image< int > *init_predecessor,
-                     bool sequential_label );
-
-    /**
-     * @date 2014/Jan/08
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'.
@@ -94,10 +85,28 @@ namespace Bial {
      * @date 2014/Dec/05
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor value.
+     * @warning none.
+     */
+    bool RemovePredecessor( size_t index, BucketState state );
+
+    /**
+     * @date 2014/Dec/05
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'. Also sets its label value.
      * @warning none.
      */
     bool RemoveLabel( size_t index, BucketState state );
+
+    /**
+     * @date 2012/Sep/25
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor and label value.
+     * @warning none.
+     */
+    bool RemoveComplete( size_t index, BucketState state );
 
     /**
      * @date 2014/Jan/08

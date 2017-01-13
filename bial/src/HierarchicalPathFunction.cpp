@@ -25,21 +25,22 @@
 #endif
 #include "Image.hpp"
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< template< class D > class C, class D >
-  HierarchicalPathFunction< C, D >::HierarchicalPathFunction( const C< D > &handicap, C< int > *merge_label, 
-                                                              C< int > *split_label, D new_bucket_size ) try :
-    PathFunction< C, D >( ), handicap( handicap ), merge_label( merge_label ), split_label( split_label ),
-      new_merge_label( ), bucket_size( new_bucket_size ) {
+  HierarchicalPathFunction< C, D >::HierarchicalPathFunction( C< D > &init_value, C< int > &init_label,
+                                                              C< int > *init_predecessor, bool sequential_label, 
+                                                              const C< D > &handicap, C< int > *merge_label, 
+                                                              C< int > *split_label ) try :
+    PathFunction< C, D >( init_value, &init_label, init_predecessor, sequential_label ), handicap( handicap ), 
+      merge_label( merge_label ), split_label( split_label ), new_merge_label( ) {
       COMMENT( "Computing the number of labels to initialize new_merge_label.", 1 );
       int labels = 0;
       for( size_t lbl = 0; lbl < merge_label->size( ); ++lbl ) {
-        if( labels < merge_label->operator()( lbl ) + 1 ) {
+        if( labels < merge_label->operator()( lbl ) + 1 )
           labels = merge_label->operator()( lbl ) + 1;
-        }
       }
       new_merge_label = Vector< int >( labels, -1 );
     }
@@ -62,7 +63,9 @@ namespace Bial {
 
   template< template< class D > class C, class D >
   HierarchicalPathFunction< C, D >::HierarchicalPathFunction( const HierarchicalPathFunction< C, D > &pf ) try : 
-    HierarchicalPathFunction< C, D >( pf.handicap, pf.merge_label, pf.split_label, pf.bucket_size ) {
+    HierarchicalPathFunction< C, D >( *( pf.value ), *( pf.label ), pf.predecessor, true, pf.handicap, pf.merge_label,
+                                      pf.split_label ) {
+      this->next_label = pf.next_label;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -109,13 +112,12 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  void HierarchicalPathFunction< C, D >::Initialize( C< D > &init_value, C< int > *init_label,
-                                                     C< int > *init_predecessor, bool sequential_label ) {
+  bool HierarchicalPathFunction< C, D >::RemoveSimple( size_t index, BucketState state ) {
     try {
-      if( init_label == nullptr ) {
-        BIAL_ERROR( "This pathfunction must be used with label." );
+      if( state == BucketState::INSERTED ) {
+        this->value->operator()( index ) = handicap( index );
       }
-      PathFunction< C, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
+      return( true );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -136,10 +138,11 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool HierarchicalPathFunction< C, D >::RemoveSimple( size_t index, BucketState state ) {
+  bool HierarchicalPathFunction< C, D >::RemovePredecessor( size_t index, BucketState state ) {
     try {
       if( state == BucketState::INSERTED ) {
         this->value->operator()( index ) = handicap( index );
+        this->predecessor->operator()( index ) = -1;
       }
       return( true );
     }
@@ -191,6 +194,31 @@ namespace Bial {
       COMMENT( "new_merge_label( merge_label->operator()( index ) ): "
                << new_merge_label( merge_label->operator()( index ) ), 4 );
       return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool HierarchicalPathFunction< C, D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      if( state == BucketState::INSERTED )
+        this->predecessor->operator()( index ) = -1;
+      return( RemoveLabel( index, state ) );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

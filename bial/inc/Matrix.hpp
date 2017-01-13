@@ -1238,17 +1238,17 @@ namespace Bial {
   template< class D > Matrix< D >::Matrix( size_t size_0, size_t size_1, size_t size_2 ) try
     : _data( ), qk_data( nullptr ), _size( size_0 * size_1 * size_2 ), dims( 3 ), dim_size( 3, size_0 ),
         acc_dim_size( 3, size_0 ) {
-      COMMENT( "Allocating data vector.", 2 );
+      COMMENT( "Allocating data vector.", 4 );
       _data = Vector< D >( _size );
-      COMMENT( "Assigning quick access pointers.", 2 );
+      COMMENT( "Assigning quick access pointers.", 4 );
       qk_data = _data.data( );
-      COMMENT( "Setting size of matrix dimensions.", 2 );
+      COMMENT( "Setting size of matrix dimensions.", 4 );
       dim_size( 1 ) = size_1;
       dim_size( 2 ) = size_2;
-      COMMENT( "Computing accumulated size of matrix dimensions.", 2 );
+      COMMENT( "Computing accumulated size of matrix dimensions.", 4 );
       acc_dim_size( 1 ) *= acc_dim_size( 0 );
       acc_dim_size( 2 ) *= acc_dim_size( 1 );
-      COMMENT( "Checking for zero size dimension.", 2 );
+      COMMENT( "Checking for zero size dimension.", 4 );
       if( acc_dim_size( 2 ) == 0 ) {
         std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
         throw( std::logic_error( msg ) );
@@ -1275,7 +1275,7 @@ namespace Bial {
     : _data( mtx._data ), qk_data( nullptr ), _size( mtx._size ), dims( mtx.dims ), dim_size( mtx.dim_size ),
         acc_dim_size( mtx.acc_dim_size ) {
 
-      COMMENT( "Assigning quick access pointers for the matrix.", 2 );
+      COMMENT( "Assigning quick access pointers for the matrix.", 4 );
       qk_data = _data.data( );
     }
   catch( std::bad_alloc &e ) {

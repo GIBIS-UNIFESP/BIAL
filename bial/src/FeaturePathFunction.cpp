@@ -26,13 +26,15 @@
 #endif
 #include "Image.hpp"
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< template< class D > class C, class D > 
-  FeatureDistanceFunction< C, D >::FeatureDistanceFunction( const Feature< D > &new_feats ) try : 
-    PathFunction< C, D >( ), feats( new_feats ) {
+  FeatureDistanceFunction< C, D >::FeatureDistanceFunction( C< D > &init_value, C< int > *init_label, 
+                                                            C< int > *init_predecessor, bool sequential_label, 
+                                                            const Feature< D > &new_feats ) try : 
+    PathFunction< C, D >( init_value, init_label, init_predecessor, sequential_label ), feats( new_feats ) {
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -52,10 +54,17 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  void FeatureDistanceFunction< C, D >::Initialize( C< D > &init_value, C< int > *init_label, 
-                                                    C< int > *init_predecessor, bool sequential_label ) {
+  bool FeatureDistanceFunction< C, D >::RemoveSimple( size_t, BucketState ) {
+    return( true );
+  }
+
+  template< template< class D > class C, class D >
+  bool FeatureDistanceFunction< C, D >::RemovePredecessor( size_t index, BucketState state ) {
     try {
-      PathFunction< C, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
+      if( state == BucketState::INSERTED ) {
+        this->predecessor->operator()( index ) = -1;
+      }
+      return( true );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -76,15 +85,38 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool FeatureDistanceFunction< C, D >::RemoveSimple( size_t, BucketState ) {
-    return( true );
-  }
-
-  template< template< class D > class C, class D >
   bool FeatureDistanceFunction< C, D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       if( state == BucketState::INSERTED ) {
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool FeatureDistanceFunction< C, D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      if( state == BucketState::INSERTED ) {
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       return( true );

@@ -49,13 +49,20 @@ namespace Bial {
 
     /**
      * @date 2013/Jul/02
+     * @param init_value: Reference for initial value container.
+     * @param init_label: Reference for initial label container.
+     * @param init_predecessor: Reference for predecessor container.
+     * @param sequential_label: Sets labeling sequentially.
+     * @param new_intensity: Intensity used for cost propagation (e.g. a gradient image.)
+     * @param new_alpha: weight of orientation. Negative for dark objects and positive for light objects.
      * @param new_beta: weight of the geodesic funtion. Closer to 0 is more similar to euclidean distance. Higher
      * values is closer to SumPathFunction.
      * @return none.
      * @brief Basic constructor.
      * @warning none.
      */
-    GeodesicRestrictionPathFunction( const Image< D > &handicap, const Image< D > &new_intensity, 
+    GeodesicRestrictionPathFunction( Image< D > &init_value, Image< int > *init_label, Image< int > *init_predecessor, 
+                                     bool sequential_label, const Image< D > &handicap, const Image< D > &new_intensity,
                                      double new_alpha = 0.0, double new_beta = 0.5 );
 
     /**
@@ -86,19 +93,6 @@ namespace Bial {
     GeodesicRestrictionPathFunction< D > operator=( const GeodesicRestrictionPathFunction< D > &pf );
 
     /**
-     * @date 2012/Oct/02
-     * @param init_value: Reference for initial value container.
-     * @param init_label: Reference for initial label container.
-     * @param init_predecessor: Reference for predecessor container.
-     * @param sequential_label: Sets labeling sequentially.
-     * @return none.
-     * @brief Initializes object attributes.
-     * @warning This function is called automatically by IFT constructor.
-     */
-    void Initialize( Image< D > &init_value, Image< int > *init_label, Image< int > *init_predecessor, 
-                     bool sequential_label );
-
-    /**
      * @date 2012/Sep/25
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
@@ -111,10 +105,28 @@ namespace Bial {
      * @date 2014/Dec/05
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor value.
+     * @warning none.
+     */
+    bool RemovePredecessor( size_t index, BucketState state );
+
+    /**
+     * @date 2014/Dec/05
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'. Also sets its label value.
      * @warning none.
      */
     bool RemoveLabel( size_t index, BucketState state );
+
+    /**
+     * @date 2012/Sep/25
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor and label value.
+     * @warning none.
+     */
+    bool RemoveComplete( size_t index, BucketState state );
 
     /**
      * @date 2013/Oct/14

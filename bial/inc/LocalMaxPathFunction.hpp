@@ -23,50 +23,7 @@ namespace Bial {
 
   protected:
 
-    // /** @brief  Handicap container (Vector, Matrix, Image, etc). */
-    // C< D > handicap;
-    // /** @brief  Minimum difference between two sample intensities. */
-    // D bucket_size;
-
   public:
-
-    /**
-     * @date 2015/Jul/20
-     // * @param handicap: initial value to paths.
-     // * @param new_bucket_size: size of bucke in queue.
-     * @return none.
-     * @brief Basic constructor.
-     * @warning none.
-     */
-    // LocalMaxPathFunction( const C< D > &handicap, D new_bucket_size = 1.0 );
-    LocalMaxPathFunction( );
-
-    // /**
-    //  * @date 2013/Jul/01
-    //  * @param pf: path-function to be copied.
-    //  * @return none.
-    //  * @brief Copy constructor.
-    //  * @warning none.
-    //  */
-    // LocalMaxPathFunction( const MaxPathFunction< C, D > &pf );
-    
-    // /**
-    //  * @date 2013/Jul/01
-    //  * @param none.
-    //  * @return none.
-    //  * @brief Destructor.
-    //  * @warning none.
-    //  */
-    // ~LocalMaxPathFunction( );
-
-    // /**
-    //  * @date 2013/Jul/01
-    //  * @param pf: path-function to be assigned.
-    //  * @return none.
-    //  * @brief Assignment operator.
-    //  * @warning none.
-    //  */
-    // LocalMaxPathFunction< C, D > operator=( const LocalMaxPathFunction< C, D > &pf );
 
     /**
      * @date 2015/Jul/20
@@ -75,10 +32,10 @@ namespace Bial {
      * @param init_predecessor: Reference for predecessor container.
      * @param sequential_label: Sets labeling sequentially.
      * @return none.
-     * @brief Initializes object attributes.
-     * @warning This function is called automatically by IFT constructor.
+     * @brief Basic constructor.
+     * @warning none.
      */
-    void Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, bool sequential_label );
+    LocalMaxPathFunction( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, bool sequential_label );
 
     /**
      * @date 2015/Jul/20
@@ -90,13 +47,31 @@ namespace Bial {
     bool RemoveSimple( size_t index, BucketState state );
 
     /**
-     * @date 2015/Jul/20
+     * @date 2014/Dec/05
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor value.
+     * @warning none.
+     */
+    bool RemovePredecessor( size_t index, BucketState state );
+
+    /**
+     * @date 2014/Dec/05
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'. Also sets its label value.
      * @warning none.
      */
     bool RemoveLabel( size_t index, BucketState state );
+
+    /**
+     * @date 2012/Sep/25
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor and label value.
+     * @warning none.
+     */
+    bool RemoveComplete( size_t index, BucketState state );
 
     /**
      * @date 2015/Jul/20

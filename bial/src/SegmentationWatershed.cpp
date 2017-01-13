@@ -57,40 +57,28 @@ namespace Bial {
     try {
       D min_val = gradient.Minimum( );
       size_t value_range = gradient.Maximum( ) - gradient.Minimum( ) + 1;
-      if( seeds.size( ) != gradient.size( ) ) {
+      size_t size = gradient.size( );
+      IF_DEBUG( seeds.size( ) != size ) {
         std::string msg( BIAL_ERROR( "Gradient image and seed vector must have the same number of elements." ) );
         throw( std::logic_error( msg ) );
       }
       Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
-      Image< int > label( gradient );
-      label.Set( 0.0 );
-      MaxPathFunction< Image, D > max_function( gradient, 1.0 );
-      size_t size = gradient.size( );
+      Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
+      MaxPathFunction< Image, D > max_function( gradient, &label, nullptr, true, gradient );
       COMMENT( "Setting seeds. Image size: " << size, 0 );
+      FastIncreasingFifoBucketQueue queue( size, min_val, value_range );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
-        if( seeds[ pxl ] )
+        if( seeds[ pxl ] ) {
           gradient[ pxl ] += 1.0;
+          queue.Insert( pxl, gradient[ pxl ] );
+        }
         else
           gradient[ pxl ] = std::numeric_limits< D >::max( );
       }
       COMMENT( "Running IFT.", 0 );
-      //ImageIFT< D > ift( gradient, spheric, &max_function, &seeds, &label, static_cast< Image< int >* >( nullptr ),
-      //                   true, static_cast< D >( 1.0 ), true );
-      //ImageIFT< D > ift( gradient, spheric, &max_function, min_val, value_range, &seeds, &label,
-      //                   static_cast< Image< int >* >( nullptr ), true, true );
+      //ImageIFT< D > ift( gradient, spheric, &max_function, &queue );
       //ift.Run( );
-
-      FastIncreasingFifoBucketQueue queue( size, min_val, value_range );
-      COMMENT( "Initializing data in path function.", 1 );
-      max_function.Initialize( gradient, &label, nullptr, true );
       COMMENT( "Initializing the maps.", 1 );
-      
-      COMMENT( "Inserting seeds.", 1 );
-      for( size_t it = 0; it < size; ++it ) {
-        if( seeds[ it ] )
-          queue.Insert( it, gradient( it ) );
-      }
-
       // AdjacencyIterator adj_itr( gradient, spheric );
       // size_t adj_size = spheric.size( );
       // size_t adj_index;
@@ -120,7 +108,6 @@ namespace Bial {
       //     }
       //   }
       // }
-
       AdjacencyIterator adj_itr( gradient, spheric );
       size_t adj_size = spheric.size( );
       size_t adj_index;
@@ -220,29 +207,26 @@ namespace Bial {
       D min_val = gradient.Minimum( );
       size_t value_range = gradient.Maximum( ) - gradient.Minimum( ) + 1;
       Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
-      Image< int > label( gradient );
+      Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
       size_t size = gradient.size( );
-      Vector< bool > seeds( size, false );
-      label.Set( 0.0 );
-      MaxPathFunction< Image, D > max_function( gradient, 1.0 );
+      Image< D > handicap( gradient );
+      MaxPathFunction< Image, D > max_function( gradient, &label, nullptr, true, handicap );
+      FastIncreasingFifoBucketQueue queue( size, min_val, value_range );
+      for( size_t elm = 0; elm < size; ++elm )
+        gradient[ elm ] = std::numeric_limits< D >::max( );
       for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
-        label[ obj_seeds[ elm ] ] = 1;
-        seeds[ obj_seeds[ elm ] ] = true;
-        gradient[ obj_seeds[ elm ] ] += 1.0;
+        size_t obj_elm = obj_seeds[ elm ];
+        label[ obj_elm ] = 1;
+        gradient[ obj_elm ] = handicap[ obj_elm ] + 1.0;
+        queue.Insert( obj_elm, gradient[ obj_elm ] );
       }
       for( size_t elm = 0; elm < bkg_seeds.size( ); ++elm ) {
-        label[ bkg_seeds[ elm ] ] = 0;
-        seeds[ bkg_seeds[ elm ] ] = true;
-        gradient[ bkg_seeds[ elm ] ] += 1.0;
+        size_t bkg_elm = bkg_seeds[ elm ];
+        label[ bkg_elm ] = 0;
+        gradient[ bkg_elm ] = handicap[ bkg_elm ] + 1.0;
+        queue.Insert( bkg_elm, gradient[ bkg_elm ] );
       }
-      for( size_t elm = 0; elm < size; ++elm ) {
-        if( !seeds[ elm ] )
-          gradient[ elm ] = std::numeric_limits< D >::max( );
-      }
-      //ImageIFT< D > ift( gradient, spheric, &max_function, &seeds, &label, static_cast< Image< int >* >( nullptr ),
-      //                   false, static_cast< D >( 1.0 ), true );
-      ImageIFT< D > ift( gradient, spheric, &max_function, min_val, value_range, &seeds, &label,
-                         static_cast< Image< int >* >( nullptr ), true, true );
+      ImageIFT< D > ift( gradient, spheric, &max_function, &queue );
       ift.Run( );
       return( label );
     }

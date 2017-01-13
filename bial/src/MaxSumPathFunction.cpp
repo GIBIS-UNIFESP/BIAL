@@ -24,14 +24,16 @@
 #endif
 #include "Image.hpp"
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< template< class D > class C, class D >
-  MaxSumPathFunction< C, D >::MaxSumPathFunction( const C< D > &intensity, const C< D > &handicap, double new_alpha, 
-                                                  double new_beta ) try :
-    PathFunction< C, D >( ), intensity( intensity ), handicap( handicap ), alpha( new_alpha ), beta( new_beta ) {
+  MaxSumPathFunction< C, D >::MaxSumPathFunction( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
+                                                  bool sequential_label, const C< D > &intensity, 
+                                                  const C< D > &handicap, double new_alpha, double new_beta ) try :
+    PathFunction< C, D >( init_value, init_label, init_predecessor, sequential_label ), intensity( intensity ), 
+      handicap( handicap ), alpha( new_alpha ), beta( new_beta ) {
       if( ( alpha < -1.0 ) || ( alpha > 1.0 ) ) {
         std::string msg( BIAL_ERROR( "Invalid alpha. Expected: -1.0 to 1.0. Given: " +
                                      std::to_string( alpha ) + "." ) );
@@ -61,7 +63,9 @@ namespace Bial {
 
   template< template< class D > class C, class D >
   MaxSumPathFunction< C, D >::MaxSumPathFunction( const MaxSumPathFunction< C, D > &pf )
-    try : MaxSumPathFunction< C, D >( pf.intensity, pf.handicap, pf.alpha, pf.beta ) {
+    try : MaxSumPathFunction< C, D >( *( pf.value ), pf.label, pf.predecessor, true, pf.intensity, pf.handicap,
+                                      pf.alpha, pf.beta ) {
+      this->next_label = pf.next_label;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -87,30 +91,6 @@ namespace Bial {
   MaxSumPathFunction< C, D > MaxSumPathFunction< C, D >::operator=( const MaxSumPathFunction< C, D > &pf ) {
     try {
       return( MaxSumPathFunction< C, D >( pf ) );
-    }
-    catch( std::bad_alloc &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( std::runtime_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( const std::out_of_range &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-      throw( std::out_of_range( msg ) );
-    }
-    catch( const std::logic_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-      throw( std::logic_error( msg ) );
-    }
-  }
-
-  template< template< class D > class C, class D >
-  void MaxSumPathFunction< C, D >::Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
-                                               bool sequential_label ) {
-    try {
-      PathFunction< C, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -158,6 +138,34 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
+  bool MaxSumPathFunction< C, D >::RemovePredecessor( size_t index, BucketState state ) {
+    try {
+      COMMENT( "Removing element.", 3 );
+      if( state == BucketState::INSERTED ) {
+        this->value->operator()( index ) = handicap( index );
+        this->predecessor->operator()( index ) = -1;
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
   bool MaxSumPathFunction< C, D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       COMMENT( "Removing element.", 3 );
@@ -165,6 +173,37 @@ namespace Bial {
         COMMENT( "Next label: " << this->next_label << ".", 3 );
         this->value->operator()( index ) = handicap( index );
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool MaxSumPathFunction< C, D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      COMMENT( "Removing element.", 3 );
+      if( state == BucketState::INSERTED ) {
+        COMMENT( "Next label: " << this->next_label << ".", 3 );
+        this->value->operator()( index ) = handicap( index );
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       return( true );
@@ -219,15 +258,12 @@ namespace Bial {
       double arc_weight = ( handicap( index ) + handicap( adj_index ) ) / 2.0;
       COMMENT( "Orienting edges.", 3 );
       double fraction = 0.0;
-      if( intensity[ index ] > intensity[ adj_index ] ) {
+      if( intensity[ index ] > intensity[ adj_index ] )
         fraction = std::abs( alpha );
-      }
-      else if( intensity[ index ] < intensity[ adj_index ] ) {
+      else if( intensity[ index ] < intensity[ adj_index ] )
         fraction = -std::abs( alpha );
-      }
-      if( alpha < 0.0 ) {
+      if( alpha < 0.0 )
         fraction = -fraction;
-      }
       arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
       COMMENT( "Suppressing non-zero.", 3 );
       ++arc_weight;

@@ -24,13 +24,14 @@
 #endif
 #include "Image.hpp"
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< template< class D > class C, class D >
-  MinPathFunction< C, D >::MinPathFunction( const C< D > &handicap, D new_bucket_size ) try :
-    PathFunction< C, D >( ), handicap( handicap ), bucket_size( new_bucket_size ) {
+  MinPathFunction< C, D >::MinPathFunction( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
+                                            bool sequential_label, const C< D > &handicap ) try :
+    PathFunction< C, D >( init_value, init_label, init_predecessor, sequential_label ), handicap( handicap ) {
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -50,8 +51,9 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  MinPathFunction< C, D >::MinPathFunction( const MinPathFunction< C, D > &pf ) try
-    : MinPathFunction< C, D >( pf.handicap, pf.bucket_size ) {
+  MinPathFunction< C, D >::MinPathFunction( const MinPathFunction< C, D > &pf ) try :
+    MinPathFunction< C, D >( *( pf.value ), pf.label, pf.predecessor, true, pf.handicap ) {
+      this->next_label = pf.next_label;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -77,30 +79,6 @@ namespace Bial {
   MinPathFunction< C, D > MinPathFunction< C, D >::operator=( const MinPathFunction< C, D > &pf ) {
     try {
       return( MinPathFunction< C, D >( pf ) );
-    }
-    catch( std::bad_alloc &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( std::runtime_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( const std::out_of_range &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-      throw( std::out_of_range( msg ) );
-    }
-    catch( const std::logic_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-      throw( std::logic_error( msg ) );
-    }
-  }
-
-  template< template< class D > class C, class D >
-  void MinPathFunction< C, D >::Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
-                                            bool sequential_label ) {
-    try {
-      PathFunction< C, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -148,12 +126,71 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
+  bool MinPathFunction< C, D >::RemovePredecessor( size_t index, BucketState state ) {
+    try {
+      COMMENT( "Removing element.", 3 );
+      if( state == BucketState::INSERTED ) {
+        this->value->operator()( index ) = handicap( index );
+        this->predecessor->operator()( index ) = -1;
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
   bool MinPathFunction< C, D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       COMMENT( "Removing element.", 3 );
       if( state == BucketState::INSERTED ) {
         this->value->operator()( index ) = handicap( index );
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      COMMENT( "Finished.", 3 );
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool MinPathFunction< C, D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      COMMENT( "Removing element.", 3 );
+      if( state == BucketState::INSERTED ) {
+        this->value->operator()( index ) = handicap( index );
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       COMMENT( "Finished.", 3 );

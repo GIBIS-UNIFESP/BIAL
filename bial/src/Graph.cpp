@@ -21,6 +21,7 @@
 #include "ClusteringIFT.hpp"
 #include "DFIDE.hpp"
 #include "Feature.hpp"
+#include "GrowingBucketQueue.hpp"
 #include "KnnGraphAdjacency.hpp"
 #include "LSHGraphAdjacency.hpp"
 #include "MinPathFunction.hpp"
@@ -205,28 +206,29 @@ namespace Bial {
 
       COMMENT( "Clustering.", 2 );
       Vector< double > value( density );
-      MinPathFunction< Vector, double > pf( value + delta, delta );
+      size_t size = value.size( );
+      MinPathFunction< Vector, double > pf( value, &label, nullptr, true, value + delta );
+      GrowingBucketQueue queue( size, delta, false, true );
+      for( size_t elm = 0; elm < size; ++elm )
+        queue.Insert( elm, value[ elm ] );
       if( adjacency.HomogeneousSize( scl ) == 0 ) {
         COMMENT( "LSH IFT.", 2 );
-
-        std::cout << "Prior adjacency sizes: " << std::endl;
-        for( size_t elm = 0; elm < value.size( ); ++elm ) {
-          std::cout << adjacency.Arcs( scl, elm ) << " ";
+        IF_DEBUG( true ) {
+          std::cout << "Prior adjacency sizes: " << std::endl;
+          for( size_t elm = 0; elm < size; ++elm )
+            std::cout << adjacency.Arcs( scl, elm ) << " ";
+          std::cout << std::endl;
         }
-        std::cout << std::endl;
-
         ClusteringIFT< Vector, double > 
           ift( value, &pf, adjacency.HeterogeneousAdjacency( density, scl, delta ),
-               adjacency.HeterogeneousSize( scl ), nullptr, &label,
-               static_cast< Vector< int >* >( nullptr ), true, delta, true );
+               adjacency.HeterogeneousSize( scl ), &queue );
         ift.Run( );
       }
       else {
         COMMENT( "KNN IFT.", 2 );
         ClusteringIFT< Vector, double >
           ift( value, &pf, adjacency.HomogeneousAdjacency( ), adjacency.HomogeneousSize( scl ),
-               adjacency.HeterogeneousAdjacency( density, scl, delta ), nullptr, &label,
-               static_cast< Vector< int >* >( nullptr ), true, delta, true );
+               adjacency.HeterogeneousAdjacency( density, scl, delta ), &queue );
         ift.Run( );
       }
       COMMENT( "Sorting value vector.", 2 );

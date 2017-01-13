@@ -22,6 +22,7 @@
 #include "FileImage.hpp"
 #endif
 #include "AdjacencyRound.hpp"
+#include "FastIncreasingFifoBucketQueue.hpp"
 #include "GradientMorphological.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
@@ -36,12 +37,14 @@ namespace Bial {
     Image< D > grad = Gradient::Morphological( img );
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
-    COMMENT( "Computing IFT.", 0 );
-    LocalMaxPathFunction< Image, D > pf;
     Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
+    COMMENT( "Computing IFT.", 0 );
+    LocalMaxPathFunction< Image, D > pf( grad, nullptr, &predecessor, false );
+    size_t size = grad.size( );
+    FastIncreasingFifoBucketQueue queue( size, 0, grad.Maximum( ) + 1 );
     Adjacency adj( AdjacencyType::HyperSpheric( 1.1, img.Dims( ) ) );
-    ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false,
-                       static_cast< long double >( 1.0 ) );
+    ImageIFT< D > ift( grad, adj, &pf, &queue );
+    ift.InsertSeeds( seed );
     ift.Run( );
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );
@@ -55,19 +58,18 @@ namespace Bial {
     COMMENT( "Computing gradient complement.", 0 );
     Intensity::Complement( grad );
     // DEBUG_WRITE( grad.DataMatrix( ), "grad_rb", 4 );
-    COMMENT( "Computing IFT.", 0 );
-    LocalMaxPathFunction< Image, D > pf;
     Image< int > predecessor( img.Dim( ), img.PixelSize( ) );
-    Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
+    COMMENT( "Computing IFT.", 0 );
+    LocalMaxPathFunction< Image, D > pf( grad, nullptr, &predecessor, false );
     size_t size = img.size( );
+    FastIncreasingFifoBucketQueue queue( size, 0, grad.Maximum( ) + 1 );
+    Adjacency adj( AdjacencyType::HyperSpheric( 1.9, img.Dims( ) ) );
     for( size_t elm = 0; elm < size; ++elm ) {
-      if( msk[ elm ] == 0 ) {
+      if( msk[ elm ] == 0 )
         grad[ elm ] = 0;
-        //seed[ elm ] = false;
-      }
     }
-    ImageIFT< D > ift( grad, adj, &pf, &seed, static_cast< Image< int >* >( nullptr ), &predecessor, false,
-                       static_cast< long double >( 1.0 ) );
+    ImageIFT< D > ift( grad, adj, &pf, &queue );
+    ift.InsertSeeds( seed );
     ift.Run( );
     COMMENT( "Returning maps.", 0 );
     return( std::tie( grad, predecessor ) );

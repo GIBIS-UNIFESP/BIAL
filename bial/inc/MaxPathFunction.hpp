@@ -25,20 +25,22 @@ namespace Bial {
 
     /** @brief  Handicap container (Vector, Matrix, Image, etc). */
     C< D > handicap;
-    /** @brief  Minimum difference between two sample intensities. */
-    D bucket_size;
 
   public:
 
     /**
      * @date 2013/Jul/02
+     * @param init_value: Reference for initial value container.
+     * @param init_label: Reference for initial label container.
+     * @param init_predecessor: Reference for predecessor container.
+     * @param sequential_label: Sets labeling sequentially.
      * @param handicap: initial value to paths.
-     * @param new_bucket_size: size of bucke in queue.
      * @return none.
      * @brief Basic constructor.
      * @warning none.
      */
-    MaxPathFunction( const C< D > &handicap, D new_bucket_size = 1.0 );
+    MaxPathFunction( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, bool sequential_label, 
+                     const C< D > &handicap );
 
     /**
      * @date 2013/Jul/01
@@ -68,18 +70,6 @@ namespace Bial {
     MaxPathFunction< C, D > operator=( const MaxPathFunction< C, D > &pf );
 
     /**
-     * @date 2012/Oct/02
-     * @param init_value: Reference for initial value container.
-     * @param init_label: Reference for initial label container.
-     * @param init_predecessor: Reference for predecessor container.
-     * @param sequential_label: Sets labeling sequentially.
-     * @return none.
-     * @brief Initializes object attributes.
-     * @warning This function is called automatically by IFT constructor.
-     */
-    void Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, bool sequential_label );
-
-    /**
      * @date 2012/Sep/25
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
@@ -92,10 +82,28 @@ namespace Bial {
      * @date 2014/Dec/05
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor value.
+     * @warning none.
+     */
+    bool RemovePredecessor( size_t index, BucketState state );
+
+    /**
+     * @date 2014/Dec/05
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'. Also sets its label value.
      * @warning none.
      */
     bool RemoveLabel( size_t index, BucketState state );
+
+    /**
+     * @date 2012/Sep/25
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor and label value.
+     * @warning none.
+     */
+    bool RemoveComplete( size_t index, BucketState state );
 
     /**
      * @date 2013/Oct/14

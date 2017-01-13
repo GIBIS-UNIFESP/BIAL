@@ -24,13 +24,15 @@
 #include "FileImage.hpp"
 #endif
 
-/* Implementation ***************************************************************************************************** */
+/* Implementation *************************************************************************************************** */
 
 namespace Bial {
 
   template< class D >
-  GeodesicDistancePathFunction< D >::GeodesicDistancePathFunction( const Image< D > &handicap ) try : 
-    PathFunction< Image, D >( ), handicap( handicap ) {
+  GeodesicDistancePathFunction< D >::GeodesicDistancePathFunction( Image< D > &init_value, Image< int > *init_label,
+                                                                   Image< int > *init_predecessor, bool sequential_label, 
+                                                                   const Image< D > &handicap ) try : 
+    PathFunction< Image, D >( init_value, init_label, init_predecessor, sequential_label ), handicap( handicap ) {
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -51,7 +53,8 @@ namespace Bial {
 
   template< class D >
   GeodesicDistancePathFunction< D >::GeodesicDistancePathFunction( const GeodesicDistancePathFunction< D > &pf ) try :
-    GeodesicDistancePathFunction< D >( pf.handicap ) {
+    GeodesicDistancePathFunction< D >( *( pf.value ), pf.label, pf.predecessor, true, pf.handicap ) {
+      this->next_label = pf.next_label;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -97,10 +100,16 @@ namespace Bial {
   }
 
   template< class D >
-  void GeodesicDistancePathFunction< D >::Initialize( Image< D > &init_value, Image< int > *init_label,
-                                                      Image< int > *init_predecessor, bool sequential_label ) {
+  bool GeodesicDistancePathFunction< D >::RemoveSimple( size_t, BucketState ) {
+    return( true );
+  }
+
+  template< class D >
+  bool GeodesicDistancePathFunction< D >::RemovePredecessor( size_t index, BucketState state ) {
     try {
-      PathFunction< Image, D >::Initialize( init_value, init_label, init_predecessor, sequential_label );
+      if( state == BucketState::INSERTED )
+        this->predecessor->operator()( index ) = -1;
+      return( true );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -121,15 +130,38 @@ namespace Bial {
   }
 
   template< class D >
-  bool GeodesicDistancePathFunction< D >::RemoveSimple( size_t, BucketState ) {
-    return( true );
-  }
-
-  template< class D >
   bool GeodesicDistancePathFunction< D >::RemoveLabel( size_t index, BucketState state ) {
     try {
       if( state == BucketState::INSERTED ) {
         this->label->operator()( index ) = this->next_label;
+        ++( this->next_label );
+      }
+      return( true );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
+  bool GeodesicDistancePathFunction< D >::RemoveComplete( size_t index, BucketState state ) {
+    try {
+      if( state == BucketState::INSERTED ) {
+        this->label->operator()( index ) = this->next_label;
+        this->predecessor->operator()( index ) = -1;
         ++( this->next_label );
       }
       return( true );

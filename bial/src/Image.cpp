@@ -31,7 +31,7 @@ namespace Bial {
     size_t z_size = _data.dim_size( 2 );
     y_table = new D*[ y_size * z_size ];
     z_table = new D**[ z_size ];
-    COMMENT( "Setting y table: ", 2 );
+    COMMENT( "Setting y table: ", 4 );
     size_t pos = 0;
     for( size_t z = 0; z < z_size; ++z ) {
       for( size_t y = 0; y < y_size; ++y ) {
@@ -39,7 +39,7 @@ namespace Bial {
         pos += x_size;
       }
     }
-    COMMENT( "Setting z table: ", 2 );
+    COMMENT( "Setting z table: ", 4 );
     pos = 0;
     for( size_t z = 0; z < z_size; ++z ) {
       z_table[ z ] = &y_table[ pos ];
@@ -49,7 +49,7 @@ namespace Bial {
 
   template< class D >
   void Image< D >::DestroyTables( ) {
-    COMMENT( "Destroying tables.", 2 );
+    COMMENT( "Destroying tables.", 4 );
     if( z_table != nullptr )
       delete[]( z_table );
     z_table = nullptr;
@@ -182,13 +182,13 @@ namespace Bial {
   template< class D > Image< D >::Image( size_t spc_dim_0, size_t spc_dim_1 ) try 
     : _data( spc_dim_0, spc_dim_1, 1 ), qk_data( nullptr ), pixel_size( Vector< float >( 3, 1.0 ) ), y_table( nullptr ), 
         z_table( nullptr ) {
-      COMMENT( "Check for zero size dimensions.", 2 );
+      COMMENT( "Check for zero size dimensions.", 4 );
       if( ( spc_dim_0 == 0 ) || ( spc_dim_1 == 0 ) ) {
         std::string msg( BIAL_ERROR( "Zero element spatial dimension(s): " + std::to_string( spc_dim_0 ) + ", " +
                                      std::to_string( spc_dim_1 ) + "." ) );
         throw( std::logic_error( msg ) );
       }
-      COMMENT( "Assigning quick access pointers.", 2 );
+      COMMENT( "Assigning quick access pointers.", 4 );
       qk_data = &_data[ 0 ];
       CreateTables( );
     }
@@ -402,7 +402,7 @@ namespace Bial {
 
   template< class D > Image< D >::Image( const Image< D > &img ) try :
     _data( img._data ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ), z_table( nullptr ) {
-      COMMENT( "Assigning quick access pointers.", 2 );
+      COMMENT( "Assigning quick access pointers.", 4 );
       qk_data = &_data[ 0 ];
       CreateTables( );
     }
@@ -1536,12 +1536,12 @@ namespace Bial {
 
   template< class D >
   Image< D > &operator+=( Image< D > &img1, const Image< D > &img2 ) {
-    COMMENT( "Verifying if images have compatible dimensions.", 2 );
+    COMMENT( "Verifying if images have compatible dimensions.", 4 );
     if( img1.size( ) != img2.size( ) ) {
       std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
       throw( std::logic_error( msg ) );
     }
-    COMMENT( "Performing addition.", 2 );
+    COMMENT( "Performing addition.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl )
       img1( pxl ) += img2( pxl );
@@ -1551,14 +1551,14 @@ namespace Bial {
   template< class D >
   Image< D > operator-( const Image< D > &img1, const Image< D > &img2 ) {
     try {
-      COMMENT( "Verifying if images have compatible dimensions.", 2 );
+      COMMENT( "Verifying if images have compatible dimensions.", 4 );
       if( img1.size( ) != img2.size( ) ) {
         std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
         throw( std::logic_error( msg ) );
       }
-      COMMENT( "Initializing resultant image.", 2 );
+      COMMENT( "Initializing resultant image.", 4 );
       Image< D > res( img1 );
-      COMMENT( "Performing subtraction.", 2 );
+      COMMENT( "Performing subtraction.", 4 );
       return( res -= img2 );
     }
     catch( std::bad_alloc &e ) {
@@ -1577,12 +1577,12 @@ namespace Bial {
 
   template< class D >
   Image< D > &operator-=( Image< D > &img1, const Image< D > &img2 ) {
-   COMMENT( "Verifying if images have compatible dimensions.", 2 );
+   COMMENT( "Verifying if images have compatible dimensions.", 4 );
     if( img1.size( ) != img2.size( ) ) {
       std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
       throw( std::logic_error( msg ) );
     }
-    COMMENT( "Performing subtraction.", 2 );
+    COMMENT( "Performing subtraction.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       img1( pxl ) -= img2( pxl );
@@ -1593,14 +1593,14 @@ namespace Bial {
   template< class D >
   Image< D > operator*( const Image< D > &img1, const Image< D > &img2 ) {
     try {
-      COMMENT( "Verifying if images have compatible dimensions.", 2 );
+      COMMENT( "Verifying if images have compatible dimensions.", 4 );
       if( img1.size( ) != img2.size( ) ) {
         std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
         throw( std::logic_error( msg ) );
       }
-      COMMENT( "Initializing resultant image.", 2 );
+      COMMENT( "Initializing resultant image.", 4 );
       Image< D > res( img1 );
-      COMMENT( "Performing multiplication.", 2 );
+      COMMENT( "Performing multiplication.", 4 );
       return( res *= img2 );
     }
     catch( std::bad_alloc &e ) {
@@ -1619,12 +1619,12 @@ namespace Bial {
 
   template< class D >
   Image< D > &operator*=( Image< D > &img1, const Image< D > &img2 ) {
-   COMMENT( "Verifying if images have compatible dimensions.", 2 );
+   COMMENT( "Verifying if images have compatible dimensions.", 4 );
     if( img1.size( ) != img2.size( ) ) {
       std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
       throw( std::logic_error( msg ) );
     }
-    COMMENT( "Performing multiplication.", 2 );
+    COMMENT( "Performing multiplication.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       img1( pxl ) *= img2( pxl );
@@ -1635,14 +1635,14 @@ namespace Bial {
   template< class D >
   Image< D > operator/( const Image< D > &img1, const Image< D > &img2 ) {
     try {
-      COMMENT( "Verifying if images have compatible dimensions.", 2 );
+      COMMENT( "Verifying if images have compatible dimensions.", 4 );
       if( img1.size( ) != img2.size( ) ) {
         std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
         throw( std::logic_error( msg ) );
       }
-      COMMENT( "Initializing resultant image.", 2 );
+      COMMENT( "Initializing resultant image.", 4 );
       Image< D > res( img1 );
-      COMMENT( "Performing division.", 2 );
+      COMMENT( "Performing division.", 4 );
       return( res /= img2 );
     }
     catch( std::bad_alloc &e ) {
@@ -1661,13 +1661,13 @@ namespace Bial {
 
   template< class D >
   Image< D > &operator/=( Image< D > &img1, const Image< D > &img2 ) {
-    COMMENT( "Verifying if images have compatible dimensions.", 2 );
+    COMMENT( "Verifying if images have compatible dimensions.", 4 );
     if( img1.size( ) != img2.size( ) ) {
       std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
       throw( std::logic_error( msg ) );
     }
 #ifdef BIAL_DEBUG
-    COMMENT( "Performing division.", 2 );
+    COMMENT( "Performing division.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       if( img2( pxl ) == 0 ) {
@@ -1677,7 +1677,7 @@ namespace Bial {
       img1( pxl ) /= img2( pxl );
     }
 #else
-    COMMENT( "Performing division.", 2 );
+    COMMENT( "Performing division.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       img1( pxl ) /= img2( pxl );
@@ -1688,13 +1688,13 @@ namespace Bial {
 
   template< >
   Image< Color > &operator/=( Image< Color > &img1, const Image< Color > &img2 ) {
-    COMMENT( "Verifying if images have compatible dimensions.", 2 );
+    COMMENT( "Verifying if images have compatible dimensions.", 4 );
     if( img1.size( ) != img2.size( ) ) {
       std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
       throw( std::logic_error( msg ) );
     }
 #ifdef BIAL_DEBUG
-    COMMENT( "Performing division.", 2 );
+    COMMENT( "Performing division.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       if( ( img2( pxl )( 0 ) == 0 ) || ( img2( pxl )( 1 ) == 0 ) || 
@@ -1705,7 +1705,7 @@ namespace Bial {
       img1( pxl ) /= img2( pxl );
     }
 #else
-    COMMENT( "Performing division.", 2 );
+    COMMENT( "Performing division.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       img1( pxl ) /= img2( pxl );
@@ -1716,13 +1716,13 @@ namespace Bial {
 
   template< >
   Image< RealColor > &operator/=( Image< RealColor > &img1, const Image< RealColor > &img2 ) {
-    COMMENT( "Verifying if images have compatible dimensions.", 2 );
+    COMMENT( "Verifying if images have compatible dimensions.", 4 );
     if( img1.size( ) != img2.size( ) ) {
       std::string msg( BIAL_ERROR( " All images must have the same dimensions." ) );
       throw( std::logic_error( msg ) );
     }
 #ifdef BIAL_DEBUG
-    COMMENT( "Performing division.", 2 );
+    COMMENT( "Performing division.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       if( ( img2( pxl )( 0 ) == 0.0f ) || ( img2( pxl )( 1 ) == 0.0f ) || 
@@ -1733,7 +1733,7 @@ namespace Bial {
       img1( pxl ) /= img2( pxl );
     }
 #else
-    COMMENT( "Performing division.", 2 );
+    COMMENT( "Performing division.", 4 );
     size_t size = img1.size( );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       img1( pxl ) /= img2( pxl );

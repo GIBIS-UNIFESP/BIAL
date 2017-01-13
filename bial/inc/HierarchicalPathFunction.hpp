@@ -30,19 +30,26 @@ namespace Bial {
     C< int > *merge_label; /* Pointer to merged labels (Vector, Matrix, Image, etc). */
     C< int > *split_label; /* Pointer to split labels (Vector, Matrix, Image, etc). */
     Vector< int > new_merge_label; /* A vector that contains the first label to reach each merged cluster. */
-    D bucket_size; /* Minimum difference between two sample intensities. */
 
   public:
 
     /**
      * @date 2013/Jul/02
-     * @param new_bucket_size: size of bucke in queue.
+     * @param init_value: Reference for initial value container.
+     * @param init_label: Reference for initial label container.
+     * @param init_predecessor: Reference for predecessor container.
+     * @param sequential_label: Sets labeling sequentially.
+     * @param handicap: Handicap value used to initiate cost.
+     * @param marge_label: merged cluster labels.
+     * @param split_label: split cluster labels.
+     
      * @return none.
      * @brief Basic constructor.
      * @warning none.
      */
-    HierarchicalPathFunction( const C< D > &handicap, C< int > *merge_label, C< int > *split_label, 
-                              D new_bucket_size = 1.0 );
+    HierarchicalPathFunction( C< D > &init_value, C< int > &init_label, C< int > *init_predecessor,
+                              bool sequential_label, const C< D > &handicap, C< int > *merge_label, 
+                              C< int > *split_label );
 
     /**
      * @date 2013/Jul/01
@@ -72,18 +79,6 @@ namespace Bial {
     HierarchicalPathFunction< C, D > operator=( const HierarchicalPathFunction< C, D > &pf );
 
     /**
-     * @date 2012/Oct/02
-     * @param init_value: Reference for initial value container.
-     * @param init_label: Reference for initial label container.
-     * @param init_predecessor: Reference for predecessor container.
-     * @param sequential_label: Sets labeling sequentially.
-     * @return none.
-     * @brief Initializes object attributes.
-     * @warning This function is called automatically by IFT constructor.
-     */
-    void Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, bool sequential_label );
-
-    /**
      * @date 2012/Sep/25
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
@@ -96,10 +91,28 @@ namespace Bial {
      * @date 2014/Dec/05
      * @param index: The index of the pixel to be initalized.
      * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor value.
+     * @warning none.
+     */
+    bool RemovePredecessor( size_t index, BucketState state );
+
+    /**
+     * @date 2014/Dec/05
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
      * @brief Sets initial value for root pixel of index 'index'. Also sets its label value.
      * @warning none.
      */
     bool RemoveLabel( size_t index, BucketState state );
+
+    /**
+     * @date 2012/Sep/25
+     * @param index: The index of the pixel to be initalized.
+     * @return Whether this node can propagate or not.
+     * @brief Sets initial value for root pixel of index 'index'. Also sets its predecessor and label value.
+     * @warning none.
+     */
+    bool RemoveComplete( size_t index, BucketState state );
 
     /**
      * @date 2013/Oct/14

@@ -27,8 +27,21 @@
 
 namespace Bial {
 
-  template< template< class D > class C, class D > PathFunction< C, D >::PathFunction( )
-    try : value( nullptr ), label( nullptr ), predecessor( nullptr ), next_label( 0 ) {
+  template< template< class D > class C, class D > 
+  PathFunction< C, D >::PathFunction( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor, 
+                                      bool sequential_label ) try :
+    value( &init_value ), label( init_label ), predecessor( init_predecessor ), next_label( -1 ) {
+      if( ( ( init_label != nullptr ) && ( init_value.size( ) != init_label->size( ) ) ) ||
+          ( ( init_predecessor != nullptr ) && ( init_value.size( ) != init_predecessor->size( ) ) ) ) {
+        std::string msg( BIAL_ERROR( "Image dimensions do not match." ) );
+        throw( std::logic_error( msg ) );
+      }
+      if( sequential_label ) {
+        COMMENT( "Sequential label.", 0 );
+        next_label = 0;
+      }
+      RemoveData = RemoveFunction( );
+      UpdateData = UpdateFunction( );
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -49,14 +62,7 @@ namespace Bial {
 
   template< template< class D > class C, class D >
   PathFunction< C, D >::PathFunction( const PathFunction< C, D > &pf ) try :
-    PathFunction< C, D >( ) {
-      COMMENT( "Copying data.", 1 );
-      value = pf.value;
-      label = pf.label;
-      predecessor = pf.predecessor;
-      next_label = pf.next_label;
-
-      COMMENT( "Assigning quick pointers.", 1 );
+    PathFunction< C, D >( *( pf.value ), pf.label, pf.predecessor, pf.next_label ) {
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -76,44 +82,6 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  void PathFunction< C, D >::Initialize( C< D > &init_value, C< int > *init_label, C< int > *init_predecessor,
-                                         bool sequential_label ) {
-    try {
-      if( ( ( init_label != nullptr ) && ( init_value.size( ) != init_label->size( ) ) ) ||
-          ( ( init_predecessor != nullptr ) && ( init_value.size( ) != init_predecessor->size( ) ) ) ) {
-        std::string msg( BIAL_ERROR( "Image dimensions do not match." ) );
-        throw( std::logic_error( msg ) );
-      }
-      COMMENT( "Initializing pointers.", 1 );
-      value = &init_value;
-      label = init_label;
-      predecessor = init_predecessor;
-      COMMENT( "Initializing sequential labeling.", 1 );
-      next_label = -1;
-      if( sequential_label ) {
-        COMMENT( "Sequential label.", 1 );
-        next_label = 0;
-      }
-    }
-    catch( std::bad_alloc &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( std::runtime_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-      throw( std::runtime_error( msg ) );
-    }
-    catch( const std::out_of_range &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-      throw( std::out_of_range( msg ) );
-    }
-    catch( const std::logic_error &e ) {
-      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-      throw( std::logic_error( msg ) );
-    }
-  }
-
-  template< template< class D > class C, class D >
   D PathFunction< C, D >::BestValue( int index ) {
     std::cout << "Bestvalue pathfunction." << std::endl;
     return( ( *value )[ index ] );
@@ -123,10 +91,16 @@ namespace Bial {
   typename PathFunction< C, D >::RemoveFn PathFunction< C, D >::RemoveFunction( ) {
     try {
       if( next_label == -1 ) {
-        return( &PathFunction< C, D >::RemoveSimple );
+        if( predecessor == nullptr )
+          return( &PathFunction< C, D >::RemoveSimple );
+        else
+          return( &PathFunction< C, D >::RemovePredecessor );
       }
       else {
-        return( &PathFunction< C, D >::RemoveLabel );
+        if( predecessor == nullptr )
+          return( &PathFunction< C, D >::RemoveLabel );
+        else
+          return( &PathFunction< C, D >::RemoveComplete );
       }
     }
     catch( std::bad_alloc &e ) {
@@ -150,18 +124,14 @@ namespace Bial {
   template< template< class D > class C, class D >
   typename PathFunction< C, D >::UpdateFn PathFunction< C, D >::UpdateFunction( ) {
     try {
-      if( ( label != nullptr ) && ( predecessor != nullptr ) ) {
+      if( ( label != nullptr ) && ( predecessor != nullptr ) )
         return( &PathFunction< C, D >::UpdateCompleteData );
-      }
-      else if( predecessor != nullptr ) {
+      else if( predecessor != nullptr )
         return( &PathFunction< C, D >::UpdatePredecessorData );
-      }
-      else if( label != nullptr ) {
+      else if( label != nullptr )
         return( &PathFunction< C, D >::UpdateLabelData );
-      }
-      else {
+      else
         return( &PathFunction< C, D >::UpdateSimpleData );
-      }
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

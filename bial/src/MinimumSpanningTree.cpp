@@ -27,6 +27,7 @@
 
 #include "DegeneratedIFT.hpp"
 #include "FeaturePathFunction.hpp"
+#include "GrowingBucketQueue.hpp"
 
 namespace Bial {
 
@@ -40,19 +41,14 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       /* initialization */
-      D bucket_size = 1.0;
-      Vector< bool > seed( distance_map.size( ), false );
-      seed( 0 ) = true;
-      FeatureDistanceFunction< C, D > path_function( feature );
       size_t size = distance_map.size( );
-      for( size_t elm = 0; elm < size; ++elm ) {
-        if( seed( elm ) )
-          distance_map( elm ) = 0;
-        else
+      FeatureDistanceFunction< C, D > path_function( distance_map, nullptr, &predecessor_map, false, feature );
+      GrowingBucketQueue queue( size, 1.0, path_function.Increasing( ), false );
+      distance_map( 0 ) = 0;
+      queue.Insert( 0, 0 );
+      for( size_t elm = 1; elm < size; ++elm )
           distance_map( elm ) = std::numeric_limits< D >::max( );
-      }
-      DegeneratedIFT< C, D > ift( distance_map, &path_function, &seed, static_cast< C< int >* >( nullptr ), 
-                                    &predecessor_map, false, bucket_size, true );
+      DegeneratedIFT< C, D > ift( distance_map, &path_function, &queue );
       ift.Run( );
     }
     catch( std::bad_alloc &e ) {

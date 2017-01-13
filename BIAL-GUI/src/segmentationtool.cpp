@@ -69,7 +69,8 @@ bool SegmentationTool::isInitiated( ) const {
 
 SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) try :
     Tool( guiImage, viewer ), seeds( guiImage->getDim( ) ), cost( ), pred( 1, 1 ), label( 1, 1 ),
-    int_path_func( nullptr ), flt_path_func( nullptr ), adj( ), int_ift( nullptr ), flt_ift( nullptr ) {
+    int_path_func( nullptr ), flt_path_func( nullptr ), adj( ), queue( nullptr ), int_ift( nullptr ),
+    flt_ift( nullptr ) {
   COMMENT( "Initiating segmentation tool.", 0 );
   drawType = 1;
   drawing = false;
@@ -105,10 +106,12 @@ catch( const std::logic_error &e ) {
 SegmentationTool::~SegmentationTool( ) {
     delete int_path_func;
     delete flt_path_func;
+    delete queue;
     delete int_ift;
     delete flt_ift;
     int_path_func = nullptr;
     flt_path_func = nullptr;
+    queue = nullptr;
     int_ift = nullptr;
     flt_ift = nullptr;
 }
@@ -243,40 +246,38 @@ void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< s
             grad = new Bial::Image< int >( Bial::Gradient::Morphological( img ) );
             pred = Bial::Image< int >( img.Dim( ) );
             label = Bial::Image< int >( img.Dim( ) );
-            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( *grad, 1.0 );
+            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred, false, *grad );
             for( size_t elm = 0; elm < size; ++elm )
                 ( *grad )[ elm ] = std::numeric_limits< int >::max( );
+            queue = new Bial::GrowingBucketQueue( size, 1.0, int_path_func->Increasing( ), true );
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
             grad = &( cost.IntImage( ) );
         }
         COMMENT( "Initialize seeds.", 0 );
-        Bial::Vector< bool > seeds( size, false );
         COMMENT( "Initialize object seeds. Seeds: " << obj_seeds.size( ), 0 );
         for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
-            label[ obj_seeds[ elm ] ] = 1;
-            seeds[ obj_seeds[ elm ] ] = true;
-            ( *grad )[ obj_seeds[ elm ] ] = 0;
+            size_t obj_elm = obj_seeds[ elm ];
+            label[ obj_elm ] = 1;
+            ( *grad )[ obj_elm ] = 0;
+            queue->Insert( obj_elm, ( *grad )[ obj_elm ] );
         }
         COMMENT( "Initialize background seeds. Seeds: " << bkg_seeds.size( ), 0 );
         for( size_t elm = 0; elm < bkg_seeds.size( ); ++elm ) {
-            label[ bkg_seeds[ elm ] ] = 0;
-            seeds[ bkg_seeds[ elm ] ] = true;
-            ( *grad )[ bkg_seeds[ elm ] ] = 0;
+            size_t bkg_elm = bkg_seeds[ elm ];
+            label[ bkg_elm ] = 0;
+            ( *grad )[ bkg_elm ] = 0;
+            queue->Insert( bkg_elm, ( *grad )[ bkg_elm ] );
         }
         COMMENT( "Fininished initializing seeds.", 0 );
         if( !initiated )  {
             COMMENT( "Initialize IFT.", 0 );
             cost = Bial::MultiImage( *grad );
             adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
-            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func, &seeds, &label, &pred, false, 1, true );
+            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func, queue );
             initiated = true;
             delete grad;
-        }
-        else {
-            COMMENT( "Updating seeds for IFT.", 0 );
-            int_ift->InsertSeeds( seeds );
         }
         COMMENT( "Running IFT.", 0 );
         int_ift->Run( );
@@ -320,25 +321,27 @@ void SegmentationTool::Watershed( Bial::Image< float > &img, const Bial::Vector<
       label = Bial::Image< int >( grad.Dim( ) );
       for( size_t elm = 0; elm < size; ++elm )
           grad[ elm ] = std::numeric_limits< float >::max( );
-      flt_path_func = new Bial::MaxPathFunction< Bial::Image, float >( grad, 1.0 );
+      flt_path_func = new Bial::MaxPathFunction< Bial::Image, float >( cost.FltImage( ), &label, &pred, false, grad );
+      queue = new Bial::GrowingBucketQueue( size, 1.0, flt_path_func->Increasing( ), true );
     }
     COMMENT( "Initialize seeds.", 0 );
-    Bial::Vector< bool > seeds( size, false );
     for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
-      label[ obj_seeds[ elm ] ] = 1;
-      seeds[ obj_seeds[ elm ] ] = true;
-      grad[ obj_seeds[ elm ] ] = 0.0f;
+      size_t obj_elm = obj_seeds[ elm ];
+      label[ obj_elm ] = 1;
+      grad[ obj_elm ] = 0.0f;
+      queue->Insert( obj_elm, grad[ obj_elm ] );
     }
     for( size_t elm = 0; elm < bkg_seeds.size( ); ++elm ) {
-      label[ bkg_seeds[ elm ] ] = 0;
-      seeds[ bkg_seeds[ elm ] ] = true;
-      grad[ bkg_seeds[ elm ] ] = 0.0f;
+      size_t bkg_elm = bkg_seeds[ elm ];
+      label[ bkg_elm ] = 0;
+      grad[ bkg_elm ] = 0.0f;
+      queue->Insert( bkg_elm, grad[ bkg_elm ] );
     }
     if( !initiated )  {
         COMMENT( "Initialize IFT.", 0 );
         cost = Bial::MultiImage( grad );
         adj = Bial::AdjacencyType::HyperSpheric( 1.0, grad.Dims( ) );
-        flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func, &seeds, &label, &pred, false, 1.0f, true );
+        flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func, queue );
         initiated = true;
     }
     COMMENT( "Running IFT.", 0 );

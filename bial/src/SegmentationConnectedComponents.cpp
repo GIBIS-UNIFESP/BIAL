@@ -21,6 +21,7 @@
 #ifdef BIAL_DEBUG
 #include "FileImage.hpp"
 #endif
+#include "FastIncreasingFifoBucketQueue.hpp"
 #include "Histogram.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
@@ -34,12 +35,16 @@ namespace Bial {
     try {
       Image< int > label( input.Dim( ), input.PixelSize( ) );
       Image< D > value( input );
-      Image< D > handicap( input.Dim( ) );
-      ConnPathFunction< Image, D > connection_function( handicap, value );
+      Image< D > handicap( input.Dim( ), input.PixelSize( ) );
+      ConnPathFunction< Image, D > connection_function( value, &label, nullptr, true, handicap, value );
+      size_t size = value.size( );
+      FastIncreasingFifoBucketQueue queue( size, 0, 2 );
       value.Set( 1.0 );
-      ImageIFT< D > ift( value, adj, &connection_function, static_cast< Vector< bool >* >( nullptr ), &label,
-                         static_cast< Image< int >* >( nullptr ), true, static_cast< D >( 1 ), false );
+      for( size_t elm = 0; elm < size; ++elm )
+        queue.Insert( elm, value[ elm ] );
+      ImageIFT< D > ift( value, adj, &connection_function, &queue );
       ift.Run( );
+      COMMENT( "Finished.", 0 );
       return( label );
     }
     catch( std::bad_alloc &e ) {

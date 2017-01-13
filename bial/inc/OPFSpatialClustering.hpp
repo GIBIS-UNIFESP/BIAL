@@ -33,7 +33,7 @@ namespace Bial {
      * @warning Feature and init label must have compatible dimensions. 
      */
     template< class D >
-    size_t SpacialClustering( const Feature< D > &feature, Image< int > &label, const Adjacency &adjacency,
+    size_t SpatialClustering( const Feature< D > &feature, Image< int > &label, const Adjacency &adjacency,
                               float intensity_fraction );
 
     /**
