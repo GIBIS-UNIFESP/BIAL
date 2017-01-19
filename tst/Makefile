@@ -81,7 +81,10 @@ Matrix-Gradient: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 
-Adjacency: Adjacency-Displacement Adjacency-Gray
+Adjacency: Adjacency-Circunference Adjacency-Displacement Adjacency-Gray
+
+Adjacency-Circunference: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Adjacency-Displacement: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)

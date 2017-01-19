@@ -79,6 +79,15 @@ namespace Bial {
      */
     Adjacency HyperEllipsoid( const Vector< float > &radius );
 
+    /**
+     * @date 2012/Jul/06
+     * @param radius: the radius of the circunference adjacency.
+     * @return adjacency relation with circunference form.
+     * @brief Create and return a 2D circunference adjacency relation of radius 'radius'.
+     * @warning none.
+     */
+    Adjacency Circunference( float radius );
+
   }
 
 }

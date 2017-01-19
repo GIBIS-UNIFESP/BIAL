@@ -32,6 +32,7 @@ namespace Bial {
     ldbl minimum; /** @brief maximum element currently inserted in the queue. */
     ldbl maximum; /** @brief minimum element currently inserted in the queue. */
     ldbl delta; /** @brief step between two consecutive buckets. */
+    size_t weight_size; /** @brief pre-computed size of weight vector. To speedup computation. */
 
   public:
 

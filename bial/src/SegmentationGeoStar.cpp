@@ -75,8 +75,10 @@ namespace Bial {
       ift.Run( );
       COMMENT( "SECOND STEP. Running with background and foreground seeds.", 0 );
       COMMENT( "Setting seeds with background.", 0 );
-      for( size_t elm = 0; elm < size; ++elm )
+      for( size_t elm = 0; elm < size; ++elm ) {
         grad[ elm ] = std::numeric_limits< D >::max( );
+        queue.State( elm, BucketState::NOT_VISITED );
+      }
       COMMENT( "Inserting obj seeds:", 0 );
       for( size_t idx = 0; idx < obj_seeds.size( ); ++idx ) {
         size_t elm = obj_seeds( idx );

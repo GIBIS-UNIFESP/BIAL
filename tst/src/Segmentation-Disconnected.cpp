@@ -70,6 +70,7 @@ int main( int argc, char *argv[ ] ) {
   COMMENT( "Checking if there are adjacent pixels from distinct object.", 0 );
   bool has_adjacent = false;
   for( size_t src_pxl = 0; src_pxl < size; ++src_pxl ) {
+    queue.State( src_pxl, BucketState::NOT_VISITED );
     int src_lbl = label[ src_pxl ];
     if( src_lbl != 0 ) {
       for( size_t idx = 0; idx < adj_size; ++idx ) {
@@ -105,6 +106,7 @@ int main( int argc, char *argv[ ] ) {
     thres = atoi( argv[ 5 ] );
   cout << "thres: " << thres << endl;
   for( size_t src_pxl = 0; src_pxl < size; ++src_pxl ) {
+    queue.State( src_pxl, BucketState::NOT_VISITED );
     int src_lbl = label[ src_pxl ];
     if( src_lbl != 0 ) {
       COMMENT( "Computing energy variation. dE(pxl)=E_bkg(pxl)-E_img(pxl)", 3 );

@@ -61,6 +61,14 @@ namespace Bial {
   template< class D >
   void Gradient::Sobel( const Image< D > &img, Image< D > *magnitude, Image< int > *direction ) {
     try {
+      IF_DEBUG( ( magnitude != nullptr ) && ( img.Dim( ) != magnitude->Dim( ) ) ) {
+        std::string msg( BIAL_ERROR( "input image and gradient magnitude size do not match." ) );
+        throw( std::logic_error( msg ) );
+      }
+      IF_DEBUG( ( direction != nullptr ) && ( img.Dim( ) != direction->Dim( ) ) ) {
+        std::string msg( BIAL_ERROR( "input image and gradient direction size do not match." ) );
+        throw( std::logic_error( msg ) );
+      }
       const double TAN_22_5 = std::tan( M_PI / 8.0 ); // 0.414213562;
       size_t dimensions = img.Dims( );
 

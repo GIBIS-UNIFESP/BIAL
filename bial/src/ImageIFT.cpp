@@ -86,8 +86,8 @@ namespace Bial {
           }
         }
       }
-      COMMENT( "Reseting queue.", 0 );
-      this->queue->ResetState( );
+      //COMMENT( "Reseting queue.", 0 );
+      //this->queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -117,7 +117,6 @@ namespace Bial {
   template< class D >
   void ImageIFT< D >::DisableDifferentialIFT( ) {
     dift_enb = false;
-    dift_elm = 0;
   }
 
 #ifdef BIAL_EXPLICIT_ImageIFT

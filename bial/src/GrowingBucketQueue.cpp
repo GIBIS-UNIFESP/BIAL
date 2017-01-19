@@ -30,9 +30,10 @@ namespace Bial {
 
   GrowingBucketQueue::GrowingBucketQueue( size_t size, ldbl bucket_size, bool increasing_order, bool fifo_tie ) try :
     BucketQueue( size, increasing_order, fifo_tie ), minimum( 0.0L ), maximum( 0.0L ), delta( bucket_size ) {
-      weight = Vector< WeightNode >( std::min( static_cast< size_t >( 256 ), sizeof( ldbl ) * 255 + 1 ),
-                                     WeightNode( ) );
-      COMMENT( "Created with size : " << this->weight.size( ), 3 );
+      this->weight = Vector< WeightNode >( std::min( static_cast< size_t >( 256 ), sizeof( ldbl ) * 255 + 1 ),
+                                           WeightNode( ) );
+      weight_size = this->weight.size( );
+      COMMENT( "Created with size : " << weight_size, 3 );
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -52,12 +53,12 @@ namespace Bial {
   }
 
   size_t GrowingBucketQueue::Index( ldbl value ) {
-    return( static_cast< size_t >( value / delta ) % this->weight.size( ) );
+    return( static_cast< size_t >( value / delta ) % weight_size );
   }
 
   void GrowingBucketQueue::Grow( size_t new_size ) {
     try {
-      COMMENT( "Growing queue. Current size: " << this->weight.size( ) << ", new size: " << new_size << ".", 3 );
+      COMMENT( "Growing queue. Current size: " << weight_size << ", new size: " << new_size << ".", 3 );
       ldbl wgt = minimum;
       size_t last_idx = Index( wgt );
       size_t cur_idx = Index( wgt );
@@ -74,7 +75,8 @@ namespace Bial {
         cur_idx = Index( wgt );
       } while( last_idx != cur_idx );
       this->weight = new_weight;
-      COMMENT( "weight.size( ): " << this->weight.size( ), 4 );
+      weight_size = new_size;
+      COMMENT( "weight_size: " << weight_size, 4 );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -100,7 +102,7 @@ namespace Bial {
       COMMENT( "Inserting element: " << idt << ", with weight: " << wgt << ".", 4 );
       if( ( this->identity( idt ).state == BucketState::INSERTED ) || 
           ( this->identity( idt ).state == BucketState::UPDATED ) ) {
-        std::string msg( BIAL_ERROR( "Inserting element that is already in queue." ) );
+        std::string msg( BIAL_ERROR( "Inserting element " + std::to_string( idt ) + " that is already in queue." ) );
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Setting minimum and maximum values in queue.", 4 );
@@ -132,8 +134,8 @@ namespace Bial {
                         "Fix your program or continue at your own risk. Minimum: " + std::to_string( new_min ) +
                         " Maximum: " + std::to_string( new_max ) + " wgt: " + std::to_string( wgt ) );
         }
-        if( this->weight.size( ) <= new_size ) {
-          COMMENT( "Growing queue because " << this->weight.size( ) << " <= " << new_size << ".", 3 );
+        if( weight_size <= new_size ) {
+          COMMENT( "Growing queue because " << weight_size << " <= " << new_size << ".", 3 );
           Grow( new_size + 10000 );
         }
         minimum = new_min;

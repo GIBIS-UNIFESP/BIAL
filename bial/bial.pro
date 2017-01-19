@@ -16,7 +16,7 @@ Profile {
 }
 
 Debug {
-  QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=3
+  QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=1
   message( "Debug" )
 }
 
