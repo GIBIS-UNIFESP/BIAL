@@ -114,10 +114,9 @@ namespace Bial {
               if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
-                if( this->function->Propagate( index, adj_index ) ) {
+                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
-                  ( this->function->*( this->function->UpdateData ) )( index, adj_index );
                 }
               }
             }
@@ -128,10 +127,9 @@ namespace Bial {
               if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
-                if( this->function->Propagate( index, adj_index ) ) {
+                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
-                  ( this->function->*( this->function->UpdateData ) )( index, adj_index );
                 }
               }
             }
@@ -154,17 +152,15 @@ namespace Bial {
               if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
-                if( this->function->Propagate( index, adj_index ) ) {
+                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
-                  ( this->function->*( this->function->UpdateData ) )( index, adj_index );
                 }
               }
             }
           }
         }
       }
-      this->queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -192,138 +188,10 @@ namespace Bial {
   template class ClusteringIFT< Vector, float >;
   template class ClusteringIFT< Vector, double >;
 
-  // template class ClusteringIFT< Matrix, int >;
-  // template class ClusteringIFT< Matrix, llint >;
-  // template class ClusteringIFT< Matrix, float >;
-  // template class ClusteringIFT< Matrix, double >;
-
   template class ClusteringIFT< Image, int >;
   template class ClusteringIFT< Image, llint >;
   template class ClusteringIFT< Image, float >;
   template class ClusteringIFT< Image, double >;
-
-
-  // template void IFT::ClusteringIFT( Vector< int > &value, PathFunction< Vector, int > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< int > &value, PathFunction< Vector, int > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< int > &value, PathFunction< Image, int > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< int > &value, PathFunction< Image, int > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< llint > &value, PathFunction< Vector, llint > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< llint > &value, PathFunction< Vector, llint > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< llint > &value, PathFunction< Image, llint > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< llint > &value, PathFunction< Image, llint > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< float > &value, PathFunction< Vector, float > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< float > &value, PathFunction< Vector, float > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< float > &value, PathFunction< Image, float > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< float > &value, PathFunction< Image, float > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< double > &value, PathFunction< Vector, double > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Vector< double > &value, PathFunction< Vector, double > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Vector< int > *label, Vector< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< double > &value, PathFunction< Image, double > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Image< double > &value, PathFunction< Image, double > *function,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Image< int > *label, Image< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-
-  // template void IFT::ClusteringIFT( Matrix< int > &value, PathFunction< Matrix, int > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, 
-  //                                   const Vector< bool > *seed, Matrix< int > *label, Matrix< int > *predecessor, 
-  //                                   bool sequential_label, long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< int > &value, PathFunction< Matrix, int > *function, 
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label, 
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< llint > &value, PathFunction< Matrix, llint > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,  const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label, 
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< llint > &value, PathFunction< Matrix, llint > *function, 
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< float > &value, PathFunction< Matrix, float > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label, 
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< float > &value, PathFunction< Matrix, float > *function, 
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< double > &value, PathFunction< Matrix, double > *function,
-  //                                   const Matrix< size_t > &uniform_adjacency, const size_t uniform_adjs,
-  //                                   const Vector< Vector< size_t > > &variable_adjacency, const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label,
-  //                                   long double bucket_size, bool fifo_tie );
-  // template void IFT::ClusteringIFT( Matrix< double > &value, PathFunction< Matrix, double > *function, 
-  //                                   const Vector< Vector< size_t > > &variable_adjacency,
-  //                                   const Vector< size_t > &variable_adjs, const Vector< bool > *seed,
-  //                                   Matrix< int > *label, Matrix< int > *predecessor, bool sequential_label, 
-  //                                   long double bucket_size, bool fifo_tie );
 
 #endif
 

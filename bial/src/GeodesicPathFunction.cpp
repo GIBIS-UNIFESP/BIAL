@@ -185,7 +185,7 @@ namespace Bial {
   }
 
   template< class D >
-  inline bool GeodesicDistancePathFunction< D >::Capable( int index, int adj_index, BucketState adj_state ) {
+  inline bool GeodesicDistancePathFunction< D >::Capable( size_t index, size_t adj_index, BucketState adj_state ) {
     try {
       return( ( adj_state != BucketState::REMOVED ) &&
               ( this->value->operator()( index ) < this->value->operator()( adj_index ) ) );
@@ -209,7 +209,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool GeodesicDistancePathFunction< D >::Propagate( int index, int adj_index ) {
+  bool GeodesicDistancePathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing spacial distance.", 3 );
@@ -220,6 +220,42 @@ namespace Bial {
       COMMENT( "Updating value.", 3 );
       if( src_value > prp_value ) {
         this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
+        return( true );
+      }
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
+  bool GeodesicDistancePathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+    try {
+      D src_value = this->value->operator()( adj_index );
+      COMMENT( "Computing spacial distance.", 3 );
+      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
+                                         handicap.Dims( ) );
+      COMMENT( "Propagated value.", 3 );
+      D prp_value = static_cast< D >( this->value->operator()( index ) + distance );
+      COMMENT( "Updating value.", 3 );
+      if( src_value > prp_value ) {
+        this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       return( false );

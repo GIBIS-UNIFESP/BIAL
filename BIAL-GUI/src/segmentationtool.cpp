@@ -265,6 +265,128 @@ void SegmentationTool::InitiateSeeds( const Bial::Vector< size_t > &obj_seeds, c
   }
 }
 
+void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
+                                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta ) {
+    try {
+        if( ( initiated ) && ( pf != 1 ) ) {
+            COMMENT( "Was running with other pathfunction. Restart required.", 0 );
+            delete int_path_func;
+            delete int_ift;
+            int_path_func = nullptr;
+            int_ift = nullptr;
+            initiated = false;
+        }
+        COMMENT( "Getting initial parameters.", 0 );
+        pf = 1;
+        size_t size = img.size( );
+        if( !initiated )  {
+            COMMENT( "Initialize maps.", 0 );
+            Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
+            pred = Bial::Image< int >( img.Dim( ) );
+            label = Bial::Image< int >( img.Dim( ) );
+            COMMENT( "Initialize path function.", 0 );
+            cost = Bial::MultiImage( grad );
+            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred, false, grad );
+            COMMENT( "Initialize queue.", 0 );
+            Bial::Image< int > &value( cost.IntImage( ) );
+            for( size_t elm = 0; elm < size; ++elm )
+                value[ elm ] = std::numeric_limits< int >::max( );
+            queue = new Bial::GrowingBucketQueue( size, 1.0, true, true );
+            InitiateSeeds( obj_seeds, bkg_seeds, value );
+            COMMENT( "Initialize IFT.", 0 );
+            adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
+            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func, queue );
+            initiated = true;
+        }
+        else {
+            COMMENT( "Continuing segmentation.", 0 );
+            int_path_func->DifferentialPropagation( true );
+            for( size_t elm = 0; elm < size; ++elm )
+                queue->State( elm, Bial::BucketState::NOT_VISITED );
+            InitiateSeeds( obj_seeds, bkg_seeds, cost.IntImage( ) );
+        }
+        COMMENT( "Running IFT.", 0 );
+        int_ift->Run( );
+    }
+    catch( std::bad_alloc &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+        throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+        throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+        throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+        throw( std::logic_error( msg ) );
+    }
+}
+
+void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
+                                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta ) {
+    try {
+        if( ( initiated ) && ( pf != 1 ) ) {
+            COMMENT( "Was running with other pathfunction. Restart required.", 0 );
+            delete flt_path_func;
+            delete flt_ift;
+            flt_path_func = nullptr;
+            flt_ift = nullptr;
+            initiated = false;
+        }
+        COMMENT( "Getting initial parameters.", 0 );
+        pf = 1;
+        size_t size = img.size( );
+        if( !initiated )  {
+            COMMENT( "Initialize maps.", 0 );
+            Bial::Image< float > grad( Bial::Gradient::Morphological( img ) );
+            pred = Bial::Image< int >( img.Dim( ) );
+            label = Bial::Image< int >( img.Dim( ) );
+            COMMENT( "Initialize path function.", 0 );
+            cost = Bial::MultiImage( grad );
+            flt_path_func = new Bial::MaxPathFunction< Bial::Image, float >( cost.FltImage( ), &label, &pred, false, grad );
+            COMMENT( "Initialize queue.", 0 );
+            Bial::Image< float > &value( cost.FltImage( ) );
+            for( size_t elm = 0; elm < size; ++elm )
+                value[ elm ] = std::numeric_limits< float >::max( );
+            queue = new Bial::GrowingBucketQueue( size, 1.0, true, true );
+            InitiateSeeds( obj_seeds, bkg_seeds, value );
+            COMMENT( "Initialize IFT.", 0 );
+            adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
+            flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func, queue );
+            initiated = true;
+        }
+        else {
+            COMMENT( "Continuing segmentation.", 0 );
+            flt_path_func->DifferentialPropagation( true );
+            for( size_t elm = 0; elm < size; ++elm )
+                queue->State( elm, Bial::BucketState::NOT_VISITED );
+            InitiateSeeds( obj_seeds, bkg_seeds, cost.FltImage( ) );
+        }
+        COMMENT( "Running IFT.", 0 );
+        flt_ift->Run( );
+    }
+    catch( std::bad_alloc &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+        throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+        throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+        throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+        throw( std::logic_error( msg ) );
+    }
+}
+
 void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                                   const Bial::Vector< size_t > &bkg_seeds ) {
     try {
@@ -300,6 +422,7 @@ void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< s
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
+            int_path_func->DifferentialPropagation( true );
             for( size_t elm = 0; elm < size; ++elm )
                 queue->State( elm, Bial::BucketState::NOT_VISITED );
             InitiateSeeds( obj_seeds, bkg_seeds, cost.IntImage( ) );
@@ -361,6 +484,7 @@ void SegmentationTool::Watershed( Bial::Image< float > &img, const Bial::Vector<
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
+            flt_path_func->DifferentialPropagation( true );
             for( size_t elm = 0; elm < size; ++elm )
                 queue->State( elm, Bial::BucketState::NOT_VISITED );
             InitiateSeeds( obj_seeds, bkg_seeds, cost.FltImage( ) );
@@ -398,29 +522,30 @@ Bial::Image< int > SegmentationTool::connect( int pf_type, double alpha, double 
       bkg_seed.push_back( i );
     }
   }
-  Bial::Image< int > img;
   if( ( !obj_seed.empty( ) ) && ( !bkg_seed.empty( ) ) ) {
-    switch( guiImage->getImageType( ) ) {
-        case Bial::MultiImageType::int_img:
-        img = guiImage->getIntImage( );
-        break;
-        case Bial::MultiImageType::flt_img:
-        img = guiImage->getFltImage( );
-        break;
-        case Bial::MultiImageType::clr_img:
-        img = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) );
-        break;
-        case Bial::MultiImageType::rcl_img:
-        img = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) );
-        break;
-        default:
-        std::string msg( BIAL_ERROR( "Getting image from non initialized multi-image." ) );
-        throw( std::runtime_error( msg ) );
-    }
     switch( pf_type ) {
     case 0: {
-        // OrientedGeodesicStar( obj_seed, bkg_seed, alpha, beta );
-        break;
+        COMMENT( "Running Oriented Geodesic Path Function IFT.", 0 );
+        switch( guiImage->getImageType( ) ) {
+          case Bial::MultiImageType::int_img:
+            GeodesicSum( guiImage->getIntImage( ), obj_seed, bkg_seed, alpha, beta );
+            break;
+          case Bial::MultiImageType::flt_img:
+            GeodesicSum( guiImage->getFltImage( ), obj_seed, bkg_seed, alpha, beta );
+            break;
+          case Bial::MultiImageType::clr_img: {
+            Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) ) );
+            GeodesicSum( img, obj_seed, bkg_seed, alpha, beta );
+            break;
+          }
+          case Bial::MultiImageType::rcl_img: {
+            Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) ) );
+            GeodesicSum( img, obj_seed, bkg_seed, alpha, beta );
+            break;
+          }
+          default:
+            qDebug( "Error: Segmented uninitialized image." );
+        }
     }
     case 1: {
         COMMENT( "Running Max Path Function IFT.", 0 );

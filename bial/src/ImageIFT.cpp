@@ -26,7 +26,7 @@ namespace Bial {
   template< class D >
   ImageIFT< D >::ImageIFT( Image< D > &value, const Adjacency &adjacency, PathFunction< Image, D > *function,
                            BucketQueue *queue ) try :
-    DegeneratedIFT< Image, D >( value, function, queue ), adjacency( adjacency ), dift_enb( false ), dift_elm( 0 ) {
+    DegeneratedIFT< Image, D >( value, function, queue ), adjacency( adjacency ), stop_elm( value.size( ) ) {
       if( value.Dims( ) != adjacency.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Image and adjacency relation dimensions do not match. Image dimensions: " +
                                      std::to_string( value.Dims( ) ) + ", adjacency dimensions: " +
@@ -59,10 +59,10 @@ namespace Bial {
       AdjacencyIterator adj_itr( this->value, adjacency );
       size_t adj_size = adjacency.size( );
       size_t adj_index;
-      while( ( !this->queue->Empty( ) ) &&
-             ( ( !dift_enb ) || ( this->queue->State( dift_elm ) != BucketState::REMOVED ) ) ) {
+      size_t index = 0;
+      while( ( !this->queue->Empty( ) ) && ( index != stop_elm ) ) {
         COMMENT( "Initializing removed data.", 4 );
-        int index = this->queue->Remove( );
+        index = this->queue->Remove( );
         bool capable = ( this->function->*( this->function->RemoveData ) )( index, this->queue->State( index ) );
         COMMENT( "Index: " << index << ", value: " << this->value[ index ] << ", is capable: " <<
                  ( capable ? "true" : "false" ), 4 );
@@ -75,19 +75,12 @@ namespace Bial {
               COMMENT( "Conquering: " << adj_index, 4 );
               D previous_value = this->value[ adj_index ];
               COMMENT( "previous_value: " << previous_value, 4 );
-              if( this->function->Propagate( index, adj_index ) ) {
-                COMMENT( "propagated!", 4 );
+              if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) )
                 this->queue->Update( adj_index, previous_value, this->value[ adj_index ] );
-                COMMENT( "queue updated!", 4 );
-                ( this->function->*( this->function->UpdateData ) )( index, adj_index );
-                COMMENT( "function updated!", 4 );
-              }
             }
           }
         }
       }
-      //COMMENT( "Reseting queue.", 0 );
-      //this->queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -109,14 +102,13 @@ namespace Bial {
   }
 
   template< class D >
-  void ImageIFT< D >::EnableDifferentialIFT( size_t elm ) {
-    dift_enb = true;
-    dift_elm = elm;
+  void ImageIFT< D >::EnableStopElement( size_t elm ) {
+    stop_elm = elm;
   }
 
   template< class D >
-  void ImageIFT< D >::DisableDifferentialIFT( ) {
-    dift_enb = false;
+  void ImageIFT< D >::DisableStopElement( ) {
+    stop_elm = this->value.size( );
   }
 
 #ifdef BIAL_EXPLICIT_ImageIFT

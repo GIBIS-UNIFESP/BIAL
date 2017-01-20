@@ -162,9 +162,8 @@ namespace Bial {
           std::string msg( BIAL_ERROR( "Image and mask dimensions do not match." ) );
           throw( std::logic_error( msg ) );
         }
-        if( ( modality != MRIModality::T1 ) &&
-            ( modality != MRIModality::T2 ) &&
-            ( modality != MRIModality::PD ) ) {
+        if( ( modality != MRIModality::T1 ) && ( modality != MRIModality::T2 ) &&
+                  ( modality != MRIModality::PD ) ) {
           std::string msg( BIAL_ERROR( "Must select an MRI_T1, MRI_T2, or MRI_PD modalities." ) );
           throw( std::logic_error( msg ) );
         }
@@ -189,27 +188,23 @@ namespace Bial {
           intensity = tissues.second_valley;
         }
         Image< D > wmgm = TissueSegmentation( img, msk, intensity, csf_scl_min, csf_scl_max, hierarchical );
-        if( modality != MRIModality::T1 ) {
+        if( modality != MRIModality::T1 )
           Binary::Complement( wmgm, msk );
-        }
         COMMENT( "Segmenting GM from WM.", 0 );
         intensity = tissues.second_valley;
-        if( modality != MRIModality::T1 ) {
+        if( modality != MRIModality::T1 )
           intensity = tissues.first_valley;
-        }
         Image< int > tissue = TissueSegmentation( img, wmgm, intensity, gm_scl_min, gm_scl_max, hierarchical );
         if( modality == MRIModality::T1 ) {
           for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-            if( msk[ pxl ] != 0 ) {
+            if( msk[ pxl ] != 0 )
               tissue[ pxl ] += wmgm[ pxl ] + 1;
-            }
           }
         }
         else { /* if( ( modality == MRIModality::T2 ) || ( modality == MRIModality::PD ) ) { */
           for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-            if( msk[ pxl ] != 0 ) {
+            if( msk[ pxl ] != 0 )
               tissue[ pxl ] = ( tissue[ pxl ] + 1 ) % 2 + wmgm[ pxl ] + 1;
-            }
           }
         }
         return( tissue );

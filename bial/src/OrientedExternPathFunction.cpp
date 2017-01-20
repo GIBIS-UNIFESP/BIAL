@@ -206,7 +206,7 @@ namespace Bial {
   }
 
   template< class D >
-  inline bool OrientedExternPathFunction< D >::Capable( int index, int adj_index, BucketState adj_state ) {
+  inline bool OrientedExternPathFunction< D >::Capable( size_t index, size_t adj_index, BucketState adj_state ) {
     try {
       return( ( adj_state != BucketState::REMOVED ) &&
               ( this->value->operator()( index ) < this->value->operator()( adj_index ) ) );
@@ -230,7 +230,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool OrientedExternPathFunction< D >::Propagate( int index, int adj_index ) {
+  bool OrientedExternPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight.", 3 );
@@ -264,6 +264,65 @@ namespace Bial {
       COMMENT( "Updating path value.", 3 );
       if( src_value > prp_value ) {
         this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
+        return( true );
+      }
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
+  bool OrientedExternPathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+    try {
+      D src_value = this->value->operator()( adj_index );
+      COMMENT( "Computing arc weight.", 3 );
+      double arc_weight = handicap( index ) + handicap( adj_index );
+      COMMENT( "Orienting edges.", 3 );
+      double fraction = 0;
+      if( intensity[ index ] > intensity[ adj_index ] ) {
+        fraction = alpha;
+      }
+      else if( intensity[ index ] < intensity[ adj_index ] ) {
+        fraction = -alpha;
+      }
+      if( this->label->operator()( index ) == 0 ) {
+        fraction = -fraction;
+      }
+      arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
+      COMMENT( "Suppressing non-zero.", 3 );
+      ++arc_weight;
+      COMMENT( "Zero weight edges.", 3 );
+      if( geodesic_restriction != nullptr ) {
+        if( ( ( this->label->operator()( index ) != 0 ) && ( ( *geodesic_restriction )[ index ] == adj_index ) ) ||
+            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) ) {
+          arc_weight = 0;
+        }
+      }
+      ++arc_weight;
+      COMMENT( "Propagated value.", 3 );
+      // D prp_value = static_cast< D >
+      //   ( std::min( static_cast< double >( std::numeric_limits< int >::max( ) ), arc_weight ) );
+      D prp_value = static_cast< D >( arc_weight );
+      COMMENT( "Updating path value.", 3 );
+      if( src_value > prp_value ) {
+        this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       return( false );

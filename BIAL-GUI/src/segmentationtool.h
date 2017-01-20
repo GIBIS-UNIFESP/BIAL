@@ -41,7 +41,7 @@ public:
   enum { Type = 1 };
   SegmentationTool( GuiImage *guiImage, ImageViewer *viewer );
   ~SegmentationTool( );
-  static const int supportedFormats = ( ( int ) Modality::BW2D | ( int ) Modality::BW3D );
+  static const int supportedFormats = ( ( int ) Modality::BW2D | ( int ) Modality::BW3D | ( int ) Modality::RGB2D );
 
   /* Tool interface */
 public:
@@ -60,6 +60,10 @@ public:
   template< class D >
   void InitiateSeeds( const Bial::Vector< size_t > &obj_seeds, const Bial::Vector< size_t > &bkg_seeds,
                       Bial::Image< D > &grad );
+  void GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
+                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta );
+  void GeodesicSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
+                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta );
   void Watershed( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                   const Bial::Vector< size_t > &bkg_seeds );
   void Watershed( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,

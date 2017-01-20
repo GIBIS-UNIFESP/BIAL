@@ -195,7 +195,7 @@ namespace Bial {
     }
   }
 
-  int GrowingBucketQueue::Remove( ) {
+  size_t GrowingBucketQueue::Remove( ) {
     try {
       COMMENT( "Current amount of elements prior to removal: " << this->elements, 3 );
       COMMENT( "Check if queue is initialized.", 4 );
@@ -229,12 +229,10 @@ namespace Bial {
       COMMENT( "Removing idt: " << idt << ", weight_idx: " << current_weight << ", prev: " << 
                this->identity( idt ).prev << ", next:" << next, 3 );
       this->weight( current_weight ).first = next;
-      if( next == -1 ) {
+      if( next == -1 )
         this->weight( current_weight ).last = -1;
-      }
-      else {
+      else
         this->identity( next ).prev = -1;
-      }
       COMMENT( "Remove done.", 3 );
       return( idt );
     }

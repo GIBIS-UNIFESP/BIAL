@@ -31,10 +31,6 @@ namespace Bial {
   DegeneratedIFT< C, D >::
   DegeneratedIFT( C< D > &value, PathFunction< C, D > *function, BucketQueue *queue ) try :
     queue( queue ), value( value ), function( function ) {
-      COMMENT( "Initializing.", 1 );
-      //Initialize( seed, bucket_size, fifo_tie );
-      //RemoveData = function->RemoveFunction( );
-      //UpdateData = function->UpdateFunction( );
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -53,66 +49,9 @@ namespace Bial {
                      BIAL_ERROR( "Image, window end, and/or window size dimensions do not match." ) );
     throw( std::logic_error( msg ) );
   }
-
-  // template< template< class D > class C, class D >
-  // DegeneratedIFT< C, D >::
-  // DegeneratedIFT( C< D > &value, PathFunction< C, D > *function, const Vector< bool > *seed, ldbl bucket_size,
-  //                 bool fifo_tie ) try :
-  //   value( value ), function( function ) {
-  //     COMMENT( "Initializing.", 1 );
-  //     Initialize( seed, bucket_size, fifo_tie );
-  //     RemoveData = function->RemoveFunction( );
-  //     UpdateData = function->UpdateFunction( );
-  //   }
-  // catch( std::bad_alloc &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-  //   throw( std::runtime_error( msg ) );
-  // }
-  // catch( std::runtime_error &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-  //   throw( std::runtime_error( msg ) );
-  // }
-  // catch( const std::out_of_range &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-  //   throw( std::out_of_range( msg ) );
-  // }
-  // catch( const std::logic_error &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + 
-  //                    BIAL_ERROR( "Image, window end, and/or window size dimensions do not match." ) );
-  //   throw( std::logic_error( msg ) );
-  // }
-
-  // template< template< class D > class C, class D >
-  // DegeneratedIFT< C, D >::
-  // DegeneratedIFT( C< D > &value, PathFunction< C, D > *function, D minimum_value, size_t value_range, 
-  //                   const Vector< bool > *seed, bool fifo_tie ) try :
-  //   value( value ), function( function ) {
-  //     COMMENT( "Initializing.", 1 );
-  //     Initialize( seed, minimum_value, value_range, fifo_tie );
-  //     RemoveData = function->RemoveFunction( );
-  //     UpdateData = function->UpdateFunction( );
-  //   }
-  // catch( std::bad_alloc &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-  //   throw( std::runtime_error( msg ) );
-  // }
-  // catch( std::runtime_error &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-  //   throw( std::runtime_error( msg ) );
-  // }
-  // catch( const std::out_of_range &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-  //   throw( std::out_of_range( msg ) );
-  // }
-  // catch( const std::logic_error &e ) {
-  //   std::string msg( e.what( ) + std::string( "\n" ) + 
-  //                    BIAL_ERROR( "Image, window end, and/or window size dimensions do not match." ) );
-  //   throw( std::logic_error( msg ) );
-  // }
   
   template< template< class D > class C, class D >
   DegeneratedIFT< C, D >::~DegeneratedIFT( ) {
-//  delete ( queue );
   }
 
   template< template< class D > class C, class D >
@@ -120,7 +59,7 @@ namespace Bial {
     try {
       COMMENT( "Running.", 1 );
       while( !queue->Empty( ) ) {
-        int index = queue->Remove( );
+        size_t index = queue->Remove( );
         COMMENT( "Initializing removed data.", 3 );
         bool capable = ( function->*function->RemoveData )( index, queue->State( index ) );
         queue->Finished( index );
@@ -128,15 +67,12 @@ namespace Bial {
           for( size_t adj_index = 0; adj_index < value.size( ); ++adj_index ) {
             if( function->Capable( index, adj_index, queue->State( adj_index ) ) ) {
               D previous_value = value( adj_index );
-              if( function->Propagate( index, adj_index ) ) {
+              if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) )
                 queue->Update( adj_index, previous_value, value( adj_index ) );
-                ( function->*function->UpdateData )( index, adj_index );
-              }
             }
           }
         }
       }
-      //queue->ResetState( );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -156,91 +92,6 @@ namespace Bial {
       throw( std::logic_error( msg ) );
     }
   }
-
-  // template< template< class D > class C, class D >
-  // void DegeneratedIFT< C, D >::Initialize( const Vector< bool > *seed, ldbl bucket_size, bool fifo_tie ) {
-  //   try {
-  //     queue = new GrowingBucketQueue( value.size( ), bucket_size, function->Increasing( ), fifo_tie );
-  //     COMMENT( "Initializing data in path function.", 1 );
-  //     COMMENT( "Initializing the maps.", 1 );
-  //     if( seed != nullptr ) {
-  //       COMMENT( "Initializing data with seeds.", 1 );
-  //       InsertSeeds( *seed );
-  //     }
-  //     else {
-  //       COMMENT( "Initializing data without seeds.", 1 );
-  //       for( size_t it = 0; it < value.size( ); ++it ) {
-  //         queue->Insert( it, value( it ) );
-  //       }
-  //     }
-  //     COMMENT( "value: " << value, 5 );
-  //   }
-  //   catch( std::bad_alloc &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-  //     throw( std::runtime_error( msg ) );
-  //   }
-  //   catch( std::runtime_error &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-  //     throw( std::runtime_error( msg ) );
-  //   }
-  //   catch( const std::out_of_range &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-  //     throw( std::out_of_range( msg ) );
-  //   }
-  //   catch( const std::logic_error &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR(
-  //                        "Image, window end, and/or window size dimensions do not match." ) );
-  //     throw( std::logic_error( msg ) );
-  //   }
-  // }
-
-  // template< template< class D > class C, class D >
-  // void DegeneratedIFT< C, D >::Initialize( const Vector< bool > *seed, ldbl minimum_value, size_t value_range, 
-  //                                          bool fifo_tie ) {
-  //   try {
-  //     //queue = new FastBucketQueue( value.size( ), minimum_value, value_range, function->Increasing( ), fifo_tie );
-  //     if( fifo_tie ) {
-  //       if( function->Increasing( ) ) 
-  //         queue = new FastIncreasingFifoBucketQueue( value.size( ), minimum_value, value_range );
-  //       else
-  //         queue = new FastDecreasingFifoBucketQueue( value.size( ), minimum_value, value_range );
-  //     }
-  //     else {
-  //       if( function->Increasing( ) ) 
-  //         queue = new FastIncreasingLifoBucketQueue( value.size( ), minimum_value, value_range );
-  //       else
-  //         queue = new FastDecreasingLifoBucketQueue( value.size( ), minimum_value, value_range );
-  //     }
-  //     COMMENT( "Initializing the maps.", 1 );
-  //     if( seed != nullptr ) {
-  //       COMMENT( "Initializing data with seeds.", 1 );
-  //       InsertSeeds( *seed );
-  //     }
-  //     else {
-  //       COMMENT( "Initializing data without seeds.", 1 );
-  //       for( size_t it = 0; it < value.size( ); ++it )
-  //         queue->Insert( it, value( it ) );
-  //     }
-  //     COMMENT( "value: " << value, 5 );
-  //   }
-  //   catch( std::bad_alloc &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-  //     throw( std::runtime_error( msg ) );
-  //   }
-  //   catch( std::runtime_error &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-  //     throw( std::runtime_error( msg ) );
-  //   }
-  //   catch( const std::out_of_range &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-  //     throw( std::out_of_range( msg ) );
-  //   }
-  //   catch( const std::logic_error &e ) {
-  //     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR(
-  //                                                                   "Image, window end, and/or window size dimensions do not match." ) );
-  //     throw( std::logic_error( msg ) );
-  //   }
-  // }
 
   template< template< class D > class C, class D >
   void DegeneratedIFT< C, D >::InsertSeeds( const Vector< bool > &seed ) {
@@ -286,105 +137,6 @@ namespace Bial {
   template class DegeneratedIFT< Image, llint >;
   template class DegeneratedIFT< Image, float >;
   template class DegeneratedIFT< Image, double >;
-
-  // template void DegeneratedIFT::DegeneratedIFT( Vector< int > &value, PathFunction< Vector, int > *function,
-  //                                               const Vector< bool > *seed, Vector< int > *label, 
-  //                                               Vector< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Vector< int > &value, PathFunction< Vector, int > *function,
-  //                                                   const Vector< bool > *seed, Vector< int > *label, 
-  //                                                   Vector< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Vector< llint > &value, PathFunction< Vector, llint > *function,
-  //                                               const Vector< bool > *seed, Vector< int > *label, 
-  //                                               Vector< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Vector< llint > &value, PathFunction< Vector, llint > *function,
-  //                                                   const Vector< bool > *seed, Vector< int > *label, 
-  //                                                   Vector< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Vector< float > &value, PathFunction< Vector, float > *function,
-  //                                               const Vector< bool > *seed, Vector< int > *label, 
-  //                                               Vector< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Vector< float > &value, PathFunction< Vector, float > *function,
-  //                                                   const Vector< bool > *seed, Vector< int > *label, 
-  //                                                   Vector< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Vector< double > &value, PathFunction< Vector, double > *function,
-  //                                               const Vector< bool > *seed, Vector< int > *label, 
-  //                                               Vector< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Vector< double > &value, PathFunction< Vector, double > *function,
-  //                                                   const Vector< bool > *seed, Vector< int > *label, 
-  //                                                   Vector< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-
-  // template void DegeneratedIFT::DegeneratedIFT( Matrix< int > &value_image, PathFunction< Matrix, int > *function,
-  //                                               const Vector< bool > *seed, Matrix< int > *label, 
-  //                                               Matrix< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Matrix< int > &value, PathFunction< Matrix, int > *function,
-  //                                                   const Vector< bool > *seed, Matrix< int > *label, 
-  //                                                   Matrix< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Matrix< llint > &value_image, PathFunction< Matrix, llint > *function,
-  //                                               const Vector< bool > *seed, Matrix< int > *label, 
-  //                                               Matrix< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Matrix< llint > &value, PathFunction< Matrix, llint > *function,
-  //                                                   const Vector< bool > *seed, Matrix< int > *label, 
-  //                                                   Matrix< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Matrix< float > &value_image, PathFunction< Matrix, float > *function,
-  //                                               const Vector< bool > *seed, Matrix< int > *label, 
-  //                                               Matrix< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Matrix< float > &value, PathFunction< Matrix, float > *function,
-  //                                                   const Vector< bool > *seed, Matrix< int > *label, 
-  //                                                   Matrix< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Matrix< double > &value_image, PathFunction< Matrix, double > *function,
-  //                                               const Vector< bool > *seed, Matrix< int > *label, 
-  //                                               Matrix< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Matrix< double > &value, PathFunction< Matrix, double > *function,
-  //                                                   const Vector< bool > *seed, Matrix< int > *label, 
-  //                                                   Matrix< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-
-  // template void DegeneratedIFT::DegeneratedIFT( Image< int > &value, PathFunction< Image, int > *function,
-  //                                               const Vector< bool > *seed, Image< int > *label, 
-  //                                               Image< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Image< int > &value, PathFunction< Image, int > *function,
-  //                                                   const Vector< bool > *seed, Image< int > *label, 
-  //                                                   Image< int > *predecessor, bool sequential_label,
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Image< llint > &value, PathFunction< Image, llint > *function,
-  //                                               const Vector< bool > *seed, Image< int > *label,
-  //                                               Image< int > *predecessor, bool sequential_label,
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Image< llint > &value, PathFunction< Image, llint > *function,
-  //                                                   const Vector< bool > *seed, Image< int > *label,
-  //                                                   Image< int > *predecessor, bool sequential_label,
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Image< float > &value, PathFunction< Image, float > *function,
-  //                                               const Vector< bool > *seed, Image< int > *label,
-  //                                               Image< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Image< float > &value, PathFunction< Image, float > *function,
-  //                                                   const Vector< bool > *seed, Image< int > *label, 
-  //                                                   Image< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
-  // template void DegeneratedIFT::DegeneratedIFT( Image< double > &value, PathFunction< Image, double > *function,
-  //                                               const Vector< bool > *seed, Image< int > *label, 
-  //                                               Image< int > *predecessor, bool sequential_label, 
-  //                                               long double bucket_size, bool fifo_tie );
-  // template BucketQueue* DegeneratedIFT::Initialize( Image< double > &value, PathFunction< Image, double > *function,
-  //                                                   const Vector< bool > *seed, Image< int > *label, 
-  //                                                   Image< int > *predecessor, bool sequential_label, 
-  //                                                   long double bucket_size, bool fifo_tie );
 
 #endif
 

@@ -101,7 +101,7 @@ namespace Bial {
     }
   }
 
-  int FastDecreasingLifoBucketQueue::Remove( ) {
+  size_t FastDecreasingLifoBucketQueue::Remove( ) {
     try {
       COMMENT( "Current amount of elements prior to removal: " << this->elements, 3 );
       COMMENT( "Check if queue is initialized.", 4 );

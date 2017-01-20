@@ -212,7 +212,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline bool MaxPathFunction< C, D >::Capable( int index, int adj_index, BucketState adj_state ) {
+  inline bool MaxPathFunction< C, D >::Capable( size_t index, size_t adj_index, BucketState adj_state ) {
     try {
       return( adj_state != BucketState::REMOVED );
     }
@@ -235,7 +235,48 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxPathFunction< C, D >::Propagate( int index, int adj_index ) {
+  bool MaxPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+    try {
+      IF_DEBUG( ( this->predecessor == nullptr ) || ( this->label == nullptr ) ) {
+        std::string msg( BIAL_ERROR( "Differential propragation requires predecessor and label maps." ) );
+        throw( std::runtime_error( msg ) );
+      }
+      COMMENT( "Propagating!", 4 );
+      D src_value = this->value->operator()( adj_index );
+      D arc_weight = handicap( adj_index );
+      D prp_value = std::max( this->value->operator()( index ), arc_weight );
+      if( ( src_value > prp_value ) ||
+          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+            ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
+        COMMENT( "propagated!", 4 );
+        this->value->operator()( adj_index ) = prp_value;
+        this->predecessor->operator()( adj_index ) = index;
+        this->label->operator()( adj_index ) = this->label->operator()( index );
+        return( true );
+      }
+      COMMENT( "Not propagated!", 4 );
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool MaxPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
     try {
       COMMENT( "Propagating!", 4 );
       D src_value = this->value->operator()( adj_index );
@@ -245,6 +286,7 @@ namespace Bial {
           || ( src_value > prp_value ) ) {
         COMMENT( "propagated!", 4 );
         this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       COMMENT( "Not propagated!", 4 );
@@ -274,10 +316,9 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  D MaxPathFunction< C, D >::BestValue( int index ) {
+  D MaxPathFunction< C, D >::BestValue( size_t index ) {
     return( handicap[ index ] );
   }
-
 
 #ifdef BIAL_EXPLICIT_MaxPathFunction
 

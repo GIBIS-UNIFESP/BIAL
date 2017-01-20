@@ -215,7 +215,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline bool DiffPathFunction< C, D >::Capable( int index, int adj_index, BucketState adj_state ) {
+  inline bool DiffPathFunction< C, D >::Capable( size_t index, size_t adj_index, BucketState adj_state ) {
     try {
       return( ( adj_state != BucketState::REMOVED ) &&
               ( this->value->operator()( index ) > this->value->operator()( adj_index ) ) );
@@ -239,7 +239,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool DiffPathFunction< C, D >::Propagate( int index, int adj_index ) {
+  bool DiffPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D prp_value = this->value->operator()( index ) - handicap( adj_index );
@@ -248,6 +248,40 @@ namespace Bial {
       if( src_value < prp_value ) {
         COMMENT( "Conquested.", 4 );
         this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
+        return( true );
+      }
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool DiffPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+    try {
+      D src_value = this->value->operator()( adj_index );
+      D prp_value = this->value->operator()( index ) - handicap( adj_index );
+      COMMENT( "Trying to propagate from " << index << " to " << adj_index << ".", 4 );
+      COMMENT( "orig value " << src_value << ", tgt value: " << prp_value << ".", 4 );
+      if( src_value < prp_value ) {
+        COMMENT( "Conquested.", 4 );
+        this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       return( false );

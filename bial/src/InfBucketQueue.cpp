@@ -208,7 +208,7 @@ namespace Bial {
     }
   }
 
-  int InfBucketQueue::Remove( ) {
+  size_t InfBucketQueue::Remove( ) {
     try {
       COMMENT( "Current amount of elements prior to removal: " << elements, 3 );
       COMMENT( "Check if queue is initialized.", 4 );

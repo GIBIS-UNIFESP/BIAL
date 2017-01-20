@@ -117,7 +117,18 @@ namespace Bial {
      * function. This function makes IFT faster.
      * @warning none.
      */
-    bool Capable( int index, int adj_index, BucketState adj_state );
+    bool Capable( size_t index, size_t adj_index, BucketState adj_state );
+
+    /**
+     * @date 2017/Jan/20
+     * @param source: Source pixel index.
+     * @param target: Adjacent pixel index.
+     * @return True if path-value is propagated.
+     * @brief Updates adjacent pixel values and returns true if path_function is propagated. This is used with
+     *        differential IFT.
+     * @warning none.
+     */
+    bool PropagateDifferential( size_t index, size_t adj_index );
 
     /**
      * @date 2014/Jan/08
@@ -127,7 +138,7 @@ namespace Bial {
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
      */
-    bool Propagate( int index, int adj_index );
+    bool Propagate( size_t index, size_t adj_index );
 
     /**
      * @date 2014/Jan/08

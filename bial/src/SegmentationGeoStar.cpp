@@ -57,7 +57,6 @@ namespace Bial {
       Image< int > label( image.Dim( ), image.PixelSize( ) );
       label.Set( -1 );
       size_t size = image.size( );
-      Vector< bool > seeds( image.size( ), 0 );
       COMMENT( "FIRST STEP. Running with foreground seeds.", 0 );
       GeodesicRestrictionPathFunction< D > geo_path( grad, nullptr, &pred, false, grad, image, alpha, beta );
       GrowingBucketQueue queue( size, 1, geo_path.Increasing( ), true );
@@ -68,7 +67,6 @@ namespace Bial {
         label( elm ) = 1;
         grad[ elm ] = 0;
         queue.Insert( elm, grad[ elm ] );
-        seeds[ elm ] = true;
       }
       COMMENT( "Running geodesic star restriction IFT.", 0 );
       ImageIFT< D > ift( grad, adj, &geo_path, &queue );
@@ -92,7 +90,6 @@ namespace Bial {
         pred( elm ) = -1;
         grad[ elm ] = 0;
         queue.Insert( elm, grad[ elm ] );
-        seeds[ elm ] = true;
       }
       COMMENT( "Running oriented path function.", 0 );
       if( alpha >= 0.0 ) {

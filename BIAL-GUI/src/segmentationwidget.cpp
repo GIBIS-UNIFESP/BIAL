@@ -14,7 +14,6 @@ SegmentationWidget::~SegmentationWidget( ) {
 void SegmentationWidget::setTool( Tool *sTool ) {
   tool = dynamic_cast< SegmentationTool* >( sTool );
   if( tool ) {
-
     setEnabled( true );
     /* atualiza os dados da interface */
     ui->BetaSpinBox->setValue( tool->getBeta( ) );

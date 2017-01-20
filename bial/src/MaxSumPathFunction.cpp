@@ -227,7 +227,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxSumPathFunction< C, D >::Capable( int index, int adj_index, BucketState adj_state ) {
+  bool MaxSumPathFunction< C, D >::Capable( size_t index, size_t adj_index, BucketState adj_state ) {
     try {
       return( ( adj_state != BucketState::REMOVED ) && 
               ( this->value->operator()( index ) < this->value->operator()( adj_index ) ) );
@@ -251,7 +251,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxSumPathFunction< C, D >::Propagate( int index, int adj_index ) {
+  bool MaxSumPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight.", 3 );
@@ -272,6 +272,52 @@ namespace Bial {
       COMMENT( "Updating value.", 3 );
       if( src_value > prp_value ) {
         this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
+        return( true );
+      }
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool MaxSumPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+    try {
+      D src_value = this->value->operator()( adj_index );
+      COMMENT( "Computing arc weight.", 3 );
+      double arc_weight = ( handicap( index ) + handicap( adj_index ) ) / 2.0;
+      COMMENT( "Orienting edges.", 3 );
+      double fraction = 0.0;
+      if( intensity[ index ] > intensity[ adj_index ] )
+        fraction = std::abs( alpha );
+      else if( intensity[ index ] < intensity[ adj_index ] )
+        fraction = -std::abs( alpha );
+      if( alpha < 0.0 )
+        fraction = -fraction;
+      arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
+      COMMENT( "Suppressing non-zero.", 3 );
+      ++arc_weight;
+      COMMENT( "Propagated value.", 3 );
+      D prp_value = static_cast< D >( this->value->operator()( index ) + arc_weight - 1.0 );
+      COMMENT( "Updating value.", 3 );
+      if( src_value > prp_value ) {
+        this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       return( false );

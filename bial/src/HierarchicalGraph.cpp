@@ -179,18 +179,15 @@ namespace Bial {
       COMMENT( "For each new label, check for old labels that should merge and keep just one.", 2 );
       for( size_t new_lbl = 0; new_lbl < new_labels; ++new_lbl ) {
         if( old_label_cut( new_lbl ) > new_label_cut( new_lbl ) ) {
-          /* std::cout << "new label: " << new_lbl << " olds: "; */
           int src_lbl = -1;
           for( size_t tgt_lbl = 0; tgt_lbl < old_labels; ++tgt_lbl ) {
             if( merges( tgt_lbl ) ( new_lbl ) ) {
-              /* std::cout << tgt_lbl << " "; */
               if( src_lbl == -1 ) {
                 src_lbl = tgt_lbl;
               }
               root_label( tgt_lbl ) = src_lbl;
             }
           }
-          /* std::cout << std::endl; */
         }
       }
       COMMENT( "Root label: " << root_label, 2 );
@@ -253,11 +250,12 @@ namespace Bial {
       size_t old_labels = split_label.Maximum( ) + 1;
       size_t new_labels = this->label.Maximum( ) + 1;
       size_t elements = merge_label.size( );
-
       COMMENT( "Computing new and old cuts for each old cluster.", 2 );
+      COMMENT( "old_labels: " << old_labels << ", new_labels: " << new_labels, 1 );
       Vector< double > old_label_cut( old_labels, 0.0 );
       Vector< double > new_label_cut( old_labels, 0.0 );
       Vector< Vector< bool > > splits( old_labels, Vector< bool >( new_labels, false ) );
+      COMMENT( "elements: " << elements, 1 );
       for( size_t elm = 0; elm < elements; ++elm ) {
         old_label_cut( split_label( elm ) ) += split_cut( elm );
         new_label_cut( split_label( elm ) ) += this->cut( elm );

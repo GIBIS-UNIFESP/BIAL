@@ -28,7 +28,8 @@ namespace Bial {
 
     /** @brief  Remove functions of IFT. They will operate on valid maps among value, label, and predecessor. */
     typedef bool ( PathFunction< C, D >::*RemoveFn )( size_t index, BucketState state );
-
+    /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
+    typedef bool ( PathFunction< C, D >::*PropagateFn )( size_t index, size_t adj_index );
     /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
     typedef void ( PathFunction< C, D >::*UpdateFn )( size_t index, size_t adj_index );
 
@@ -46,6 +47,7 @@ namespace Bial {
 
     /** Removal and update functions. */
     typename PathFunction< C, D >::RemoveFn RemoveData;
+    typename PathFunction< C, D >::PropagateFn PropagateData;
     typename PathFunction< C, D >::UpdateFn UpdateData;
 
     /**
@@ -62,21 +64,12 @@ namespace Bial {
     
     /**
      * @date 2015/Mar/09
-     * @param pf: A queue.
+     * @param pf: A path function.
      * @return none.
      * @brief Copy constructor.
      * @warning none.
      */
     PathFunction( const PathFunction< C, D > &pf );
-
-    /*
-     * / * @date 2015/Mar/09 * /
-     * / * @param pf: A queue. * /
-     * / * @return This. * /
-     * / * @brief Assignement operator. * /
-     * / * @warning none. * /
-     * virtual PathFunction< C, D > operator=( const PathFunction< C, D > &pf ) = 0;
-     */
 
     /**
      * @date 2013/Nov/19
@@ -148,7 +141,18 @@ namespace Bial {
      * function. This function makes IFT faster.
      * @warning none.
      */
-    virtual bool Capable( int index, int adj_index, BucketState adj_state ) = 0;
+    virtual bool Capable( size_t index, size_t adj_index, BucketState adj_state ) = 0;
+
+    /**
+     * @date 2017/Jan/20
+     * @param source: Source pixel index.
+     * @param target: Adjacent pixel index.
+     * @return True if path-value is propagated.
+     * @brief Updates adjacent pixel values and returns true if path_function is propagated. This is used with
+     *        differential IFT.
+     * @warning none.
+     */
+    virtual bool PropagateDifferential( size_t index, size_t adj_index ) = 0;
 
     /**
      * @date 2013/Jun/28
@@ -158,7 +162,7 @@ namespace Bial {
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
      */
-    virtual bool Propagate( int index, int adj_index ) = 0;
+    virtual bool Propagate( size_t index, size_t adj_index ) = 0;
 
     /**
      * @date 2012/Sep/19
@@ -177,16 +181,35 @@ namespace Bial {
      *        this kind of map.
      * @warning none.
      */
-    virtual D BestValue( int index );
+    virtual D BestValue( size_t index );
+
+    /**
+     * @date 2017/Jan/20
+     * @param set: True for differential propagation and false for non-differential propagation.
+     * @return none.
+     * @brief Sets or resets differential IFT propagation mode.
+     * @warning none.
+     */
+    virtual void DifferentialPropagation( bool set );
 
     /**
      * @date 2013/Jun/28
      * @param none.
-     * @return A pointer to one of root initialization functions.
+     * @return A pointer to queue removal functions.
      * @brief Returns a root initialization function that will be used depending on used maps.
      * @warning none.
      */
     typename PathFunction< C, D >::RemoveFn RemoveFunction( );
+
+
+    /**
+     * @date 2013/Jun/28
+     * @param none.
+     * @return A pointer to path propagation functions.
+     * @brief Returns a root initialization function that will be used depending on used maps.
+     * @warning none.
+     */
+    typename PathFunction< C, D >::PropagateFn PropagateFunction( );
 
     /**
      * @date 2013/Jun/28

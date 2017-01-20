@@ -24,8 +24,7 @@ namespace Bial {
   class ImageIFT : public DegeneratedIFT< Image, D > {
 
     const Adjacency &adjacency;
-    bool dift_enb;
-    size_t dift_elm;
+    size_t stop_elm;
 
   public:
 
@@ -56,19 +55,19 @@ namespace Bial {
      * @date 2015/07/18
      * @param elm: Target element.
      * @return none.
-     * @brief Enables differential IFT. Runs until target element is reached.
+     * @brief Enables stop element IFT. Runs until target element is reached.
      * @warning none.
      */
-    void EnableDifferentialIFT( size_t elm );
+    void EnableStopElement( size_t elm );
 
     /**
      * @date 2015/07/18
      * @param none.
      * @return none.
-     * @brief Disables differential IFT. Runs until all elements leave the queue.
+     * @brief Disables stop element IFT. Runs until all elements leave the queue.
      * @warning none.
      */
-    void DisableDifferentialIFT( );
+    void DisableStopElement( );
 
     // template< class D, class D2 >
     // static void ImageIFT( Image< D > &value, const Image< D2 > &mask, const Adjacency &adjacency,

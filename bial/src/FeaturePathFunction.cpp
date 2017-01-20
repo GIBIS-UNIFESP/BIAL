@@ -140,7 +140,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline bool FeatureDistanceFunction< C, D >::Capable( int, int adj_index, BucketState adj_state ) {
+  inline bool FeatureDistanceFunction< C, D >::Capable( size_t, size_t adj_index, BucketState adj_state ) {
     try {
       return( ( adj_state != BucketState::REMOVED ) && ( this->value->operator()( adj_index ) > 0.0 ) );
     }
@@ -163,12 +163,43 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool FeatureDistanceFunction< C, D >::Propagate( int index, int adj_index ) {
+  bool FeatureDistanceFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
     try {
       double distance = DFIDE::Distance( feats, feats, index * feats.Features( ), adj_index * feats.Features( ),
                                          feats.Features( ) );
       if( this->value->operator()( adj_index ) > distance ) {
         this->value->operator()( adj_index ) = distance;
+        ( this->*this->UpdateData )( index, adj_index );
+        return( true );
+      }
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  bool FeatureDistanceFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+    try {
+      double distance = DFIDE::Distance( feats, feats, index * feats.Features( ), adj_index * feats.Features( ),
+                                         feats.Features( ) );
+      if( this->value->operator()( adj_index ) > distance ) {
+        this->value->operator()( adj_index ) = distance;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       return( false );

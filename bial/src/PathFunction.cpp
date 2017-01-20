@@ -41,6 +41,7 @@ namespace Bial {
         next_label = 0;
       }
       RemoveData = RemoveFunction( );
+      PropagateData = PropagateFunction( );
       UpdateData = UpdateFunction( );
     }
   catch( std::bad_alloc &e ) {
@@ -82,7 +83,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  D PathFunction< C, D >::BestValue( int index ) {
+  D PathFunction< C, D >::BestValue( size_t index ) {
     std::cout << "Bestvalue pathfunction." << std::endl;
     return( ( *value )[ index ] );
   }
@@ -102,6 +103,29 @@ namespace Bial {
         else
           return( &PathFunction< C, D >::RemoveComplete );
       }
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< template< class D > class C, class D >
+  typename PathFunction< C, D >::PropagateFn PathFunction< C, D >::PropagateFunction( ) {
+    try {
+      return( &PathFunction< C, D >::Propagate );
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -225,6 +249,15 @@ namespace Bial {
   template< template< class D > class C, class D >
   void PathFunction< C, D >::UpdateSimpleData( size_t, size_t ) {
   }
+
+  template< template< class D > class C, class D >
+  void PathFunction< C, D >::DifferentialPropagation( bool set ) {
+    if( ( set ) && ( label != nullptr ) && ( predecessor != nullptr ) )
+      PropagateData = &PathFunction< C, D >::PropagateDifferential;
+    else
+      PropagateData = &PathFunction< C, D >::Propagate;
+  }
+
 
 #ifdef BIAL_EXPLICIT_PathFunction
 

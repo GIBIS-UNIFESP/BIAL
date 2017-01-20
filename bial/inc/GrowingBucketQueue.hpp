@@ -90,7 +90,7 @@ namespace Bial {
      * @brief Removes the next element in the bucket queue. 
      * @warning none. 
      */
-    int Remove( );
+    size_t Remove( );
 
   protected:
 

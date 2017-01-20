@@ -237,7 +237,7 @@ namespace Bial {
   }
 
   template< class D >
-  inline bool EdgeMaxPathFunction< D >::Capable( int index, int adj_index, BucketState adj_state ) {
+  inline bool EdgeMaxPathFunction< D >::Capable( size_t index, size_t adj_index, BucketState adj_state ) {
     try {
       return( ( adj_state != BucketState::REMOVED ) &&
               ( this->value->operator()( index ) < this->value->operator()( adj_index ) ) );
@@ -261,7 +261,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool EdgeMaxPathFunction< D >::Propagate( int index, int adj_index ) {
+  bool EdgeMaxPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D arc_weight = static_cast< D >( std::abs( static_cast< double >( handicap( adj_index ) ) - handicap( index ) ) );
@@ -272,6 +272,42 @@ namespace Bial {
                  " arc_weight: " << arc_weight << " handicap src: " << handicap( index ) << 
                  " handicap tgt: " << handicap( adj_index ) << ".", 3 );
         this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
+        return( true );
+      }
+      return( false );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  template< class D >
+  bool EdgeMaxPathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+    try {
+      D src_value = this->value->operator()( adj_index );
+      D arc_weight = static_cast< D >( std::abs( static_cast< double >( handicap( adj_index ) ) - handicap( index ) ) );
+      D prp_value = std::max( this->value->operator()( index ), arc_weight );
+      if( src_value > prp_value ) {
+        COMMENT( "Propagating: From: " << index << " to: " << adj_index << ". Old value: " << 
+                 this->value->operator()( adj_index ) << ", propagated value : " << prp_value << 
+                 " arc_weight: " << arc_weight << " handicap src: " << handicap( index ) << 
+                 " handicap tgt: " << handicap( adj_index ) << ".", 3 );
+        this->value->operator()( adj_index ) = prp_value;
+        ( this->*this->UpdateData )( index, adj_index );
         return( true );
       }
       return( false );
