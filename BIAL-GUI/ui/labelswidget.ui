@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>271</width>
-    <height>150</height>
+    <height>121</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -20,16 +20,13 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="1" rowspan="5">
-    <widget class="QPushButton" name="pushButton">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+   <item row="1" column="1">
+    <widget class="QRadioButton" name="translucent">
      <property name="text">
-      <string>Clear label</string>
+      <string>Translucent</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -49,7 +46,17 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="2" column="1">
+    <widget class="QRadioButton" name="multilabel">
+     <property name="text">
+      <string>&amp;Multilabel</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
     <widget class="QRadioButton" name="none">
      <property name="text">
       <string>&amp;None</string>
@@ -59,7 +66,7 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="2" column="0">
     <widget class="QRadioButton" name="solid">
      <property name="text">
       <string>So&amp;lid</string>
@@ -69,23 +76,16 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QRadioButton" name="translucent">
+   <item row="6" column="0" colspan="2">
+    <widget class="QPushButton" name="pushButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
-      <string>Translucent</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QRadioButton" name="multilabel">
-     <property name="text">
-      <string>&amp;Multilabel</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
+      <string>Clear label</string>
      </property>
     </widget>
    </item>

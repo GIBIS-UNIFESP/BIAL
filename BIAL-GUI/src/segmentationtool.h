@@ -16,8 +16,8 @@ private:
   Bial::MultiImage cost;
   Bial::Image< int > pred;
   Bial::Image< int > label;
-  Bial::PathFunction< Bial::Image, int > *int_path_func;
-  Bial::PathFunction< Bial::Image, float > *flt_path_func;
+  Bial::PathFunction< Bial::Image, int > *int_path_func[ 2 ];
+  Bial::PathFunction< Bial::Image, float > *flt_path_func[ 2 ];
   Bial::Adjacency adj;
   Bial::GrowingBucketQueue *queue;
   Bial::ImageIFT< int > *int_ift;

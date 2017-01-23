@@ -69,8 +69,7 @@ bool SegmentationTool::isInitiated( ) const {
 
 SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) try :
     Tool( guiImage, viewer ), seeds( guiImage->getDim( ) ), cost( ), pred( 1, 1 ), label( 1, 1 ),
-    int_path_func( nullptr ), flt_path_func( nullptr ), adj( ), queue( nullptr ), int_ift( nullptr ),
-    flt_ift( nullptr ) {
+    adj( ), queue( nullptr ), int_ift( nullptr ), flt_ift( nullptr ) {
   COMMENT( "Initiating segmentation tool.", 0 );
   drawType = 1;
   drawing = false;
@@ -82,7 +81,11 @@ SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) tr
   seedsVisible = true;
   maskVisible = true;
   initiated = false;
-  pf = -1; // geosum path-function
+  pf = 0; // geosum path-function
+  int_path_func[ 0 ] = nullptr;
+  int_path_func[ 1 ] = nullptr;
+  flt_path_func[ 0 ] = nullptr;
+  flt_path_func[ 1 ] = nullptr;
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
 catch( std::bad_alloc &e ) {
@@ -102,15 +105,18 @@ catch( const std::logic_error &e ) {
   throw( std::logic_error( msg ) );
 }
 
-
 SegmentationTool::~SegmentationTool( ) {
-    delete int_path_func;
-    delete flt_path_func;
+    delete int_path_func[ 0 ];
+    delete int_path_func[ 1 ];
+    delete flt_path_func[ 0 ];
+    delete flt_path_func[ 1 ];
     delete queue;
     delete int_ift;
     delete flt_ift;
-    int_path_func = nullptr;
-    flt_path_func = nullptr;
+    int_path_func[ 0 ] = nullptr;
+    int_path_func[ 1 ] = nullptr;
+    flt_path_func[ 0 ] = nullptr;
+    flt_path_func[ 1 ] = nullptr;
     queue = nullptr;
     int_ift = nullptr;
     flt_ift = nullptr;
@@ -268,16 +274,19 @@ void SegmentationTool::InitiateSeeds( const Bial::Vector< size_t > &obj_seeds, c
 void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                                     const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta ) {
     try {
-        if( ( initiated ) && ( pf != 1 ) ) {
+        qDebug( ) << "GEOSUM: pf: " << pf;
+        if( ( initiated ) && ( pf != 0 ) ) {
             COMMENT( "Was running with other pathfunction. Restart required.", 0 );
-            delete int_path_func;
+            delete int_path_func[ 0 ];
+            delete int_path_func[ 1 ];
             delete int_ift;
-            int_path_func = nullptr;
+            int_path_func[ 0 ] = nullptr;
+            int_path_func[ 0 ] = nullptr;
             int_ift = nullptr;
             initiated = false;
         }
-        COMMENT( "Getting initial parameters.", 0 );
-        pf = 1;
+        COMMENT( "Getting initial parameters. pf:" << pf, 0 );
+        pf = 0;
         size_t size = img.size( );
         if( !initiated )  {
             COMMENT( "Initialize maps.", 0 );
@@ -286,7 +295,8 @@ void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector<
             label = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
             cost = Bial::MultiImage( grad );
-            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred, false, grad );
+            int_path_func[ 0 ] = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred,
+                                                                                false, grad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< int > &value( cost.IntImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -295,12 +305,12 @@ void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector<
             InitiateSeeds( obj_seeds, bkg_seeds, value );
             COMMENT( "Initialize IFT.", 0 );
             adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
-            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func, queue );
+            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func[ 0 ], queue );
             initiated = true;
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
-            int_path_func->DifferentialPropagation( true );
+            ( int_path_func[ 0 ] )->DifferentialPropagation( true );
             for( size_t elm = 0; elm < size; ++elm )
                 queue->State( elm, Bial::BucketState::NOT_VISITED );
             InitiateSeeds( obj_seeds, bkg_seeds, cost.IntImage( ) );
@@ -329,16 +339,18 @@ void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector<
 void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
                                     const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta ) {
     try {
-        if( ( initiated ) && ( pf != 1 ) ) {
+        if( ( initiated ) && ( pf != 0 ) ) {
             COMMENT( "Was running with other pathfunction. Restart required.", 0 );
-            delete flt_path_func;
+            delete flt_path_func[ 0 ];
+            delete flt_path_func[ 1 ];
             delete flt_ift;
-            flt_path_func = nullptr;
+            flt_path_func[ 0 ] = nullptr;
+            flt_path_func[ 1 ] = nullptr;
             flt_ift = nullptr;
             initiated = false;
         }
         COMMENT( "Getting initial parameters.", 0 );
-        pf = 1;
+        pf = 0;
         size_t size = img.size( );
         if( !initiated )  {
             COMMENT( "Initialize maps.", 0 );
@@ -347,7 +359,8 @@ void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vecto
             label = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
             cost = Bial::MultiImage( grad );
-            flt_path_func = new Bial::MaxPathFunction< Bial::Image, float >( cost.FltImage( ), &label, &pred, false, grad );
+            flt_path_func[ 0 ] = new Bial::MaxPathFunction< Bial::Image, float >( cost.FltImage( ), &label, &pred,
+                                                                                  false, grad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< float > &value( cost.FltImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -356,12 +369,12 @@ void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vecto
             InitiateSeeds( obj_seeds, bkg_seeds, value );
             COMMENT( "Initialize IFT.", 0 );
             adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
-            flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func, queue );
+            flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func[ 0 ], queue );
             initiated = true;
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
-            flt_path_func->DifferentialPropagation( true );
+            ( flt_path_func[ 0 ] )->DifferentialPropagation( true );
             for( size_t elm = 0; elm < size; ++elm )
                 queue->State( elm, Bial::BucketState::NOT_VISITED );
             InitiateSeeds( obj_seeds, bkg_seeds, cost.FltImage( ) );
@@ -390,11 +403,14 @@ void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vecto
 void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                                   const Bial::Vector< size_t > &bkg_seeds ) {
     try {
+        qDebug( ) << "Watershed: pf: " << pf;
         if( ( initiated ) && ( pf != 1 ) ) {
             COMMENT( "Was running with other pathfunction. Restart required.", 0 );
-            delete int_path_func;
+            delete int_path_func[ 0 ];
+            delete int_path_func[ 1 ];
             delete int_ift;
-            int_path_func = nullptr;
+            int_path_func[ 0 ] = nullptr;
+            int_path_func[ 0 ] = nullptr;
             int_ift = nullptr;
             initiated = false;
         }
@@ -408,7 +424,8 @@ void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< s
             label = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
             cost = Bial::MultiImage( grad );
-            int_path_func = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred, false, grad );
+            int_path_func[ 0 ] = new Bial::MaxPathFunction< Bial::Image, int >( cost.IntImage( ), &label, &pred,
+                                                                                false, grad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< int > &value( cost.IntImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -417,12 +434,12 @@ void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< s
             InitiateSeeds( obj_seeds, bkg_seeds, value );
             COMMENT( "Initialize IFT.", 0 );
             adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
-            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func, queue );
+            int_ift = new Bial::ImageIFT< int >( cost.IntImage( ), adj, int_path_func[ 0 ], queue );
             initiated = true;
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
-            int_path_func->DifferentialPropagation( true );
+            ( int_path_func[ 0 ] )->DifferentialPropagation( true );
             for( size_t elm = 0; elm < size; ++elm )
                 queue->State( elm, Bial::BucketState::NOT_VISITED );
             InitiateSeeds( obj_seeds, bkg_seeds, cost.IntImage( ) );
@@ -454,9 +471,11 @@ void SegmentationTool::Watershed( Bial::Image< float > &img, const Bial::Vector<
     try {
         if( ( initiated ) && ( pf != 1 ) ) {
             COMMENT( "Was running with other pathfunction. Restart required.", 0 );
-            delete flt_path_func;
+            delete flt_path_func[ 0 ];
+            delete flt_path_func[ 1 ];
             delete flt_ift;
-            flt_path_func = nullptr;
+            flt_path_func[ 0 ] = nullptr;
+            flt_path_func[ 1 ] = nullptr;
             flt_ift = nullptr;
             initiated = false;
         }
@@ -470,7 +489,8 @@ void SegmentationTool::Watershed( Bial::Image< float > &img, const Bial::Vector<
             label = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
             cost = Bial::MultiImage( grad );
-            flt_path_func = new Bial::MaxPathFunction< Bial::Image, float >( cost.FltImage( ), &label, &pred, false, grad );
+            flt_path_func[ 0 ] = new Bial::MaxPathFunction< Bial::Image, float >( cost.FltImage( ), &label, &pred,
+                                                                                  false, grad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< float > &value( cost.FltImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -479,12 +499,12 @@ void SegmentationTool::Watershed( Bial::Image< float > &img, const Bial::Vector<
             InitiateSeeds( obj_seeds, bkg_seeds, value );
             COMMENT( "Initialize IFT.", 0 );
             adj = Bial::AdjacencyType::HyperSpheric( 1.0, label.Dims( ) );
-            flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func, queue );
+            flt_ift = new Bial::ImageIFT< float >( cost.FltImage( ), adj, flt_path_func[ 0 ], queue );
             initiated = true;
         }
         else {
             COMMENT( "Continuing segmentation.", 0 );
-            flt_path_func->DifferentialPropagation( true );
+            ( flt_path_func[ 0 ] )->DifferentialPropagation( true );
             for( size_t elm = 0; elm < size; ++elm )
                 queue->State( elm, Bial::BucketState::NOT_VISITED );
             InitiateSeeds( obj_seeds, bkg_seeds, cost.FltImage( ) );
@@ -546,6 +566,7 @@ Bial::Image< int > SegmentationTool::connect( int pf_type, double alpha, double 
           default:
             qDebug( "Error: Segmented uninitialized image." );
         }
+        break;
     }
     case 1: {
         COMMENT( "Running Max Path Function IFT.", 0 );
@@ -569,6 +590,7 @@ Bial::Image< int > SegmentationTool::connect( int pf_type, double alpha, double 
           default:
             qDebug( "Error: Segmented uninitialized image." );
         }
+        break;
     }
     default: {
         //Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );

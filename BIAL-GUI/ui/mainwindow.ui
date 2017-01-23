@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>615</width>
-    <height>1020</height>
+    <height>1050</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -309,6 +309,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidgetSegmentation">
+   <property name="minimumSize">
+    <size>
+     <width>58</width>
+     <height>410</height>
+    </size>
+   </property>
    <property name="windowTitle">
     <string>Se&amp;gmentation</string>
    </property>
