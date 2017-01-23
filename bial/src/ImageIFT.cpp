@@ -59,7 +59,7 @@ namespace Bial {
       AdjacencyIterator adj_itr( this->value, adjacency );
       size_t adj_size = adjacency.size( );
       size_t adj_index;
-      size_t index = 0;
+      size_t index = std::numeric_limits< size_t >::max( );
       while( ( !this->queue->Empty( ) ) && ( index != stop_elm ) ) {
         COMMENT( "Initializing removed data.", 4 );
         index = this->queue->Remove( );
