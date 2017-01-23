@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>411</width>
+    <width>365</width>
     <height>345</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>282</width>
-    <height>319</height>
+    <width>250</width>
+    <height>320</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -35,8 +35,8 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-20</y>
-        <width>377</width>
+        <y>0</y>
+        <width>331</width>
         <height>345</height>
        </rect>
       </property>
@@ -66,7 +66,7 @@
             </property>
             <widget class="QRadioButton" name="pfmaxgeo">
              <property name="text">
-              <string>MaxFunction with Geodesic Restriction</string>
+              <string>Geo. Restriction MaxFunction</string>
              </property>
              <property name="checked">
               <bool>true</bool>

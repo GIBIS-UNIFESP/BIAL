@@ -236,16 +236,17 @@ QPixmap DefaultTool::getLabel( size_t axis ) {
         int xx, yy, zz;
         transf( x, y, guiImage->currentSlice( axis ), &xx, &yy, &zz );
         int color = m_label( xx, yy, zz ) * factor;
-        if( color != 0 ) {
+        if( color != 0 )
           scanLine[ x ] = qRgba( color, color, color, alpha );
-        }
+        else
+          scanLine[ x ] = qRgba( 0, 0, 0, alpha );
       }
     }
   }
   else if( labelType == LabelType::multilabel ) {
     res.fill( qRgba( 0, 0, 0, 0 ) );
     int alpha = qMin( static_cast< int >( m_factor ), 255 );
-#pragma omp parallel for firstprivate(axis, xsz, alpha, ysz, transf) shared(res)
+#pragma omp parallel for firstprivate(axis, xsz, ysz, alpha, transf) shared(res)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
