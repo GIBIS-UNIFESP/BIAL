@@ -258,8 +258,6 @@ namespace Bial {
       }
       ++arc_weight;
       COMMENT( "Propagated value.", 3 );
-      // D prp_value = static_cast< D >
-      //   ( std::min( static_cast< double >( std::numeric_limits< int >::max( ) ), arc_weight ) );
       D prp_value = static_cast< D >( arc_weight );
       COMMENT( "Updating path value.", 3 );
       if( src_value > prp_value ) {

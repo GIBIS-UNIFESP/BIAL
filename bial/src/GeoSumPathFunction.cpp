@@ -235,15 +235,12 @@ namespace Bial {
       double arc_weight = handicap( index ) + handicap( adj_index );
       COMMENT( "Orienting edges.", 3 );
       double fraction = 0;
-      if( intensity[ index ] > intensity[ adj_index ] ) {
+      if( intensity[ index ] > intensity[ adj_index ] )
         fraction = std::abs( alpha );
-      }
-      else if( intensity[ index ] < intensity[ adj_index ] ) {
+      else if( intensity[ index ] < intensity[ adj_index ] )
         fraction = -std::abs( alpha );
-      }
-      if( alpha < 0.0 ) {
+      if( alpha < 0.0 )
         fraction = -fraction;
-      }
       arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
       COMMENT( "Suppressing non-zero.", 3 );
       ++arc_weight;
@@ -254,7 +251,9 @@ namespace Bial {
       D prp_value = static_cast< D >( this->value->operator()( index ) + std::pow( arc_weight, beta )
                                       - 1.0 + distance );
       COMMENT( "Updating value.", 3 );
-      if( src_value > prp_value ) {
+      if( ( src_value > prp_value ) ||
+          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+            ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
         this->value->operator()( adj_index ) = prp_value;
         ( this->*this->UpdateData )( index, adj_index );
         return( true );

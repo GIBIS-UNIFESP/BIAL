@@ -13,15 +13,17 @@ private:
   Bial::Image< int > mask;
 
   // Aditional objects required to run IFT from scratch. Used for DIFT.
-  Bial::MultiImage cost;
-  Bial::Image< int > pred;
-  Bial::Image< int > label;
+  Bial::MultiImage cost[ 2 ];
+  Bial::Image< int > pred[ 2 ];
+  Bial::Image< int > label[ 2 ];
   Bial::PathFunction< Bial::Image, int > *int_path_func[ 2 ];
   Bial::PathFunction< Bial::Image, float > *flt_path_func[ 2 ];
   Bial::Adjacency adj;
   Bial::GrowingBucketQueue *queue;
-  Bial::ImageIFT< int > *int_ift;
-  Bial::ImageIFT< float > *flt_ift;
+  Bial::ImageIFT< int > *int_ift[ 2 ];
+  Bial::ImageIFT< float > *flt_ift[ 2 ];
+  double curr_alpha;
+  double curr_beta;
 
   Bial::Point3D lastPoint;
   bool drawing;
@@ -58,8 +60,8 @@ public:
   void clearSeeds( );
 
   template< class D >
-  void InitiateSeeds( const Bial::Vector< size_t > &obj_seeds, const Bial::Vector< size_t > &bkg_seeds,
-                      Bial::Image< D > &grad );
+  void InitiateSeeds( size_t map_set, const Bial::Vector< size_t > &obj_seeds,
+                      const Bial::Vector< size_t > &bkg_seeds, Bial::Image< D > &grad );
   void GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
                     const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta );
   void GeodesicSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
@@ -68,6 +70,10 @@ public:
                   const Bial::Vector< size_t > &bkg_seeds );
   void Watershed( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
                   const Bial::Vector< size_t > &bkg_seeds );
+  void FSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
+                               const Bial::Vector< size_t > &bkg_seeds );
+  void FSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
+                               const Bial::Vector< size_t > &bkg_seeds );
 
   /* pf_type: 0-maxgeo, 1-max, 2-sum */
   Bial::Image< int > connect( int pf_type, double alpha, double beta );

@@ -251,7 +251,9 @@ namespace Bial {
       COMMENT( "Propagated value.", 4 );
       D prp_value = static_cast< D >( arc_weight );
       COMMENT( "Updating path value.", 4 );
-      if( src_value > prp_value ) {
+      if( ( src_value > prp_value ) ||
+          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+            ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
         this->value->operator()( adj_index ) = prp_value;
         ( this->*this->UpdateData )( index, adj_index );
         return( true );
