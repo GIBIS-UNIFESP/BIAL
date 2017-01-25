@@ -29,7 +29,7 @@ namespace Bial {
     /** @brief  Remove functions of IFT. They will operate on valid maps among value, label, and predecessor. */
     typedef bool ( PathFunction< C, D >::*RemoveFn )( size_t index, BucketState state );
     /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
-    typedef bool ( PathFunction< C, D >::*PropagateFn )( size_t index, size_t adj_index );
+    typedef bool ( PathFunction< C, D >::*PropagateFn )( size_t index, size_t adj_index, size_t adj_pos );
     /** @brief  Update functions of IFT. They will operate on valid maps among value, label, and predecessor. */
     typedef void ( PathFunction< C, D >::*UpdateFn )( size_t index, size_t adj_index );
 
@@ -152,7 +152,7 @@ namespace Bial {
      *        differential IFT.
      * @warning none.
      */
-    virtual bool PropagateDifferential( size_t index, size_t adj_index ) = 0;
+    virtual bool PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) = 0;
 
     /**
      * @date 2013/Jun/28
@@ -162,7 +162,7 @@ namespace Bial {
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
      */
-    virtual bool Propagate( size_t index, size_t adj_index ) = 0;
+    virtual bool Propagate( size_t index, size_t adj_index, size_t adj_pos ) = 0;
 
     /**
      * @date 2012/Sep/19

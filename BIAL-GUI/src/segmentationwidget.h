@@ -40,6 +40,10 @@ private slots:
 
   void on_pfsum_toggled(bool checked);
 
+  void on_morphological_grad_toggled(bool checked);
+
+  void on_sobel_grad_toggled(bool checked);
+
 private:
   Ui::Segmentationwidget *ui;
   SegmentationTool *tool;

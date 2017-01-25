@@ -8,6 +8,7 @@
 #include "Geometrics.hpp"
 #include "GeoSumPathFunction.hpp"
 #include "GradientMorphological.hpp"
+#include "GradientSobel.hpp"
 #include "MaxPathFunction.hpp"
 #include "MultiImage.hpp"
 #include "OrientedExternPathFunction.hpp"
@@ -93,6 +94,7 @@ SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) tr
   int_path_func[ 1 ] = nullptr;
   flt_path_func[ 0 ] = nullptr;
   flt_path_func[ 1 ] = nullptr;
+  grad_type = -1;
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
 catch( std::bad_alloc &e ) {
@@ -313,7 +315,7 @@ void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector<
             Bial::Image< int > &value( cost[ 1 ].IntImage( ) );
             int_path_func[ 1 ] =
               new Bial::GeodesicRestrictionPathFunction< int >( value, &label[ 1 ], &pred[ 1 ], false, grad, img,
-                                                                alpha, beta );
+                                                                adj, alpha, beta );
             COMMENT( "Initialize queue.", 0 );
             for( size_t elm = 0; elm < size; ++elm )
                 value[ elm ] = std::numeric_limits< int >::max( );
@@ -424,7 +426,7 @@ void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vecto
             Bial::Image< float > &value( cost[ 1 ].FltImage( ) );
             flt_path_func[ 1 ] =
               new Bial::GeodesicRestrictionPathFunction< float >( value, &label[ 1 ], &pred[ 1 ], false, grad, img,
-                                                                  alpha, beta );
+                                                                  adj, alpha, beta );
             COMMENT( "Initialize queue.", 0 );
             for( size_t elm = 0; elm < size; ++elm )
                 value[ elm ] = std::numeric_limits< float >::max( );
@@ -775,6 +777,8 @@ void SegmentationTool::FSum( Bial::Image< float > &img, const Bial::Vector< size
 
 
 Bial::Image< int > SegmentationTool::connect( int pf_type, double alpha, double beta ) {
+  if( grad_type == -1 )
+      MorphologicalGradient( );
   Bial::Vector< size_t > obj_seed;
   Bial::Vector< size_t > bkg_seed;
   maskVisible = true;
@@ -918,3 +922,58 @@ QPixmap SegmentationTool::getLabel( size_t axis ) {
   pixmaps[ axis ] = QPixmap::fromImage( res );
   return( pixmaps[ axis ] );
 }
+
+void SegmentationTool::MorphologicalGradient( ) {
+    switch( guiImage->getImageType( ) ) {
+      case Bial::MultiImageType::int_img:
+        grad = Bial::MultiImage( Bial::Gradient::Morphological( guiImage->getIntImage( ) ) );
+        break;
+      case Bial::MultiImageType::flt_img:
+        grad = Bial::MultiImage( Bial::Gradient::Morphological( guiImage->getFltImage( ) ) );
+        break;
+      case Bial::MultiImageType::clr_img: {
+        Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) ) );
+        grad = Bial::MultiImage( Bial::Gradient::Morphological( img ) );
+        break;
+      }
+      case Bial::MultiImageType::rcl_img: {
+        Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) ) );
+        grad = Bial::MultiImage( Bial::Gradient::Morphological( img ) );
+        break;
+      }
+      default:
+        qDebug( "Error: Segmenting uninitialized image." );
+    }
+    grad_type = 0;
+    initiated = false;
+}
+
+void SegmentationTool::SobelGradient( ) {
+    switch( guiImage->getImageType( ) ) {
+      case Bial::MultiImageType::int_img:
+        grad = Bial::MultiImage( guiImage->getIntImage( ) );
+        Bial::Gradient::Sobel( guiImage->getIntImage( ), &( grad.IntImage( ) ), nullptr ) ;
+        break;
+      case Bial::MultiImageType::flt_img:
+        grad = Bial::MultiImage( guiImage->getFltImage( ) );
+        Bial::Gradient::Sobel( guiImage->getFltImage( ), &( grad.FltImage( ) ), nullptr );
+        break;
+      case Bial::MultiImageType::clr_img: {
+        Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) ) );
+        grad = Bial::MultiImage( img );
+        Bial::Gradient::Sobel( img, &( grad.IntImage( ) ), nullptr );
+        break;
+      }
+      case Bial::MultiImageType::rcl_img: {
+        Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) ) );
+        grad = Bial::MultiImage( img );
+        Bial::Gradient::Sobel( img, &( grad.IntImage( ) ), nullptr );
+        break;
+      }
+      default:
+        qDebug( "Error: Segmenting uninitialized image." );
+    }
+    grad_type = 1;
+    initiated = false;
+}
+

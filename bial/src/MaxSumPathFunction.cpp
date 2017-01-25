@@ -251,7 +251,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxSumPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool MaxSumPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight.", 3 );
@@ -296,7 +296,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxSumPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+  bool MaxSumPathFunction< C, D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight.", 3 );

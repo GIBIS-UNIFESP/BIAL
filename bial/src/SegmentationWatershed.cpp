@@ -142,7 +142,7 @@ namespace Bial {
                 COMMENT( "Conquering: " << adj_index, 4 );
                 D previous_value = gradient[ adj_index ];
                 COMMENT( "previous_value: " << previous_value, 4 );
-                if( max_function.Propagate( index, adj_index ) ) {
+                if( max_function.Propagate( index, adj_index, adj ) ) {
                   COMMENT( "propagated!", 4 );
                   queue.Update( adj_index, previous_value, gradient[ adj_index ] );
                   COMMENT( "queue updated!", 4 );
@@ -160,7 +160,7 @@ namespace Bial {
                 COMMENT( "Conquering: " << adj_index, 4 );
                 D previous_value = gradient[ adj_index ];
                 COMMENT( "previous_value: " << previous_value, 4 );
-                if( max_function.Propagate( index, adj_index ) ) {
+                if( max_function.Propagate( index, adj_index, adj ) ) {
                   COMMENT( "propagated!", 4 );
                   queue.Update( adj_index, previous_value, gradient[ adj_index ] );
                   COMMENT( "queue updated!", 4 );

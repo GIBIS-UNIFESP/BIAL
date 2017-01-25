@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>365</width>
-    <height>390</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>250</width>
-    <height>380</height>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>390</height>
+    <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,7 @@
         <x>0</x>
         <y>0</y>
         <width>345</width>
-        <height>370</height>
+        <height>480</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -46,7 +46,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>177</height>
+           <height>200</height>
           </size>
          </property>
          <property name="title">
@@ -66,7 +66,7 @@
             </property>
             <widget class="QRadioButton" name="pfmaxgeo">
              <property name="text">
-              <string>Geo. Restriction MaxFunction</string>
+              <string>Geodesic Restriction Function</string>
              </property>
              <property name="checked">
               <bool>true</bool>
@@ -199,7 +199,7 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox">
          <property name="minimumSize">
           <size>
@@ -208,7 +208,7 @@
           </size>
          </property>
          <property name="title">
-          <string>Seeds and Mask</string>
+          <string>Visualization and Execution</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
@@ -314,6 +314,57 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBoxGradient">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>80</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Gradients</string>
+         </property>
+         <widget class="QSplitter" name="splitter_5">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>303</width>
+            <height>50</height>
+           </rect>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QRadioButton" name="morphological_grad">
+           <property name="text">
+            <string>Morphological</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QRadioButton" name="sobel_grad">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Sobel</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </widget>
         </widget>
        </item>
       </layout>

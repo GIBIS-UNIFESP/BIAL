@@ -105,3 +105,11 @@ void SegmentationWidget::on_pfsum_toggled( bool checked ) {
     }
 }
 
+void SegmentationWidget::on_morphological_grad_toggled( bool checked ) {
+    tool->MorphologicalGradient( );
+}
+
+void SegmentationWidget::on_sobel_grad_toggled( bool checked ) {
+    tool->SobelGradient( );
+}
+

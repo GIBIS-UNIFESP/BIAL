@@ -32,7 +32,7 @@ namespace Bial {
       size_t size = border.size( );
       Image< float > value( border.Dim( ), border.PixelSize( ) );
       Adjacency adj = AdjacencyType::HyperSpheric( 1.8, border.Dims( ) );
-      GeodesicDistancePathFunction< float > path_func( value, nullptr, nullptr, false, value );
+      GeodesicDistancePathFunction< float > path_func( value, nullptr, nullptr, false, adj, value );
       GrowingBucketQueue queue( size, 0.001f, true, true );
       COMMENT( "Setting seed pixels.", 0 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
@@ -72,7 +72,7 @@ namespace Bial {
       size_t size = border.size( );
       Image< float > value( mask );
       Adjacency adj = AdjacencyType::HyperSpheric( 1.8, border.Dims( ) );
-      GeodesicDistancePathFunction< float > path_func( value, nullptr, nullptr, false, value );
+      GeodesicDistancePathFunction< float > path_func( value, nullptr, nullptr, false, adj, value );
       GrowingBucketQueue queue( size, 0.001f, true, true );
       COMMENT( "Setting seed pixels.", 0 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {

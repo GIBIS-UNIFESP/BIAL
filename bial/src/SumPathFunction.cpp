@@ -238,7 +238,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool SumPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool SumPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D prp_value = this->value->operator()( index ) + handicap( adj_index );
@@ -273,7 +273,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool SumPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+  bool SumPathFunction< C, D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D prp_value = this->value->operator()( index ) + handicap( adj_index );

@@ -75,7 +75,7 @@ namespace Bial {
               COMMENT( "Conquering: " << adj_index, 4 );
               D previous_value = this->value[ adj_index ];
               COMMENT( "previous_value: " << previous_value, 4 );
-              if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) )
+              if( ( this->function->*( this->function->PropagateData ) )( index, adj_index, adj ) )
                 this->queue->Update( adj_index, previous_value, this->value[ adj_index ] );
             }
           }

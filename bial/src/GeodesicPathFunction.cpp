@@ -24,15 +24,21 @@
 #include "FileImage.hpp"
 #endif
 
-/* Implementation *************************************************************************************************** */
+/* Implementation ************************************************************************************************** */
 
 namespace Bial {
 
   template< class D >
   GeodesicDistancePathFunction< D >::GeodesicDistancePathFunction( Image< D > &init_value, Image< int > *init_label,
-                                                                   Image< int > *init_predecessor, bool sequential_label, 
-                                                                   const Image< D > &handicap ) try : 
+                                                                   Image< int > *init_predecessor,
+                                                                   bool sequential_label, const Adjacency &adj,
+                                                                   const Image< D > &handicap ) try :
     PathFunction< Image, D >( init_value, init_label, init_predecessor, sequential_label ), handicap( handicap ) {
+    size_t adj_size = adj.size( );
+    dists = Vector< double >( adj_size, 0.0 );
+    for( size_t elm = 0; elm < adj_size; ++elm )
+      dists[ elm ] = std::sqrt( adj( elm, 0 ) * adj( elm, 0 ) + adj( elm, 1 ) * adj( elm, 1 ) +
+                                adj( elm, 2 ) * adj( elm, 2 ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -53,8 +59,9 @@ namespace Bial {
 
   template< class D >
   GeodesicDistancePathFunction< D >::GeodesicDistancePathFunction( const GeodesicDistancePathFunction< D > &pf ) try :
-    GeodesicDistancePathFunction< D >( *( pf.value ), pf.label, pf.predecessor, true, pf.handicap ) {
+    GeodesicDistancePathFunction< D >( *( pf.value ), pf.label, pf.predecessor, true, Adjacency(), pf.handicap ) {
       this->next_label = pf.next_label;
+      this->dists = pf.dists;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -209,12 +216,13 @@ namespace Bial {
   }
 
   template< class D >
-  bool GeodesicDistancePathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool GeodesicDistancePathFunction< D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing spacial distance.", 3 );
-      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
-                                         handicap.Dims( ) );
+//      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
+//                                         handicap.Dims( ) );
+      double distance = dists[ adj_pos ];
       COMMENT( "Propagated value.", 3 );
       D prp_value = static_cast< D >( this->value->operator()( index ) + distance );
       COMMENT( "Updating value.", 3 );
@@ -244,12 +252,13 @@ namespace Bial {
   }
 
   template< class D >
-  bool GeodesicDistancePathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+  bool GeodesicDistancePathFunction< D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing spacial distance.", 3 );
-      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
-                                         handicap.Dims( ) );
+//      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
+//                                         handicap.Dims( ) );
+      double distance = dists[ adj_pos ];
       COMMENT( "Propagated value.", 3 );
       D prp_value = static_cast< D >( this->value->operator()( index ) + distance );
       COMMENT( "Updating value.", 3 );

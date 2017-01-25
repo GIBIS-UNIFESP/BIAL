@@ -261,7 +261,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool EdgeMaxPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool EdgeMaxPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D arc_weight = static_cast< D >( std::abs( static_cast< double >( handicap( adj_index ) ) - handicap( index ) ) );
@@ -296,7 +296,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool EdgeMaxPathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+  bool EdgeMaxPathFunction< D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D arc_weight = static_cast< D >( std::abs( static_cast< double >( handicap( adj_index ) ) - handicap( index ) ) );

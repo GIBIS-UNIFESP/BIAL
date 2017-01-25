@@ -35,21 +35,28 @@ namespace Bial {
                                                                          bool sequential_label, 
                                                                          const Image< D > &handicap,
                                                                          const Image< D > &new_intensity,
+                                                                         const Adjacency &adj,
                                                                          double new_alpha, double new_beta ) try : 
     PathFunction< Image, D >( init_value, init_label, init_predecessor, sequential_label ), intensity( new_intensity ),
-      handicap( handicap ), alpha( new_alpha ), beta( new_beta ) {
+      handicap( handicap ), alpha( new_alpha ), beta( new_beta ), dists( ) {
       if( intensity.Dims( ) != init_value.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Intensity and value image dimensions do not match." ) );
         throw( std::logic_error( msg ) );
       }
       if( ( alpha < -1.0 ) || ( alpha > 1.0 ) ) {
-        std::string msg( BIAL_ERROR( "Invalid alpha. Expected: -1.0 to 1.0. Given: " + std::to_string( alpha ) + "." ) );
+        std::string msg( BIAL_ERROR( "Invalid alpha. Expected: -1.0 to 1.0. Given: " + 
+                                     std::to_string( alpha ) + "." ) );
         throw( std::logic_error( msg ) );
       }
       if( ( beta < 0.0 ) || ( beta > 4.0 ) ) {
         std::string msg( BIAL_ERROR( "Invalid beta. Expected: 0.0 to 4.0. Given: " + std::to_string( beta ) + "." ) );
         throw( std::logic_error( msg ) );
       }
+      size_t adj_size = adj.size( );
+      dists = Vector< double >( adj_size, 0.0 );
+      for( size_t elm = 0; elm < adj_size; ++elm )
+        dists[ elm ] = std::sqrt( adj( elm, 0 ) * adj( elm, 0 ) + adj( elm, 1 ) * adj( elm, 1 ) + 
+                                  adj( elm, 2 ) * adj( elm, 2 ) );
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -69,10 +76,12 @@ namespace Bial {
   }
 
   template< class D >
-  GeodesicRestrictionPathFunction< D >::GeodesicRestrictionPathFunction( const GeodesicRestrictionPathFunction< D > &pf )
-    try : GeodesicRestrictionPathFunction< D >( *( pf.value ), pf.label, pf.predecessor, true, pf.handicap, pf.intensity,
-                                                pf.alpha, pf.beta ) {
+  GeodesicRestrictionPathFunction< D >::
+  GeodesicRestrictionPathFunction( const GeodesicRestrictionPathFunction< D > &pf )
+    try : GeodesicRestrictionPathFunction< D >( *( pf.value ), pf.label, pf.predecessor, true, pf.handicap, 
+                                                pf.intensity, Adjacency( ), pf.alpha, pf.beta ) {
       this->next_label = pf.next_label;
+      dists = pf.dists;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -91,10 +100,12 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  template< class D > GeodesicRestrictionPathFunction< D >::~GeodesicRestrictionPathFunction( ) {
+  template< class D >
+  GeodesicRestrictionPathFunction< D >::~GeodesicRestrictionPathFunction( ) {
   }
 
-  template< class D > GeodesicRestrictionPathFunction< D >
+  template< class D >
+  GeodesicRestrictionPathFunction< D >
   GeodesicRestrictionPathFunction< D >::operator=( const GeodesicRestrictionPathFunction< D > &pf ) {
     try {
       return( GeodesicRestrictionPathFunction< D >( pf ) );
@@ -228,25 +239,28 @@ namespace Bial {
   }
 
   template< class D >
-  bool GeodesicRestrictionPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool GeodesicRestrictionPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight.", 3 );
       double arc_weight = handicap( index ) + handicap( adj_index );
       COMMENT( "Orienting edges.", 3 );
       double fraction = 0;
-      if( intensity[ index ] > intensity[ adj_index ] )
+      // if( intensity[ index ] > intensity[ adj_index ] )
+      //   fraction = std::abs( alpha );
+      // else if( intensity[ index ] < intensity[ adj_index ] )
+      //   fraction = -std::abs( alpha );
+      // if( alpha < 0.0 )
+      //   fraction = -fraction;
+      if( ( intensity[ index ] - intensity[ adj_index ] ) * alpha >= 0.0 )
         fraction = std::abs( alpha );
-      else if( intensity[ index ] < intensity[ adj_index ] )
+      else
         fraction = -std::abs( alpha );
-      if( alpha < 0.0 )
-        fraction = -fraction;
       arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
       COMMENT( "Suppressing non-zero.", 3 );
       ++arc_weight;
       COMMENT( "Computing spacial distance.", 3 );
-      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
-                                         handicap.Dims( ) );
+      double distance = dists( adj_pos );
       COMMENT( "Propagated value.", 3 );
       D prp_value = static_cast< D >( this->value->operator()( index ) + std::pow( arc_weight, beta )
                                       - 1.0 + distance );
@@ -279,28 +293,32 @@ namespace Bial {
   }
 
   template< class D >
-  bool GeodesicRestrictionPathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+  bool GeodesicRestrictionPathFunction< D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight.", 3 );
       double arc_weight = handicap( index ) + handicap( adj_index );
       COMMENT( "Orienting edges.", 3 );
       double fraction = 0;
-      if( intensity[ index ] > intensity[ adj_index ] ) {
+      // if( intensity[ index ] > intensity[ adj_index ] ) {
+      //   fraction = std::abs( alpha );
+      // }
+      // else if( intensity[ index ] < intensity[ adj_index ] ) {
+      //   fraction = -std::abs( alpha );
+      // }
+      // if( alpha < 0.0 ) {
+      //   fraction = -fraction;
+      // }
+      double tmp = ( intensity[ index ] - intensity[ adj_index ] ) * alpha;
+      if( tmp > 0.0 )
         fraction = std::abs( alpha );
-      }
-      else if( intensity[ index ] < intensity[ adj_index ] ) {
+      else if( tmp < 0.0 )
         fraction = -std::abs( alpha );
-      }
-      if( alpha < 0.0 ) {
-        fraction = -fraction;
-      }
       arc_weight = std::round( arc_weight * ( 1.0 + fraction ) );
       COMMENT( "Suppressing non-zero.", 3 );
       ++arc_weight;
       COMMENT( "Computing spacial distance.", 3 );
-      double distance = DFIDE::Distance( handicap.Coordinates( index ), handicap.Coordinates( adj_index ), 0, 0,
-                                         handicap.Dims( ) );
+      double distance = dists( adj_pos );
       COMMENT( "Propagated value.", 3 );
       D prp_value = static_cast< D >( this->value->operator()( index ) + std::pow( arc_weight, beta )
                                       - 1.0 + distance );

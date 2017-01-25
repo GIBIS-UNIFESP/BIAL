@@ -127,7 +127,7 @@ namespace Bial {
      *        differential IFT.
      * @warning none.
      */
-    bool PropagateDifferential( size_t index, size_t adj_index );
+    bool PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos );
 
     /**
      * @date 2015/Apr/14
@@ -137,7 +137,7 @@ namespace Bial {
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
      */
-    bool Propagate( size_t index, size_t adj_index );
+    bool Propagate( size_t index, size_t adj_index, size_t adj_pos );
 
     /**
      * @date 2015/Apr/14

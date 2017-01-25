@@ -225,7 +225,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool OrientedInternPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool OrientedInternPathFunction< D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight of " << index << " to " << adj_index, 4 );
@@ -279,7 +279,7 @@ namespace Bial {
   }
 
   template< class D >
-  bool OrientedInternPathFunction< D >::Propagate( size_t index, size_t adj_index ) {
+  bool OrientedInternPathFunction< D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Computing arc weight of " << index << " to " << adj_index, 4 );

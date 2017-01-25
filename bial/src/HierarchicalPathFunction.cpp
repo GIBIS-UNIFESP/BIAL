@@ -267,7 +267,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool HierarchicalPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool HierarchicalPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Checking conditions related to merge and split label. Merge_label( index ): " << 
@@ -310,7 +310,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool HierarchicalPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+  bool HierarchicalPathFunction< C, D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       COMMENT( "Checking conditions related to merge and split label. Merge_label( index ): " << 

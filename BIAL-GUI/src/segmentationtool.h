@@ -13,6 +13,7 @@ private:
   Bial::Image< int > mask;
 
   // Aditional objects required to run IFT from scratch. Used for DIFT.
+  Bial::MultiImage grad;
   Bial::MultiImage cost[ 2 ];
   Bial::Image< int > pred[ 2 ];
   Bial::Image< int > label[ 2 ];
@@ -38,6 +39,7 @@ private:
   std::array< bool, 4 > needUpdate;
   bool initiated;
   int pf; // Path function used during last execution. -1: none; 0: geosum; 1:max; 2:sum same order of radio buttons.
+  int grad_type; //Type of gradient: -1: none; 0: morphological; 1: sobel.
 
 public:
   enum { Type = 1 };
@@ -74,6 +76,9 @@ public:
                                const Bial::Vector< size_t > &bkg_seeds );
   void FSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
                                const Bial::Vector< size_t > &bkg_seeds );
+
+  void MorphologicalGradient( );
+  void SobelGradient( );
 
   /* pf_type: 0-maxgeo, 1-max, 2-sum */
   Bial::Image< int > connect( int pf_type, double alpha, double beta );

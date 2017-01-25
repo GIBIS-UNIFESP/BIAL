@@ -25,9 +25,13 @@ namespace Bial {
   protected:
 
     /**
-     * @brief  handicap container (Vector, Matrix, Image, etc).
+     * @brief handicap container (Vector, Matrix, Image, etc).
      */
     Image< D > handicap;
+    /**
+     * @brief auxiliar vector to compute distances faster.
+     */
+    Vector< double > dists;
 
   public:
 
@@ -43,7 +47,7 @@ namespace Bial {
      * @warning none.
      */
     GeodesicDistancePathFunction( Image< D > &init_value, Image< int > *init_label, Image< int > *init_predecessor,
-                                  bool sequential_label, const Image< D > &handicap );
+                                  bool sequential_label, const Adjacency &adj, const Image< D > &handicap );
 
     /**
      * @date 2014/Jan/08
@@ -128,7 +132,7 @@ namespace Bial {
      *        differential IFT.
      * @warning none.
      */
-    bool PropagateDifferential( size_t index, size_t adj_index );
+    bool PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos );
 
     /**
      * @date 2014/Jan/08
@@ -138,7 +142,7 @@ namespace Bial {
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
      */
-    bool Propagate( size_t index, size_t adj_index );
+    bool Propagate( size_t index, size_t adj_index, size_t adj_pos );
 
     /**
      * @date 2014/Jan/08

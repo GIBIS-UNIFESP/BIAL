@@ -67,7 +67,7 @@ namespace Bial {
           for( size_t adj_index = 0; adj_index < value.size( ); ++adj_index ) {
             if( function->Capable( index, adj_index, queue->State( adj_index ) ) ) {
               D previous_value = value( adj_index );
-              if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) )
+              if( ( this->function->*( this->function->PropagateData ) )( index, adj_index, 0 ) )
                 queue->Update( adj_index, previous_value, value( adj_index ) );
             }
           }

@@ -42,8 +42,13 @@ namespace Bial {
      * Weight to control behavior between gradient and distance weight. <br>
      * Lower: more similar to geodesic distance. <br>
      * Higher: more similar to gradient. Default value = 0.5
-		 */
+     */
     double beta;
+    /**
+     * @brief
+     * auxiliar vector to compute distances faster.
+     */
+    Vector< double > dists;
 
   public:
 
@@ -54,6 +59,7 @@ namespace Bial {
      * @param init_predecessor: Reference for predecessor container.
      * @param sequential_label: Sets labeling sequentially.
      * @param new_intensity: Intensity used for cost propagation (e.g. a gradient image.)
+     * @param adj: Adjacency relation used in path propagation.
      * @param new_alpha: weight of orientation. Negative for dark objects and positive for light objects.
      * @param new_beta: weight of the geodesic funtion. Closer to 0 is more similar to euclidean distance. Higher
      * values is closer to SumPathFunction.
@@ -63,7 +69,7 @@ namespace Bial {
      */
     GeodesicRestrictionPathFunction( Image< D > &init_value, Image< int > *init_label, Image< int > *init_predecessor, 
                                      bool sequential_label, const Image< D > &handicap, const Image< D > &new_intensity,
-                                     double new_alpha = 0.0, double new_beta = 0.5 );
+                                     const Adjacency &adj, double new_alpha = 0.0, double new_beta = 0.5 );
 
     /**
      * @date 2013/Jul/01
@@ -141,24 +147,24 @@ namespace Bial {
 
     /**
      * @date 2017/Jan/20
-     * @param source: Source pixel index.
-     * @param target: Adjacent pixel index.
+     * @param index: Source pixel index.
+     * @param adj_index: Adjacent pixel index.
      * @return True if path-value is propagated.
      * @brief Updates adjacent pixel values and returns true if path_function is propagated. This is used with
      *        differential IFT.
      * @warning none.
      */
-    bool PropagateDifferential( size_t index, size_t adj_index );
+    bool PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos );
 
     /**
      * @date 2013/Jun/28
-     * @param source: Source pixel index.
-     * @param target: Adjacent pixel index.
+     * @param index: Source pixel index.
+     * @param adj_index: Adjacent pixel index.
      * @return True if path-value is propagated.
      * @brief Updates adjacent pixel values and returns true if path_function is propagated.
      * @warning none.
      */
-    bool Propagate( size_t index, size_t adj_index );
+    bool Propagate( size_t index, size_t adj_index, size_t adj_pos );
 
     /**
      * @date 2012/Sep/19

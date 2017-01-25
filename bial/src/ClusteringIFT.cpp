@@ -114,7 +114,7 @@ namespace Bial {
               if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
-                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) ) {
+                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index, fxd ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
                 }
@@ -127,7 +127,7 @@ namespace Bial {
               if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
-                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) ) {
+                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index, var ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
                 }
@@ -152,7 +152,7 @@ namespace Bial {
               if( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) {
                 COMMENT( "Capable from " << index << " to " << adj_index, 4 );
                 D previous_value = this->value( adj_index );
-                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index ) ) {
+                if( ( this->function->*( this->function->PropagateData ) )( index, adj_index, var ) ) {
                   COMMENT( "Propagation from " << index << " to " << adj_index, 4 );
                   this->queue->Update( adj_index, previous_value, this->value( adj_index ) );
                 }

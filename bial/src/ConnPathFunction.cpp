@@ -238,7 +238,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool ConnPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool ConnPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D prp_value = std::max( this->value->operator()( index ), handicap( adj_index ) );
@@ -268,7 +268,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool ConnPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+  bool ConnPathFunction< C, D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       D src_value = this->value->operator()( adj_index );
       D prp_value = std::max( this->value->operator()( index ), handicap( adj_index ) );

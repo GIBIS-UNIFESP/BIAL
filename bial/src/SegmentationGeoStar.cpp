@@ -58,7 +58,7 @@ namespace Bial {
       label.Set( -1 );
       size_t size = image.size( );
       COMMENT( "FIRST STEP. Running with foreground seeds.", 0 );
-      GeodesicRestrictionPathFunction< D > geo_path( grad, nullptr, &pred, false, grad, image, alpha, beta );
+      GeodesicRestrictionPathFunction< D > geo_path( grad, nullptr, &pred, false, grad, image, adj, alpha, beta );
       GrowingBucketQueue queue( size, 1, geo_path.Increasing( ), true );
       for( size_t elm = 0; elm < size; ++elm )
         grad[ elm ] = std::numeric_limits< D >::max( );

@@ -163,7 +163,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool FeatureDistanceFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool FeatureDistanceFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       double distance = DFIDE::Distance( feats, feats, index * feats.Features( ), adj_index * feats.Features( ),
                                          feats.Features( ) );
@@ -193,7 +193,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool FeatureDistanceFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+  bool FeatureDistanceFunction< C, D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       double distance = DFIDE::Distance( feats, feats, index * feats.Features( ), adj_index * feats.Features( ),
                                          feats.Features( ) );

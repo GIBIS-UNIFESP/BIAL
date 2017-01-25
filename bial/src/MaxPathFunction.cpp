@@ -235,7 +235,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index ) {
+  bool MaxPathFunction< C, D >::PropagateDifferential( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       IF_DEBUG( ( this->predecessor == nullptr ) || ( this->label == nullptr ) ) {
         std::string msg( BIAL_ERROR( "Differential propragation requires predecessor and label maps." ) );
@@ -276,7 +276,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  bool MaxPathFunction< C, D >::Propagate( size_t index, size_t adj_index ) {
+  bool MaxPathFunction< C, D >::Propagate( size_t index, size_t adj_index, size_t adj_pos ) {
     try {
       COMMENT( "Propagating!", 4 );
       D src_value = this->value->operator()( adj_index );
