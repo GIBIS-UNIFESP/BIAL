@@ -304,17 +304,17 @@ void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector<
         pf = 0;
         size_t size = img.size( );
         if( !initiated )  {
-            Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
+            Bial::Image< int > &lgrad( grad.IntImage( ) );
             COMMENT( "Initialize maps.", 0 );
             pred[ 1 ] = Bial::Image< int >( img.Dim( ) );
             label[ 1 ] = Bial::Image< int >( img.Dim( ) );
             adj = Bial::AdjacencyType::HyperSpheric( 1.5, label[ 1 ].Dims( ) );
             COMMENT( "Initialize first path function.", 0 );
-            cost[ 0 ] = Bial::MultiImage( grad );
-            cost[ 1 ] = Bial::MultiImage( grad );
+            cost[ 0 ] = grad;
+            cost[ 1 ] = grad;
             Bial::Image< int > &value( cost[ 1 ].IntImage( ) );
             int_path_func[ 1 ] =
-              new Bial::GeodesicRestrictionPathFunction< int >( value, &label[ 1 ], &pred[ 1 ], false, grad, img,
+              new Bial::GeodesicRestrictionPathFunction< int >( value, &label[ 1 ], &pred[ 1 ], false, lgrad, img,
                                                                 adj, alpha, beta );
             COMMENT( "Initialize queue.", 0 );
             for( size_t elm = 0; elm < size; ++elm )
@@ -341,12 +341,12 @@ void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector<
             if( alpha >= 0.0 ) {
               COMMENT( "OrientedExternPathFunction.", 0 );
               int_path_func[ 0 ] = new Bial::OrientedExternPathFunction< int >( value2, label[ 0 ], &pred[ 0 ], false,
-                                                                                grad, img, &pred[ 1 ], alpha );
+                                                                                lgrad, img, &pred[ 1 ], alpha );
             }
             else {
               COMMENT( "OrientedInternPathFunction.", 0 );
               int_path_func[ 0 ] = new Bial::OrientedInternPathFunction< int >( value2, label[ 0 ], &pred[ 0 ], false,
-                                                                                grad, img, &pred[ 1 ], -alpha );
+                                                                                lgrad, img, &pred[ 1 ], -alpha );
             }
             int_ift[ 0 ] = new Bial::ImageIFT< int >( value2, adj, int_path_func[ 0 ], queue );
             int_ift[ 0 ]->Run( );
@@ -415,17 +415,17 @@ void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vecto
         pf = 0;
         size_t size = img.size( );
         if( !initiated )  {
-            Bial::Image< float > grad( Bial::Gradient::Morphological( img ) );
+            Bial::Image< float > &lgrad( grad.FltImage( ) );
             COMMENT( "Initialize maps.", 0 );
             pred[ 1 ] = Bial::Image< int >( img.Dim( ) );
             label[ 1 ] = Bial::Image< int >( img.Dim( ) );
             adj = Bial::AdjacencyType::HyperSpheric( 1.5, label[ 1 ].Dims( ) );
             COMMENT( "Initialize first path function.", 0 );
-            cost[ 0 ] = Bial::MultiImage( grad );
-            cost[ 1 ] = Bial::MultiImage( grad );
+            cost[ 0 ] = grad;
+            cost[ 1 ] = grad;
             Bial::Image< float > &value( cost[ 1 ].FltImage( ) );
             flt_path_func[ 1 ] =
-              new Bial::GeodesicRestrictionPathFunction< float >( value, &label[ 1 ], &pred[ 1 ], false, grad, img,
+              new Bial::GeodesicRestrictionPathFunction< float >( value, &label[ 1 ], &pred[ 1 ], false, lgrad, img,
                                                                   adj, alpha, beta );
             COMMENT( "Initialize queue.", 0 );
             for( size_t elm = 0; elm < size; ++elm )
@@ -452,13 +452,13 @@ void SegmentationTool::GeodesicSum( Bial::Image< float > &img, const Bial::Vecto
             if( alpha >= 0.0 ) {
               COMMENT( "OrientedExternPathFunction.", 0 );
               flt_path_func[ 0 ] =
-                  new Bial::OrientedExternPathFunction< float >( value2, label[ 0 ], &pred[ 0 ], false, grad, img,
+                  new Bial::OrientedExternPathFunction< float >( value2, label[ 0 ], &pred[ 0 ], false, lgrad, img,
                                                                &pred[ 1 ], alpha );
             }
             else {
               COMMENT( "OrientedInternPathFunction.", 0 );
               flt_path_func[ 0 ] =
-                  new Bial::OrientedInternPathFunction< float >( value2, label[ 0 ], &pred[ 0 ], false, grad, img,
+                  new Bial::OrientedInternPathFunction< float >( value2, label[ 0 ], &pred[ 0 ], false, lgrad, img,
                                                                  &pred[ 1 ], -alpha );
             }
             flt_ift[ 0 ] = new Bial::ImageIFT< float >( value2, adj, flt_path_func[ 0 ], queue );
@@ -529,13 +529,13 @@ void SegmentationTool::Watershed( Bial::Image< int > &img, const Bial::Vector< s
         size_t size = img.size( );
         if( !initiated )  {
             COMMENT( "Initialize maps.", 0 );
-            Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
+            Bial::Image< int > &lgrad( grad.IntImage( ) );
             pred[ 0 ] = Bial::Image< int >( img.Dim( ) );
             label[ 0 ] = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
-            cost[ 0 ] = Bial::MultiImage( grad );
+            cost[ 0 ] = grad;
             int_path_func[ 0 ] = new Bial::MaxPathFunction< Bial::Image, int >( cost[ 0 ].IntImage( ), &label[ 0 ],
-                                                                                &pred[ 0 ], false, grad );
+                                                                                &pred[ 0 ], false, lgrad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< int > &value( cost[ 0 ].IntImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -595,13 +595,13 @@ void SegmentationTool::Watershed( Bial::Image< float > &img, const Bial::Vector<
         size_t size = img.size( );
         if( !initiated )  {
             COMMENT( "Initialize maps.", 0 );
-            Bial::Image< float > grad( Bial::Gradient::Morphological( img ) );
+            Bial::Image< float > &lgrad( grad.FltImage( ) );
             pred[ 0 ] = Bial::Image< int >( img.Dim( ) );
             label[ 0 ] = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
-            cost[ 0 ] = Bial::MultiImage( grad );
+            cost[ 0 ] = grad;
             flt_path_func[ 0 ] = new Bial::MaxPathFunction< Bial::Image, float >( cost[ 0 ].FltImage( ), &label[ 0 ],
-                                                                                  &pred[ 0 ], false, grad );
+                                                                                  &pred[ 0 ], false, lgrad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< float > &value( cost[ 0 ].FltImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -662,13 +662,13 @@ void SegmentationTool::FSum( Bial::Image< int > &img, const Bial::Vector< size_t
         size_t size = img.size( );
         if( !initiated )  {
             COMMENT( "Initialize maps.", 0 );
-            Bial::Image< int > grad( Bial::Gradient::Morphological( img ) );
+            Bial::Image< int > &lgrad( grad.IntImage( ) );
             pred[ 0 ] = Bial::Image< int >( img.Dim( ) );
             label[ 0 ] = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
-            cost[ 0 ] = Bial::MultiImage( grad );
+            cost[ 0 ] = grad;
             int_path_func[ 0 ] = new Bial::SumPathFunction< Bial::Image, int >( cost[ 0 ].IntImage( ), &label[ 0 ],
-                                                                                &pred[ 0 ], false, grad );
+                                                                                &pred[ 0 ], false, lgrad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< int > &value( cost[ 0 ].IntImage( ) );
             for( size_t elm = 0; elm < size; ++elm )
@@ -729,13 +729,13 @@ void SegmentationTool::FSum( Bial::Image< float > &img, const Bial::Vector< size
         size_t size = img.size( );
         if( !initiated )  {
             COMMENT( "Initialize maps.", 0 );
-            Bial::Image< float > grad( Bial::Gradient::Morphological( img ) );
+            Bial::Image< float > &lgrad( grad.FltImage( ) );
             pred[ 0 ] = Bial::Image< int >( img.Dim( ) );
             label[ 0 ] = Bial::Image< int >( img.Dim( ) );
             COMMENT( "Initialize path function.", 0 );
-            cost[ 0 ] = Bial::MultiImage( grad );
+            cost[ 0 ] = grad;
             flt_path_func[ 0 ] = new Bial::SumPathFunction< Bial::Image, float >( cost[ 0 ].FltImage( ), &label[ 0 ],
-                                                                                  &pred[ 0 ], false, grad );
+                                                                                  &pred[ 0 ], false, lgrad );
             COMMENT( "Initialize queue.", 0 );
             Bial::Image< float > &value( cost[ 0 ].FltImage( ) );
             for( size_t elm = 0; elm < size; ++elm )

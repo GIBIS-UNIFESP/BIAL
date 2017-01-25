@@ -82,27 +82,27 @@ void SegmentationWidget::on_thickDoubleSpinBox_valueChanged( double arg1 ) {
 }
 
 void SegmentationWidget::on_pfmaxgeo_toggled( bool checked ) {
-    if( tool->isInitiated( ) ) {
-      QMessageBox messageBox;
-      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
-      messageBox.setFixedSize(500,200);
-    }
+//    if( tool->isInitiated( ) ) {
+//      QMessageBox messageBox;
+//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+//      messageBox.setFixedSize(500,200);
+//    }
 }
 
 void SegmentationWidget::on_pfmax_toggled( bool checked ) {
-    if( tool->isInitiated( ) ) {
-      QMessageBox messageBox;
-      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
-      messageBox.setFixedSize(500,200);
-    }
+//    if( tool->isInitiated( ) ) {
+//      QMessageBox messageBox;
+//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+//      messageBox.setFixedSize(500,200);
+//    }
 }
 
 void SegmentationWidget::on_pfsum_toggled( bool checked ) {
-    if( tool->isInitiated( ) ) {
-      QMessageBox messageBox;
-      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
-      messageBox.setFixedSize(500,200);
-    }
+//    if( tool->isInitiated( ) ) {
+//      QMessageBox messageBox;
+//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+//      messageBox.setFixedSize(500,200);
+//    }
 }
 
 void SegmentationWidget::on_morphological_grad_toggled( bool checked ) {
