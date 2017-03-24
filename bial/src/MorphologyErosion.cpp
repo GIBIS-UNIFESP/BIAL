@@ -179,10 +179,11 @@ namespace Bial {
       AdjacencyIterator adj_itr( image, adjacency );
       size_t adj_size = adjacency.size( );
       size_t adj_pxl;
-      for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
-        for( size_t idx = 0; idx < adj_size; ++idx ) {
+      for( size_t sed = min_index; sed < max_index; ++sed ) {
+        size_t pxl = seeds[ sed ];
+        for( size_t idx = 1; idx < adj_size; ++idx ) {
           if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) && ( image[ adj_pxl ] == 0 ) ) {
-            result[ seeds( pxl ) ] = 0;
+            result[ pxl ] = 0;
             break;
           }
         }

@@ -26,7 +26,7 @@ namespace Bial {
 
   /* Adjacency ----------------------------------------------------------------------------------------------------- **/
 
-  Adjacency::Adjacency( ) try : relation( 1, 2 ) {
+  Adjacency::Adjacency( ) try : relation( 2, 1 ) {
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

@@ -35,7 +35,7 @@ namespace Bial {
      * Definition: relation(dims, size)
      */
     Matrix< int > relation;
-
+    
   public:
 
     /**

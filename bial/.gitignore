@@ -8,6 +8,8 @@ cpplex/obj/*
 cpplex/lib/*
 lsh/obj/*
 lsh/lib/*
+SLIC/obj/*
+SLIC/lib/*
 
 *.slo
 *.lo

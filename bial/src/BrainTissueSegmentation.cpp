@@ -184,17 +184,16 @@ namespace Bial {
         BrainIntensities tissues( brain );
         COMMENT( "Segmenting CSF from GM+WM.", 0 );
         D intensity = tissues.first_valley;
-        if( modality != MRIModality::T1 ) {
+        if( modality != MRIModality::T1 )
           intensity = tissues.second_valley;
-        }
-        Image< D > wmgm = TissueSegmentation( img, msk, intensity, csf_scl_min, csf_scl_max, hierarchical );
+        Image< D > wmgm( TissueSegmentation( img, msk, intensity, csf_scl_min, csf_scl_max, hierarchical ) );
         if( modality != MRIModality::T1 )
           Binary::Complement( wmgm, msk );
         COMMENT( "Segmenting GM from WM.", 0 );
         intensity = tissues.second_valley;
         if( modality != MRIModality::T1 )
           intensity = tissues.first_valley;
-        Image< int > tissue = TissueSegmentation( img, wmgm, intensity, gm_scl_min, gm_scl_max, hierarchical );
+        Image< int > tissue( TissueSegmentation( img, wmgm, intensity, gm_scl_min, gm_scl_max, hierarchical ) );
         if( modality == MRIModality::T1 ) {
           for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
             if( msk[ pxl ] != 0 )

@@ -16,15 +16,13 @@ using namespace Bial;
 int main( int argc, char **argv ) {
   if( ( argc < 5 ) || ( argc == 6 ) || ( argc == 8 ) ) {
     cout << "Usage: " << argv[ 0 ] <<
-    " <input image> <brain mask> <modality> <output image> [<csf_min_scl>, <csf_max_scl>] [<gm_min_scl>, <gm_max_scl>]"
-         << endl;
+      " <input image> <brain mask> <modality> <output image> [<csf_min_scl>, <csf_max_scl>] " <<
+      "[<gm_min_scl>, <gm_max_scl>]" << endl;
     cout << "\tmodality: T1, T2, or PD." << endl;
-    cout <<
-    "\tcsf_min_scl, csf_max_cls: Default values = 0.4, 0.5. Suggested values: 0.1 <= csf_min_scl <= csf_max_scl <= 0.9."
-         << endl;
-    cout <<
-    "\tgm_min_scl, gm_max_scl: Default values = 0.4, 0.5. Suggested values: 0.1 <= gm_min_scl <= gm_max_scl <= 0.9." <<
-    endl;
+    cout << "\tcsf_min_scl, csf_max_cls: Default values = 0.4, 0.5. " << 
+      "Suggested values: 0.1 <= csf_min_scl <= csf_max_scl <= 0.9." << endl;
+    cout << "\tgm_min_scl, gm_max_scl: Default values = 0.4, 0.5. " <<
+      "Suggested values: 0.1 <= gm_min_scl <= gm_max_scl <= 0.9." << endl;
     exit( 1 );
   }
   /* Fixed number sequence */

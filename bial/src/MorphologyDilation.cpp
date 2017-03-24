@@ -136,9 +136,8 @@ namespace Bial {
       COMMENT( "Inserting pixels into the priority queue.", 2 );
       Vector< size_t > seeds;
       for( size_t pxl = 0; pxl < image.size( ); ++pxl ) {
-        if( image[ pxl ] == 0 ) {
+        if( image[ pxl ] == 0 )
           seeds.push_back( pxl );
-        }
       }
       COMMENT( "Computing dilation result.", 2 );
       Image< D > res( image );
@@ -187,11 +186,12 @@ namespace Bial {
       AdjacencyIterator adj_itr( image, adjacency );
       size_t adj_size = adjacency.size( );
       size_t adj_pxl;
-      for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
+      for( size_t sed = min_index; sed < max_index; ++sed ) {
+        size_t pxl = seeds[ sed ];
         for( size_t idx = 0; idx < adj_size; ++idx ) {
           if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
             if( image[ adj_pxl ] != 0 ) {
-              result[ seeds( pxl ) ] = image[ adj_pxl ];
+              result[ pxl ] = image[ adj_pxl ];
               break;
             }
           }

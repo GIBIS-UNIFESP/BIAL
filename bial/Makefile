@@ -14,7 +14,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DBIAL_EXPLICIT_LIB -DQT_NO_DEBUG
 CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -m64 -Wno-unused-function -Wno-unused-parameter -I/media/fabio/experimentos/bial-git/bial/inc -I/media/fabio/experimentos/bial-git/bial/src -I/media/fabio/experimentos/bial-git/bial/lsh/inc -I/media/fabio/experimentos/bial-git/bial/SLIC/inc -I/media/fabio/experimentos/bial-git/bial/description/inc -I/media/fabio/experimentos/bial-git/bial/cpplex/inc -I/media/fabio/experimentos/bial-git/bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@))) -fopenmp -std=c++11 -DBIAL_EXPLICIT_LIB -fopenmp -std=c++11 -O3 -std=c++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -m64 -Wno-unused-function -Wno-unused-parameter -I/home/fabio/experimentos/bial-git/bial/inc -I/home/fabio/experimentos/bial-git/bial/src -I/home/fabio/experimentos/bial-git/bial/lsh/inc -I/home/fabio/experimentos/bial-git/bial/SLIC/inc -I/home/fabio/experimentos/bial-git/bial/description/inc -I/home/fabio/experimentos/bial-git/bial/cpplex/inc -I/home/fabio/experimentos/bial-git/bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@))) -fopenmp -std=c++11 -DBIAL_EXPLICIT_LIB -fopenmp -std=c++11 -O3 -std=c++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I.
 LINK          = g++
 LFLAGS        = -m64 -std=c++11 -fopenmp -std=c++11 -Wl,-O1 -shared -Wl,-soname,libbial.so.1
@@ -201,7 +201,6 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/KernelBox.cpp \
 		src/KernelGabor.cpp \
 		src/KernelGaussian.cpp \
-		src/KernelIterator.cpp \
 		src/KernelRound.cpp \
 		src/KernelSobel.cpp \
 		src/KernelSquare.cpp \
@@ -437,7 +436,6 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/KernelBox.o \
 		../build/linux/release/obj/KernelGabor.o \
 		../build/linux/release/obj/KernelGaussian.o \
-		../build/linux/release/obj/KernelIterator.o \
 		../build/linux/release/obj/KernelRound.o \
 		../build/linux/release/obj/KernelSobel.o \
 		../build/linux/release/obj/KernelSquare.o \
@@ -1334,9 +1332,6 @@ compiler_clean:
 ../build/linux/release/obj/KernelGaussian.o: src/KernelGaussian.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/KernelGaussian.o src/KernelGaussian.cpp
 
-../build/linux/release/obj/KernelIterator.o: src/KernelIterator.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/KernelIterator.o src/KernelIterator.cpp
-
 ../build/linux/release/obj/KernelRound.o: src/KernelRound.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/KernelRound.o src/KernelRound.cpp
 
@@ -1578,211 +1573,210 @@ compiler_clean:
 
 install_headersDataFiles: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/include/qt5/bial/ || mkdir -p $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Adjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyGrayCode.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyIterator.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyMarchingCube.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencyRound.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/AdjacencySquare.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Array.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BinaryCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BinaryComplement.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Bit.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BrainCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BrainInhomogeneity.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BrainIntensities.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BrainSkullStripping.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BrainTissueSegmentation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BSpline.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/BucketQueueElements.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ChessBoardDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/CityBlockDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ClusteringIFT.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Color.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ColorChannel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ColorFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ColorHSI.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ColorLab.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ColorMedianFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ColorRGB.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Common.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ConnPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Correlation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DegeneratedIFT.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DFIDE.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DicomHeader.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DiffPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DiffusionFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Display.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawBox.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawCircle.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawFigure.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawIntersection.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawLine.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawPoint.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawSequence.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawShape.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/DrawSVGGraph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EdgeLazyWalk.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EdgeLiveWire.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EdgeMaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EdgeRiverBed.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Errors.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/EuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastDecreasingFifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastDecreasingLifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastIncreasingFifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FastIncreasingLifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Feature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FeaturePathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FeatureResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FFmpegIO.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/File.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileBMP.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileDicom.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileImage.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileMatrix.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileNifti.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FilePNM.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileScene.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FileSignal.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FilteringAnisotropicDiffusion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FilteringGaussian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FilteringMean.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FilteringMedian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FilteringOptimalAnisotropicDiffusion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/FuzzyCMeans.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GDCM.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeodesicPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Geometrics.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeometricsAffine.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeometricsRotate.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeometricsScale.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeometricsShear.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeometricsTranslate.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GeoSumPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientCanny.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientDirectional.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientGabor.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientMorphological.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientPosOperations.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientScaleCanny.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GradientSobel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Graph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/GrowingBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/gzstream.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HeartCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HeartSegmentation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HierarchicalGraph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HierarchicalPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Histogram.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/HoughCircle.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Image.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageEquals.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageFrame.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageIFT.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageInterpolation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageMerge.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageROI.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageSplit.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/ImageSwapDims.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/InfBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Integral.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/IntensityGlobals.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/IntensityLocals.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Kernel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelBox.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelGabor.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelGaussian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelIterator.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelRound.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelSobel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KernelSquare.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/KnnGraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/LocalMaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/LSHGraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MarchingCubes.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Matrix.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MatrixDeterminant.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MatrixIdentity.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MatrixInverse.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MatrixPolar.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MatrixResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MatrixTranspose.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MaxSumPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MedianFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MinimumSpanningTree.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MinPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MorphologyDilation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MorphologyErosion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MRIModality.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/MultiImage.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/NiftiHeader.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/OPFClusterMatching.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/OPFHierarchicalClustering.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/OPFSpatialClustering.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/OPFSpectralClustering.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/OrientedExternPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/OrientedInternPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/PathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/PixelInterpolation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Plotting.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/PNMHeader.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/PreEuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/RandomQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/RealColor.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Sample.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SampleRandom.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SampleUniform.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationBackground.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationBorder.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationConnectedComponents.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationFSum.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationGeoStar.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationHysteresis.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationIntensityThreshold.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationMST.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationOctants.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationOtsuThreshold.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationQuadrants.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationSurface.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SegmentationWatershed.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Signal.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalAccumulate.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalEmptyBins.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalEqualize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalHysteresis.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalKeyPoints.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalMedianFilter.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalNormalize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SignalOtsuThreshold.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SortingBinarySearch.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SortingSort.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SpatialFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SquareEuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsAverage.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsBaddeley.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsDice.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsJaccard.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsKappa.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsMAD.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsObsAgree.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsPosNeg.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/StatisticsStdDev.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/SumPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Superpixel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Table.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/TransformEuclDist.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/TransformEuclDistInv.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/Vector.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
-	-$(INSTALL_FILE) /media/fabio/experimentos/bial-git/bial/inc/VideoIO.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Adjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/AdjacencyGrayCode.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/AdjacencyIterator.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/AdjacencyMarchingCube.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/AdjacencyRound.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/AdjacencySquare.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Array.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BinaryCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BinaryComplement.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Bit.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BrainCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BrainInhomogeneity.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BrainIntensities.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BrainSkullStripping.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BrainTissueSegmentation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BSpline.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/BucketQueueElements.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ChessBoardDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/CityBlockDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ClusteringIFT.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Color.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ColorChannel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ColorFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ColorHSI.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ColorLab.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ColorMedianFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ColorRGB.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Common.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ConnPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Correlation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DegeneratedIFT.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DFIDE.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DicomHeader.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DiffPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DiffusionFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Display.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawBox.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawCircle.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawFigure.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawIntersection.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawLine.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawPoint.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawSequence.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawShape.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/DrawSVGGraph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/EdgeLazyWalk.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/EdgeLiveWire.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/EdgeMaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/EdgeRiverBed.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Errors.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/EuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FastBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FastDecreasingFifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FastDecreasingLifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FastIncreasingFifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FastIncreasingLifoBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Feature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FeaturePathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FeatureResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FFmpegIO.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/File.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileBMP.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileDicom.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileImage.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileMatrix.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileNifti.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilePNM.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileScene.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FileSignal.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringAnisotropicDiffusion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringGaussian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringMean.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringMedian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringOptimalAnisotropicDiffusion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FuzzyCMeans.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GDCM.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeodesicPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Geometrics.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeometricsAffine.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeometricsRotate.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeometricsScale.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeometricsShear.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeometricsTranslate.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeoSumPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientCanny.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientDirectional.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientGabor.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientMorphological.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientPosOperations.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientScaleCanny.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GradientSobel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Graph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GrowingBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/gzstream.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/HeartCOG.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/HeartSegmentation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/HierarchicalGraph.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/HierarchicalPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Histogram.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/HoughCircle.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Image.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageEquals.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageFrame.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageIFT.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageInterpolation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageMerge.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageROI.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageSplit.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/ImageSwapDims.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/InfBucketQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Integral.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/IntensityGlobals.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/IntensityLocals.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Kernel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KernelBox.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KernelGabor.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KernelGaussian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KernelRound.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KernelSobel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KernelSquare.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/KnnGraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/LocalMaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/LSHGraphAdjacency.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MarchingCubes.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Matrix.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MatrixDeterminant.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MatrixIdentity.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MatrixInverse.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MatrixPolar.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MatrixResize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MatrixTranspose.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MaxPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MaxSumPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MedianFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MinimumSpanningTree.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MinPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MorphologyDilation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MorphologyErosion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MRIModality.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/MultiImage.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/NiftiHeader.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/OPFClusterMatching.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/OPFHierarchicalClustering.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/OPFSpatialClustering.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/OPFSpectralClustering.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/OrientedExternPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/OrientedInternPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/PathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/PixelInterpolation.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Plotting.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/PNMHeader.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/PreEuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/RandomQueue.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/RealColor.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Sample.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SampleRandom.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SampleUniform.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationBackground.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationBorder.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationConnectedComponents.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationFSum.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationGeoStar.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationHysteresis.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationIntensityThreshold.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationMST.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationOctants.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationOtsuThreshold.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationQuadrants.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationSurface.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SegmentationWatershed.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Signal.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalAccumulate.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalEmptyBins.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalEqualize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalHysteresis.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalKeyPoints.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalMedianFilter.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalNormalize.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SignalOtsuThreshold.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SortingBinarySearch.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SortingSort.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SpatialFeature.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SquareEuclideanDistanceFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsAverage.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsBaddeley.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsDice.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsJaccard.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsKappa.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsMAD.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsObsAgree.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsPosNeg.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/StatisticsStdDev.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/SumPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Superpixel.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Table.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/TransformEuclDist.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/TransformEuclDistInv.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Vector.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/VideoIO.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 
 uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/VideoIO.hpp
@@ -1867,7 +1861,6 @@ uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelSquare.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelSobel.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelRound.hpp
-	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelIterator.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelGaussian.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelGabor.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/KernelBox.hpp

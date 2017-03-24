@@ -903,6 +903,7 @@ namespace Bial {
   };
 
   /**
+   * @date 2012/Jul/02
    * @param os: output stream.
    *             img: an image.
    * @return Reference to os.
