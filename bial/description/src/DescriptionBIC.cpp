@@ -44,7 +44,7 @@ namespace Bial {
     int r, g, b;
     int fator_g = dim;
     int fator_b = fator_g * dim;
-
+    int mask_size;
     Features< int > complete_histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
 
@@ -62,11 +62,13 @@ namespace Bial {
 
       /* Classificação dos pixels---------------------------------- */
 
+      mask_size = 0;
 
       Adjacency adjpixels = AdjacencyType::Circular( 1.0 );
       for( size_t y = 0; y < quantized.size( 1 ); y++ ) {
         for( size_t x = 0; x < quantized.size( 0 ); x++ ) {
           if( mask( x, y ) == 1 ) {
+            ++mask_size;
             same_color = 0;
 
             size_t p = x + y * quantized.size( 0 );
@@ -100,7 +102,7 @@ namespace Bial {
         complete_histogram[ interior[ j ] ]++;
       }
       for( size_t j = 0; j < complete_histogram.size( ); j++ ) {
-        complete_histogram[ j ] = Log( complete_histogram[ j ], quantized.size( ) );
+        complete_histogram[ j ] = Log( complete_histogram[ j ], mask_size );
       }
       feat.push_back( complete_histogram );
     }

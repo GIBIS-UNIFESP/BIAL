@@ -68,12 +68,13 @@ namespace Bial {
       std::tie( img, mask ) = this->detected[ i ];
       property = Vector< int >( img.size( ) );
 
-
+      size_t mask_size = 0;
       /* Local Activity Spectrum------------------------------------------------ */
       Adjacency adjpixels = AdjacencyType::Circular( 1.5f );
       for( size_t y = 0; y < img.size( 1 ); y++ ) {
         for( size_t x = 0; x < img.size( 0 ); x++ ) {
           if( mask( x, y ) == 1 ) {
+            mask_size++;
             p = x + y * img.size( 0 );
             for( size_t pos = 1; pos <= adjpixels.size( ) / 2; pos++ ) {
               ulong pixel_x = x + adjpixels( pos, 0 );
@@ -109,7 +110,7 @@ namespace Bial {
         histogram[ property[ j ] ]++;
       }
       for( size_t j = 0; j < size; j++ ) {
-        histogram[ j ] = ( int ) Log( histogram[ j ], img.size( ) );
+        histogram[ j ] = ( int ) Log( histogram[ j ], mask_size );
       }
       feat.push_back( histogram );
       /* ---------------------------------------------------------- */

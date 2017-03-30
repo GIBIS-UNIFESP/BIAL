@@ -64,13 +64,16 @@ namespace Bial {
 
       /* Histograma------------------------------------------------ */
       histogram = Features< int >( size );
+      size_t mask_size = 0;
+
       for( size_t j = 0; j < quantized.size( ); j++ ) {
         if( mask[ j ] == 1 ) {
           histogram[ quantized[ j ] ]++;
+          mask_size++;
         }
       }
       for( size_t j = 0; j < size; j++ ) {
-        histogram[ j ] = Log( histogram[ j ], quantized.size( ) );
+        histogram[ j ] = Log( histogram[ j ], mask_size );
       }
       feat.push_back( histogram );
       /* ---------------------------------------------------------- */
