@@ -101,6 +101,7 @@ namespace Bial {
        * -----------------------------------------------------------
        * Frequencia dos pixels--------------------------------------
        */
+      size_t mask_size = 0;
       for( size_t j = 0; j < n_distances; j++ ) {
         frequency[ j ] = Vector< int >( quantized.size( ) );
       }
@@ -108,6 +109,7 @@ namespace Bial {
       for( size_t y = 0; y < quantized.size( 1 ); y++ ) {
         for( size_t x = 0; x < quantized.size( 0 ); x++ ) {
           if( mask( x, y ) == 1 ) {
+            mask_size++;
             for( size_t d = 0; d < n_distances; d++ ) {
               size_t raio = distances[ d ];
               p = x + y * img.size( 0 );
@@ -133,7 +135,7 @@ namespace Bial {
         }
       }
       for( size_t j = 0; j < size; j++ ) {
-        complete_histogram[ j ] = Log( complete_histogram[ j ], n_distances * quantized.size( ) );
+        complete_histogram[ j ] = Log( complete_histogram[ j ], n_distances * mask_size );
       }
       feat.push_back( complete_histogram );
       /* ---------------------------------------------------------- */

@@ -54,6 +54,7 @@ namespace Bial {
     unsigned char fator_g = dim;
     unsigned char fator_b = fator_g * dim;
     unsigned char r, g, b;
+    size_t mask_size;
 
     Features< int > histogram, area, colors;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
@@ -79,6 +80,7 @@ namespace Bial {
 
       size_t fator_x = grid;
       size_t fator_y = cell;
+      mask_size = 0;
       for( size_t r = 0; r < quantized.size( 1 ); r++ ) {
         for( size_t c = 0; c < quantized.size( 0 ); c++ ) {
           if( mask( c, r ) == 1 ) {
@@ -90,6 +92,7 @@ namespace Bial {
       }
       for( size_t j = 0; j < quantized.size( ); j++ ) {
         if( mask[ j ] == 1 ) {
+          ++mask_size;
           area[ quantized[ j ] ]++;
         }
       }
@@ -109,10 +112,10 @@ namespace Bial {
       histogram[ n++ ] = dim;
       histogram[ n++ ] = grid;
       for( size_t j = 0; j < area.size( ); j++ ) {
-        histogram[ n++ ] = Log( area[ j ], quantized.size( ) );
+        histogram[ n++ ] = Log( area[ j ], mask_size );
       }
       for( size_t j = 0; j < colors.size( ); j++ ) {
-        histogram[ n++ ] = Log( colors[ j ], quantized.size( ) );
+        histogram[ n++ ] = Log( colors[ j ], mask_size );
       }
       feat.push_back( histogram );
       /* ---------------------------------------------------------- */

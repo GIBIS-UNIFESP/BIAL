@@ -112,7 +112,7 @@ namespace Bial {
     Image< int > img;
     Image< int > mask;
 
-
+    size_t mask_size = 0;
     Features< int > histogram;
     for( size_t i = 0; i < this->detected.size( ); ++i ) {
       std::tie( img, mask ) = this->detected[ i ];
@@ -131,7 +131,7 @@ namespace Bial {
       for( size_t y = 1; y < img.size( 1 ) - 1; y++ ) {
         for( size_t x = 1; x < img.size( 0 ) - 1; x++ ) {
           if( mask( x, y ) == 1 ) {
-
+            mask_size++;
             p = x + y * img.size( 0 );
             for( size_t pos = 1; pos <= adjpixels.size( ) >> 1; ++pos ) {
               if( pos == 1 ) {
@@ -153,8 +153,8 @@ namespace Bial {
       }
       for( size_t j = 0; j < 4; j++ ) {
         for( size_t k = 0; k < 511; k++ ) {
-          sum[ j ][ k ] /= ( float ) img.size( );
-          dif[ j ][ k ] /= ( float ) img.size( );
+          sum[ j ][ k ] /= ( float ) mask_size;
+          dif[ j ][ k ] /= ( float ) mask_size;
         }
       }
       /* ---------------------------------------------------------- */

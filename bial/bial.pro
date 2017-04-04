@@ -42,7 +42,7 @@ QMAKE_CXXFLAGS_RELEASE -= -pg
 QMAKE_CXXFLAGS_DEBUG += -O0
 QMAKE_CXXFLAGS_DEBUG -= -O2 -O3
 QMAKE_CXXFLAGS_DEBUG += -pg
-
+QMAKE_LFLAGS += -pg
 macx{
 QMAKE_CXXFLAGS += -stdlib=libc++ -std=c++17
 QMAKE_LFLAGS += -stdlib=libc++
@@ -50,11 +50,15 @@ QMAKE_LFLAGS += -stdlib=libc++
 
 
 QMAKE_CXXFLAGS -= -pipe
-LIBS += -lavutil -lavformat -lavcodec -lswscale -lm
+
+
+LIBS += -lm
+QMAKE_LFLAGS += -lm
+
 
 win32{
 QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -fopenmp  -lavutil -lavformat -lavcodec -lswscale -lm
+QMAKE_LFLAGS += -fopenmp
 
 Release:DESTDIR = $$PWD/../build/win/release/lib/
 Release:OBJECTS_DIR = $$PWD/../build/win/release/obj
@@ -506,9 +510,11 @@ DISTFILES += \
     uncrustify.cfg
 
 #TODO: Verify if FFMPEG is available
+
 #HEADERS += inc/FFmpegIO.hpp
 #SOURCES += src/FFmpegIO.cpp
-
+#LIBS += -lavutil -lavformat -lavcodec -lswscale
+#QMAKE_LFLAGS += -lavutil -lavformat -lavcodec -lswscale
 
 ## INSTALL LIBRARY
 headersDataFiles.path = $$[QT_INSTALL_HEADERS]/bial/
