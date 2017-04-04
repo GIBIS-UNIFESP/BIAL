@@ -68,7 +68,7 @@ BIAL_SRC=../bial/src/*.cpp
 SRC=./src
 BIN=./bin
 
-all: Adjacency Bit Brain Clustering Color DataSet Draw Edge Feature File Filtering Gradient Geometrics Heart Hough Image ImageInterpolation Insert-Inhomogeneity Kernel Lungs MarchingCubes Matrix MRI OPF Plate PNM Relaxometria Segmentation Signal Sorting Statistics SuperPixel Table Transform Vector
+all: Adjacency Bit Brain Clustering Color DataSet Draw Edge Feature File Filtering Fourier Gradient Geometrics Heart Hough Image ImageInterpolation Insert-Inhomogeneity Kernel Lungs MarchingCubes Matrix MRI OPF Plate PNM Relaxometria Segmentation Signal Sorting Statistics SuperPixel Table Transform Vector
 
 libbial:
 	export LD_LIBRARY_PATH=$(LIB)
@@ -235,6 +235,14 @@ Filtering-Mean: libbial
 
 Filtering-OptimalAnisotropic: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+
+
+Fourier: Fourier-Test
+
+Fourier-Test: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
 
 
 Gradient: Gradient-AutoCanny Gradient-Canny Gradient-DirectionalSobel Gradient-Gabor Gradient-HoleClosing Gradient-Morphological Gradient-MultiScaleCanny Gradient-MultiSubScaleCanny Gradient-ScaleCanny Gradient-Sobel Gradient-SuppressedSobel

@@ -56,6 +56,7 @@ typedef long long llint;
 typedef unsigned long ulint;
 typedef unsigned long long ullint;
 typedef long double ldbl;
+typedef std::complex< double > bial_complex;
 /* Defining the standard output functions. */
 
 /**

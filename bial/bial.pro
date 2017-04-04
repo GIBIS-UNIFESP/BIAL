@@ -10,15 +10,13 @@ QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc -I$$PWD/description/inc\
 -I$$PWD/cpplex/inc -I$$PWD/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
-Profile {
-  CONFIG+=static
-  message( "Profile" )
-}
+CONFIG(release, release|debug|profile) : message( "Release 1" )
 
-Debug {
-  QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=2
-  message( "Debug" )
-}
+CONFIG(profile, profile|release|debug) : CONFIG+=static
+CONFIG(profile, profile|release|debug) : message( "Profile 1" )
+
+CONFIG(debug, debug|release|profile) : QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=2
+CONFIG(debug, debug|release|profile) : message( "Debug 1" )
 
 #-I$$PWD/SLIC/inc
 
@@ -83,18 +81,17 @@ Debug:OBJECTS_DIR = $$PWD/../build/mac/debug/obj
 
 unix{
 
-CONFIG(release, debug|release):DESTDIR = $$PWD/../build/linux/release/lib/
-CONFIG(release, debug|release):OBJECTS_DIR = $$PWD/../build/linux/release/obj
+CONFIG(release, release|debug|profile):message( "Release Dir" )
+CONFIG(release, release|debug|profile):DESTDIR = $$PWD/../build/linux/release/lib/
+CONFIG(release, release|debug|profile):OBJECTS_DIR = $$PWD/../build/linux/release/obj
 
-message( "Debug Dir" )
-CONFIG(debug, debug|release):DESTDIR = $$PWD/../build/linux/debug/lib/
-CONFIG(debug, debug|release):OBJECTS_DIR = $$PWD/../build/linux/debug/obj
+CONFIG(debug, debug|release|profile):message( "Debug Dir" )
+CONFIG(debug, debug|release|profile):DESTDIR = $$PWD/../build/linux/debug/lib/
+CONFIG(debug, debug|release|profile):OBJECTS_DIR = $$PWD/../build/linux/debug/obj
 
-Profile {
-message( "Profile Dir" )
-CONFIG(debug, debug|release):DESTDIR = $$PWD/../build/linux/profile/lib/
-CONFIG(debug, debug|release):OBJECTS_DIR = $$PWD/../build/linux/profile/obj
-}
+CONFIG(profile, profile|debug|release):message( "Profile Dir" )
+CONFIG(profile, profile|debug|release):DESTDIR = $$PWD/../build/linux/profile/lib/
+CONFIG(profile, profile|debug|release):OBJECTS_DIR = $$PWD/../build/linux/profile/obj
 
 }
 
@@ -188,6 +185,7 @@ HEADERS += \
     inc/FilteringMean.hpp \
     inc/FilteringMedian.hpp \
     inc/FilteringOptimalAnisotropicDiffusion.hpp \
+    inc/Fourier.hpp \
     inc/FuzzyCMeans.hpp \
     inc/GDCM.hpp \
     inc/GeodesicPathFunction.hpp \
@@ -381,6 +379,7 @@ SOURCES += \
     src/FilteringMean.cpp \
     src/FilteringMedian.cpp \
     src/FilteringOptimalAnisotropicDiffusion.cpp \
+    src/Fourier.cpp \
     src/FuzzyCMeans.cpp \
     src/GeodesicPathFunction.cpp \
     src/Geometrics.cpp \

@@ -159,6 +159,7 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/FilteringMean.cpp \
 		src/FilteringMedian.cpp \
 		src/FilteringOptimalAnisotropicDiffusion.cpp \
+		src/Fourier.cpp \
 		src/FuzzyCMeans.cpp \
 		src/GeodesicPathFunction.cpp \
 		src/Geometrics.cpp \
@@ -394,6 +395,7 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/FilteringMean.o \
 		../build/linux/release/obj/FilteringMedian.o \
 		../build/linux/release/obj/FilteringOptimalAnisotropicDiffusion.o \
+		../build/linux/release/obj/Fourier.o \
 		../build/linux/release/obj/FuzzyCMeans.o \
 		../build/linux/release/obj/GeodesicPathFunction.o \
 		../build/linux/release/obj/Geometrics.o \
@@ -1206,6 +1208,9 @@ compiler_clean:
 ../build/linux/release/obj/FilteringOptimalAnisotropicDiffusion.o: src/FilteringOptimalAnisotropicDiffusion.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FilteringOptimalAnisotropicDiffusion.o src/FilteringOptimalAnisotropicDiffusion.cpp
 
+../build/linux/release/obj/Fourier.o: src/Fourier.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/Fourier.o src/Fourier.cpp
+
 ../build/linux/release/obj/FuzzyCMeans.o: src/FuzzyCMeans.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/FuzzyCMeans.o src/FuzzyCMeans.cpp
 
@@ -1650,6 +1655,7 @@ install_headersDataFiles: first FORCE
 	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringMean.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringMedian.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FilteringOptimalAnisotropicDiffusion.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
+	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/Fourier.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/FuzzyCMeans.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GDCM.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
 	-$(INSTALL_FILE) /home/fabio/experimentos/bial-git/bial/inc/GeodesicPathFunction.hpp $(INSTALL_ROOT)/usr/include/qt5/bial/
@@ -1906,6 +1912,7 @@ uninstall_headersDataFiles: FORCE
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/GeodesicPathFunction.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/GDCM.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FuzzyCMeans.hpp
+	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/Fourier.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FilteringOptimalAnisotropicDiffusion.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FilteringMedian.hpp
 	-$(DEL_FILE) -r $(INSTALL_ROOT)/usr/include/qt5/bial/FilteringMean.hpp
