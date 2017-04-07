@@ -238,9 +238,12 @@ Filtering-OptimalAnisotropic: libbial
 
 
 
-Fourier: Fourier-Test
+Fourier: Fourier-Inhomogeneity Fourier-Test
 
 Fourier-Test: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Fourier-Inhomogeneity:
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 

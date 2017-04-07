@@ -101,7 +101,7 @@ namespace Bial {
       size_t adj_index;
       for( size_t img_index = min_index; img_index < max_index; ++img_index ) {
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( ( adj_itr.*adj_itr.AdjIdx )( img_index, idx, adj_index ) ) &&
+          if( ( adj_itr.AdjIdx( img_index, idx, adj_index ) ) &&
               ( result[ img_index ] > image[ adj_index ] ) )
             result[ img_index ] = image[ adj_index ];
         }
@@ -182,7 +182,7 @@ namespace Bial {
       for( size_t sed = min_index; sed < max_index; ++sed ) {
         size_t pxl = seeds[ sed ];
         for( size_t idx = 1; idx < adj_size; ++idx ) {
-          if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) && ( image[ adj_pxl ] == 0 ) ) {
+          if( ( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) && ( image[ adj_pxl ] == 0 ) ) {
             result[ pxl ] = 0;
             break;
           }

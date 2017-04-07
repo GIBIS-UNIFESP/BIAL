@@ -103,11 +103,11 @@ namespace Bial {
       size_t adj_index;
       size_t min_index = thread * image.Size( ) / total_threads;
       size_t max_index = ( thread + 1 ) * image.Size( ) / total_threads;
-      for( size_t img_index = min_index; img_index < max_index; ++img_index ) {
+      for( size_t src_index = min_index; src_index < max_index; ++src_index ) {
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( img_index, idx, adj_index ) ) {
-            if( result[ img_index ] < image[ adj_index ] )
-              result[ img_index ] = image[ adj_index ];
+          if( adj_itr.AdjIdx( src_index, idx, adj_index ) ) {
+            if( result[ src_index ] < image[ adj_index ] )
+              result[ src_index ] = image[ adj_index ];
           }
         }
       }
@@ -189,7 +189,7 @@ namespace Bial {
       for( size_t sed = min_index; sed < max_index; ++sed ) {
         size_t pxl = seeds[ sed ];
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
             if( image[ adj_pxl ] != 0 ) {
               result[ pxl ] = image[ adj_pxl ];
               break;

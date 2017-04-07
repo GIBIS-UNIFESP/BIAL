@@ -35,6 +35,7 @@ namespace Bial {
      * Definition: relation(dims, size)
      */
     Matrix< int > relation;
+    size_t dims;
     
   public:
 
@@ -50,7 +51,7 @@ namespace Bial {
     /**
      * @date 2012/Jul/06
      * @param size: number of elements of the adjacency relation.
-     * @param dims: number of dimensions of the adjacency relation.
+     * @param dims: number of dimensions.
      * @return none.
      * @brief Basic Constructor.
      * @warning Uninitialized adjacency is created. 
@@ -86,6 +87,15 @@ namespace Bial {
      * @warning none.
      */
     Vector< size_t > SortByDistance( bool increasing_order = true );
+
+    /**
+     * @date 2017/Apr/04
+     * @param elm: adjacency relation element.
+     * @return The displacement of elm from origin.
+     * @brief Returns the displacement of elm from origin.
+     * @warning none.
+     */
+    float Displacement( size_t elm );
 
     /**
      * @date 2012/Jul/13

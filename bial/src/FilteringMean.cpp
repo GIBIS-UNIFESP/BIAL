@@ -39,7 +39,7 @@ namespace Bial {
       size_t total_voxels = 0;
       unsigned long long sum = 0;
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+        if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
           ++total_voxels;
           sum += img[ adj_pxl ];
         }
@@ -62,7 +62,7 @@ namespace Bial {
         size_t total_voxels = 0;
         unsigned long long sum = 0;
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) && ( msk[ adj_pxl ] != 0 ) ) {
+          if( ( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) && ( msk[ adj_pxl ] != 0 ) ) {
             ++total_voxels;
             sum += img[ adj_pxl ];
           }

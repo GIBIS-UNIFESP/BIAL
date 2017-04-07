@@ -51,7 +51,7 @@ namespace Bial {
       while( !queue.Empty( ) ) {
         size_t pxl = queue.Remove( );
         for( size_t idx = 1; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
             if( ( img[ adj_pxl ] >= lower ) && ( edge[ adj_pxl ] == 0 ) ) {
               queue.Insert( adj_pxl, 1 );
               edge[ adj_pxl ] = 1;

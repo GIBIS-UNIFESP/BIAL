@@ -149,7 +149,7 @@ namespace Bial {
           if( canny[ pxl ] ) {
             char l1 = 0, l2 = 0, l3 = 0, l4 = 0, ngbs = 0;
             for( size_t pos = 1; pos < adj_size; ++pos ) {
-              if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, pos, adj_pxl ) ) && ( canny[ adj_pxl ] ) ) {
+              if( ( adj_itr.AdjIdx( pxl, pos, adj_pxl ) ) && ( canny[ adj_pxl ] ) ) {
                 switch( pos ) {
                 case 1: {
                   --l4; ++ngbs;
@@ -291,7 +291,7 @@ namespace Bial {
         if( canny[ pxl ] != 0 ) {
           unsigned int neighbors = 0;
           for( size_t pos = 0; pos < adj_size; ++pos ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, pos, adj_pxl ) ) && ( canny[ pxl ] == canny[ adj_pxl ] ) )
+            if( ( adj_itr.AdjIdx( pxl, pos, adj_pxl ) ) && ( canny[ pxl ] == canny[ adj_pxl ] ) )
               ++neighbors;
           }
           if( neighbors >= 3 )
@@ -334,7 +334,7 @@ namespace Bial {
         if( label[ pxl ] != 0 ) {
           unsigned int neighbors = 0;
           for( size_t pos = 1; pos < adj_size; ++pos ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, pos, adj_pxl ) ) && ( label[ pxl ] == label[ adj_pxl ] ) )
+            if( ( adj_itr.AdjIdx( pxl, pos, adj_pxl ) ) && ( label[ pxl ] == label[ adj_pxl ] ) )
               ++neighbors;
           }
           if( neighbors == 1 ) {

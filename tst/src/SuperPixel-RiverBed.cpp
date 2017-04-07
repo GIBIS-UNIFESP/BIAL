@@ -42,7 +42,7 @@ int main( int argc, char **argv ) {
     int src_lbl = lbl( pxl );
     int adj_lbl = -1;
     for( size_t idx = 0; idx < adj_size; ++idx ) {
-      if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+      if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
         COMMENT( "Checking for adjacent pixels with distinct label.", 4 );
         if( lbl( adj_pxl ) != src_lbl ) {
           COMMENT( "Requires two distinct labels from the source to set as intersection point.", 4 );
@@ -64,7 +64,7 @@ int main( int argc, char **argv ) {
     bool valid = true;
     size_t pxl = lbl.Position( intersection[ src_vtx ] );
     for( size_t idx = 0; idx < adj_size; ++idx ) {
-      if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+      if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
         bool insert = true;
         int new_lbl = lbl[ adj_pxl ];
         for( size_t sl = 0; sl < src_lbl.size( ); ++sl ) {
@@ -84,7 +84,7 @@ int main( int argc, char **argv ) {
       Vector< int > tgt_lbl;
       size_t pxl = lbl.Position( intersection[ tgt_vtx ] );
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+        if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
           bool insert = true;
           int new_lbl = lbl[ adj_pxl ];
           for( size_t tl = 0; tl < tgt_lbl.size( ); ++tl ) {
@@ -117,7 +117,7 @@ int main( int argc, char **argv ) {
     Vector< int > src_lbl;
     size_t pxl = lbl.Position( vertex[ src_vtx ] );
     for( size_t idx = 0; idx < adj_size; ++idx ) {
-      if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+      if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
         bool insert = true;
         int new_lbl = lbl[ adj_pxl ];
         for( size_t sl = 0; sl < src_lbl.size( ); ++sl ) {
@@ -137,7 +137,7 @@ int main( int argc, char **argv ) {
       Vector< int > tgt_lbl;
       size_t pxl = lbl.Position( vertex[ tgt_vtx ] );
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+        if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
           bool insert = true;
           int new_lbl = lbl[ adj_pxl ];
           for( size_t tl = 0; tl < tgt_lbl.size( ); ++tl ) {
@@ -195,7 +195,7 @@ int main( int argc, char **argv ) {
   for( size_t pxl = 0; pxl < lbl.size( ); ++pxl ) {
     Vector< int > adj_lbl( 1, lbl( pxl ) );
     for( size_t idx = 0; idx < adj_size; ++idx ) {
-      if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+      if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
         COMMENT( "Checking for adjacent pixels with distinct label.", 4 );
         int new_lbl = lbl( adj_pxl );
         if( new_lbl != adj_lbl( 0 ) ) {

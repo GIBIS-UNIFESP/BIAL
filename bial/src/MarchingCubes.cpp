@@ -35,7 +35,7 @@ namespace Bial {
       AdjacencyIterator itr( img, adj );
       std::array< size_t, 8 > displacement;
       for( size_t vtx = 0; vtx < 8; ++vtx )
-        ( itr.*itr.AdjIdx )( 0, vtx, displacement[ vtx ] );
+        itr.AdjIdx( 0, vtx, displacement[ vtx ] );
       const size_t x_sz = img.size( 0 ) - 1;
       const size_t y_sz = img.size( 1 ) - 1;
       const size_t z_sz = img.size( 2 ) - 1;
@@ -92,7 +92,7 @@ namespace Bial {
       AdjacencyIterator itr( img, adj );
       std::array< size_t, 8 > displacement;
       for( size_t vtx = 0; vtx < 8; ++vtx )
-        ( itr.*itr.AdjIdx )( 0, vtx, displacement[ vtx ] );
+        itr.AdjIdx( 0, vtx, displacement[ vtx ] );
       const size_t x_sz = img.size( 0 ) - 1;
       const size_t y_sz = img.size( 1 ) - 1;
       const size_t z_sz = img.size( 2 ) - 1;

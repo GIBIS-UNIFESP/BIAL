@@ -20,46 +20,35 @@
 
 namespace Bial {
   
-  /* Erros aqui! rever esta função e colocar a remoção de dimensões de tamanho 1. */
   template< class D >
   Matrix< D > MatrixOp::Resize( const Matrix< D > &mat, const Vector< size_t > &new_min,
                                 const Vector< size_t > &new_max ) {
     try {
-      COMMENT( "Number of elements of submatrix in each dimension.", 3 );
-      size_t dims = mat.Dims( );
-      Vector< size_t > new_size( 3, 1 );
-      Vector< size_t > min_elm( new_min );
-      Vector< size_t > max_elm( new_max );
-      COMMENT( "Verifying new_min and new_max vector sizes.", 3 );
-      if( new_min.size( ) != new_max.size( ) ) {
+      IF_DEBUG( new_min.size( ) != new_max.size( ) ) {
         std::string msg( BIAL_ERROR( "new_min vector end new_max vector sizes do not match!" ) );
         throw( std::logic_error( msg ) );
       }
-      size_t min_size = min_elm.size( );
-      COMMENT( "Dealing with 2D coordinates for 2D images.", 0 );
-      if( ( min_size == 2 ) && ( dims == 3 ) ) {
-        min_elm.push_back( 0 );
-        max_elm.push_back( mat.size( min_size ) - 1 );
-      }
-      COMMENT( "Verifying if new_min <= new_max <= matrix dimensions.", 3 );
+      COMMENT( "Number of elements of submatrix in each dimension.", 1 );
+      size_t dims = std::min( mat.Dims( ), new_min.size( ) );
+      Vector< size_t > new_size( mat.Dims( ), 1 );
+      Vector< size_t > min_elm( new_min );
+      Vector< size_t > max_elm( new_max );
+      COMMENT( "Verifying if new_min <= new_max <= matrix dimensions.", 1 );
       for( size_t dms = 0; dms < dims; ++dms ) {
-        if( min_elm[ dms ] > max_elm[ dms ] ) {
-          min_elm[ dms ] = 0;
-          BIAL_WARNING( "In Dimension: " << dms << " minimum was set to 0. ( new_min > new_max )." );
-        }
-        if( min_elm[ dms ] >= mat.size( dms ) ) {
-          min_elm[ dms ] = 0;
-          BIAL_WARNING( "In Dimension: " << dms << " minimum was set to 0. ( new_min >= this_max )." );
-        }
         if( max_elm[ dms ] >= mat.size( dms ) ) {
           max_elm[ dms ] = mat.size( dms ) - 1;
-          BIAL_WARNING( "In Dimension: " << dms << " maximum was set to " << mat.size( dms ) - 1 <<
-                        ". ( new_max >= this_max )" );
+          COMMENT( "In Dimension: " << dms << " maximum was set to " << mat.size( dms ) - 1 <<
+                   ". ( new_max >= this_max )", 3 );
         }
-        COMMENT( "Setting the submatrix dimension sizes.", 4 );
+        if( min_elm[ dms ] > mat.size( dms ) ) {
+          std::string msg( BIAL_ERROR( "Minimum value greater than maximum value for dimension " + 
+                                       std::to_string( dms ) ) );
+          throw( std::logic_error( msg ) );
+        }
+        COMMENT( "Setting the submatrix dimension sizes.", 3 );
         new_size[ dms ] = max_elm[ dms ] - min_elm[ dms ] + 1;
       }
-      COMMENT( "Creating resultant submatrix.", 3 );
+      COMMENT( "Creating resultant submatrix.", 1 );
       Matrix< D > res( new_size );
       Vector< size_t > src_pxl( min_elm );
       size_t dms, tgt_pxl = 0;
@@ -70,14 +59,12 @@ namespace Bial {
           ++tgt_pxl;
         }
         COMMENT( "Updating source element coordinates.", 4 );
-        for( dms = 0; ( dms < dims ) && ( src_pxl[ dms ] == max_elm[ dms ] ); ++dms ) {
+        for( dms = 0; ( dms < dims ) && ( src_pxl[ dms ] == max_elm[ dms ] ); ++dms )
           src_pxl[ dms ] = min_elm[ dms ];
-        }
-        if( dms < dims ) {
+        if( dms < dims )
           ++src_pxl[ dms ];
-        }
       } while( dms < dims );
-      COMMENT( "Dimensions: " << res.Dim( ), 4 );
+      COMMENT( "Dimensions: " << res.Dim( ), 1 );
       return( res );
     }
     catch( std::bad_alloc &e ) {

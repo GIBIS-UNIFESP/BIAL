@@ -81,7 +81,7 @@ namespace Bial {
         Vector< float > queue( adj_size );
         size_t idx = 0;
         for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, adj_idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, adj_idx, adj_pxl ) ) {
             queue[ idx ] = img[ adj_pxl ];
             ++idx;
           }

@@ -121,7 +121,7 @@ namespace Bial {
         if( msk[ src_elm ] != 0 ) {
           COMMENT( "Computing the sum of the distances of all channels from adjacent to source pixels.", 4 );
           for( size_t adj = 0; adj < adj_size; ++adj ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( src_elm, adj, adj_elm ) ) && ( msk[ adj_elm ] != 0 ) ) {
+            if( ( adj_itr.AdjIdx( src_elm, adj, adj_elm ) ) && ( msk[ adj_elm ] != 0 ) ) {
               index( adj ) = adj_elm;
               for( size_t chn = 1; chn < 4; ++chn ) {
                 D adj_value = src( adj_elm )( chn );
@@ -186,7 +186,7 @@ namespace Bial {
         COMMENT( "Computing the sum of the distances of all channels from adjacent to source pixels.", 4 );
         for( size_t adj = 0; adj < adj_size; ++adj ) {
           COMMENT( "Computing index of elements.", 4 );
-          if( ( adj_itr.*adj_itr.AdjIdx )( src_elm, adj, adj_elm ) ) {
+          if( adj_itr.AdjIdx( src_elm, adj, adj_elm ) ) {
             index( adj ) = adj_elm;
             for( size_t chn = 1; chn < 4; ++chn ) {
               D adj_value = src( adj_elm )( chn );

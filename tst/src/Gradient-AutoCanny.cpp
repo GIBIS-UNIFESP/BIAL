@@ -501,7 +501,7 @@ Image< D > AutoScaleCanny( const Image< D > &smooth, size_t window_scale, float 
                 size_t pxl = queue.Remove( );
                 COMMENT( "Searching for adjacents that must also be set as edge pixels.", 4 );
                 for( size_t idx = 1; idx < adj_size; ++idx ) {
-                  if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+                  if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
                     COMMENT( "Getting adjacent local and global coordinates.", 4 );
                     Vector< size_t > img_coord = edge.Coordinates( adj_pxl );
                     img_coord( 0 ) += x_src;

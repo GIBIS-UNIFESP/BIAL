@@ -42,7 +42,7 @@ namespace Bial {
         if( img[ pxl ] != 0 ) {
           size_t adjs = 0;
           for( size_t idx = 1; idx < adj_size; ++idx ) {
-            if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+            if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
               if( img[ adj_pxl ] != 0 )
                 ++adjs;
             }

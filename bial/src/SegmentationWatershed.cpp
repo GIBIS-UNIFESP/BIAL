@@ -92,7 +92,7 @@ namespace Bial {
       //   queue.Finished( index );
       //   if( capable ) {
       //     for( size_t adj = 0; adj < adj_size; ++adj ) {
-      //       if( ( ( adj_itr.*adj_itr.AdjIdx )( index, adj, adj_index ) ) &&
+      //       if( ( adj_itr.AdjIdx( index, adj, adj_index ) ) &&
       //           ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
       //         COMMENT( "Conquering: " << adj_index, 4 );
       //         D previous_value = gradient[ adj_index ];
@@ -155,7 +155,7 @@ namespace Bial {
           else {
             for( size_t adj = 0; adj < adj_size; ++adj ) {
               adj_index = adj_itr( index, adj );
-              if( ( ( adj_itr.*adj_itr.AdjVct )( src_vector, adj, adj_vector ) ) &&
+              if( ( adj_itr.AdjVct( src_vector, adj, adj_vector ) ) &&
                   ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
                 COMMENT( "Conquering: " << adj_index, 4 );
                 D previous_value = gradient[ adj_index ];

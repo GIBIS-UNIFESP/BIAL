@@ -19,7 +19,7 @@
 
 namespace Bial {
 
-  Kernel::Kernel( ) try : Adjacency( 2, 1 ), coefficient( 1, 1.0f ) {
+  Kernel::Kernel( ) try : Adjacency( 1, 3 ), coefficient( 1, 1.0f ) {
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

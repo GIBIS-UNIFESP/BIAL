@@ -48,7 +48,7 @@ int main( int argc, char **argv ) {
   for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
     Vector< size_t > used_labels( nlabels + 1, false );
     for( size_t idx = 0; idx < adj_size; ++idx ) {
-      if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) )
+      if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) )
         used_labels[ label[ img[ adj_pxl ] ] ] = true;
     }
     for( size_t lbl = 0; lbl < used_labels.size( ); ++lbl ) {

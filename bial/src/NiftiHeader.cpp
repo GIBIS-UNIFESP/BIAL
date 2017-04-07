@@ -45,8 +45,8 @@ namespace Bial {
         qoffset_y( 0.0 ), qoffset_z( 0.0 ), qfac( 1.0 ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
       qtm.Set( 0.0 );
       stm.Set( 0.0 );
-      qtm[ 15 ] = 1.0;
-      stm[ 15 ] = 1.0;
+      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0;
+      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0;
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -76,11 +76,10 @@ namespace Bial {
         glmax( 255 ), glmin( 0 ), descrip( 80, '\0' ), aux_file( 24, '\0' ), qform_code( NiftiXForm::UNKNOWN ), 
         sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0 ), quatern_c( 0.0 ), quatern_d( 0.0 ), qoffset_x( 0.0 ), 
         qoffset_y( 0.0 ), qoffset_z( 0.0 ), qfac( 1.0 ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
-
       qtm.Set( 0.0 );
       stm.Set( 0.0 );
-      qtm[ 15 ] = 1.0;
-      stm[ 15 ] = 1.0;
+      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0;
+      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0;
       SetBitPix( );
       if( !one_file ) {
         vox_offset = 0.0;
@@ -119,8 +118,8 @@ namespace Bial {
         dim.pop_back( );
       qtm.Set( 0.0 );
       stm.Set( 0.0 );
-      qtm( 15 ) = 1.0;
-      stm( 15 ) = 1.0;
+      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0;
+      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0;
       SetBitPix( );
       if( !one_file ) {
         vox_offset = 0.0;
@@ -160,7 +159,6 @@ namespace Bial {
       IFile file;
       file.exceptions( std::fstream::failbit | std::fstream::badbit );
       file.open( hdrname );
-
       COMMENT( "Reading and translating header.", 2 );
       int hdr_size;
       file.read( reinterpret_cast< char* >( &hdr_size ), sizeof( int ) ); /* hdr_size */

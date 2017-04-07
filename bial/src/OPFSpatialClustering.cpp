@@ -134,7 +134,7 @@ namespace Bial {
       COMMENT( "Computing distance from all samples.", 2 );
       for( size_t pxl = min_pxl; pxl < max_pxl; ++pxl ) {
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
             double distance = DFIDE::Distance( feature, pxl * feature.Features( ), adj_pxl * feature.Features( ),
                                                feature.Features( ) );
             /* float distance = ( *BialDistanceFunction )( &feature( pxl, 0 ), &feature( adj_pxl, 0 ), 
@@ -215,7 +215,7 @@ namespace Bial {
         density[ pxl ] = 1.0;
         size_t pixels = 1;
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
             double arc_weight = DFIDE::Distance( feature, pxl * feature.Features( ), adj_pxl * feature.Features( ),
                                                  feature.Features( ) );
             /* float arc_weight = ( *BialDistanceFunction )( &feature( pxl, 0 ), &feature( adj_pxl, 0 ), feature.Features(

@@ -110,13 +110,12 @@ namespace Bial {
   }
 
   template< class D > Image< D >::Image( D *new_data, const Vector< size_t > &new_dim ) try
-    : _data( new_data, new_dim ), qk_data( new_data ), pixel_size( ), y_table( nullptr ), z_table( nullptr ) {
+    : _data( new_data, new_dim ), qk_data( new_data ), pixel_size( 3, 1.0 ), y_table( nullptr ), z_table( nullptr ) {
       size_t dimensions = new_dim.size( );
       if( ( dimensions < 2 ) || ( dimensions > 3 ) ) {
         std::string msg( BIAL_ERROR( "Must have 2 or 3 dimensions. Given" + std::to_string( dimensions ) + "." ) );
         throw( std::logic_error( msg ) );
       }
-      pixel_size = Vector< float >( 3, 1.0f );
       COMMENT( "Creating data matrix.", 2 );
       Vector< size_t > dims( new_dim );
       if( dimensions == 2 )

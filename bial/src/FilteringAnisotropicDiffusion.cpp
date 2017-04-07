@@ -165,7 +165,7 @@ namespace Bial {
       size_t adj_pxl;
       for( size_t idx = 1; idx < adj_size; ++idx ) {
         double distance = 0.0;
-        if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+        if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
           COMMENT( "Computing distance.", 4 );
           for( size_t dim = 0; dim < img_dims; ++dim )
             distance += pow( adj( idx, dim ), 2.0 );
