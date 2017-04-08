@@ -274,7 +274,7 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       if( swap ) {
-        Swap( );
+        SwapHeader( );
       }
       if( ( datatype != NiftiType::UINT8 ) && ( datatype != NiftiType::INT16 ) && ( datatype != NiftiType::INT32 ) &&
           ( datatype != NiftiType::INT64 ) && ( datatype != NiftiType::FLOAT32 ) && ( datatype != NiftiType::FLOAT64 )
@@ -836,14 +836,14 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  void NiftiHeader::Swap2Bytes( size_t n, void *ar ) {
+  void NiftiHeader::Swap2Bytes( size_t size, void *data ) {
     try {
-      unsigned char *cp1 = reinterpret_cast< unsigned char* >( ar );
-      unsigned char *cp2;
-      for( size_t ii = 0; ii < n; ++ii ) {
-        cp2 = cp1 + 1;
-        std::swap( *cp1, *cp2 );
-        cp1 += 2;
+      unsigned char *base_element = reinterpret_cast< unsigned char* >( data );
+      unsigned char *next_element;
+      for( size_t ii = 0; ii < size; ++ii ) {
+        next_element = base_element + 1;
+        std::swap( *base_element, *next_element );
+        base_element += 2;
       }
     }
     catch( std::bad_alloc &e ) {
@@ -864,19 +864,19 @@ namespace Bial {
     }
   }
 
-  void NiftiHeader::Swap4Bytes( size_t n, void *ar ) {
+  void NiftiHeader::Swap4Bytes( size_t size, void *data ) {
     try {
-      unsigned char *cp0 = reinterpret_cast< unsigned char* >( ar );
-      unsigned char *cp1;
-      unsigned char *cp2;
-      for( size_t ii = 0; ii < n; ++ii ) {
-        cp1 = cp0;
-        cp2 = cp0 + 3;
-        std::swap( *cp1, *cp2 );
-        cp1++;
-        cp2--;
-        std::swap( *cp1, *cp2 );
-        cp0 += 4;
+      unsigned char *base_element = reinterpret_cast< unsigned char* >( data );
+      unsigned char *low_element;
+      unsigned char *high_element;
+      for( size_t ii = 0; ii < size; ++ii ) {
+        low_element = base_element;
+        high_element = base_element + 3;
+        std::swap( *low_element, *high_element );
+        low_element++;
+        high_element--;
+        std::swap( *low_element, *high_element );
+        base_element += 4;
       }
     }
     catch( std::bad_alloc &e ) {
@@ -897,20 +897,20 @@ namespace Bial {
     }
   }
 
-  void NiftiHeader::Swap8Bytes( size_t n, void *ar ) {
+  void NiftiHeader::Swap8Bytes( size_t size, void *data ) {
     try {
-      unsigned char *cp0 = reinterpret_cast< unsigned char* >( ar );
-      unsigned char *cp1;
-      unsigned char *cp2;
-      for( size_t ii = 0; ii < n; ++ii ) {
-        cp1 = cp0;
-        cp2 = cp0 + 7;
-        while( cp2 > cp1 ) {
-          std::swap( *cp1, *cp2 );
-          cp1++;
-          cp2--;
+      unsigned char *base_element = reinterpret_cast< unsigned char* >( data );
+      unsigned char *low_element;
+      unsigned char *high_element;
+      for( size_t ii = 0; ii < size; ++ii ) {
+        low_element = base_element;
+        high_element = base_element + 7;
+        while( high_element > low_element ) {
+          std::swap( *low_element, *high_element );
+          low_element++;
+          high_element--;
         }
-        cp0 += 8;
+        base_element += 8;
       }
     }
     catch( std::bad_alloc &e ) {
@@ -931,20 +931,20 @@ namespace Bial {
     }
   }
 
-  void NiftiHeader::Swap16Bytes( size_t n, void *ar ) {
+  void NiftiHeader::Swap16Bytes( size_t size, void *data ) {
     try {
-      unsigned char *cp0 = reinterpret_cast< unsigned char* >( ar );
-      unsigned char *cp1;
-      unsigned char *cp2;
-      for( size_t ii = 0; ii < n; ii++ ) {
-        cp1 = cp0;
-        cp2 = cp0 + 15;
-        while( cp2 > cp1 ) {
-          std::swap( *cp1, *cp2 );
-          cp1++;
-          cp2--;
+      unsigned char *base_element = reinterpret_cast< unsigned char* >( data );
+      unsigned char *low_element;
+      unsigned char *high_element;
+      for( size_t ii = 0; ii < size; ii++ ) {
+        low_element = base_element;
+        high_element = base_element + 15;
+        while( high_element > low_element ) {
+          std::swap( *low_element, *high_element );
+          low_element++;
+          high_element--;
         }
-        cp0 += 16;
+        base_element += 16;
       }
     }
     catch( std::bad_alloc &e ) {
@@ -965,8 +965,9 @@ namespace Bial {
     }
   }
 
-  void NiftiHeader::Swap( ) {
+  void NiftiHeader::SwapHeader( ) {
     try {
+      COMMENT( "Header must be swapped.", 0 );
       NiftiHeader::Swap4Bytes( 1, reinterpret_cast< void* >( &extents ) );
       NiftiHeader::Swap2Bytes( 1, reinterpret_cast< void* >( &session_error ) );
       NiftiHeader::Swap4Bytes( 3, reinterpret_cast< void* >( &intent_p1 ) ); /* intent_p1, intent_p2, intent_p3 */
@@ -1040,31 +1041,30 @@ namespace Bial {
     }
   }
 
-
-  void NiftiHeader::SwapNBytes( size_t n, int siz, void *ar ) {
+  void NiftiHeader::SwapNBytes( size_t size, size_t bytes, void *data ) {
     try {
-      switch( siz ) {
+      switch( bytes ) {
       case 2: {
-  NiftiHeader::Swap2Bytes( n, ar );
-  break;
+        NiftiHeader::Swap2Bytes( size, data );
+        break;
       }
       case 4: {
-  NiftiHeader::Swap4Bytes( n, ar );
-  break;
+        NiftiHeader::Swap4Bytes( size, data );
+        break;
       }
       case 8: {
-  NiftiHeader::Swap8Bytes( n, ar );
-  break;
+        NiftiHeader::Swap8Bytes( size, data );
+        break;
       }
       case 16: {
-  NiftiHeader::Swap16Bytes( n, ar );
-  break;
+        NiftiHeader::Swap16Bytes( size, data );
+        break;
       }
       default: {
-  COMMENT( "nifti_swap_bytes  ( n , siz, ar )", 2 );
-  std::string msg( BIAL_ERROR( "Invalid number of bytes to be swapped." ) );
-  throw( std::logic_error( msg ) );
-  break;
+        COMMENT( "nifti_swap_bytes( size , bytes, data )", 2 );
+        std::string msg( BIAL_ERROR( "Invalid number of bytes to be swapped." ) );
+        throw( std::logic_error( msg ) );
+        break;
       }
       }
     }
@@ -1437,14 +1437,22 @@ namespace Bial {
     }
   }
 
-  bool NiftiHeader::UseQuatern( ) {
+  float NiftiHeader::SclSlope( ) const {
+    return( scl_slope );
+  }
+
+  float NiftiHeader::SclInter( ) const {
+    return( scl_inter );
+  }
+
+  bool NiftiHeader::UseQuatern( ) const {
     if( qform_code > NiftiXForm::UNKNOWN ) {
       return( true );
     }
     return( false );
   }
 
-  bool NiftiHeader::UseAffine( ) {
+  bool NiftiHeader::UseAffine( ) const {
     if( sform_code > NiftiXForm::UNKNOWN ) {
       return( true );
     }

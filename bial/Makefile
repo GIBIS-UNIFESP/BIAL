@@ -17,8 +17,8 @@ CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -m64 -Wno-unused-function -Wno-unused-parameter -I/home/fabio/experimentos/bial-git/bial/inc -I/home/fabio/experimentos/bial-git/bial/src -I/home/fabio/experimentos/bial-git/bial/lsh/inc -I/home/fabio/experimentos/bial-git/bial/SLIC/inc -I/home/fabio/experimentos/bial-git/bial/description/inc -I/home/fabio/experimentos/bial-git/bial/cpplex/inc -I/home/fabio/experimentos/bial-git/bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@))) -fopenmp -std=c++11 -DBIAL_EXPLICIT_LIB -fopenmp -std=c++11 -O3 -std=c++0x -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I.
 LINK          = g++
-LFLAGS        = -m64 -std=c++11 -fopenmp -std=c++11 -Wl,-O1 -shared -Wl,-soname,libbial.so.1
-LIBS          = $(SUBLIBS) -lavutil -lavformat -lavcodec -lswscale -lm -lpthread 
+LFLAGS        = -m64 -std=c++11 -pg -lm -fopenmp -std=c++11 -Wl,-O1 -shared -Wl,-soname,libbial.so.1
+LIBS          = $(SUBLIBS) -lm -lpthread 
 AR            = ar cqs
 RANLIB        = 
 QMAKE         = /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
