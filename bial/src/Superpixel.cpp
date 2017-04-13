@@ -108,7 +108,7 @@ namespace Bial {
     for( size_t pxl = 0; pxl < img_size; ++pxl ) {
       bool border = false;
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) && ( label[ pxl ] != label[ adj_pxl ] ) ) {
+        if( ( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) && ( label[ pxl ] != label[ adj_pxl ] ) ) {
           border = true;
           break;
         }

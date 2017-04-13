@@ -28,11 +28,6 @@ namespace Bial {
    */
   class AdjacencyIterator {
 
-    typedef bool( AdjacencyIterator::*AdjacencyIndexFn )( size_t src_index, size_t adj_position, size_t &adj_index ) 
-      const;
-    typedef bool( AdjacencyIterator::*AdjacencyVectorFn )( const Vector< size_t > &src_index, size_t adj_position, 
-                                                           Vector< size_t > &adj_index ) const;
-    
   private:
     /** @brief Adjacency relation. */
     const Matrix< int > &relation;
@@ -54,11 +49,6 @@ namespace Bial {
     Vector< int > displacement;
 
   public:
-
-    /** @brief Adjacency function pointer for 2D or 3D adjacency. */
-    const AdjacencyIndexFn AdjIdx;
-    /** @brief Adjacency function pointer for 2D or 3D adjacency. */
-    const AdjacencyVectorFn AdjVct;
 
      /**
      * @date 2014/Apr/14
@@ -82,6 +72,15 @@ namespace Bial {
      * @warning none.
      */
     size_t operator()( size_t src_index, size_t adj_position ) const;
+
+    /**
+     * @date 2017/Apr/04
+     * @param adj_pos: Position of element in adjacency relation.
+     * @return The displacement of the adjacency position from the source.
+     * @brief Returns the displacement of the adjacency position from the source..
+     * @warning none.
+     */
+    int Displacement( size_t adj_position ) const;
 
     /**
      * @date 2013/Oct/23
@@ -115,9 +114,9 @@ namespace Bial {
      * @return true if adjacent element is valid.
      * @brief Computes the index of the adjacent element in image. If the adjacent element is out of the image 
      * boundaries, returns false.
-     * @warning For 3D adjacencies. Generic call with AdjIdx function.
+     * @warning For 2D or 3D adjacencies.
      */
-    bool AdjIdx3( size_t src_index, size_t adj_pos, size_t &adj_index ) const;
+    bool AdjIdx( size_t src_index, size_t adj_pos, size_t &adj_index ) const;
 
     /**
      * @date 2013/Oct/23
@@ -127,9 +126,9 @@ namespace Bial {
      * @return true if adjacent element is valid.
      * @brief Computes the index vector of the adjacent element in image. If the adjacent element is out of the image
      * boundaries, returns false.
-     * @warning For 3D adjacencies. Generic call with AdjVct function.
+     * @warning For 2D or 3D adjacencies.
      */
-    bool AdjVct3( const Vector< size_t > &src_index, size_t adj_pos, Vector< size_t > &adj_index ) const;
+    bool AdjVct( const Vector< size_t > &src_index, size_t adj_pos, Vector< size_t > &adj_index ) const;
 
   };
 

@@ -96,7 +96,7 @@ namespace Bial {
         for( size_t chn = 1; chn < 4; ++chn ) {
           for( size_t adj_position = 0; adj_position < adj_size; ++adj_position ) {
             COMMENT( "Assigning adjacent colors if it is valid and src element colors otherwise.", 4 );
-            if( ( adj_itr.*adj_itr.AdjIdx )( src_elm, adj_position, adj_elm ) )
+            if( adj_itr.AdjIdx( src_elm, adj_position, adj_elm ) )
               res( src_elm, adj_position + adj_size * ( chn - 1 ) ) = src( adj_elm )( chn );
             else
               res( src_elm, adj_position + adj_size * ( chn - 1 ) ) = src( src_elm )( chn );

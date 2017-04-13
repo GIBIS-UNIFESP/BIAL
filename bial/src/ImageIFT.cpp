@@ -69,7 +69,7 @@ namespace Bial {
         this->queue->Finished( index );
         if( capable ) {
           for( size_t adj = 0; adj < adj_size; ++adj ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( index, adj, adj_index ) ) &&
+            if( ( adj_itr.AdjIdx( index, adj, adj_index ) ) &&
                 ( this->queue->State( adj_index ) != BucketState::REMOVED ) &&
                 ( this->function->Capable( index, adj_index, this->queue->State( adj_index ) ) ) ) {
               COMMENT( "Conquering: " << adj_index, 4 );

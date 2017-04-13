@@ -29,9 +29,7 @@ namespace Bial {
   AdjacencyIterator::AdjacencyIterator( const Image< D > &img, const Adjacency &adj ) try :
     relation( adj.Relation( ) ), x_size( img.size( 0 ) ), y_size( img.size( 1 ) ), z_size( img.size( 2 ) ),
       xy_size( img.Displacement( 1 ) ), img_size( img.size( ) ), adj_size( adj.size( ) ), dims( img.Dims( ) ), 
-      displacement( adj.size( ) ),
-      AdjIdx( adj.Dims( ) == 2 ? &AdjacencyIterator::AdjIdx2 : &AdjacencyIterator::AdjIdx3 ),
-      AdjVct( adj.Dims( ) == 2 ? &AdjacencyIterator::AdjVct2 : &AdjacencyIterator::AdjVct3 ) {
+      displacement( adj.size( ) ) {
       IF_DEBUG( dims != adj.Dims( ) ) {
         std::string msg( BIAL_ERROR( "Image and adjacency dimensions do not match." ) );
         throw( std::logic_error( msg ) );
@@ -41,7 +39,7 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Computing displacement vector.", 3 );
-      size_t acc_dim_size =1;
+      size_t acc_dim_size = 1;
       for( size_t dms = 0; dms < dims; ++dms ) {
         for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx )
           displacement[ adj_idx ] += adj( adj_idx, dms ) * acc_dim_size;
@@ -83,10 +81,28 @@ namespace Bial {
     }
   }
 
+  int AdjacencyIterator::Displacement( size_t adj_position ) const {
+    try {
+      return( displacement( adj_position ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
   bool AdjacencyIterator::AdjIdx2( size_t src_index, size_t adj_position, size_t &adj_index ) const {
     try {
       COMMENT( "Computing coordinates.", 4 );
-      size_t rel_base_index = adj_position << 1; // rel_base_index = adj_position * 2
+      size_t rel_base_index = ( adj_position << 1 ) + adj_position; // rel_base_index = adj_position * 3
       div_t div_pos_by_x = std::div( static_cast< int >( src_index ), static_cast< int >( x_size ) );
       size_t x = static_cast< size_t >( div_pos_by_x.rem + relation[ rel_base_index ] );
       size_t y = static_cast< size_t >( div_pos_by_x.quot + relation[ rel_base_index + 1 ] );
@@ -118,7 +134,7 @@ namespace Bial {
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Computing coordinates.", 5 );
-      size_t rel_base_index = adj_position << 1; // rel_base_index = adj_position * 2
+      size_t rel_base_index = ( adj_position << 1 ) + adj_position; // rel_base_index = adj_position * 3
       adj_index[ 0 ] = static_cast< size_t >( src_index[ 0 ] + relation[ rel_base_index ] );
       adj_index[ 1 ] = static_cast< size_t >( src_index[ 1 ] + relation[ rel_base_index + 1 ] );
       COMMENT( "Checking if coordinates are valid.", 5 );
@@ -140,7 +156,7 @@ namespace Bial {
     }
   }
 
-  bool AdjacencyIterator::AdjIdx3( size_t src_index, size_t adj_position, size_t &adj_index ) const { 
+  bool AdjacencyIterator::AdjIdx( size_t src_index, size_t adj_position, size_t &adj_index ) const { 
     try {
       COMMENT( "Computing coordinates.", 4 );
       size_t rel_base_index = ( adj_position << 1 ) + adj_position;  // rel_base_index = adj_position * 3
@@ -171,16 +187,15 @@ namespace Bial {
     }
   }
 
-  bool AdjacencyIterator::AdjVct3( const Vector< size_t > &src_index, size_t adj_position, Vector< size_t > &adj_index )
+  bool AdjacencyIterator::AdjVct( const Vector< size_t > &src_index, size_t adj_position, Vector< size_t > &adj_index )
     const {
     try {
-      IF_DEBUG( ( adj_index.size( ) != src_index.size( ) ) || ( adj_index.size( ) < 3 ) ) {
-        std::string msg( BIAL_ERROR( "Input vectors must have three dimensions." ) );
+      IF_DEBUG( adj_index.size( ) != src_index.size( ) ) {
+        std::string msg( BIAL_ERROR( "Input vectors must have same dimensions." ) );
         throw( std::logic_error( msg ) );
       }
       COMMENT( "Computing coordinates.", 5 );
       size_t rel_base_index = ( adj_position << 1 ) + adj_position;  // rel_base_index = adj_position * 3
-      Vector< size_t > res( 3 );
       adj_index[ 0 ] = static_cast< size_t >( src_index[ 0 ] + relation[ rel_base_index ] );
       adj_index[ 1 ] = static_cast< size_t >( src_index[ 1 ] + relation[ rel_base_index + 1 ] );
       adj_index[ 2 ] = static_cast< size_t >( src_index[ 2 ] + relation[ rel_base_index + 2 ] );

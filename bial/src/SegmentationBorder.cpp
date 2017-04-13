@@ -34,7 +34,7 @@ namespace Bial {
       COMMENT( "Setting border pixels.", 0 );
       for( size_t pxl = 0; pxl < res.size( ); ++pxl ) {
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) ) {
             if( img[ pxl ] != img[ adj_pxl ] ) {
               res[ pxl ] = img[ pxl ];
               break;

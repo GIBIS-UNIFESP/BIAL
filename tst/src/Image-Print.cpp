@@ -16,7 +16,7 @@ int main( int argc, char **argv ) {
     cout << "Usage: " << argv[ 0 ] << " <input image>" << endl;
     exit( 1 );
   }
-  Image< int > img( Read< int >( argv[ 1 ] ) );
+  Image< double > img( Read< double >( argv[ 1 ] ) );
   
   cout << img << endl;
 

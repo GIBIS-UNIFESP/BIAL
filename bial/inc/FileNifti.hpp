@@ -123,89 +123,91 @@ namespace Bial {
       }
       COMMENT( "Data type conversion.", 2 );
       switch( hdr.DataType( ) ) {
-          case NiftiType::INT32: {
-          int *data = reinterpret_cast< int* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl )
-              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-          }
-          break;
+      case NiftiType::INT32: {
+        int *data = reinterpret_cast< int* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl )
+            res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
         }
-          case NiftiType::UINT32: {
-          unsigned int *data = reinterpret_cast< unsigned int* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl )
-              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-          }
-          break;
+        break;
+      }
+      case NiftiType::UINT32: {
+        unsigned int *data = reinterpret_cast< unsigned int* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl )
+            res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
         }
-          case NiftiType::INT16: {
-          short *data = reinterpret_cast< short* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl )
-              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-          }
-          break;
+        break;
+      }
+      case NiftiType::INT16: {
+        short *data = reinterpret_cast< short* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl )
+            res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
         }
-          case NiftiType::UINT16: {
-          unsigned short *data = reinterpret_cast< unsigned short* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl )
-              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-          }
-          break;
+        break;
+      }
+      case NiftiType::UINT16: {
+        unsigned short *data = reinterpret_cast< unsigned short* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl )
+            res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
         }
-          case NiftiType::INT8: {
-          char *data = reinterpret_cast< char* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl )
-              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-          }
-          break;
+        break;
+      }
+      case NiftiType::INT8: {
+        char *data = reinterpret_cast< char* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl )
+            res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
         }
-          case NiftiType::UINT8: {
-          unsigned char *data = reinterpret_cast< unsigned char* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl )
-              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-          }
-          break;
+        break;
+      }
+      case NiftiType::UINT8: {
+        unsigned char *data = reinterpret_cast< unsigned char* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl )
+            res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
         }
-          case NiftiType::FLOAT32: {
-          float *data = reinterpret_cast< float* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl ) {
-              if( !std::isfinite( data[ pxl ] ) ) {
-                res( pxl )( chl ) = 0;
-              }
-              else {
-                res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-              }
+        break;
+      }
+      case NiftiType::FLOAT32: {
+        float *data = reinterpret_cast< float* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl ) {
+            if( !std::isfinite( data[ pxl ] ) ) {
+              res( pxl )( chl ) = 0;
+            }
+            else {
+              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
             }
           }
-          break;
         }
-          case NiftiType::FLOAT64: {
-          double *data = reinterpret_cast< double* >( dataptr );
-          for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-            for( size_t chl = 0; chl < channels; ++chl ) {
-              if( !std::isfinite( data[ pxl ] ) ) {
-                res( pxl )( chl ) = 0;
-              }
-              else {
-                res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
-              }
+        break;
+      }
+      case NiftiType::FLOAT64: {
+        double *data = reinterpret_cast< double* >( dataptr );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          for( size_t chl = 0; chl < channels; ++chl ) {
+            if( !std::isfinite( data[ pxl ] ) ) {
+              res( pxl )( chl ) = 0;
+            }
+            else {
+              res( pxl )( chl ) = static_cast< uchar >( data[ pxl + chl * img_size ] );
             }
           }
-          break;
         }
-          default: {
-          delete[]( reinterpret_cast< unsigned char* >( dataptr ) );
-          std::string msg( BIAL_ERROR( "Unsupported nifti data type." ) );
-          throw( std::logic_error( msg ) );
-        }
+        break;
+      }
+      default: {
+        delete[]( reinterpret_cast< unsigned char* >( dataptr ) );
+        std::string msg( BIAL_ERROR( "Unsupported nifti data type." ) );
+        throw( std::logic_error( msg ) );
+      }
       }
       delete[]( reinterpret_cast< unsigned char* >( dataptr ) );
+      if( hdr.SclSlope( ) != 0.0 )
+        res = res * hdr.SclSlope( ) + hdr.SclInter( );
       return( res );
     }
     catch( std::ios_base::failure &e ) {
@@ -235,7 +237,6 @@ namespace Bial {
       COMMENT( "Header: " << hdr, 2 );
       Vector< size_t > dim = hdr.Dim( );
       Vector< float > pixdim = hdr.PixelSize( );
-
       COMMENT( "Seting the parameters for the constructor.", 2 );
       Vector< size_t > spc_dims( { dim[ 0 ], dim[ 1 ] } );
       Vector< float > pixel_size( { pixdim[ 0 ], pixdim[ 1 ] } );
@@ -260,8 +261,8 @@ namespace Bial {
         Image< Color > color_img( ReadNifti< Color >( filename ) );
         return( ColorSpace::ARGBtoGraybyBrightness< D >( color_img ) );
       }
-
       Image< D > res( spc_dims, pixel_size );
+      size_t img_size = res.size( );
       COMMENT( "Getting filename and opening it.", 2 );
       std::string imgname( NiftiHeader::ExistingDataFileName( filename ) );
       COMMENT( "Image name: " << imgname, 2 );
@@ -271,7 +272,6 @@ namespace Bial {
       IFile file;
       file.exceptions( std::ios::eofbit | std::ios::failbit | std::ios::badbit | std::ios::goodbit );
       file.open( imgname );
-
       COMMENT( "Seeking to the appropriate read position.", 2 );
       size_t offset;
       if( extension.rfind( ".nii" ) != std::string::npos ) {
@@ -280,7 +280,7 @@ namespace Bial {
       }
       COMMENT( "Reading data.", 0 );
       size_t single_bytes = hdr.BitPix( ) / 8;
-      size_t total_bytes = single_bytes * res.size( );
+      size_t total_bytes = single_bytes * img_size;
       char *dataptr = new char[ total_bytes ];
       file.read( &( dataptr[ 0 ] ), total_bytes ); /* data input */
       if( ( !file.good( ) ) || file.eof( ) || file.fail( ) || file.bad( ) ) {
@@ -291,94 +291,96 @@ namespace Bial {
       file.close( );
 
       bool swap = NiftiHeader::IsSwapped( filename );
-      COMMENT( "Is swapped??????????? " << swap, 2 );
+      COMMENT( "Is swapped??????????? " << swap, 1 );
       if( ( swap == true ) && ( single_bytes > 1 ) ) {
-        COMMENT( "Byte swap array if needed.", 2 );
-        NiftiHeader::SwapNBytes( res.size( ), single_bytes, dataptr );
+        COMMENT( "Byte swap array if needed.", 1 );
+        NiftiHeader::SwapNBytes( img_size, single_bytes, dataptr );
       }
       COMMENT( "Data type conversion.", 2 );
       switch( hdr.DataType( ) ) {
-        case NiftiType::INT32: {
-          COMMENT( "Int 32.", 2 );
-          int *data = reinterpret_cast< int* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
+      case NiftiType::INT32: {
+        COMMENT( "Int 32.", 1 );
+        int *data = reinterpret_cast< int* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          res( p ) = static_cast< D >( data[ p ] );
+        }
+        break;
+      }
+      case NiftiType::UINT32: {
+        COMMENT( "UInt 32.", 1 );
+        unsigned int *data = reinterpret_cast< unsigned int* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          res( p ) = static_cast< D >( data[ p ] );
+        }
+        break;
+      }
+      case NiftiType::INT16: {
+        COMMENT( "Int 16.", 1 );
+        short *data = reinterpret_cast< short* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          res( p ) = static_cast< D >( data[ p ] );
+        }
+        break;
+      }
+      case NiftiType::UINT16: {
+        COMMENT( "UInt 16.", 1 );
+        unsigned short *data = reinterpret_cast< unsigned short* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          res( p ) = static_cast< D >( data[ p ] );
+        }
+        break;
+      }
+      case NiftiType::INT8: {
+        COMMENT( "Int 8.", 1 );
+        char *data = reinterpret_cast< char* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          res( p ) = static_cast< D >( data[ p ] );
+        }
+        break;
+      }
+      case NiftiType::UINT8: {
+        COMMENT( "UInt 8.", 1 );
+        unsigned char *data = reinterpret_cast< unsigned char* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          res( p ) = static_cast< D >( data[ p ] );
+        }
+        break;
+      }
+      case NiftiType::FLOAT32: {
+        COMMENT( "Flt 32.", 1 );
+        float *data = reinterpret_cast< float* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          if( !std::isfinite( data[ p ] ) ) {
+            res( p ) = 0;
+          }
+          else {
             res( p ) = static_cast< D >( data[ p ] );
           }
-          break;
         }
-        case NiftiType::UINT32: {
-          COMMENT( "UInt 32.", 2 );
-          unsigned int *data = reinterpret_cast< unsigned int* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
+        break;
+      }
+      case NiftiType::FLOAT64: {
+        COMMENT( "Flt 64.", 1 );
+        double *data = reinterpret_cast< double* >( dataptr );
+        for( size_t p = 0; p < img_size; ++p ) {
+          if( !std::isfinite( data[ p ] ) ) {
+            res( p ) = 0;
+          }
+          else {
             res( p ) = static_cast< D >( data[ p ] );
           }
-          break;
         }
-        case NiftiType::INT16: {
-          COMMENT( "Int 16.", 2 );
-          short *data = reinterpret_cast< short* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
-            res( p ) = static_cast< D >( data[ p ] );
-          }
-          break;
-        }
-        case NiftiType::UINT16: {
-          COMMENT( "UInt 16.", 2 );
-          unsigned short *data = reinterpret_cast< unsigned short* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
-            res( p ) = static_cast< D >( data[ p ] );
-          }
-          break;
-        }
-        case NiftiType::INT8: {
-          COMMENT( "Int 8.", 2 );
-          char *data = reinterpret_cast< char* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
-            res( p ) = static_cast< D >( data[ p ] );
-          }
-          break;
-        }
-        case NiftiType::UINT8: {
-          COMMENT( "UInt 8.", 2 );
-          unsigned char *data = reinterpret_cast< unsigned char* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
-            res( p ) = static_cast< D >( data[ p ] );
-          }
-          break;
-        }
-        case NiftiType::FLOAT32: {
-          COMMENT( "Flt 32.", 2 );
-          float *data = reinterpret_cast< float* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
-            if( !std::isfinite( data[ p ] ) ) {
-              res( p ) = 0;
-            }
-            else {
-              res( p ) = static_cast< D >( data[ p ] );
-            }
-          }
-          break;
-        }
-        case NiftiType::FLOAT64: {
-          COMMENT( "Flt 64.", 2 );
-          double *data = reinterpret_cast< double* >( dataptr );
-          for( size_t p = 0; p < res.size( ); ++p ) {
-            if( !std::isfinite( data[ p ] ) ) {
-              res( p ) = 0;
-            }
-            else {
-              res( p ) = static_cast< D >( data[ p ] );
-            }
-          }
-          break;
-        }
-        default: {
-          delete[]( reinterpret_cast< unsigned char* >( dataptr ) );
-          std::string msg( BIAL_ERROR( "Unsupported nifti data type." ) );
-          throw( std::logic_error( msg ) );
-        }
+        break;
+      }
+      default: {
+        delete[]( reinterpret_cast< unsigned char* >( dataptr ) );
+        std::string msg( BIAL_ERROR( "Unsupported nifti data type." ) );
+        throw( std::logic_error( msg ) );
+      }
       }
       delete[] ( reinterpret_cast< unsigned char* >( dataptr ) );
+      if( hdr.SclSlope( ) != 0.0 )
+        res = res * hdr.SclSlope( ) + hdr.SclInter( );
       return( res );
     }
     catch( std::ios_base::failure &e ) {
@@ -420,29 +422,34 @@ namespace Bial {
         new_hdr.PixelSize( dms, img.PixelSize( dms ) );
       }
       new_hdr.Write( file, one_file );
-
+      COMMENT( "Dealing with data slop that multiplies and adds values to the image.", 2 );
+      Image< D > slc_img( img );
+      if( hdr.SclSlope( ) != 0.0 )
+        slc_img = ( slc_img - hdr.SclInter( ) ) / hdr.SclSlope( );
       COMMENT( "Opening data file if using img and hdr extensions.", 2 );
       if( !one_file ) {
         file.close( );
         std::string imgname( NiftiHeader::DataFileName( filename ) );
         file.open( imgname );
       }
+      COMMENT( "Getting image information.", 2 );
+      size_t img_size = slc_img.size( );
       COMMENT( "Getting data description.", 2 );
       switch( new_hdr.DataType( ) ) {
       case NiftiType::INT32: {
-        COMMENT( "Converting data to nifti format. _data._size: " << img.size( ) << ".", 2 );
-        Vector< int > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        COMMENT( "Converting data to nifti format. _data._size: " << img_size << ".", 2 );
+        Vector< int > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         file.write( reinterpret_cast< char* >( write_data.data( ) ), write_data.size( ) * sizeof( int ) );
         break;
       }
       case NiftiType::UINT32: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< unsigned int > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< unsigned int > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( unsigned int ) );
@@ -450,9 +457,9 @@ namespace Bial {
       }
       case NiftiType::INT16: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< short > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< short > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( short ) );
@@ -460,9 +467,9 @@ namespace Bial {
       }
       case NiftiType::UINT16: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< unsigned short > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< unsigned short > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( unsigned short ) );
@@ -470,9 +477,9 @@ namespace Bial {
       }
       case NiftiType::INT8: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< char > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< char > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( char ) );
@@ -480,9 +487,9 @@ namespace Bial {
       }
       case NiftiType::UINT8: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< unsigned char > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< unsigned char > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( unsigned char ) );
@@ -490,9 +497,9 @@ namespace Bial {
       }
       case NiftiType::FLOAT32: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< float > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< float > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( float ) );
@@ -500,9 +507,9 @@ namespace Bial {
       }
       case NiftiType::FLOAT64: {
         COMMENT( "Converting data to nifti format.", 2 );
-        Vector< double > write_data( img.size( ) );
-        for( size_t pxl = 0; pxl < img.size( ); ++pxl ) {
-          write_data[ pxl ] = static_cast< int >( img( pxl ) );
+        Vector< double > write_data( img_size );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          write_data[ pxl ] = static_cast< int >( slc_img( pxl ) );
         }
         COMMENT( "Writing data.", 2 );
         file.write( reinterpret_cast< char* >( &write_data[ 0 ] ), write_data.size( ) * sizeof( double ) );
@@ -554,6 +561,10 @@ namespace Bial {
         new_hdr.PixelSize( dms, img.PixelSize( dms ) );
       }
       new_hdr.Write( file, one_file );
+      COMMENT( "Dealing with data slop that multiplies and adds values to the image.", 2 );
+      Image< Color > slc_img( img );
+      if( hdr.SclSlope( ) != 0.0 )
+        slc_img = ( slc_img - hdr.SclInter( ) ) / hdr.SclSlope( );
       COMMENT( "Opening data file if using img and hdr extensions.", 2 );
       if( !one_file ) {
         file.close( );
@@ -561,8 +572,7 @@ namespace Bial {
         file.open( imgname );
       }
       COMMENT( "Getting image information.", 2 );
-      size_t img_size = img.size( );
-
+      size_t img_size = slc_img.size( );
       COMMENT( "Getting data description.", 2 );
       switch( new_hdr.DataType( ) ) {
       case NiftiType::INT32: {
@@ -572,7 +582,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< int >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< int >( slc_img( pxl )( chl ) );
           }
         }
         file.write( reinterpret_cast< char* >( write_data.data( ) ), write_data.size( ) * sizeof( int ) );
@@ -585,7 +595,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< unsigned int >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< unsigned int >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );
@@ -599,7 +609,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< short >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< short >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );
@@ -613,7 +623,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< unsigned short >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< unsigned short >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );
@@ -627,7 +637,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< char >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< char >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );
@@ -641,7 +651,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< unsigned char >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< unsigned char >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );
@@ -655,7 +665,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 4 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< float >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< float >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );
@@ -669,7 +679,7 @@ namespace Bial {
           for( size_t chl = 0; chl < 4; ++chl ) {
             COMMENT( "Computing coordinates and assigning data.", 2 );
             size_t coord = pxl + chl * img_size;
-            write_data[ coord ] = static_cast< double >( img( pxl )( chl ) );
+            write_data[ coord ] = static_cast< double >( slc_img( pxl )( chl ) );
           }
         }
         COMMENT( "Writing data.", 2 );

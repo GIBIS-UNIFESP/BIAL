@@ -56,7 +56,7 @@ namespace Bial {
         }
         queue.Finished( pxl );
         for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, adj_idx, adj_pxl ) ) {
+          if( adj_itr.AdjIdx( pxl, adj_idx, adj_pxl ) ) {
             if( ( mask[ adj_pxl ] != 0 ) && ( queue.State( adj_pxl ) != BucketState::REMOVED ) &&
                 ( dist[ pxl ] > dist[ adj_pxl ] ) ) {
               if( queue.State( adj_pxl ) == BucketState::NOT_VISITED ) {

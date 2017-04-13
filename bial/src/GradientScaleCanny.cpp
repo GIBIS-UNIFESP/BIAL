@@ -144,7 +144,7 @@ namespace Bial {
                 Vector< size_t > pxl_coords( edge.Coordinates( pxl ) );
                 COMMENT( "Searching for adjacents that must also be set as edge pixels.", 4 );
                 for( size_t idx = 1; idx < adj_size; ++idx ) {
-                  if( ( adj_itr.*adj_itr.AdjVct )( pxl_coords, idx, adj_pxl ) ) {
+                  if( adj_itr.AdjVct( pxl_coords, idx, adj_pxl ) ) {
                     COMMENT( "Getting adjacent local and global coordinates.", 5 );
                     Vector< size_t > img_coord( adj_pxl );
                     img_coord[ 0 ] += x_src;
@@ -314,7 +314,7 @@ namespace Bial {
                 Vector< size_t > pxl_coords( edge.Coordinates( pxl ) );
                 COMMENT( "Searching for adjacents that must also be set as edge pixels.", 4 );
                 for( size_t idx = 1; idx < adj_size; ++idx ) {
-                  if( ( adj_itr.*adj_itr.AdjVct )( pxl_coords, idx, adj_pxl ) ) {
+                  if( adj_itr.AdjVct( pxl_coords, idx, adj_pxl ) ) {
                     COMMENT( "Getting adjacent local and global coordinates.", 5 );
                     Vector< size_t > img_coord( adj_pxl );
                     img_coord[ 0 ] += x_src;

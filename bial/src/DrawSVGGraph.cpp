@@ -56,7 +56,7 @@ namespace Bial {
         file << "    </marker>" << std::endl;
         file << "  </defs>" << std::endl;
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( ( adj_itr.*adj_itr.AdjVct )( src_pxl, idx, adj_pxl ) ) && ( src_pxl != adj_pxl ) ) {
+          if( ( adj_itr.AdjVct( src_pxl, idx, adj_pxl ) ) && ( src_pxl != adj_pxl ) ) {
             size_t x_pos_adj = ( adj_pxl[ 0 ] + 1 ) * 10;
             size_t y_pos_adj = ( adj_pxl[ 1 ] + 1 ) * 10;
             COMMENT( "Moving arrow displacement.", 5 );

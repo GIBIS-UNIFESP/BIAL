@@ -367,16 +367,16 @@ namespace Bial {
 
     /**
      * @date 2012/jul/31
-     * @param n: number of bytes to be swapped.
-     * @param siz: size of the swapped data.
+     * @param size: number of elements to be swapped.
+     * @param data: data to be swapped data.
      * @return none.
-     * @brief Swaps bytes of data pointed by ar. Used to read data written by different architectures.
+     * @brief Swaps bytes of data pointed by 'data'. Used to read data written by different architectures.
      * @warning none.
      */
-    static void Swap2Bytes( size_t n, void *ar );
-    static void Swap4Bytes( size_t n, void *ar );
-    static void Swap8Bytes( size_t n, void *ar );
-    static void Swap16Bytes( size_t n, void *ar );
+    static void Swap2Bytes( size_t size, void *data );
+    static void Swap4Bytes( size_t size, void *data );
+    static void Swap8Bytes( size_t size, void *data );
+    static void Swap16Bytes( size_t size, void *data );
 
     /**
      * @date 2012/jul/31
@@ -385,7 +385,7 @@ namespace Bial {
      * @brief Swaps bytes of 'this' header. Used to read data written by different architectures.
      * @warning none.
      */
-    void Swap( );
+    void SwapHeader( );
 
   public:
 
@@ -631,14 +631,14 @@ namespace Bial {
 
     /**
      * @date 2012/Jul/31
-     * @param n: number of bytes to be swapped.
-     * @param siz: size of the swapped data.
-     * @param ar: pointer to data.
+     * @param size: size of the swapped data.
+     * @param bytes: number of bytes to be swapped.
+     * @param data: pointer to data.
      * @return none.
-     * @brief Swaps bytes of data pointed by ar. Used to read data written by different architectures.
+     * @brief Swaps bytes of data pointed by data. Used to read data written by different architectures.
      * @warning none.
      */
-    static void SwapNBytes( size_t n, int siz, void *ar );
+    static void SwapNBytes( size_t size, size_t bytes, void *data );
 
     /**
      * @date 2013/Aug/21
@@ -705,13 +705,23 @@ namespace Bial {
     std::string Orientation( ) const;
 
     /**
+     * @date 2017/Apr/08
+     * @param none.
+     * @return scl_slope and scl_inter.
+     * @brief Functions to access scl_slope and scl_inter parameters.
+     * @warning none.
+     */
+    float SclSlope( ) const;
+    float SclInter( ) const;
+
+    /**
      * @date 2012/Sep/08
      * @param none.
      * @return Boolean value indicating if this MR image uses quaternion orientation form or not.
      * @brief Returns a boolean value indicating if this MR image uses quaternion orientation form or not.
      * @warning none.
      */
-    bool UseQuatern( );
+    bool UseQuatern( ) const;
 
     /**
      * @date 2012/Sep/08
@@ -720,7 +730,7 @@ namespace Bial {
      * @brief Returns a boolean value indicating if this MR image uses affine orientation form or not.
      * @warning none.
      */
-    bool UseAffine( );
+    bool UseAffine( ) const;
 
     /**
      * @date 2012/Aug/03

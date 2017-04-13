@@ -23,12 +23,10 @@
 using namespace std;
 using namespace Bial;
 
-/* Tamanho do lado do quadrado.*/
 size_t GetPosWindowMaxSum( Image< int > img, size_t window_x_size, size_t window_y_size ) {
   try {
     Image< double > integral = Integral::IntegralImage( img );
     size_t best_pos = 0;
-
     size_t max_sum = 0;
     for( size_t row = window_y_size - 1; row < img.size( 1 ); ++row ) {
       for( size_t col = window_x_size - 1; col < img.size( 0 ); ++col ) {
@@ -66,55 +64,47 @@ int main( int argc, char *argv[] ) {
     return( 0 );
   }
   try {
+    COMMENT( "Reading files in input directory and storing them into a vector.", 0 );
     Vector< Image< int > > img( ReadDir< int >( argv[ 1 ] ) );
-
-    /* Image< int > sum( img[ 0 ].size( 0 ), img[ 0 ].size( 1 ) ); */
-    Image< int > diff( img[ 0 ] );
-    diff.Set( 0 );
+    COMMENT( "Computing diff image.", 0 );
+    Image< int > diff( img[ 0 ].Dim( ) );
     for( size_t idx = 1; idx < img.size( ); ++idx ) {
-      Image< int > local_diff( img[ idx ] - img[ idx - 1 ] );
-      for( size_t pxl = 0; pxl < local_diff.size( ); ++pxl ) {
-        if( local_diff[ pxl ] <= 0 )
-          local_diff[ pxl ] = -local_diff[ pxl ];
-      }
-      diff += local_diff;
+      for( size_t pxl = 0; pxl < diff.size( ); ++pxl )
+        diff[ pxl ] += std::abs( img[ idx ][ pxl ] - img[ idx - 1 ][ pxl ] );
     }
+    DEBUG_WRITE( diff, "diff_img", 1 );
+
     COMMENT( "Getting maximum intensity position with given window size.", 0 );
     size_t win_xsize = static_cast< size_t >( diff.size( 0 ) * 0.35 + 0.5 );
     size_t win_ysize = win_xsize / 2;
     size_t pxl = GetPosWindowMaxSum( diff, win_xsize, win_ysize ) + 1;
     size_t col = pxl % diff.size( 0 );
     size_t row = pxl / diff.size( 0 );
-
+    COMMENT( "Max position: " << col << ", " << row, 0 );
     Box heart_box( { col - win_xsize / 2.0f, row - win_ysize / 2.0f },
                    { static_cast< float >( win_xsize ), static_cast< float >( win_ysize ) },
                    Color( 180, 255, 255, 0 ), false );
 
-
     COMMENT( "Computing merged image.", 0 );
     Image< int > scn( ImageOp::Merge( img ) );
+    DEBUG_WRITE( scn, "3d_sagital_series", 1 );
     COMMENT( "Computing slice image. scn dims: " << scn.Dim( ), 0 );
-    // BUG here. Must remove first dimension.
     Image< int > sgt_rot( ImageOp::Resize( scn, { col + win_xsize / 4, 0, 0 },
                                            { col + win_xsize / 4, scn.size( 1 ) - 1, scn.size( 2 ) - 1 } ) );
+    DEBUG_WRITE( sgt_rot, "sgt_rot", 1 );
     COMMENT( "Computing subimage. sgt_rot dims: " << sgt_rot.Dim( ), 0 );
     Image< int > sgt( sgt_rot.size( 2 ), sgt_rot.size( 1 ) );
     for( size_t x = 0; x < sgt_rot.size( 2 ); ++x ) {
-      for( size_t y = 0; y < sgt_rot.size( 1 ); ++y ) {
+      for( size_t y = 0; y < sgt_rot.size( 1 ); ++y )
         sgt( x, y ) = sgt_rot( 0, y, x );
-      }
     }
     COMMENT( "Writing sagittal.", 0 );
-    Write( sgt, "dat/sagittal.pgm" );
-
+    DEBUG_WRITE( sgt, "sagittal", 1 );
     COMMENT( "Computing sobel.", 0 );
     Image< int > grad( sgt );
-    /* Image< int > grad( Gradient::DirectionalSobel( sgt, 1 ) ); */
     Gradient::Sobel( sgt, &grad );
-
     COMMENT( "Writing grad.", 0 );
-    Write( grad, "dat/sgt_grad.pgm" );
-
+    DEBUG_WRITE( grad, "sgt_grad", 1 );
     Image< int > cgrad( grad );
     Intensity::Complement( cgrad );
     int max = cgrad.Maximum( );
@@ -126,7 +116,7 @@ int main( int argc, char *argv[] ) {
       }
     }
     COMMENT( "Writing grad complement.", 0 );
-    Write( cgrad, "dat/sgt_cgrad.pgm" );
+    DEBUG_WRITE( cgrad, "sgt_cgrad", 1 );
 
     COMMENT( "Creating seeds.", 0 );
     Vector< bool > seeds( grad.size( ), false );
@@ -153,8 +143,8 @@ int main( int argc, char *argv[] ) {
     ImageIFT< int > ift( value, adj, &pf, &queue );
     ift.Run( );
     COMMENT( "Finished IFT.", 0 );
-    Write( value, "dat/ift_value.pgm" );
-    Write( pred, "dat/ift_pred.pgm" );
+    DEBUG_WRITE( value, "ift_value", 1 );
+    DEBUG_WRITE( pred, "ift_pred", 1 );
     COMMENT( "Computing min_y.", 0 );
     size_t min_y = row + win_ysize / 2 + 1;
     for( size_t y = row + win_ysize / 2 + 2; y <= sgt.size( 1 ) - 10; ++y ) {
@@ -171,9 +161,9 @@ int main( int argc, char *argv[] ) {
       sum_y += prd / value.size( 0 );
       curve[ prd ] = 1;
       prd = pred[ prd ];
-    } while( prd >= 0 );
+    } while( ( prd >= 0 ) && ( prd != pred[ prd ] ) );
     sum_y = ( sum_y + 0.5 ) / value.size( 0 );
-    Write( curve, "dat/curve.pgm" );
+    DEBUG_WRITE( curve, "curve", 1 );
     COMMENT( "Creating res.", 0 );
     Vector< Image< Color > > res;
     prd = min_pxl;

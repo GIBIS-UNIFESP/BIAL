@@ -293,7 +293,7 @@ namespace Bial {
       size_t adj_size = adj.size( );
       size_t adj_pxl;
       for( size_t idx = 1; idx < adj_size; ++idx ) {
-        if( ( ( adj_itr.*adj_itr.AdjIdx )( start_pxl, idx, adj_pxl ) ) && ( label[ adj_pxl ] == value ) &&
+        if( ( adj_itr.AdjIdx( start_pxl, idx, adj_pxl ) ) && ( label[ adj_pxl ] == value ) &&
             ( !visited[ adj_pxl ] ) ) {
           SequenceCreator( label, adj_pxl, visited, adj );
           return;

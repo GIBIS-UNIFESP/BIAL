@@ -110,13 +110,12 @@ namespace Bial {
   }
 
   template< class D > Image< D >::Image( D *new_data, const Vector< size_t > &new_dim ) try
-    : _data( new_data, new_dim ), qk_data( new_data ), pixel_size( ), y_table( nullptr ), z_table( nullptr ) {
+    : _data( new_data, new_dim ), qk_data( new_data ), pixel_size( 3, 1.0 ), y_table( nullptr ), z_table( nullptr ) {
       size_t dimensions = new_dim.size( );
       if( ( dimensions < 2 ) || ( dimensions > 3 ) ) {
         std::string msg( BIAL_ERROR( "Must have 2 or 3 dimensions. Given" + std::to_string( dimensions ) + "." ) );
         throw( std::logic_error( msg ) );
       }
-      pixel_size = Vector< float >( 3, 1.0f );
       COMMENT( "Creating data matrix.", 2 );
       Vector< size_t > dims( new_dim );
       if( dimensions == 2 )
@@ -400,7 +399,153 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  template< class D > Image< D >::Image( const Image< D > &img ) try :
+  template< > template< class D >
+  Image< bial_complex >::Image( const Image< D > &img ) try :
+      _data( img._data.dim_size ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ),
+        z_table( nullptr ) {
+      COMMENT( "Assigning quick access pointers.", 2 );
+      qk_data = &_data[ 0 ];
+      CreateTables( );
+      size_t size = _data._size;
+      COMMENT( "Copying image data.", 2 );
+      for( size_t pxl = 0; pxl < size; ++pxl )
+        QK_DATA( pxl ) = bial_complex( img.QK_DATA( pxl ), static_cast< D >( 0 ) );
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+  
+  template< > template< >
+  Image< int >::Image( const Image< bial_complex > &img ) try :
+    _data( img._data.dim_size ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ),
+        z_table( nullptr ) {
+      COMMENT( "Assigning quick access pointers.", 2 );
+      qk_data = &_data[ 0 ];
+      CreateTables( );
+      size_t size = _data._size;
+      COMMENT( "Copying image data.", 2 );
+      for( size_t pxl = 0; pxl < size; ++pxl )
+        QK_DATA( pxl ) = static_cast< int >( img.QK_DATA( pxl ).real( ) );
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+  
+  template< > template< >
+  Image< llint >::Image( const Image< bial_complex > &img ) try :
+    _data( img._data.dim_size ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ),
+        z_table( nullptr ) {
+      COMMENT( "Assigning quick access pointers.", 2 );
+      qk_data = &_data[ 0 ];
+      CreateTables( );
+      size_t size = _data._size;
+      COMMENT( "Copying image data.", 2 );
+      for( size_t pxl = 0; pxl < size; ++pxl )
+        QK_DATA( pxl ) = static_cast< llint >( img.QK_DATA( pxl ).real( ) );
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+
+  template< > template< >
+  Image< float >::Image( const Image< bial_complex > &img ) try :
+    _data( img._data.dim_size ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ),
+        z_table( nullptr ) {
+      COMMENT( "Assigning quick access pointers.", 2 );
+      qk_data = &_data[ 0 ];
+      CreateTables( );
+      size_t size = _data._size;
+      COMMENT( "Copying image data.", 2 );
+      for( size_t pxl = 0; pxl < size; ++pxl )
+        QK_DATA( pxl ) = static_cast< float >( img.QK_DATA( pxl ).real( ) );
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+
+  template< > template< >
+  Image< double >::Image( const Image< bial_complex > &img ) try :
+    _data( img._data.dim_size ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ),
+        z_table( nullptr ) {
+      COMMENT( "Assigning quick access pointers.", 2 );
+      qk_data = &_data[ 0 ];
+      CreateTables( );
+      size_t size = _data._size;
+      COMMENT( "Copying image data.", 2 );
+      for( size_t pxl = 0; pxl < size; ++pxl )
+        QK_DATA( pxl ) = static_cast< double >( img.QK_DATA( pxl ).real( ) );
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+
+  template< class D >
+  Image< D >::Image( const Image< D > &img ) try :
     _data( img._data ), qk_data( nullptr ), pixel_size( img.pixel_size ), y_table( nullptr ), z_table( nullptr ) {
       COMMENT( "Assigning quick access pointers.", 4 );
       qk_data = &_data[ 0 ];
@@ -902,6 +1047,26 @@ namespace Bial {
     }
   }
 
+  template< >
+  bial_complex Image< bial_complex >::Minimum( ) const {
+    try {
+      bial_complex min = QK_DATA( 0 );
+      for( size_t elm = 1; elm < _data._size; ++elm ) {
+        if( std::abs( min ) > std::abs( QK_DATA( elm ) ) )
+          min = QK_DATA( elm );
+      }
+      return( min );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
   template< class D >
   D Image< D >::Maximum( ) const {
     try {
@@ -967,6 +1132,27 @@ namespace Bial {
       throw( std::logic_error( msg ) );
     }
   }
+
+  template< >
+  bial_complex Image< bial_complex >::Maximum( ) const {
+    try {
+      bial_complex min = QK_DATA( 0 );
+      for( size_t elm = 1; elm < _data._size; ++elm ) {
+        if( std::abs( min ) < std::abs( QK_DATA( elm ) ) )
+          min = QK_DATA( elm );
+      }
+      return( min );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
 
   /* Using macros here to speed up code in run mode and allow debug mode. */
 
@@ -2127,6 +2313,7 @@ namespace Bial {
   template class Image< double >;
   template class Image< Color >;
   template class Image< RealColor >;
+  template class Image< bial_complex >;
 
   /*
    * Explicit instantiation of Image functions. Insert here if other types are necessary.
@@ -2147,6 +2334,11 @@ namespace Bial {
   template Image< double >::Image( const Image< int > &img );
   template Image< double >::Image( const Image< llint > &img );
   template Image< double >::Image( const Image< float > &img );
+
+  template Image< bial_complex >::Image( const Image< int > &img );
+  template Image< bial_complex >::Image( const Image< llint > &img );
+  template Image< bial_complex >::Image( const Image< float > &img );
+  template Image< bial_complex >::Image( const Image< double > &img );
 
   /* operator= */
   template Image< int > &Image< int >::operator=( const Image< llint > &img );

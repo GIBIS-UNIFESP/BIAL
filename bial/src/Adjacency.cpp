@@ -26,7 +26,7 @@ namespace Bial {
 
   /* Adjacency ----------------------------------------------------------------------------------------------------- **/
 
-  Adjacency::Adjacency( ) try : relation( 2, 1 ) {
+  Adjacency::Adjacency( ) try : relation( 3, 1 ), dims( 3 ) {
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -45,13 +45,13 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  Adjacency::Adjacency( size_t size, size_t dims ) try : relation( dims, size ) {
-    IF_DEBUG( ( dims < 2 ) || ( dims > 3 ) ) {
-      std::string msg( BIAL_ERROR( "Adjacency must have 2 or 3 dimensions. Given: " + std::to_string( dims ) ) );
+  Adjacency::Adjacency( size_t size, size_t dims ) try : relation( 3, size ), dims( dims ) {
+    IF_DEBUG( size == 0 ) {
+      std::string msg( BIAL_ERROR( "Empty adjacency relation." ) );
       throw( std::logic_error( msg ) );
     }
-    if( size == 0 ) {
-      std::string msg( BIAL_ERROR( "Empty adjacency relation." ) );
+    IF_DEBUG( ( dims != 2 ) && ( dims != 3 ) ) {
+      std::string msg( BIAL_ERROR( "Adjacency relation must have 2 or 3 dimensions." ) );
       throw( std::logic_error( msg ) );
     }
   }
@@ -146,9 +146,16 @@ namespace Bial {
     }
   }
 
+  float Adjacency::Displacement( size_t elm ) {
+    float dist = std::sqrt( static_cast< float >( relation( 0, elm ) * relation( 0, elm ) +
+                                                  relation( 1, elm ) * relation( 1, elm ) + 
+                                                  relation( 2, elm ) * relation( 2, elm ) ) );
+    return( dist );
+  }
+
   size_t Adjacency::Dims( ) const {
     try {
-      return( relation.dim_size[ 0 ] );
+      return( dims );
     }
     catch( const std::out_of_range &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );

@@ -34,7 +34,7 @@ namespace Bial {
       for( size_t img_idx = 0; img_idx < img_size; ++img_idx ) {
         bool minima = true;
         for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
-          if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+          if( ( adj_itr.AdjIdx( img_idx, adj_it, adj_idx ) ) &&
               ( image[ img_idx ] > image[ adj_idx ] ) ) {
             minima = false;
             break;
@@ -74,7 +74,7 @@ namespace Bial {
       for( size_t img_idx = 0; img_idx < img_size; ++img_idx ) {
         bool maxima = true;
         for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
-          if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+          if( ( adj_itr.AdjIdx( img_idx, adj_it, adj_idx ) ) &&
               ( image[ img_idx ] < image[ adj_idx ] ) ) {
             maxima = false;
             break;
@@ -116,7 +116,7 @@ namespace Bial {
         if( mask[ img_idx ] != 0 ) {
           bool minima = true;
           for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+            if( ( adj_itr.AdjIdx( img_idx, adj_it, adj_idx ) ) &&
                 ( image[ img_idx ] > image[ adj_idx ] ) ) {
               minima = false;
               break;
@@ -159,7 +159,7 @@ namespace Bial {
         if( mask[ img_idx ] != 0 ) {
           bool maxima = true;
           for( size_t adj_it = 1; adj_it < adj_size; ++adj_it ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( img_idx, adj_it, adj_idx ) ) &&
+            if( ( adj_itr.AdjIdx( img_idx, adj_it, adj_idx ) ) &&
                 ( image[ img_idx ] < image[ adj_idx ] ) ) {
               maxima = false;
               break;

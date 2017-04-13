@@ -123,7 +123,7 @@ namespace Bial {
             size_t root = edt[ pxl ];
             COMMENT( "Looking for the best value in each adjacency.", 4 );
             for( size_t idx = 0; idx < adj_size; ++idx ) {
-              if( ( ( adj_itr.*adj_itr.AdjIdx )( root, idx, adj_pxl ) ) && ( cln_msk[ adj_pxl ] != 0 ) ) {
+              if( ( adj_itr.AdjIdx( root, idx, adj_pxl ) ) && ( cln_msk[ adj_pxl ] != 0 ) ) {
                 ++total_voxels;
                 ++histo[ img[ adj_pxl ] ];
               }

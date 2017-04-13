@@ -71,7 +71,7 @@ namespace Bial {
       }
       const double TAN_22_5 = std::tan( M_PI / 8.0 ); // 0.414213562;
       size_t dimensions = img.Dims( );
-
+      COMMENT( "Creating directional sobel.", 1 );
       Vector< Image< D > > dir_sobel;
       for( size_t dir = 0; dir < dimensions; ++dir ) {
         Kernel krn( KernelType::NormalizedSobel( dimensions, dir ) );

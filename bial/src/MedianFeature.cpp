@@ -110,7 +110,7 @@ namespace Bial {
       for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
         if( msk[ src_pxl ] != 0 ) {
           for( size_t adj = 0; adj < adj_size; ++adj ) {
-            if( ( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, adj, adj_pxl ) ) && ( msk[ adj_pxl ] != 0 ) )
+            if( ( adj_itr.AdjIdx( src_pxl, adj, adj_pxl ) ) && ( msk[ adj_pxl ] != 0 ) )
               median( adj ) = src[ adj_pxl ];
             else
               median( adj ) = src[ src_pxl ];
@@ -160,7 +160,7 @@ namespace Bial {
       size_t adj_base = ( adj_size / 2 ) - ( features / 2 );
       for( size_t src_pxl = min_index; src_pxl < max_index; ++src_pxl ) {
         for( size_t adj = 0; adj < adj_size; ++adj ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, adj, adj_pxl ) )
+          if( adj_itr.AdjIdx( src_pxl, adj, adj_pxl ) )
             median( adj ) = src[ adj_pxl ];
           else
             median( adj ) = src[ src_pxl ];

@@ -84,14 +84,13 @@ namespace Bial {
       size_t adj_size = krn.size( );
       AdjacencyIterator adj_itr( img, krn );
       size_t adj_pxl;
-      COMMENT( "Dealing with thread limits.", 1 );
       size_t min_index = thread * img_size / total_threads;
       size_t max_index = ( thread + 1 ) * img_size / total_threads;
-      COMMENT( "Running algorithm.", 1 );
+      COMMENT( "Running algorithm from " << min_index << " to " << max_index - 1, 1 );
       for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
         double sum = 0.0;
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) )
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) )
             sum += static_cast< double >( img[ adj_pxl ] ) * krn.Value( idx );
         }
         res[ pxl ] = static_cast< D >( sum );

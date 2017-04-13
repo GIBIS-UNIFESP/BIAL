@@ -38,7 +38,7 @@ namespace Bial {
       for( size_t pxl = 0; pxl < img_size; ++pxl ) {
         double sum = 0;
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( ( adj_itr.*adj_itr.AdjIdx )( pxl, idx, adj_pxl ) )
+          if( adj_itr.AdjIdx( pxl, idx, adj_pxl ) )
             sum += ( img[ pxl ] > img[ adj_pxl ] ) ? img[ pxl ] - img[ adj_pxl ] : img[ adj_pxl ] - img[ pxl ];
         }
         grad[ pxl ] = static_cast< D >( sum );

@@ -33,17 +33,17 @@ namespace Bial {
   Image< D > Segmentation::OrientedGeodesicStar( const Image< D > &image, const Vector< size_t > &obj_seeds,
                                                  const Vector< size_t > &bkg_seeds, double alpha, double beta ) {
     try {
-      if( ( alpha < -1.0 ) || ( alpha > 1.0 ) ) {
+      IF_DEBUG( ( alpha < -1.0 ) || ( alpha > 1.0 ) ) {
         std::string msg( BIAL_ERROR( "Alpha must be set between -1.0 and 1.0. Given value: " + std::to_string( alpha )
                                      + "." ) );
         throw( std::logic_error( msg ) );
       }
-      if( ( beta < 0.0 ) || ( beta > 4.0 ) ) {
+      IF_DEBUG( ( beta < 0.0 ) || ( beta > 4.0 ) ) {
         std::string msg( BIAL_ERROR( "Beta must be set between 0.0 and 4.0. Given value: " +
                                      std::to_string( beta ) + "." ) );
         throw( std::logic_error( msg ) );
       }
-      if( ( obj_seeds.size( ) == 0 ) || ( bkg_seeds.size( ) == 0 ) ) {
+      IF_DEBUG( ( obj_seeds.size( ) == 0 ) || ( bkg_seeds.size( ) == 0 ) ) {
         std::string msg( BIAL_ERROR( "Must have at last one object and one background seed. Given object seeds: " +
                                      std::to_string( obj_seeds.size( ) ) + ", background seeds: " +
                                      std::to_string( bkg_seeds.size( ) ) + "." ) );

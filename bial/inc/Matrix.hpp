@@ -1202,21 +1202,17 @@ namespace Bial {
   template< class D > Matrix< D >::Matrix( size_t size_0, size_t size_1 ) try :
     _data( Vector< D >( size_0 * size_1 ) ), qk_data( nullptr ), _size( size_0 * size_1 ), dims( 2 ), 
       dim_size( 2, size_0 ), acc_dim_size( 2, size_0 ) {
-
-      COMMENT( "Assigning quick access pointers.", 2 );
-      qk_data = _data.data( );
-
-      COMMENT( "Setting size of matrix dimensions.", 2 );
-      dim_size( 1 ) = size_1;
-
-      COMMENT( "Computing accumulated size of matrix dimensions.", 2 );
-      acc_dim_size( 1 ) *= acc_dim_size( 0 );
-
-      COMMENT( "Checking for zero size dimension.", 2 );
-      if( acc_dim_size( 1 ) == 0 ) {
+      COMMENT( "Checking for zero size dimension.", 4 );
+      IF_DEBUG( ( size_0 == 0 ) || ( size_1 == 0 ) ) {
         std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
         throw( std::logic_error( msg ) );
       }
+      COMMENT( "Assigning quick access pointers.", 2 );
+      qk_data = _data.data( );
+      COMMENT( "Setting size of matrix dimensions.", 2 );
+      dim_size( 1 ) = size_1;
+      COMMENT( "Computing accumulated size of matrix dimensions.", 2 );
+      acc_dim_size( 1 ) *= size_1;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1238,6 +1234,11 @@ namespace Bial {
   template< class D > Matrix< D >::Matrix( size_t size_0, size_t size_1, size_t size_2 ) try
     : _data( ), qk_data( nullptr ), _size( size_0 * size_1 * size_2 ), dims( 3 ), dim_size( 3, size_0 ),
         acc_dim_size( 3, size_0 ) {
+      COMMENT( "Checking for zero size dimension.", 4 );
+      IF_DEBUG( ( size_0 == 0 ) || ( size_1 == 0 ) || ( size_2 == 0 ) ) {
+        std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
+        throw( std::logic_error( msg ) );
+      }
       COMMENT( "Allocating data vector.", 4 );
       _data = Vector< D >( _size );
       COMMENT( "Assigning quick access pointers.", 4 );
@@ -1246,13 +1247,8 @@ namespace Bial {
       dim_size( 1 ) = size_1;
       dim_size( 2 ) = size_2;
       COMMENT( "Computing accumulated size of matrix dimensions.", 4 );
-      acc_dim_size( 1 ) *= acc_dim_size( 0 );
-      acc_dim_size( 2 ) *= acc_dim_size( 1 );
-      COMMENT( "Checking for zero size dimension.", 4 );
-      if( acc_dim_size( 2 ) == 0 ) {
-        std::string msg( BIAL_ERROR( "Matrix with zero sized dimension(s)." ) );
-        throw( std::logic_error( msg ) );
-      }
+      acc_dim_size( 1 ) *= size_1;
+      acc_dim_size( 2 ) *= size_1 * size_2;
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

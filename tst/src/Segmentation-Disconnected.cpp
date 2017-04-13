@@ -74,7 +74,7 @@ int main( int argc, char *argv[ ] ) {
     int src_lbl = label[ src_pxl ];
     if( src_lbl != 0 ) {
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, idx, adj_pxl ) ) {
+        if( adj_itr.AdjIdx( src_pxl, idx, adj_pxl ) ) {
           int adj_lbl = label[ adj_pxl ];
           if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) )
             has_adjacent = true;
@@ -117,7 +117,7 @@ int main( int argc, char *argv[ ] ) {
         continue;
       }
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, idx, adj_pxl ) ) {
+        if( adj_itr.AdjIdx( src_pxl, idx, adj_pxl ) ) {
           int adj_lbl = label[ adj_pxl ];
           if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
             has_adjacent = true;
@@ -146,7 +146,7 @@ int main( int argc, char *argv[ ] ) {
   //   int src_lbl = label[ src_pxl ];
   //   if( src_lbl != 0 ) {
   //     for( size_t idx = 0; idx < adj_size; ++idx ) {
-  //       if( ( adj_itr.*adj_itr.AdjIdx )( src_pxl, idx, adj_pxl ) ) {
+  //       if( adj_itr.AdjIdx( src_pxl, idx, adj_pxl ) ) {
   //         int adj_lbl = label[ adj_pxl ];
   //         if( ( adj_lbl != 0 ) && ( adj_lbl != src_lbl ) ) {
   //           has_adjacent = true;
