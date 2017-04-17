@@ -221,7 +221,7 @@ void SegmentationTool::drawSeed( Bial::Point3D last, Bial::Point3D current ) {
   for( size_t px = 0; px < size; ++px ) {
     if( seeds[ px ] == 255 ) {
       for( size_t idx = 0; idx < adj_size; ++idx ) {
-        if( ( it.*it.AdjIdx )( px, idx, adj_px ) )
+        if( it.AdjIdx( px, idx, adj_px ) )
           seeds[ adj_px ] = drawType;
       }
     }
