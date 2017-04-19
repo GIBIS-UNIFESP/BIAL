@@ -1,0 +1,69 @@
+language: cpp
+cache: apt
+# cache:
+#   directories:
+#     - $HOME/Library/Caches/Homebrew
+#     - /usr/local/opt/qt@5.7/
+#     - /opt/qt57/
+os:
+  - linux
+  - osx
+
+dist: trusty
+
+env:
+  - QT=qt57
+
+addons:
+apt:
+  sources:
+  - ubuntu-toolchain-r-test
+  packages:
+  - gcc-4.8
+  - g++-4.8
+
+branches:
+  only:
+    - 'master'
+
+# before_install:
+#   - export DISPLAY=:99.0
+#   - sh -e /etc/init.d/xvfb start
+before_install:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+      if [ "$QT" = "qt57" ]; then
+        sudo add-apt-repository ppa:beineri/opt-qt571-trusty -y && sudo apt-get update;
+      fi;
+    else
+      brew update;
+    fi;
+
+install:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+      if [ "$QT" = "qt57" ]; then
+        sudo apt-get install -y qt57base qt57charts-no-lgpl dh-make;
+      fi;
+    else
+      brew install qt@5.7 gdb
+      && chmod -R 755 /usr/local/opt/qt@5.7/*;
+    fi;
+
+before_script:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+      export DISPLAY=:99.0
+      && sh -e /etc/init.d/xvfb start;
+    fi;
+
+script:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+      source /opt/qt57/bin/qt57-env.sh;
+    else
+      QTDIR="/usr/local/opt/qt@5.7/"
+      && PATH="${QTDIR}/bin:$PATH"
+      && LDFLAGS=-L${QTDIR}/lib
+      && CPPFLAGS=-I${QTDIR}/include;
+    fi;
+  - qmake -r master.pro
+  - make -j4
+  - cd tst
+  - make all
