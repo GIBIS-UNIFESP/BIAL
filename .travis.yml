@@ -66,4 +66,8 @@ script:
   - qmake -r master.pro
   - make -j4
   - cd tst
-  - make all
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+      make all;
+    else
+      make all clang=1;
+    fi;
