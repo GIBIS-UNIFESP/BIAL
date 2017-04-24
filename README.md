@@ -1,4 +1,5 @@
 # Biomedical Image Analysis Library
+![Travis-build-status](https://travis-ci.org/GIBIS-UNIFESP/BIAL.svg?branch=master)
 
 The **Biomedical Image Analysis Library** is a poweful tool for developers, physicians, researchers, engineers, and so on.
 With a intuitive user interface, a physician can make semi-automated diagnostics, segmentations, and apply sophisticated image processing filters using drag and drop features.
