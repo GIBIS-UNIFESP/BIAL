@@ -18,29 +18,29 @@ The easiest way to install the library is opening the file "master.pro" on QtCre
 
 _Warning:_
     As libbial.so is a shared library, you will need to add its path to LD\_LIBRARY\_PATH (or DYLD_LIBRARY_PATH os MAC OS), with the following command:
-    ```bash
+```bash
         export LD_LIBRARY_PATH=<BIAL_PATH>/build/<linux|windows>/<release|debug>/lib
-    ```
+```
 **Example:**
     In a machine running ubuntu 16.04, you could download Qt 5.7, and compile the whole library and run a test example with the following commands:
-    ```bash
-        #Installing Qt 5.7
-        sudo apt update
-        sudo apt install qt-sdk git
+```bash
+    #Installing Qt 5.7
+    sudo apt update
+    sudo apt install qt-sdk git
 
-        #Downloading BIAL library from github
-        git clone https://github.com/GIBIS-UNIFESP/BIAL
+    #Downloading BIAL library from github
+    git clone https://github.com/GIBIS-UNIFESP/BIAL
 
-        cd BIAL
-        # Generating the makefile with qmake
-        qmake -r . 
+    cd BIAL
+    # Generating the makefile with qmake
+    qmake -r . 
 
-        # Building the whole project
-        make
+    # Building the whole project
+    make
 
-        # Building a test binary
-        cd tst
-        make Image-Copy
-        export LD_LIBRARY_PATH=../build/linux/release/lib
-        ./bin/Image-Copy res/macaw.ppm dat/macaw.ppm
-    ```
+    # Building a test binary
+    cd tst
+    make Image-Copy
+    export LD_LIBRARY_PATH=../build/linux/release/lib
+    ./bin/Image-Copy res/macaw.ppm dat/macaw.ppm
+```
