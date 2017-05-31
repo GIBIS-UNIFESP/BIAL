@@ -4,7 +4,7 @@
 #define CCH_H
 
 namespace Bial{
-  typedef Vector < Features < int >> CCHfeature;
+  typedef Vector< Features < int > > CCHfeature;
 
   class CCH : public FeatureExtractor< Color, int > {
   private:
@@ -14,7 +14,7 @@ namespace Bial{
   public:
     CCH( FeatureDetector< Color > *Fd );
 
-    CCH( Vector < std::tuple < Image< Color >, Image< int >> > detected );
+    CCH( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

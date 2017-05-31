@@ -5,7 +5,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < double >> BASfeature;
+  typedef Vector< Features < double > > BASfeature;
 
   class BAS : public FeatureExtractor< int, double > {
 private:
@@ -15,7 +15,7 @@ private:
 public:
     BAS( FeatureDetector< int > *Fd );
 
-    BAS( Vector < std::tuple < Image< int >, Image< int >> > detected );
+    BAS( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

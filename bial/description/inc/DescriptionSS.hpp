@@ -13,7 +13,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < double >> SSfeature;
+  typedef Vector< Features < double > > SSfeature;
 
   typedef Vector< std::tuple< int, int > > Curve;
   typedef Vector< std::tuple< double, double > > CurveDouble;
@@ -27,7 +27,7 @@ private:
 public:
     SS( FeatureDetector< int > *Fd );
 
-    SS( Vector < std::tuple < Image< int >, Image< int >> > detected );
+    SS( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

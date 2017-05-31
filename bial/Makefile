@@ -231,7 +231,6 @@ SOURCES       = cpplex/src/columnset.cpp \
 		src/OrientedExternPathFunction.cpp \
 		src/OrientedInternPathFunction.cpp \
 		src/PathFunction.cpp \
-		src/ParameterInterpreter.cpp \
 		src/PixelInterpolation.cpp \
 		src/Plotting.cpp \
 		src/PNMHeader.cpp \
@@ -467,7 +466,6 @@ OBJECTS       = ../build/linux/release/obj/columnset.o \
 		../build/linux/release/obj/OrientedExternPathFunction.o \
 		../build/linux/release/obj/OrientedInternPathFunction.o \
 		../build/linux/release/obj/PathFunction.o \
-		../build/linux/release/obj/ParameterInterpreter.o \
 		../build/linux/release/obj/PixelInterpolation.o \
 		../build/linux/release/obj/Plotting.o \
 		../build/linux/release/obj/PNMHeader.o \
@@ -1423,9 +1421,6 @@ compiler_clean:
 
 ../build/linux/release/obj/PathFunction.o: src/PathFunction.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/PathFunction.o src/PathFunction.cpp
-
-../build/linux/release/obj/ParameterInterpreter.o: src/ParameterInterpreter.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/ParameterInterpreter.o src/ParameterInterpreter.cpp
 
 ../build/linux/release/obj/PixelInterpolation.o: src/PixelInterpolation.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ../build/linux/release/obj/PixelInterpolation.o src/PixelInterpolation.cpp

@@ -9,19 +9,19 @@ namespace Bial {
   template< class T >
   class NoDetector : public FeatureDetector< T > {
 public:
-    NoDetector( Image< T > );
-    Vector < std::tuple < Image< T >, Image< int >> > Run( );
+    NoDetector( const Image< T > & );
+    Vector< std::tuple < Image< T >, Vector< size_t > > > Run( );
   };
 
 
   template< class T >
-  NoDetector< T >::NoDetector( Image< T > img ) : FeatureDetector< T >( img ) {
+  NoDetector< T >::NoDetector( const Image< T > &img ) : FeatureDetector< T >( img ) {
   }
 
   template< class T >
-  Vector <  std::tuple < Image< T >, Image< int >> > NoDetector< T >::Run( ) {
-    Vector <  std::tuple < Image< T >, Image< int >> > v;
-     std::tuple < Image< T >, Image < int >> t;
+  Vector< std::tuple< Image< T >, Vector< size_t > > > NoDetector< T >::Run( ) {
+    Vector< std::tuple< Image< T >, Vector< size_t > > > v;
+    std::tuple< Image< T >, Vector< size_t > > t;
     Image< int > mask( this->img.size( 0 ), this->img.size( 1 ) );
     for( size_t i = 0; i < mask.size( ); ++i ) {
       mask[ i ] = 1;

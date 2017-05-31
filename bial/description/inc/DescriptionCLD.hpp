@@ -5,7 +5,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < int >> CLDfeature;
+  typedef Vector< Features < int > > CLDfeature;
 
 
 /*
@@ -35,8 +35,6 @@ namespace Bial {
  * range of +-8K for 8-bit data.  This convention improves accuracy in
  * integer implementations and saves some work in floating-point ones.
  */
-  typedef int DCTELEM; /* 16 or 32 bits is fine */
-  typedef long INT32;
 
 /* Various constants determining the sizes of things.
  */
@@ -80,20 +78,20 @@ namespace Bial {
  *
  * All values are expected to be of type INT32.
  */
-#define ONE ( ( INT32 ) 1 )
+#define ONE ( static_cast< int >( 1 ) )
 
-#define FIX_0_298631336 ( ( INT32 ) 2446 ) /* FIX(0.298631336) */
-#define FIX_0_390180644 ( ( INT32 ) 3196 ) /* FIX(0.390180644) */
-#define FIX_0_541196100 ( ( INT32 ) 4433 ) /* FIX(0.541196100) */
-#define FIX_0_765366865 ( ( INT32 ) 6270 ) /* FIX(0.765366865) */
-#define FIX_0_899976223 ( ( INT32 ) 7373 ) /* FIX(0.899976223) */
-#define FIX_1_175875602 ( ( INT32 ) 9633 ) /* FIX(1.175875602) */
-#define FIX_1_501321110 ( ( INT32 ) 12299 ) /* FIX(1.501321110) */
-#define FIX_1_847759065 ( ( INT32 ) 15137 ) /* FIX(1.847759065) */
-#define FIX_1_961570560 ( ( INT32 ) 16069 ) /* FIX(1.961570560) */
-#define FIX_2_053119869 ( ( INT32 ) 16819 ) /* FIX(2.053119869) */
-#define FIX_2_562915447 ( ( INT32 ) 20995 ) /* FIX(2.562915447) */
-#define FIX_3_072711026 ( ( INT32 ) 25172 ) /* FIX(3.072711026) */
+#define FIX_0_298631336 ( static_cast< int >( 2446 ) ) /* FIX(0.298631336) */
+#define FIX_0_390180644 ( static_cast< int >( 3196 ) ) /* FIX(0.390180644) */
+#define FIX_0_541196100 ( static_cast< int >( 4433 ) ) /* FIX(0.541196100) */
+#define FIX_0_765366865 ( static_cast< int >( 6270 ) ) /* FIX(0.765366865) */
+#define FIX_0_899976223 ( static_cast< int >( 7373 ) ) /* FIX(0.899976223) */
+#define FIX_1_175875602 ( static_cast< int >( 9633 ) ) /* FIX(1.175875602) */
+#define FIX_1_501321110 ( static_cast< int >( 12299 ) ) /* FIX(1.501321110) */
+#define FIX_1_847759065 ( static_cast< int >( 15137 ) ) /* FIX(1.847759065) */
+#define FIX_1_961570560 ( static_cast< int >( 16069 ) ) /* FIX(1.961570560) */
+#define FIX_2_053119869 ( static_cast< int >( 16819 ) ) /* FIX(2.053119869) */
+#define FIX_2_562915447 ( static_cast< int >( 20995 ) ) /* FIX(2.562915447) */
+#define FIX_3_072711026 ( static_cast< int >( 25172 ) ) /* FIX(3.072711026) */
 
 /* LEFT_SHIFT provides a proper signed left shift of an INT32 quantity.
  * It is only applied with constant shift counts.
@@ -126,14 +124,13 @@ private:
     static const unsigned short int zigzag[ DCTSIZE2 ];
 
     static uchar LinearNormalize( double value, double n );
-    Vector< int > DiscreteCosineTransform( Vector< int > data );
-    Vector< int > QuantizeCoefficients( Vector< int > data );
+    void DiscreteCosineTransform( Vector< int > &data );
+    void QuantizeCoefficients( Vector< int > &data );
 
 public:
     CLD( FeatureDetector< Color > *Fd );
 
-    CLD( Vector < std::tuple < Image< Color >, Image< int >> > detected );
-
+    CLD( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

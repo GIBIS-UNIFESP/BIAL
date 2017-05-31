@@ -31,17 +31,18 @@ namespace Bial {
 
   template< class T >
   Features< T >::Features( size_t n ) {
-    this->item.clear( ); this->item.resize( n );
+    this->item.clear( ); 
+    this->item.resize( n );
   }
 
   template< class T >
   T &Features< T >::operator[]( size_t i ) {
-    return( item.at( i ) );
+    return( item[ i ] );
   }
 
   template< class T >
   const T &Features< T >::operator[]( size_t i ) const {
-    return( item.at( i ) );
+    return( item[ i ] );
   }
 
   template< class T >

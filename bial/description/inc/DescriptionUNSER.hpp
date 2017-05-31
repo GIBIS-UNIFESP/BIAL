@@ -5,27 +5,27 @@
 
 namespace Bial {
 
-typedef Vector < Features < int >> UNSERfeature;
+typedef Vector< Features< int > > UNSERfeature;
 
 class UNSER : public FeatureExtractor< int, int > {
 private:
 
   static uchar LinearNormalize( double value, double n );
 
-  static float Mean( Vector< float > s );
-  static float Contrast( Vector< float > d );
-  static float Correlation( Vector< float > s, float mean, float contrast );
-  static float Energy( Vector< float > s, Vector< float > d );
-  static float Entropy( Vector< float > s, Vector< float > d );
-  static float Homogeneity( Vector< float > d );
-  static float MaximalProbability( Vector< float > s );
+  static float Mean( const Vector< float > &s );
+  static float Contrast( const Vector< float > &d );
+  static float Correlation( const Vector< float > &s, float mean, float contrast );
+  static float Energy( const Vector< float > &s, const Vector< float > &d );
+  static float Entropy( const Vector< float > &s, const Vector< float > &d );
+  static float Homogeneity( const Vector< float > &d );
+  static float MaximalProbability( const Vector< float > &s );
   static float StandardDeviation( float contrast, float correlation );
 
 
 public:
   UNSER( FeatureDetector< int > *Fd );
 
-  UNSER( Vector < std::tuple < Image< int >, Image< int >> > detected );
+  UNSER( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected );
 
   void SetParameters( ParameterInterpreter *interpreter );
 

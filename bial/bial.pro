@@ -455,7 +455,6 @@ SOURCES += \
     src/OrientedExternPathFunction.cpp \
     src/OrientedInternPathFunction.cpp \
     src/PathFunction.cpp \
-    src/ParameterInterpreter.cpp \
     src/PixelInterpolation.cpp \
     src/Plotting.cpp \
     src/PNMHeader.cpp \

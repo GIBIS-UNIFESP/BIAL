@@ -5,7 +5,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < int >> SCDfeature;
+  typedef Vector< Features < int > > SCDfeature;
 
   class SCD : public FeatureExtractor< Color, int > {
 private:
@@ -14,7 +14,7 @@ private:
 public:
     SCD( FeatureDetector< Color > *Fd );
 
-    SCD( Vector < std::tuple < Image< Color >, Image< int >> > detected );
+    SCD( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

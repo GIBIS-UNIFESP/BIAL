@@ -5,13 +5,13 @@
 
 namespace Bial {
 
-  typedef Vector < Features < int >> CSDfeature;
+  typedef Vector< Features < int > > CSDfeature;
 
   class CSD : public FeatureExtractor< Color, int > {
 public:
     CSD( FeatureDetector< Color > *Fd );
 
-    CSD( Vector < std::tuple < Image< Color >, Image< int >> > detected );
+    CSD( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

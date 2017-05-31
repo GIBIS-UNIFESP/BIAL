@@ -5,7 +5,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < int >> ACCfeature;
+  typedef Vector< Features < int > > ACCfeature;
 
   class ACC : public FeatureExtractor< Color, int > {
 private:
@@ -16,7 +16,7 @@ private:
 public:
     ACC( FeatureDetector< Color > *Fd );
 
-    ACC( Vector < std::tuple < Image< Color >, Image< int >> > detected );
+    ACC( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

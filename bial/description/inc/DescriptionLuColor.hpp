@@ -5,7 +5,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < int >> LUCOLORfeature;
+  typedef Vector< Features< int > > LUCOLORfeature;
 
   class LUCOLOR : public FeatureExtractor< Color, int > {
 private:
@@ -15,7 +15,7 @@ private:
 public:
     LUCOLOR( FeatureDetector< Color > *Fd );
 
-    LUCOLOR( Vector < std::tuple < Image< Color >, Image< int >> > detected );
+    LUCOLOR( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

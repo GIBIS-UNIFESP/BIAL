@@ -6,13 +6,6 @@
 namespace Bial {
 
 /*
- * This convention improves accuracy in integer implementations and saves
- * some work in floating-point ones.
- */
-  typedef short INT16;
-  typedef long INT32;
-
-/*
  * We have to do addition and subtraction of the integer inputs, which
  * is no problem, and multiplication by fractional constants, which is
  * a problem to do in integer arithmetic.  We multiply all the constants
@@ -41,14 +34,14 @@ namespace Bial {
  *
  * All values are expected to be of type INT32.
  */
-#define ONE ( ( INT32 ) 1 )
+#define ONE ( static_cast< int >( 1 ) )
 
 #define CONST_SCALE ( ONE << CONST_BITS )
 
-#define FIX_1_4142135 ( ( INT32 ) 11585 ) /* FIX(1.4142135) */
+#define FIX_1_4142135 ( static_cast< int >( 11585 ) ) /* FIX(1.4142135) */
 
 /* Convert a positive real constant to an integer scaled by CONST_SCALE */
-#define FIX( x ) ( ( INT32 ) ( ( x ) * CONST_SCALE + 0.5 ) )
+#define FIX( x ) ( static_cast< int >( ( x ) * CONST_SCALE + 0.5 ) )
 
 /* LEFT_SHIFT provides a proper signed left shift of an INT32 quantity.
  * It is only applied with constant shift counts.
@@ -74,7 +67,7 @@ namespace Bial {
 #define MULTIPLY( var, const ) ( ( var ) * ( const ) )
 
 
-  typedef Vector < Features < int >> EHDfeature;
+  typedef Vector< Features< int > > EHDfeature;
 
   class EHD : public FeatureExtractor< int, int > {
 private:
@@ -85,13 +78,13 @@ private:
     size_t BLCK;
     /* -------------------------------------------------------------------------- */
 
-    static size_t FindMaxPosition( Vector< int > vet );
+    static size_t FindMaxPosition( const Vector< int > &vet );
     Vector< int > ConvolveFilter( int mask[ 2 ][ 2 ] );
 
 public:
     EHD( FeatureDetector< int > *Fd );
 
-    EHD( Vector < std::tuple < Image< int >, Image< int >> > detected );
+    EHD( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

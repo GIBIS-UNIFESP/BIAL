@@ -38,6 +38,7 @@
 #include <iostream>
 #include <limits>
 #include <mutex>
+#include <queue>
 #include <sstream>
 #include <stdexcept>
 #include <stdio.h>

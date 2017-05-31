@@ -10,7 +10,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < double >> TARfeature;
+  typedef Vector< Features < double > > TARfeature;
 
   typedef Vector< std::tuple< int, int > > Curve;
 
@@ -19,18 +19,17 @@ private:
 
     size_t SAMPLES;
 
-    static Vector< double > ComputeScale( Curve contour, int n, int ts );
+    static Vector< double > ComputeScale( const Curve &contour, size_t n, size_t ts );
 
-    static Vector< Vector< double > > ComputeSignature( Curve contour, int n );
+    static Vector< Vector< double > > ComputeSignature( const Curve &contour, size_t n );
 
-    static double ShapeComplexity( Vector< Vector< double > > tar, int samples );
+    static double ShapeComplexity( const Vector< Vector< double > > &tar, size_t samples );
 
 
 public:
     TAR( FeatureDetector< int > *Fd );
 
-    TAR( Vector < std::tuple < Image< int >, Image< int >> > detected );
-
+    TAR( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

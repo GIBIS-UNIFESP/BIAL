@@ -5,7 +5,7 @@
 
 namespace Bial {
 
-  typedef Vector < Features < int >> GCHfeature;
+  typedef Vector< Features < int > > GCHfeature;
 
   class GCH : public FeatureExtractor< Color, int > {
 private:
@@ -14,7 +14,7 @@ private:
 public:
     GCH( FeatureDetector< Color > *Fd );
 
-    GCH( Vector < std::tuple < Image< Color >, Image< int >> > detected );
+    GCH( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected );
 
     void SetParameters( ParameterInterpreter *interpreter );
 

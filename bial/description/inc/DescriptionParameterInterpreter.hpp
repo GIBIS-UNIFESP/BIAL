@@ -13,14 +13,17 @@ namespace Bial {
   class ParameterInterpreter {
 protected:
     parameter_list parameters;
-    std::string input;
+    const std::string &input;
 
 public:
-    ParameterInterpreter( std::string input );
+    ParameterInterpreter( const std::string &input ) : input( input ) {
+    }
 
     ParameterInterpreter( );
 
-    void SetExpectedParameters( parameter_list p );
+    void SetExpectedParameters( const parameter_list &p ) {
+      parameters = p;
+    }
 
     virtual parameter_list Interpret( ) = 0;
 
