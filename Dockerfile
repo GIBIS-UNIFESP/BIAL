@@ -1,6 +1,6 @@
 FROM buildpack-deps:xenial
 
-RUN apt update && apt install qt-sdk zlib1g-dev freeglut3-dev
+RUN apt update && apt install qt-sdk zlib1g-dev freeglut3-dev -y
 
 RUN mkdir -p /usr/src/bial
 WORKDIR /usr/src/bial
