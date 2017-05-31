@@ -3,8 +3,7 @@ TEMPLATE = lib
 #CONFIG += shared_and_static build_all
 CONFIG += c++11
 
-
-QT       -= core gui
+CONFIG -= qt
 
 QMAKE_CXXFLAGS += -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/inc -I$$PWD/src -I$$PWD/lsh/inc -I$$PWD/SLIC/inc -I$$PWD/description/inc\

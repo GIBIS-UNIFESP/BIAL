@@ -61,6 +61,11 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build/win/debug/lib 
 else:unix: CONFIG(release, debug|release): LIBS += -L$$PWD/../build/linux/release/lib -lbial
 else:unix: CONFIG(debug, debug|release): LIBS += -L$$PWD/../build/linux/debug/lib -lbial
 
+
+unix: CONFIG(release, debug|release): QMAKE_RPATHDIR += $$PWD/../build/linux/release/lib
+else:unix: CONFIG(debug, debug|release): QMAKE_RPATHDIR += $$PWD/../build/linux/debug/lib
+
+
 INCLUDEPATH += $$PWD/../bial/inc
 DEPENDPATH += $$PWD/../bial/inc
 

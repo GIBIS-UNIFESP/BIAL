@@ -23,9 +23,9 @@ ifneq ($(profile), 0)
 	LIB=../build/linux/profile/lib
 endif
 
-BIAL_LINK_FLAGS= -L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -fopenmp -lpthread -lz -lm
+BIAL_LINK_FLAGS=-Wl,-rpath $(LIB) -L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -fopenmp -lpthread -lz -lm
 ifneq ($(profile), 0)
-	BIAL_LINK_FLAGS=-L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -lpthread -lz -lm -lprofiler
+	BIAL_LINK_FLAGS=-Wl,-rpath $(LIB) -L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -lpthread -lz -lm -lprofiler
 endif
 
 BIAL_CC_FLAGS=-Wall -Wno-unused-function -Wno-literal-conversion -I../bial/inc -I../bial/src -I../bial/SLIC/inc -I../bial/cpplex/inc -I../bial/lsh/inc -DREAL_FLOAT -O3
@@ -71,7 +71,7 @@ BIN=./bin
 all: Adjacency Bit Brain Clustering Color DataSet Draw Edge Feature File Filtering Fourier Gradient Geometrics Heart Hough Image ImageInterpolation Insert-Inhomogeneity Kernel Lungs MarchingCubes Matrix MRI OPF Plate PNM Relaxometria Segmentation Signal Sorting Statistics SuperPixel Table Transform Vector
 
 libbial:
-	export LD_LIBRARY_PATH=$(LIB)
+# export LD_LIBRARY_PATH=$(LIB)
 #	rm -f $(OBJ)/Common.o
 #	qmake-qt5 $(QMAKE_PARAMS)
 #	$(MAKE) -C ../ --no-print-directory
