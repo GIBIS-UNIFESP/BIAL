@@ -227,8 +227,8 @@ namespace Bial {
       A = AdjacencyType::Circular( 1.5f );
       FixAdj( A );
       adj_size = A.size( );
-      Adjacency L = LeftSide( A );
-      Adjacency R = RightSide( A );
+      Adjacency L = AdjacencyType::LeftSide( A );
+      Adjacency R = AdjacencyType::RightSide( A );
       Image< int > label( x_size, y_size );
       Image< int > color( x_size, y_size );
       Image< int > pred( x_size, y_size );

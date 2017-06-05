@@ -26,10 +26,9 @@ namespace Bial {
   Image< Color > RgbToHsv( const Image< Color > &img );
 
   Adjacency FixAdj( const Adjacency &adj );
-  Adjacency LeftSide( const Adjacency &adj );
-  Adjacency RightSide( const Adjacency &adj );
-
   namespace AdjacencyType {
+    Adjacency LeftSide( const Adjacency &adj );
+    Adjacency RightSide( const Adjacency &adj );
     Adjacency AdjacencyBox( int ncols, int nrows );
   }
 
