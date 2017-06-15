@@ -6,7 +6,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "livewiretool.h"
 #include "segmentationtool.h"
+
+#include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfoList>
 #include <QGraphicsPixmapItem>
@@ -27,6 +30,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   ui->dockWidgetLabels->hide( );
   ui->imageViewer->setController( controller );
   ui->actionPrint->setEnabled( false );
+  ui->dockWidgetSegmentation->setFloating( true );
   /*
    *  ui->dockWidgetFunctional->hide( );
    *  ui->widgetDragDrop->hide( );
@@ -45,13 +49,18 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   QActionGroup *group = new QActionGroup( this );
   actionDefaultTool = group->addAction( "Default Tool" );
   actionSegmentationTool = group->addAction( "Segmentation Tool" );
+  actionLiveWireTool = group->addAction( "LiveWire Tool" );
+
   actionDefaultTool->setCheckable( true );
-  actionDefaultTool->setChecked( true );
+
+  actionLiveWireTool->setCheckable( true );
+
   actionSegmentationTool->setCheckable( true );
-  actionSegmentationTool->setChecked( false );
+
 
   connect( actionDefaultTool, &QAction::triggered, this, &MainWindow::actionDefaultTool_triggered );
   connect( actionSegmentationTool, &QAction::triggered, this, &MainWindow::actionSegmentationTool_triggered );
+  connect( actionLiveWireTool, &QAction::triggered, this, &MainWindow::actionLiveWireTool_triggered );
 
   ui->toolBar->addActions( group->actions( ) );
 
@@ -160,6 +169,8 @@ void MainWindow::currentImageChanged( ) {
     else if( controller->currentImage( )->currentTool( )->type( ) == SegmentationTool::Type ) {
       actionSegmentationTool->setChecked( true );
     }
+/* actionLiveWireTool->setChecked( true ); */
+    actionLiveWireTool_triggered( );
     ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
     ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
   }
@@ -732,6 +743,7 @@ void MainWindow::on_actionToggle_overlay_triggered( ) {
 }
 
 void MainWindow::actionDefaultTool_triggered( ) {
+  actionDefaultTool->setChecked( true );
   GuiImage *img = controller->currentImage( );
   if( img ) {
     bool found = false;
@@ -753,6 +765,7 @@ void MainWindow::actionDefaultTool_triggered( ) {
 }
 
 void MainWindow::actionSegmentationTool_triggered( ) {
+  actionSegmentationTool->setChecked( true );
   GuiImage *img = controller->currentImage( );
   if( img ) {
     bool found = false;
@@ -769,6 +782,28 @@ void MainWindow::actionSegmentationTool_triggered( ) {
     ui->segmentationWidget->setTool( img->currentTool( ) );
     ui->labelsWidget->setTool( img->currentTool( ) );
     ui->dockWidgetSegmentation->show( );
+    emit img->imageUpdated( );
+  }
+}
+
+void MainWindow::actionLiveWireTool_triggered( ) {
+  actionLiveWireTool->setChecked( true );
+  GuiImage *img = controller->currentImage( );
+  if( img ) {
+    bool found = false;
+    for( int tool = 0; tool < img->tools.size( ); ++tool ) {
+      if( img->tools[ tool ]->type( ) == LiveWireTool::Type ) {
+        found = true;
+        img->setCurrentToolPos( tool );
+      }
+    }
+    if( !found ) {
+      img->tools.push_back( new LiveWireTool( img, ui->imageViewer ) );
+      img->setCurrentToolPos( img->tools.size( ) - 1 );
+    }
+    ui->segmentationWidget->setTool( img->currentTool( ) );
+    ui->labelsWidget->setTool( img->currentTool( ) );
+    ui->dockWidgetSegmentation->hide( );
     emit img->imageUpdated( );
   }
 }

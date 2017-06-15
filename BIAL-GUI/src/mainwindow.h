@@ -82,6 +82,8 @@ private slots:
 
   void actionDefaultTool_triggered( );
 
+  void actionLiveWireTool_triggered( );
+
   void actionSegmentationTool_triggered( );
 
   void on_actionEnglish_triggered( );
@@ -101,6 +103,7 @@ private:
 
   QAction *actionDefaultTool;
   QAction *actionSegmentationTool;
+  QAction *actionLiveWireTool;
 };
 
 class CursorChanger {

@@ -1,10 +1,10 @@
 #include "controller.h"
 #include "thumbswidget.h"
 
+#include "defaulttool.h"
 #include <QDebug>
 #include <QFile>
 #include <qsettings.h>
-#include "defaulttool.h"
 Controller::Controller( int views, QObject *parent )
   : QObject( parent ), bw2dFormat( new BW2DFormat( this ) ), rgb2dFormat( new RGB2DFormat( this ) ),
   bw3dFormat( new BW3DFormat( this ) ) {
@@ -13,12 +13,10 @@ Controller::Controller( int views, QObject *parent )
     m_labelItems.append( new QGraphicsPixmapItem( ) );
   }
   m_currentImagePos = -1;
+
   connect( rgb2dFormat, &DisplayFormat::updated, this, &Controller::currentImageChanged );
   connect( bw3dFormat, &DisplayFormat::updated, this, &Controller::currentImageChanged );
   connect( bw2dFormat, &DisplayFormat::updated, this, &Controller::currentImageChanged );
-  connect( rgb2dFormat, &DisplayFormat::updated, this, &Controller::update );
-  connect( bw3dFormat, &DisplayFormat::updated, this, &Controller::update );
-  connect( bw2dFormat, &DisplayFormat::updated, this, &Controller::update );
 }
 
 GuiImage* Controller::currentImage( ) {
@@ -111,7 +109,6 @@ int Controller::size( ) {
 
 void Controller::update( ) {
   COMMENT( "UPDATING IMAGE!", 2 );
-
   GuiImage *img = currentImage( );
   if( img ) {
     std::array< bool, 4 > showItens = currentFormat( )->getViews( );
