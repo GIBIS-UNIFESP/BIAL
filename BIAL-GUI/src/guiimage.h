@@ -82,12 +82,12 @@ class GuiImage : public QObject {
    */
   size_t m_currentToolPos;
   /**
-    * @brief contrast level
-    */
+   * @brief contrast level
+   */
   int m_contrast;
   /**
-    * @brief brightness level
-    */
+   * @brief brightness level
+   */
   int m_brightness;
 private:
   /**
@@ -98,7 +98,7 @@ private:
    */
   void updateBoundings( size_t axis );
 
-  public:
+public:
   /**
    * @brief tools is a vector containing the image tools.
    */
@@ -204,6 +204,11 @@ private:
    */
   Bial::Vector< size_t > getDim( );
   /**
+   * @brief getSize
+   * @return the image size.
+   */
+  size_t getSize( );
+  /**
    * @brief rotateAll90 rotates all views in 90 degrees.
    */
   void rotateAll90( );
@@ -260,13 +265,13 @@ private:
   void setCurrentToolPos( const size_t &currentToolPos );
 
   QPointF getIntersection( size_t view );
-  int getContrast() const;
-  void setContrast(int contrast);
+  int getContrast( ) const;
+  void setContrast( int contrast );
 
-  int getBrightness() const;
-  void setBrightness(int brightness);
+  int getBrightness( ) const;
+  void setBrightness( int brightness );
 
-  signals:
+signals:
   /**
    * @brief imageUpdated is called each time a internal property is updated,
    * after that the image views are updated.

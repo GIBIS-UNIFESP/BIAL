@@ -92,7 +92,8 @@ FORMS += \
     ui/thumbswidget.ui \
     ui/dragdrop.ui \
     ui/functionalwidget.ui \
-    ui/labelswidget.ui
+    ui/labelswidget.ui \
+    src/livewirewidget.ui
 
 HEADERS += \
     src/controller.h \
@@ -121,7 +122,8 @@ HEADERS += \
     src/viewerinterface.h \
     thirdParty/qcustomplot.h \
     src/labelswidget.h \
-    src/livewiretool.h
+    src/livewiretool.h \
+    src/livewirewidget.h
 
 SOURCES += \
     src/controller.cpp \
@@ -150,7 +152,8 @@ SOURCES += \
     src/tool.cpp \
     thirdParty/qcustomplot.cpp \
     src/labelswidget.cpp \
-    src/livewiretool.cpp
+    src/livewiretool.cpp \
+    src/livewirewidget.cpp
 
 DISTFILES += \
     uncrustify.cfg
