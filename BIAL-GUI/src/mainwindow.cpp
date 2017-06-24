@@ -9,6 +9,7 @@
 #include "livewiretool.h"
 #include "segmentationtool.h"
 
+
 #include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfoList>
@@ -26,11 +27,41 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
 
   ui->controlsWidget->setController( controller );
   ui->controlsDock->hide( );
-  ui->dockWidgetSegmentation->hide( );
+
   ui->dockWidgetLabels->hide( );
   ui->imageViewer->setController( controller );
   ui->actionPrint->setEnabled( false );
-  ui->dockWidgetSegmentation->setFloating( true );
+
+
+  segmentationDock = new QDockWidget( tr( "Segmentation" ), this );
+  segmentationWidget = new SegmentationWidget( this );
+
+  connect( ui->actionSegmentation_dock, &QAction::toggled, segmentationDock, &QDockWidget::setVisible );
+  connect( segmentationDock, &QDockWidget::visibilityChanged, ui->actionSegmentation_dock,
+           &QAction::setChecked );
+
+
+  addDockWidget( Qt::LeftDockWidgetArea, segmentationDock );
+
+  segmentationDock->setWidget( segmentationWidget );
+  segmentationDock->hide( );
+  segmentationDock->setFloating( true );
+
+
+  livewireDock = new QDockWidget( tr( "LiveWire" ), this );
+  livewireWidget = new LiveWireWidget( this );
+
+  connect( ui->actionLiveWire_dock, &QAction::toggled, livewireDock, &QDockWidget::setVisible );
+  connect( livewireDock, &QDockWidget::visibilityChanged, ui->actionLiveWire_dock,
+           &QAction::setChecked );
+
+  addDockWidget( Qt::LeftDockWidgetArea, livewireDock );
+
+  livewireDock->setWidget( livewireWidget );
+//  livewireDock->hide( );
+//  livewireDock->setFloating( true );
+
+
   /*
    *  ui->dockWidgetFunctional->hide( );
    *  ui->widgetDragDrop->hide( );
@@ -74,13 +105,10 @@ void MainWindow::createConnections( ) {
   connect( ui->actionShow_controls_dock, &QAction::toggled, ui->controlsDock, &QDockWidget::setVisible );
   connect( ui->actionHistogram_dock, &QAction::toggled, ui->dockWidgetHistogram, &QDockWidget::setVisible );
   connect( ui->actionShow_images_dock, &QAction::toggled, ui->thumbsDock, &QDockWidget::setVisible );
-  connect( ui->actionSegmentation_dock, &QAction::toggled, ui->dockWidgetSegmentation, &QDockWidget::setVisible );
   connect( ui->actionLabels_dock, &QAction::toggled, ui->dockWidgetLabels, &QDockWidget::setVisible );
   connect( ui->controlsDock, &QDockWidget::visibilityChanged, ui->actionShow_controls_dock, &QAction::setChecked );
   connect( ui->thumbsDock, &QDockWidget::visibilityChanged, ui->actionShow_images_dock, &QAction::setChecked );
   connect( ui->dockWidgetHistogram, &QDockWidget::visibilityChanged, ui->actionHistogram_dock, &QAction::setChecked );
-  connect( ui->dockWidgetSegmentation, &QDockWidget::visibilityChanged, ui->actionSegmentation_dock,
-           &QAction::setChecked );
   connect( ui->dockWidgetLabels, &QDockWidget::visibilityChanged, ui->actionLabels_dock,
            &QAction::setChecked );
 
@@ -171,7 +199,7 @@ void MainWindow::currentImageChanged( ) {
     }
 /* actionLiveWireTool->setChecked( true ); */
     actionLiveWireTool_triggered( );
-    ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
+    segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
     ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
   }
 }
@@ -198,7 +226,7 @@ void MainWindow::imageUpdated( ) {
   plot->rescaleAxes( true );
   plot->replot( );
   if( controller->currentImage( ) ) {
-    ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
+    segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
     ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
   }
 }
@@ -758,7 +786,7 @@ void MainWindow::actionDefaultTool_triggered( ) {
       img->tools.push_back( new DefaultTool( img, ui->imageViewer ) );
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
-    ui->segmentationWidget->setTool( img->currentTool( ) );
+    segmentationWidget->setTool( img->currentTool( ) );
     ui->labelsWidget->setTool( img->currentTool( ) );
     emit img->imageUpdated( );
   }
@@ -779,9 +807,12 @@ void MainWindow::actionSegmentationTool_triggered( ) {
       img->tools.push_back( new SegmentationTool( img, ui->imageViewer ) );
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
-    ui->segmentationWidget->setTool( img->currentTool( ) );
+    segmentationWidget->setTool( img->currentTool( ) );
     ui->labelsWidget->setTool( img->currentTool( ) );
-    ui->dockWidgetSegmentation->show( );
+    segmentationDock->show( );
+    livewireWidget->setTool( img->currentTool( ) );
+    livewireDock->hide( );
+
     emit img->imageUpdated( );
   }
 }
@@ -801,9 +832,13 @@ void MainWindow::actionLiveWireTool_triggered( ) {
       img->tools.push_back( new LiveWireTool( img, ui->imageViewer ) );
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
-    ui->segmentationWidget->setTool( img->currentTool( ) );
+    segmentationWidget->setTool( img->currentTool( ) );
     ui->labelsWidget->setTool( img->currentTool( ) );
-    ui->dockWidgetSegmentation->hide( );
+
+    livewireWidget->setTool( img->currentTool( ) );
+
+    livewireDock->show( );
+    segmentationDock->hide( );
     emit img->imageUpdated( );
   }
 }

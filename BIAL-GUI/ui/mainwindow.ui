@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>615</width>
-    <height>1143</height>
+    <height>1183</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -137,9 +137,11 @@
     <addaction name="actionHistogram_dock"/>
     <addaction name="actionShow_images_dock"/>
     <addaction name="actionSegmentation_dock"/>
+    <addaction name="actionLiveWire_dock"/>
     <addaction name="actionLabels_dock"/>
     <addaction name="separator"/>
     <addaction name="menuBackground_color"/>
+    <addaction name="separator"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuLayout">
@@ -301,34 +303,6 @@
         <size>
          <width>0</width>
          <height>300</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetSegmentation">
-   <property name="minimumSize">
-    <size>
-     <width>58</width>
-     <height>450</height>
-    </size>
-   </property>
-   <property name="windowTitle">
-    <string>Se&amp;gmentation</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="0">
-      <widget class="SegmentationWidget" name="segmentationWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>280</height>
         </size>
        </property>
       </widget>
@@ -636,6 +610,14 @@
     <string>Ctrl+5</string>
    </property>
   </action>
+  <action name="actionLiveWire_dock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>LiveWire dock</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -666,12 +648,6 @@
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
    <header>thirdParty/qcustomplot.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>SegmentationWidget</class>
-   <extends>QWidget</extends>
-   <header>src/segmentationwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

@@ -83,9 +83,10 @@ int LiveWireTool::type( ) {
 void LiveWireTool::addPoint( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
 
-  auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( Qt::red, 2 ),
-                                    QBrush( Qt::darkRed ) );
+  auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( Qt::green, 1 ),
+                                    QBrush( QColor( 0, 255, 0, 64 ) ) );
   point->setFlag( QGraphicsItem::ItemIsMovable, true );
+/*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
   m_points.append( point );
 
   emit guiImage->imageUpdated( );
@@ -95,8 +96,18 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
   timer.start( );
 
   const Bial::FastTransform &transf = guiImage->getTransform( axis );
-  if( m_scene->itemAt( pt, QTransform( ) )->type( ) != QGraphicsEllipseItem::Type ) {
-    addPoint( pt );
+  QGraphicsItem *item = m_scene->itemAt( pt, QTransform( ) );
+  if( buttons & Qt::LeftButton ) {
+    if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
+      addPoint( pt );
+    }
+  }
+  else if( buttons & Qt::RightButton ) {
+    if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
+      m_points.removeAll( dynamic_cast< QGraphicsEllipseItem* >( item ) );
+      m_scene->removeItem( item );
+      delete item;
+    }
   }
 }
 
@@ -138,16 +149,15 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
   }
   const Bial::FastTransform &transf = guiImage->getTransform( axis );
   QImage res( xsz, ysz, QImage::Format_ARGB32 );
-  if( !predVisible ) {
-    res.fill( qRgba( 0, 0, 0, 0 ) );
-  }
-  else {
+  res.fill( qRgba( 0, 0, 0, 128 ) );
+  if( predVisible ) {
 #pragma omp parallel for firstprivate(axis, xsz, ysz)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
         Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-        scanLine[ x ] = qRgba( 0, 0, pred( pos.x, pos.y, pos.z ), 128 );
+        QRgb color = scanLine[ x ];
+        scanLine[ x ] = qRgba( 0, 0, pred( pos.x, pos.y, pos.z ), qAlpha( color ) );
       }
     }
   }
@@ -158,7 +168,8 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
       for( size_t x = 0; x < xsz; ++x ) {
         Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
         int cst = cost( pos.x, pos.y, pos.z );
-        scanLine[ x ] = qRgba( cst, 0, 0, 128 );
+        QRgb color = scanLine[ x ];
+        scanLine[ x ] = qRgba( cst, qGreen( color ), qBlue( color ), qAlpha( color ) );
       }
     }
   }
@@ -176,7 +187,9 @@ void LiveWireTool::runLiveWire( int axis, const Bial::FastTransform &transf ) {
     float px = point->rect( ).center( ).x( ) + point->pos( ).x( );
     float py = point->rect( ).center( ).y( ) + point->pos( ).y( );
     auto tpoint = transf( px, py, ( double ) guiImage->currentSlice( axis ) );
-    seed[ cost.Position( tpoint.x, tpoint.y ) ] = true;
+    if( pred.ValidCoordinate( tpoint.x, tpoint.y, tpoint.z ) ) {
+      seed[ cost.Position( tpoint.x, tpoint.y ) ] = true;
+    }
   }
   COMMENT( "Running LiveWire.", 0 );
   float weight = 10.;

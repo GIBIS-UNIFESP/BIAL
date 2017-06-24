@@ -7,6 +7,9 @@
 #include <QCommandLineParser>
 #include <QMainWindow>
 
+#include "livewirewidget.h"
+#include "segmentationwidget.h"
+
 namespace Ui {
   class MainWindow;
 }
@@ -104,6 +107,12 @@ private:
   QAction *actionDefaultTool;
   QAction *actionSegmentationTool;
   QAction *actionLiveWireTool;
+
+  QDockWidget *segmentationDock;
+  QDockWidget *livewireDock;
+
+  SegmentationWidget *segmentationWidget;
+  LiveWireWidget *livewireWidget;
 };
 
 class CursorChanger {
