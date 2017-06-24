@@ -10,11 +10,19 @@
 #include "MultiImage.hpp"
 #include "RealColor.hpp"
 
-#include "EdgeLiveWire.hpp"
 #include "SumPathFunction.hpp"
 #include "guiimage.h"
 
+#include "AdjacencyRound.hpp"
+#include "GradientMorphological.hpp"
+#include "GrowingBucketQueue.hpp"
+#include "Image.hpp"
+#include "ImageIFT.hpp"
+#include "IntensityGlobals.hpp"
+#include "MaxSumPathFunction.hpp"
+
 #include "livewiretool.h"
+#include <Geometrics.hpp>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPointF>
@@ -23,32 +31,56 @@
 
 
 void LiveWireTool::setPredVisibility( bool vis ) {
-  predVisible = vis;
+  m_predVisible = vis;
   emit guiImage->imageUpdated( );
 }
 
 void LiveWireTool::setCostVisibility( bool vis ) {
-  costVisible = vis;
+  m_costVisible = vis;
   emit guiImage->imageUpdated( );
 }
 
 bool LiveWireTool::getPredVisible( ) const {
-  return( predVisible );
+  return( m_predVisible );
 }
 
 bool LiveWireTool::getCostVisible( ) const {
-  return( costVisible );
+  return( m_costVisible );
 }
 
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
-  Tool( guiImage, viewer ), cost( guiImage->getDim( ) ), pred( guiImage->getDim( ) ) {
+  Tool( guiImage, viewer ), m_cost( guiImage->getDim( ) ), m_pred( guiImage->getDim( ) ),
+  m_seeds( guiImage->getDim( ) ), m_res( guiImage->getDim( ) ),
+  m_transf( guiImage->getTransform( 0 ) ) {
+  switch( guiImage->getImageType( ) ) {
+      case Bial::MultiImageType::int_img: {
+      m_grayImg = guiImage->getIntImage( );
+      break;
+    }
+      case Bial::MultiImageType::flt_img: {
+      m_grayImg = guiImage->getFltImage( );
+      break;
+    }
+      case Bial::MultiImageType::clr_img: {
+      m_grayImg = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) );
+      break;
+    }
+      case Bial::MultiImageType::rcl_img: {
+      m_grayImg = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) );
+      break;
+    }
+      case Bial::MultiImageType::none:
+      throw std::runtime_error( BIAL_ERROR( "Unsupported image type." ) );
+  }
+  m_grad = Bial::Gradient::Morphological( m_grayImg );
+  Bial::Intensity::Complement( m_grad );
   COMMENT( "Initiating segmentation tool.", 0 );
 
   m_scene = viewer->getScene( 0 );
 
   setObjectName( "LiveWireTool" );
-  costVisible = true;
-  predVisible = false;
+  m_costVisible = true;
+  m_predVisible = false;
   setHasLabel( true );
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
@@ -83,7 +115,7 @@ int LiveWireTool::type( ) {
 void LiveWireTool::addPoint( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
 
-  auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( Qt::green, 1 ),
+  auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
   point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
@@ -94,8 +126,6 @@ void LiveWireTool::addPoint( QPointF pt ) {
 
 void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
   timer.start( );
-
-  const Bial::FastTransform &transf = guiImage->getTransform( axis );
   QGraphicsItem *item = m_scene->itemAt( pt, QTransform( ) );
   if( buttons & Qt::LeftButton ) {
     if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
@@ -111,8 +141,43 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
   }
 }
 
+
+Bial::Point3D LiveWireTool::toPoint3D( QGraphicsEllipseItem *item ) {
+  float px = item->rect( ).center( ).x( ) + item->pos( ).x( );
+  float py = item->rect( ).center( ).y( ) + item->pos( ).y( );
+//  return( transf( px, py, ( double ) guiImage->currentSlice( axis ) ) );
+  return( m_transf( px, py, 0 ) );
+}
+
+size_t LiveWireTool::toPxIndex( QGraphicsEllipseItem *item ) {
+  const Bial::Point3D &point = toPoint3D( item );
+  if( m_grayImg.ValidCoordinate( point.x, point.y ) ) {
+    return( m_grayImg.Position( point.x, point.y ) );
+  }
+  else {
+    return( m_grayImg.size( ) );
+  }
+}
+
+Bial::Point3D LiveWireTool::toPoint3D( const QPointF &qpoint ) {
+  return( m_transf( qpoint.x( ), qpoint.y( ), 0 ) );
+}
+
+size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
+  const Bial::Point3D &point = toPoint3D( qpoint );
+  if( m_grayImg.ValidCoordinate( point.x, point.y ) ) {
+    return( m_grayImg.Position( point.x, point.y ) );
+  }
+  else {
+    return( m_grayImg.size( ) );
+  }
+}
+
 void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
   if( timer.elapsed( ) > 30 ) {
+
+    updatePath( pt );
+
     emit guiImage->imageUpdated( );
     timer.start( );
   }
@@ -122,8 +187,7 @@ void LiveWireTool::mouseReleased( QPointF pt, Qt::MouseButtons buttons, size_t a
   emit guiImage->imageUpdated( );
   Q_UNUSED( buttons );
   Q_UNUSED( pt );
-  const Bial::FastTransform &transf = guiImage->getTransform( axis );
-  runLiveWire( axis, transf );
+  runLiveWire( axis );
 }
 
 void LiveWireTool::mouseDragged( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
@@ -141,89 +205,149 @@ void LiveWireTool::sliceChanged( size_t axis, size_t slice ) {
 QPixmap LiveWireTool::getLabel( size_t axis ) {
   const size_t xsz = guiImage->width( axis );
   const size_t ysz = guiImage->heigth( axis );
-  if( !costVisible && !predVisible ) {
+  if( !m_costVisible && !m_predVisible ) {
     return( QPixmap( ) );
   }
   if( !needUpdate[ axis ] ) {
-    return( pixmaps[ axis ] );
+    return( m_pixmaps[ axis ] );
   }
   const Bial::FastTransform &transf = guiImage->getTransform( axis );
   QImage res( xsz, ysz, QImage::Format_ARGB32 );
   res.fill( qRgba( 0, 0, 0, 128 ) );
-  if( predVisible ) {
+  if( m_predVisible ) {
 #pragma omp parallel for firstprivate(axis, xsz, ysz)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
         Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
         QRgb color = scanLine[ x ];
-        scanLine[ x ] = qRgba( 0, 0, pred( pos.x, pos.y, pos.z ), qAlpha( color ) );
+        scanLine[ x ] = qRgba( 0, 0, m_pred( pos.x, pos.y, pos.z ), qAlpha( color ) );
       }
     }
   }
-  if( costVisible && ( cost.size( ) == pred.size( ) ) ) {
+  if( m_costVisible && ( m_cost.size( ) == m_pred.size( ) ) ) {
 #pragma omp parallel for firstprivate(axis, xsz, ysz)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
         Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-        int cst = cost( pos.x, pos.y, pos.z );
+        int cst = m_cost( pos.x, pos.y, pos.z );
         QRgb color = scanLine[ x ];
         scanLine[ x ] = qRgba( cst, qGreen( color ), qBlue( color ), qAlpha( color ) );
       }
     }
   }
-  pixmaps[ axis ] = QPixmap::fromImage( res );
-  return( pixmaps[ axis ] );
+  for( size_t y = 0; y < ysz; ++y ) {
+    QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+    for( size_t x = 0; x < xsz; ++x ) {
+      Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
+      if( m_res( pos.x, pos.y, pos.z ) > 0 ) {
+        scanLine[ x ] = qRgba( 0, 255, 0, 255 );
+      }
+      if( m_seeds( pos.x, pos.y, pos.z ) ) {
+        scanLine[ x ] = qRgba( 255, 255, 255, 255 );
+      }
+    }
+  }
+  m_pixmaps[ axis ] = QPixmap::fromImage( res );
+  return( m_pixmaps[ axis ] );
 }
 
-void LiveWireTool::runLiveWire( int axis, const Bial::FastTransform &transf ) {
-  Bial::Vector< bool > seed( guiImage->getSize( ) );
-  cost.Set( 0 );
-  pred.Set( 0 );
 
-  seed.Set( false );
-  for( QGraphicsEllipseItem *point : m_points ) {
-    float px = point->rect( ).center( ).x( ) + point->pos( ).x( );
-    float py = point->rect( ).center( ).y( ) + point->pos( ).y( );
-    auto tpoint = transf( px, py, ( double ) guiImage->currentSlice( axis ) );
-    if( pred.ValidCoordinate( tpoint.x, tpoint.y, tpoint.z ) ) {
-      seed[ cost.Position( tpoint.x, tpoint.y ) ] = true;
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//////////                                             ///////////
+//////////              L I V E W I R E                ///////////
+//////////                                             ///////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+void LiveWireTool::runLiveWire( int axis ) {
+  m_cost.Set( 0 );
+  m_pred.Set( 0 );
+  m_seeds.Set( false );
+  for( QGraphicsEllipseItem *item : m_points ) {
+    const Bial::Point3D &point = toPoint3D( item );
+    if( m_pred.ValidCoordinate( point.x, point.y, point.z ) ) {
+      m_seeds[ m_cost.Position( point.x, point.y ) ] = true;
     }
   }
   COMMENT( "Running LiveWire.", 0 );
-  float weight = 10.;
-  switch( guiImage->getImageType( ) ) {
-      case Bial::MultiImageType::int_img: {
-      std::tie( cost, pred ) = Bial::Edge::LiveWire( guiImage->getIntImage( ), seed, weight );
-      break;
+  float weight = 1;
+
+  m_cost = m_grad;
+  m_pred.Set( 0 );
+  size_t size = m_cost.size( );
+  if( weight > 1. ) {
+    Bial::Image< double > grad_dbl( m_cost );
+    double min = m_cost.Minimum( );
+    double max = m_cost.Maximum( );
+    COMMENT( "Computing new intensities based on beta.", 0 );
+    for( size_t elm = 0; elm < size; ++elm ) {
+      grad_dbl[ elm ] = std::pow( grad_dbl[ elm ], weight );
     }
-      case Bial::MultiImageType::flt_img: {
-      std::tie( cost, pred ) = Bial::Edge::LiveWire( guiImage->getFltImage( ), seed, weight );
-      break;
-    }
-      case Bial::MultiImageType::clr_img: {
-      Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) ) );
-      std::tie( cost, pred ) = Bial::Edge::LiveWire( img, seed, weight );
-      break;
-    }
-      case Bial::MultiImageType::rcl_img: {
-      Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) ) );
-      std::tie( cost, pred ) = Bial::Edge::LiveWire( img, seed, weight );
-      break;
-    }
-      case Bial::MultiImageType::none:
-      std::cout << "MultiImageType::none" << std::endl;
-      return;
+    COMMENT( "Normalizing data into the input range.", 0 );
+    grad_dbl.SetRange( min, max );
+    m_cost = grad_dbl;
   }
+  int delta = 1;
+  Bial::Image< int > handicap( m_cost );
+  m_cost += delta;
+  Bial::MaxSumPathFunction< Bial::Image, int > pf( m_cost, nullptr, &m_pred, false, m_grayImg, handicap, 0.0,
+                                                   delta );
+  COMMENT( "Computing IFT.", 0 );
+  COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
+           "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
+  Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
+  Bial::GrowingBucketQueue queue( size, delta, true, true );
+  for( size_t elm = 0; elm < size; ++elm ) {
+    if( m_seeds[ elm ] ) {
+      queue.Insert( elm, m_cost[ elm ] );
+    }
+    else {
+      m_cost( elm ) = std::numeric_limits< int >::max( );
+    }
+  }
+  Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
+  ift.Run( );
+
   COMMENT( "Seting pixels for frendly displaying.", 0 );
-  for( size_t pxl = 0; pxl < pred.size( ); ++pxl ) {
-    if( pred[ pxl ] < 0 ) {
-      pred[ pxl ] = pxl;
+  for( size_t pxl = 0; pxl < m_pred.size( ); ++pxl ) {
+    if( m_pred[ pxl ] < 0 ) {
+      m_pred[ pxl ] = pxl;
     }
   }
-  cost.SetRange( 0, 255 );
+  m_cost.SetRange( 0, 255 );
 
   needUpdate[ axis ] = true;
   emit guiImage->imageUpdated( );
+}
+
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+//////////                                             ///////////
+//////////                 int   S   P                   ///////////
+//////////                                             ///////////
+///////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
+
+void LiveWireTool::updatePath( QPointF pt ) {
+  // ############################################################ //
+  // DSP algorithm - Live wire on the fly article - A. X. Falcao  //
+  // ############################################################ //
+
+  size_t v_start = toPxIndex( m_points.last( ) );
+  size_t v_end = toPxIndex( pt );
+  m_res.Set( 0 );
+  m_res[ v_end ] = 1;
+  if( ( v_start >= m_grayImg.size( ) ) || ( v_end >= m_grayImg.size( ) ) ) {
+    return;
+  }
+  std::vector< std::deque< size_t > > queue;
+
+  QList< size_t > proc_points;
+//  while( proc_points.last( ) != v_start ) {
+
+//  }
 }

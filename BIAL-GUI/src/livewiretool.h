@@ -12,18 +12,28 @@
 class LiveWireTool : public Tool {
 
 private:
-  Bial::Image< int > pred;
-  Bial::Image< int > cost;
+  Bial::Image< int > m_cost;
+  Bial::Image< int > m_pred;
+  Bial::Image< int > m_res;
+  Bial::Image< int > m_grayImg;
+  Bial::Image< int > m_grad;
+  Bial::Image< int > m_seeds;
 
   QVector< QGraphicsEllipseItem* > m_points;
 
-  bool predVisible;
-  bool costVisible;
+  bool m_predVisible;
+  bool m_costVisible;
   QTime timer;
   int circle_radius;
-  std::array< QPixmap, 4 > pixmaps;
+  std::array< QPixmap, 4 > m_pixmaps;
   std::array< bool, 4 > needUpdate;
+  Bial::FastTransform m_transf;
 
+  Bial::Point3D toPoint3D( QGraphicsEllipseItem *item );
+  size_t toPxIndex( QGraphicsEllipseItem *item );
+
+  Bial::Point3D toPoint3D( const QPointF &qpoint );
+  size_t toPxIndex( const QPointF &qpoint );
 public:
   enum { Type = 42 };
   QGraphicsScene *m_scene;
@@ -49,8 +59,10 @@ public:
 
   void addPoint( QPointF pt );
 
+  void updatePath( QPointF pt );
+
 private slots:
-  void runLiveWire( int axis, const Bial::FastTransform &transf );
+  void runLiveWire( int axis );
 };
 
 #endif /* LIVEWIRE_H */
