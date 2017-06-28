@@ -15,13 +15,14 @@ private:
   Bial::Image< int > m_cost;
   Bial::Image< int > m_pred;
   Bial::Image< int > m_res;
+  Bial::Image< int > m_cache;
   Bial::Image< int > m_grayImg;
   Bial::Image< int > m_grad;
   Bial::Image< int > m_seeds;
 
   QVector< QGraphicsEllipseItem* > m_points;
 
-  bool m_predVisible;
+  bool m_gradVisible;
   bool m_costVisible;
   QTime timer;
   int circle_radius;
@@ -51,10 +52,10 @@ public:
   void sliceChanged( size_t axis, size_t slice );
   QPixmap getLabel( size_t axis );
 
-  void setPredVisibility( bool vis );
+  void setGradVisibility( bool vis );
   void setCostVisibility( bool vis );
 
-  bool getPredVisible( ) const;
+  bool getGradVisible( ) const;
   bool getCostVisible( ) const;
 
   void addPoint( QPointF pt );

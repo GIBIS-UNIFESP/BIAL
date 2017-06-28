@@ -16,7 +16,7 @@ void LiveWireWidget::setTool( Tool *sTool ) {
   setEnabled( tool );
 
   ui->rbCostMap->setChecked( tool->getCostVisible( ) );
-  ui->rbPredMap->setChecked( tool->getPredVisible( ) );
+  ui->rbPredMap->setChecked( tool->getGradVisible( ) );
 }
 
 void LiveWireWidget::on_rbCostMap_clicked( ) {
@@ -24,5 +24,5 @@ void LiveWireWidget::on_rbCostMap_clicked( ) {
 }
 
 void LiveWireWidget::on_rbPredMap_clicked( ) {
-  tool->setPredVisibility( ui->rbPredMap->isChecked( ) );
+  tool->setGradVisibility( ui->rbPredMap->isChecked( ) );
 }

@@ -30,8 +30,8 @@
 #include <algorithm>
 
 
-void LiveWireTool::setPredVisibility( bool vis ) {
-  m_predVisible = vis;
+void LiveWireTool::setGradVisibility( bool vis ) {
+  m_gradVisible = vis;
   emit guiImage->imageUpdated( );
 }
 
@@ -40,8 +40,8 @@ void LiveWireTool::setCostVisibility( bool vis ) {
   emit guiImage->imageUpdated( );
 }
 
-bool LiveWireTool::getPredVisible( ) const {
-  return( m_predVisible );
+bool LiveWireTool::getGradVisible( ) const {
+  return( m_gradVisible );
 }
 
 bool LiveWireTool::getCostVisible( ) const {
@@ -50,7 +50,7 @@ bool LiveWireTool::getCostVisible( ) const {
 
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   Tool( guiImage, viewer ), m_cost( guiImage->getDim( ) ), m_pred( guiImage->getDim( ) ),
-  m_seeds( guiImage->getDim( ) ), m_res( guiImage->getDim( ) ),
+  m_seeds( guiImage->getDim( ) ), m_res( guiImage->getDim( ) ), m_cache( guiImage->getDim( ) ),
   m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
       case Bial::MultiImageType::int_img: {
@@ -80,7 +80,7 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
 
   setObjectName( "LiveWireTool" );
   m_costVisible = true;
-  m_predVisible = false;
+  m_gradVisible = false;
   setHasLabel( true );
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
@@ -117,10 +117,19 @@ void LiveWireTool::addPoint( QPointF pt ) {
 
   auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
-  point->setFlag( QGraphicsItem::ItemIsMovable, true );
+//  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
-  m_points.append( point );
 
+  m_points.append( point );
+  m_cache.Set( 0 );
+  for( int p = 0; p + 1 < m_points.size( ); ++p ) {
+    size_t v_end = toPxIndex( m_points[ p + 1 ] );
+    size_t pxl = m_pred[ v_end ];
+    while( ( int ) pxl != m_pred[ pxl ] ) {
+      m_cache[ pxl ] = 1;
+      pxl = m_pred[ pxl ];
+    }
+  }
   emit guiImage->imageUpdated( );
 }
 
@@ -145,7 +154,7 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
 Bial::Point3D LiveWireTool::toPoint3D( QGraphicsEllipseItem *item ) {
   float px = item->rect( ).center( ).x( ) + item->pos( ).x( );
   float py = item->rect( ).center( ).y( ) + item->pos( ).y( );
-//  return( transf( px, py, ( double ) guiImage->currentSlice( axis ) ) );
+/*  return( transf( px, py, ( double ) guiImage->currentSlice( axis ) ) ); */
   return( m_transf( px, py, 0 ) );
 }
 
@@ -205,23 +214,25 @@ void LiveWireTool::sliceChanged( size_t axis, size_t slice ) {
 QPixmap LiveWireTool::getLabel( size_t axis ) {
   const size_t xsz = guiImage->width( axis );
   const size_t ysz = guiImage->heigth( axis );
-  if( !m_costVisible && !m_predVisible ) {
-    return( QPixmap( ) );
-  }
+/*
+ *  if( !m_costVisible && !m_predVisible ) {
+ *    return( QPixmap( ) );
+ *  }
+ */
   if( !needUpdate[ axis ] ) {
     return( m_pixmaps[ axis ] );
   }
   const Bial::FastTransform &transf = guiImage->getTransform( axis );
   QImage res( xsz, ysz, QImage::Format_ARGB32 );
   res.fill( qRgba( 0, 0, 0, 128 ) );
-  if( m_predVisible ) {
+  if( m_gradVisible ) {
 #pragma omp parallel for firstprivate(axis, xsz, ysz)
     for( size_t y = 0; y < ysz; ++y ) {
       QRgb *scanLine = ( QRgb* ) res.scanLine( y );
       for( size_t x = 0; x < xsz; ++x ) {
         Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
         QRgb color = scanLine[ x ];
-        scanLine[ x ] = qRgba( 0, 0, m_pred( pos.x, pos.y, pos.z ), qAlpha( color ) );
+        scanLine[ x ] = qRgba( 0, m_grad( pos.x, pos.y, pos.z ), 0, qAlpha( color ) );
       }
     }
   }
@@ -254,13 +265,15 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
 }
 
 
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-//////////                                             ///////////
-//////////              L I V E W I R E                ///////////
-//////////                                             ///////////
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
+/*
+ * /////////////////////////////////////////////////////////////////
+ * /////////////////////////////////////////////////////////////////
+ * ////////                                             ///////////
+ * ////////              L I V E W I R E                ///////////
+ * ////////                                             ///////////
+ * /////////////////////////////////////////////////////////////////
+ * /////////////////////////////////////////////////////////////////
+ */
 
 void LiveWireTool::runLiveWire( int axis ) {
   m_cost.Set( 0 );
@@ -323,33 +336,16 @@ void LiveWireTool::runLiveWire( int axis ) {
   emit guiImage->imageUpdated( );
 }
 
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-//////////                                             ///////////
-//////////                 D   S   P                   ///////////
-//////////                                             ///////////
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-
 
 void LiveWireTool::updatePath( QPointF pt ) {
-  // ############################################################ //
-  // DSP algorithm - Live wire on the fly article - A. X. Falcao  //
-  // ############################################################ //
   if( m_points.isEmpty( ) ) {
     return;
   }
-  size_t v_start = toPxIndex( m_points.last( ) );
+  m_res = m_cache;
   size_t v_end = toPxIndex( pt );
-  m_res.Set( 0 );
-  m_res[ v_end ] = 1;
-  if( ( v_start >= m_grayImg.size( ) ) || ( v_end >= m_grayImg.size( ) ) ) {
-    return;
+  size_t pxl = v_end;
+  while( ( int ) pxl != m_pred[ pxl ] ) {
+    m_res[ pxl ] = 1;
+    pxl = m_pred[ pxl ];
   }
-  std::vector< std::deque< size_t > > queue;
-
-  QList< size_t > proc_points;
-//  while( proc_points.last( ) != v_start ) {
-
-//  }
 }
