@@ -50,8 +50,8 @@ bool LiveWireTool::getCostVisible( ) const {
 
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   Tool( guiImage, viewer ), m_cost( guiImage->getDim( ) ), m_pred( guiImage->getDim( ) ),
-  m_seeds( guiImage->getDim( ) ), m_res( guiImage->getDim( ) ), m_cache( guiImage->getDim( ) ),
-  m_transf( guiImage->getTransform( 0 ) ) {
+  m_pred_comp( guiImage->getDim( ) ), m_res( guiImage->getDim( ) ), m_cache( guiImage->getDim( ) ),
+  m_seeds( guiImage->getDim( ) ), m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
       case Bial::MultiImageType::int_img: {
       m_grayImg = guiImage->getIntImage( );
@@ -102,7 +102,7 @@ catch( const std::logic_error &e ) {
 }
 
 LiveWireTool::~LiveWireTool( ) {
-  for( QGraphicsEllipseItem *pt : m_points ) {
+  for( auto pt : m_points ) {
     m_scene->removeItem( pt );
     delete pt;
   }
@@ -114,22 +114,12 @@ int LiveWireTool::type( ) {
 
 void LiveWireTool::addPoint( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
-
   auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
 //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
-
+  updatePath( pt );
   m_points.append( point );
-  m_cache.Set( 0 );
-  for( int p = 0; p + 1 < m_points.size( ); ++p ) {
-    size_t v_end = toPxIndex( m_points[ p + 1 ] );
-    size_t pxl = m_pred[ v_end ];
-    while( ( int ) pxl != m_pred[ pxl ] ) {
-      m_cache[ pxl ] = 1;
-      pxl = m_pred[ pxl ];
-    }
-  }
   emit guiImage->imageUpdated( );
 }
 
@@ -140,14 +130,18 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
     if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
       addPoint( pt );
     }
+    m_drawing = true;
   }
   else if( buttons & Qt::RightButton ) {
-    if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
-      m_points.removeAll( dynamic_cast< QGraphicsEllipseItem* >( item ) );
-      m_scene->removeItem( item );
-      delete item;
-    }
+//    if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
+//      m_points.removeAll( dynamic_cast< QGraphicsEllipseItem* >( item ) );
+//      m_scene->removeItem( item );
+//      delete item;
+//    }
+    m_drawing = false;
+    m_res = m_cache;
   }
+  emit guiImage->imageUpdated( );
 }
 
 
@@ -184,9 +178,9 @@ size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
 
 void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
   if( timer.elapsed( ) > 30 ) {
-
-    updatePath( pt );
-
+    if( m_drawing ) {
+      updatePath( pt );
+    }
     emit guiImage->imageUpdated( );
     timer.start( );
   }
@@ -279,7 +273,8 @@ void LiveWireTool::runLiveWire( int axis ) {
   m_cost.Set( 0 );
   m_pred.Set( 0 );
   m_seeds.Set( false );
-  for( QGraphicsEllipseItem *item : m_points ) {
+  for( auto pt: m_points ) {
+    QGraphicsEllipseItem *item = pt;
     const Bial::Point3D &point = toPoint3D( item );
     if( m_pred.ValidCoordinate( point.x, point.y, point.z ) ) {
       m_seeds[ m_cost.Position( point.x, point.y ) ] = true;
@@ -323,16 +318,33 @@ void LiveWireTool::runLiveWire( int axis ) {
   }
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
   ift.Run( );
-
+  m_pred_comp.Set( -1 );
   COMMENT( "Seting pixels for frendly displaying.", 0 );
   for( size_t pxl = 0; pxl < m_pred.size( ); ++pxl ) {
     if( m_pred[ pxl ] < 0 ) {
       m_pred[ pxl ] = pxl;
     }
+    else {
+      m_pred_comp[ m_pred[ pxl ] ] = pxl;
+    }
   }
   m_cost.SetRange( 0, 255 );
 
+  m_cache.Set( 0 );
+  for( int p = 0; p < m_points.size( ); ++p ) {
+    int v_stt = toPxIndex( m_points[ p ] );
+    int v_end = toPxIndex( m_points[ ( p + 1 ) % m_points.size( ) ] );
+    size_t pxl = m_pred[ v_end ];
+    if( pxl == m_pred[ v_end ] ) {
+      pxl = m_pred_comp[ v_end ];
+    }
+    while( ( int ) pxl != m_pred[ pxl ] ) {
+      m_cache[ pxl ] = 1;
+      pxl = m_pred[ pxl ];
+    }
+  }
   needUpdate[ axis ] = true;
+
   emit guiImage->imageUpdated( );
 }
 
@@ -344,6 +356,7 @@ void LiveWireTool::updatePath( QPointF pt ) {
   m_res = m_cache;
   size_t v_end = toPxIndex( pt );
   size_t pxl = v_end;
+  Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_pred.Dims( ) ) );
   while( ( int ) pxl != m_pred[ pxl ] ) {
     m_res[ pxl ] = 1;
     pxl = m_pred[ pxl ];

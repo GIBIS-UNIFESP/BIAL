@@ -14,13 +14,14 @@ class LiveWireTool : public Tool {
 private:
   Bial::Image< int > m_cost;
   Bial::Image< int > m_pred;
+  Bial::Image< int > m_pred_comp;
   Bial::Image< int > m_res;
   Bial::Image< int > m_cache;
   Bial::Image< int > m_grayImg;
   Bial::Image< int > m_grad;
   Bial::Image< int > m_seeds;
 
-  QVector< QGraphicsEllipseItem* > m_points;
+  QList< QGraphicsEllipseItem* > m_points;
 
   bool m_gradVisible;
   bool m_costVisible;
@@ -29,6 +30,8 @@ private:
   std::array< QPixmap, 4 > m_pixmaps;
   std::array< bool, 4 > needUpdate;
   Bial::FastTransform m_transf;
+
+  bool m_drawing = false;
 
   Bial::Point3D toPoint3D( QGraphicsEllipseItem *item );
   size_t toPxIndex( QGraphicsEllipseItem *item );
