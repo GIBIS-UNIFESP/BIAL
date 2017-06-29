@@ -108,7 +108,7 @@ catch( const std::logic_error &e ) {
 }
 
 LiveWireTool::~LiveWireTool( ) {
-  for( QGraphicsEllipseItem *pt : m_points ) {
+  for( auto pt : m_points ) {
     m_scene->removeItem( pt );
     delete pt;
   }
@@ -135,7 +135,7 @@ void LiveWireTool::addPoint( QPointF pt ) {
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
 //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
-
+  updatePath( pt );
   m_points.append( point );
   updatePointIdxs( );
 
@@ -153,14 +153,18 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
     if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
       addPoint( pt );
     }
+    m_drawing = true;
   }
   else if( buttons & Qt::RightButton ) {
-    if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
-      m_points.removeAll( dynamic_cast< QGraphicsEllipseItem* >( item ) );
-      m_scene->removeItem( item );
-      delete item;
-    }
+//    if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
+//      m_points.removeAll( dynamic_cast< QGraphicsEllipseItem* >( item ) );
+//      m_scene->removeItem( item );
+//      delete item;
+//    }
+    m_drawing = false;
+    m_res = m_cache;
   }
+  emit guiImage->imageUpdated( );
 }
 
 
@@ -197,9 +201,9 @@ size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
 
 void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
   if( timer.elapsed( ) > 30 ) {
-
-    updatePath( pt );
-
+    if( m_drawing ) {
+      updatePath( pt );
+    }
     emit guiImage->imageUpdated( );
     timer.start( );
   }
@@ -309,6 +313,7 @@ void LiveWireTool::runLiveWire( int axis ) {
     method->run( );
   }
   needUpdate[ axis ] = true;
+
   emit guiImage->imageUpdated( );
 }
 

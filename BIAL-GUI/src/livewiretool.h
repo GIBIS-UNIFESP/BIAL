@@ -27,6 +27,8 @@ private:
   std::array< bool, 4 > needUpdate;
   Bial::FastTransform m_transf;
 
+  bool m_drawing = false;
+
   Bial::Point3D toPoint3D( QGraphicsEllipseItem *item );
   size_t toPxIndex( QGraphicsEllipseItem *item );
 
