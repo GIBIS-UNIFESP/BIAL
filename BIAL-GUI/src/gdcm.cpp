@@ -146,30 +146,31 @@ Bial::MultiImage GDCM::OpenGImage( const std::string &filename ) {
       QImage qimage = imageReader.read( );
       size_t xsize = qimage.width( ), ysize = qimage.height( );
       Bial::Vector< size_t > dims = { xsize, ysize };
-      if( qimage.isGrayscale( ) ) {
-        qimage = qimage.convertToFormat( QImage::Format_Grayscale8 );
-        Bial::Image< int > img( dims );
-        for( size_t y = 0; y < ysize; ++y ) {
-          uchar *scanLine = ( uchar* ) qimage.scanLine( y );
-          for( size_t x = 0; x < xsize; ++x ) {
-            uchar clr = scanLine[ x ];
-            img( x, y ) = clr;
-          }
+      qimage = qimage.convertToFormat( QImage::Format_Grayscale8 );
+      Bial::Image< int > img( dims );
+      for( size_t y = 0; y < ysize; ++y ) {
+        uchar *scanLine = ( uchar* ) qimage.scanLine( y );
+        for( size_t x = 0; x < xsize; ++x ) {
+          uchar clr = scanLine[ x ];
+          img( x, y ) = clr;
         }
-        return( Bial::MultiImage( img ) );
       }
-      else {
-        qimage = qimage.convertToFormat( QImage::Format_ARGB32 );
-        Bial::Image< Bial::Color > img( dims );
-        for( size_t y = 0; y < ysize; ++y ) {
-          QRgb *scanLine = ( QRgb* ) qimage.scanLine( y );
-          for( size_t x = 0; x < xsize; ++x ) {
-            QRgb clr = scanLine[ x ];
-            img( x, y ) = Bial::Color( qAlpha( clr ), qRed( clr ), qGreen( clr ), qBlue( clr ) );
-          }
-        }
-        return( Bial::MultiImage( img ) );
-      }
+      return( Bial::MultiImage( img ) );
+      // FIXME : Enable colored jpg image...
+//      if( qimage.isGrayscale( ) ) {
+//      }
+//      else {
+//        qimage = qimage.convertToFormat( QImage::Format_ARGB32 );
+//        Bial::Image< Bial::Color > img( dims );
+//        for( size_t y = 0; y < ysize; ++y ) {
+//          QRgb *scanLine = ( QRgb* ) qimage.scanLine( y );
+//          for( size_t x = 0; x < xsize; ++x ) {
+//            QRgb clr = scanLine[ x ];
+//            img( x, y ) = Bial::Color( qAlpha( clr ), qRed( clr ), qGreen( clr ), qBlue( clr ) );
+//          }
+//        }
+//        return( Bial::MultiImage( img ) );
+//      }
     }
   }
   catch( std::bad_alloc &e ) {

@@ -120,13 +120,6 @@ int LiveWireTool::type( ) {
   return( LiveWireTool::Type );
 }
 
-void LiveWireTool::updatePointIdxs( ) {
-  m_pointIdxs = QVector< size_t >( m_points.size( ) );
-  for( int p = 0; p < m_points.size( ); ++p ) {
-    m_pointIdxs[ p ] = toPxIndex( m_points[ p ] );
-  }
-}
-
 void LiveWireTool::addPoint( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
   if( ( pt.x( ) < 0 ) || ( pt.y( ) < 0 ) || ( pt.x( ) > guiImage->width( 0 ) ) ||
@@ -138,12 +131,22 @@ void LiveWireTool::addPoint( QPointF pt ) {
 //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
   m_points.append( point );
-  updatePointIdxs( );
-  m_cache.fill( Qt::transparent );
-  for( auto method : m_methods ) {
-    method->updateCache( );
+  m_pointIdxs.append( toPxIndex( point ) );
+  if( m_points.size( ) > 1 ) {
+    for( auto method : m_methods ) {
+      auto path = method->updatePath( toPxIndex( point ) );
+      method->m_paths.push_back( path );
+    }
+    m_selectedMethods.append( m_currentMethod );
+    m_cache.fill( QColor( 0, 0, 0, 0 ) );
+    for( int point = 0; point < m_selectedMethods.size( ); ++point ) {
+      int m = m_selectedMethods[ point ];
+      for( size_t pxl : m_methods[ m ]->m_paths[ point ] ) {
+        auto coord = m_grayImg.Coordinates( pxl );
+        m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 255, 0, 128 ) );
+      }
+    }
   }
-  //TODO : dfsjoiasjdfioasjdoisfjioajdsfoijasiofjdoisajiofdj PAÇOCA
   emit guiImage->imageUpdated( );
 }
 
@@ -161,7 +164,14 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
     updatePath( pt );
   }
   else if( buttons & Qt::MidButton ) {
-    m_drawing = false;
+    if( m_drawing ) {
+      m_drawing = false;
+      m_res = m_cache;
+    }
+    else {
+      m_drawing = true;
+      updatePath( pt );
+    }
   }
   emit guiImage->imageUpdated( );
 }
@@ -269,13 +279,10 @@ void LiveWireTool::runLiveWire( int axis ) {
   if( m_points.size( ) > 0 ) {
     m_seeds.Set( false );
     m_seeds[ m_pointIdxs.last( ) ] = true;
-//    for( size_t pt : m_pointIdxs ) {
-//      if( pt < m_seeds.size( ) ) {
-//        m_seeds[ pt ] = true;
-//      }
-//    }
-    for( auto method : m_methods ) {
-      method->run( m_seeds );
+
+#pragma omp parallel for default(none) firstprivate(m_seeds) shared(m_methods)
+    for( int m = 0; m < m_methods.size( ); ++m ) {
+      m_methods[ m ]->run( m_seeds );
     }
     needUpdate[ axis ] = true;
 

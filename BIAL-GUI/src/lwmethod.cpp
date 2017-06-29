@@ -9,13 +9,6 @@ LWMethod::LWMethod( const QVector< size_t > &points,
 
 }
 
-void LWMethod::updateCache( ) {
-  if( m_paths.size( ) < m_points.size( ) ) {
-    size_t pxl = m_points[ m_paths.size( ) ];
-    m_paths.push_back( updatePath( pxl ) );
-  }
-}
-
 Path LWMethod::updatePath( size_t pxl ) {
   Path path;
   while( ( int ) pxl != m_pred[ pxl ] ) {

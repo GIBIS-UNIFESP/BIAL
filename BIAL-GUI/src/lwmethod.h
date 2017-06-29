@@ -29,8 +29,6 @@ public:
 
   virtual void run( const Bial::Vector< bool > &seeds ) = 0;
 
-  void updateCache( );
-
   Path updatePath( size_t pxl );
 
   const QColor color;

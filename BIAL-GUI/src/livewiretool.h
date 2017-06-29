@@ -16,6 +16,7 @@ private:
   QImage m_cache;
 
   QVector< QGraphicsEllipseItem* > m_points;
+  QVector< int > m_selectedMethods;
   QVector< size_t > m_pointIdxs;
   QVector< std::shared_ptr< LWMethod > > m_methods;
 
@@ -60,8 +61,6 @@ public:
   bool getCostVisible( ) const;
 
   void addPoint( QPointF pt );
-
-  void updatePointIdxs( );
 
   void updatePath( QPointF pt );
 
