@@ -5,6 +5,7 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QFileInfo>
 #include <QMainWindow>
 
 #include "livewirewidget.h"
@@ -102,7 +103,7 @@ private:
   Controller *controller;
   QString defaultFolder;
   QAction *recentFileActs[ Controller::MaxRecentFiles ];
-  bool checkExtension( const QString &suffix );
+  bool checkExtension( const QFileInfo &fileInfo );
 
   QAction *actionDefaultTool;
   QAction *actionSegmentationTool;

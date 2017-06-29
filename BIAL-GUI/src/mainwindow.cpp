@@ -14,6 +14,7 @@
 #include <QFileDialog>
 #include <QFileInfoList>
 #include <QGraphicsPixmapItem>
+#include <QImageReader>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QSettings>
@@ -306,7 +307,7 @@ bool MainWindow::loadFolder( QString dirname ) {
       break;
     }
     QFileInfo fileInfo = list.at( i );
-    if( fileInfo.isFile( ) and checkExtension( fileInfo.completeSuffix( ).toLower( ) ) ) {
+    if( fileInfo.isFile( ) and checkExtension( fileInfo ) ) {
       QString fileName = fileInfo.absoluteFilePath( );
       if( controller->addImage( fileName ) ) {
         value = true;
@@ -323,15 +324,20 @@ bool MainWindow::loadFolder( QString dirname ) {
   return( value );
 }
 
-bool MainWindow::checkExtension( const QString &suffix ) { /* receive to lower */
-  if( suffix == "scn" or suffix == "scn.gz" or suffix == "img" or suffix == "img.gz" or suffix == "hdr" or
-      suffix == "hdr.gz" or suffix == "nii" or suffix == "nii.gz" or suffix == "pnm" or suffix == "pnm.gz" or
-      suffix == "pgm" or suffix == "pgm.gz" or suffix == "pbm" or suffix == "pbm.gz" or suffix == "dcm" or
-      suffix == "dcm.gz" or suffix == "bmat" or suffix == "bmat.gz" ) {
+bool MainWindow::checkExtension( const QFileInfo &fileInfo ) { /* receive to lower */
+  QStringList list;
+  list << "scn" << "scn.gz" << "img" << "img.gz" << "hdr"
+       << "hdr.gz" << "nii" << "nii.gz" << "pnm" << "pnm.gz"
+       << "pgm" << "pgm.gz" << "pbm" << "pbm.gz" << "dcm"
+       << "dcm.gz" << "bmat" << "bmat.gz";
+
+  QString suffix = fileInfo.completeSuffix( ).toLower( );
+  if( list.contains( suffix ) ) {
     return( true );
   }
   else {
-    return( false );
+    QImageReader reader( fileInfo.absoluteFilePath( ) );
+    return( !reader.format( ).isEmpty( ) );
   }
 }
 
