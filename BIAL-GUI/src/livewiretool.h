@@ -2,25 +2,22 @@
 #define LIVEWIRE_H
 
 #include "Common.hpp"
-#include "GrowingBucketQueue.hpp"
-#include "ImageIFT.hpp"
-#include "PathFunction.hpp"
+#include "lwmethod.h"
 #include "tool.h"
-
 #include <QGraphicsItem>
 
 class LiveWireTool : public Tool {
 
 private:
-  Bial::Image< int > m_cost;
-  Bial::Image< int > m_pred;
-  Bial::Image< int > m_res;
-  Bial::Image< int > m_cache;
   Bial::Image< int > m_grayImg;
   Bial::Image< int > m_grad;
-  Bial::Image< int > m_seeds;
+  Bial::Vector< bool > m_seeds;
+  Bial::Image< int > m_res;
+  Bial::Image< int > m_cache;
 
   QVector< QGraphicsEllipseItem* > m_points;
+  QVector< size_t > m_pointIdxs;
+  QVector< std::shared_ptr< LWMethod > > m_methods;
 
   bool m_gradVisible;
   bool m_costVisible;
@@ -61,6 +58,8 @@ public:
   void addPoint( QPointF pt );
 
   void updatePath( QPointF pt );
+
+  void updatePointIdxs( );
 
 private slots:
   void runLiveWire( int axis );

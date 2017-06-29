@@ -33,7 +33,7 @@ Debug:OBJECTS_DIR = $$PWD/../build/win/debug/obj
 
 unix: !macx{
 QMAKE_CXXFLAGS += -fopenmp -std=c++11
-QMAKE_LFLAGS += -fopenmp -std=c++11
+QMAKE_LFLAGS += -std=c++11 -fopenmp
 }
 
 macx{
@@ -123,7 +123,11 @@ HEADERS += \
     thirdParty/qcustomplot.h \
     src/labelswidget.h \
     src/livewiretool.h \
-    src/livewirewidget.h
+    src/livewirewidget.h \
+    src/lwmethod.h \
+    src/livewiremethod.h \
+    src/riverbedmethod.h \
+    src/lazywalkmethod.h
 
 SOURCES += \
     src/controller.cpp \
@@ -153,7 +157,11 @@ SOURCES += \
     thirdParty/qcustomplot.cpp \
     src/labelswidget.cpp \
     src/livewiretool.cpp \
-    src/livewirewidget.cpp
+    src/livewirewidget.cpp \
+    src/lwmethod.cpp \
+    src/livewiremethod.cpp \
+    src/riverbedmethod.cpp \
+    src/lazywalkmethod.cpp
 
 DISTFILES += \
     uncrustify.cfg

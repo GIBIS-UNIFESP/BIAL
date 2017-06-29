@@ -10,18 +10,19 @@
 #include "MultiImage.hpp"
 #include "RealColor.hpp"
 
-#include "SumPathFunction.hpp"
 #include "guiimage.h"
 
 #include "AdjacencyRound.hpp"
 #include "GradientMorphological.hpp"
 #include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
-#include "ImageIFT.hpp"
 #include "IntensityGlobals.hpp"
-#include "MaxSumPathFunction.hpp"
 
+#include "lazywalkmethod.h"
+#include "livewiremethod.h"
 #include "livewiretool.h"
+#include "riverbedmethod.h"
+
 #include <Geometrics.hpp>
 #include <QDebug>
 #include <QMessageBox>
@@ -49,9 +50,8 @@ bool LiveWireTool::getCostVisible( ) const {
 }
 
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
-  Tool( guiImage, viewer ), m_cost( guiImage->getDim( ) ), m_pred( guiImage->getDim( ) ),
-  m_seeds( guiImage->getDim( ) ), m_res( guiImage->getDim( ) ), m_cache( guiImage->getDim( ) ),
-  m_transf( guiImage->getTransform( 0 ) ) {
+  Tool( guiImage, viewer ), m_seeds( guiImage->getSize( ) ), m_res( guiImage->getDim( ) ),
+  m_cache( guiImage->getDim( ) ), m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
       case Bial::MultiImageType::int_img: {
       m_grayImg = guiImage->getIntImage( );
@@ -77,6 +77,12 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   COMMENT( "Initiating segmentation tool.", 0 );
 
   m_scene = viewer->getScene( 0 );
+
+  m_methods = {
+    std::make_shared< LiveWireMethod >( m_pointIdxs, m_grayImg, m_grad, m_seeds ),
+    std::make_shared< RiverBedMethod >( m_pointIdxs, m_grayImg, m_grad, m_seeds ),
+    std::make_shared< LazyWalkMethod >( m_pointIdxs, m_grayImg, m_grad, m_seeds )
+  };
 
   setObjectName( "LiveWireTool" );
   m_costVisible = true;
@@ -112,23 +118,30 @@ int LiveWireTool::type( ) {
   return( LiveWireTool::Type );
 }
 
+void LiveWireTool::updatePointIdxs( ) {
+  m_pointIdxs = QVector< size_t >( m_points.size( ) );
+  for( int p = 0; p < m_points.size( ); ++p ) {
+    m_pointIdxs[ p ] = toPxIndex( m_points[ p ] );
+  }
+}
+
 void LiveWireTool::addPoint( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
-
+  if( ( pt.x( ) < 0 ) || ( pt.y( ) < 0 ) || ( pt.x( ) > guiImage->width( 0 ) ) ||
+      ( pt.y( ) > guiImage->heigth( 0 ) ) ) {
+    return;
+  }
   auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
 //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
 
   m_points.append( point );
+  updatePointIdxs( );
+
   m_cache.Set( 0 );
-  for( int p = 0; p + 1 < m_points.size( ); ++p ) {
-    size_t v_end = toPxIndex( m_points[ p + 1 ] );
-    size_t pxl = m_pred[ v_end ];
-    while( ( int ) pxl != m_pred[ pxl ] ) {
-      m_cache[ pxl ] = 1;
-      pxl = m_pred[ pxl ];
-    }
+  for( auto method : m_methods ) {
+    method->updateCache( m_res );
   }
   emit guiImage->imageUpdated( );
 }
@@ -236,26 +249,36 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
       }
     }
   }
-  if( m_costVisible && ( m_cost.size( ) == m_pred.size( ) ) ) {
-#pragma omp parallel for firstprivate(axis, xsz, ysz)
-    for( size_t y = 0; y < ysz; ++y ) {
-      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
-      for( size_t x = 0; x < xsz; ++x ) {
-        Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-        int cst = m_cost( pos.x, pos.y, pos.z );
-        QRgb color = scanLine[ x ];
-        scanLine[ x ] = qRgba( cst, qGreen( color ), qBlue( color ), qAlpha( color ) );
-      }
-    }
-  }
+//  if( m_costVisible && ( m_cost.size( ) == m_pred.size( ) ) ) {
+//#pragma omp parallel for firstprivate(axis, xsz, ysz)
+//    for( size_t y = 0; y < ysz; ++y ) {
+//      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
+//      for( size_t x = 0; x < xsz; ++x ) {
+//        Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
+//        int cst = m_cost( pos.x, pos.y, pos.z );
+//        QRgb color = scanLine[ x ];
+//        scanLine[ x ] = qRgba( cst, qGreen( color ), qBlue( color ), qAlpha( color ) );
+//      }
+//    }
+//  }
   for( size_t y = 0; y < ysz; ++y ) {
     QRgb *scanLine = ( QRgb* ) res.scanLine( y );
     for( size_t x = 0; x < xsz; ++x ) {
       Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-      if( m_res( pos.x, pos.y, pos.z ) > 0 ) {
-        scanLine[ x ] = qRgba( 0, 255, 0, 255 );
+      switch( m_res( pos.x, pos.y, pos.z ) ) {
+          case LiveWireMethod::Type:
+          scanLine[ x ] = qRgba( 0, 255, 0, 255 );
+          break;
+          case RiverBedMethod::Type:
+          scanLine[ x ] = qRgba( 0, 0, 255, 255 );
+          break;
+          case LazyWalkMethod::Type:
+          scanLine[ x ] = qRgba( 0, 255, 255, 255 );
+          break;
+          default:
+          break;
       }
-      if( m_seeds( pos.x, pos.y, pos.z ) ) {
+      if( m_seeds[ m_res.Position( pos.x, pos.y, pos.z ) ] ) {
         scanLine[ x ] = qRgba( 255, 255, 255, 255 );
       }
     }
@@ -276,62 +299,15 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
  */
 
 void LiveWireTool::runLiveWire( int axis ) {
-  m_cost.Set( 0 );
-  m_pred.Set( 0 );
   m_seeds.Set( false );
-  for( QGraphicsEllipseItem *item : m_points ) {
-    const Bial::Point3D &point = toPoint3D( item );
-    if( m_pred.ValidCoordinate( point.x, point.y, point.z ) ) {
-      m_seeds[ m_cost.Position( point.x, point.y ) ] = true;
+  for( size_t pt : m_pointIdxs ) {
+    if( pt < m_seeds.size( ) ) {
+      m_seeds[ pt ] = true;
     }
   }
-  COMMENT( "Running LiveWire.", 0 );
-  float weight = 1;
-
-  m_cost = m_grad;
-  m_pred.Set( 0 );
-  size_t size = m_cost.size( );
-  if( weight > 1. ) {
-    Bial::Image< double > grad_dbl( m_cost );
-    double min = m_cost.Minimum( );
-    double max = m_cost.Maximum( );
-    COMMENT( "Computing new intensities based on beta.", 0 );
-    for( size_t elm = 0; elm < size; ++elm ) {
-      grad_dbl[ elm ] = std::pow( grad_dbl[ elm ], weight );
-    }
-    COMMENT( "Normalizing data into the input range.", 0 );
-    grad_dbl.SetRange( min, max );
-    m_cost = grad_dbl;
+  for( auto method : m_methods ) {
+    method->run( );
   }
-  int delta = 1;
-  Bial::Image< int > handicap( m_cost );
-  m_cost += delta;
-  Bial::MaxSumPathFunction< Bial::Image, int > pf( m_cost, nullptr, &m_pred, false, m_grayImg, handicap, 0.0,
-                                                   delta );
-  COMMENT( "Computing IFT.", 0 );
-  COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
-           "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
-  Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
-  Bial::GrowingBucketQueue queue( size, delta, true, true );
-  for( size_t elm = 0; elm < size; ++elm ) {
-    if( m_seeds[ elm ] ) {
-      queue.Insert( elm, m_cost[ elm ] );
-    }
-    else {
-      m_cost( elm ) = std::numeric_limits< int >::max( );
-    }
-  }
-  Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
-  ift.Run( );
-
-  COMMENT( "Seting pixels for frendly displaying.", 0 );
-  for( size_t pxl = 0; pxl < m_pred.size( ); ++pxl ) {
-    if( m_pred[ pxl ] < 0 ) {
-      m_pred[ pxl ] = pxl;
-    }
-  }
-  m_cost.SetRange( 0, 255 );
-
   needUpdate[ axis ] = true;
   emit guiImage->imageUpdated( );
 }
@@ -342,10 +318,7 @@ void LiveWireTool::updatePath( QPointF pt ) {
     return;
   }
   m_res = m_cache;
-  size_t v_end = toPxIndex( pt );
-  size_t pxl = v_end;
-  while( ( int ) pxl != m_pred[ pxl ] ) {
-    m_res[ pxl ] = 1;
-    pxl = m_pred[ pxl ];
+  for( auto method : m_methods ) {
+    method->updatePath( m_res, toPxIndex( pt ) );
   }
 }
