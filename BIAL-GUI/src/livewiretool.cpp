@@ -50,8 +50,9 @@ bool LiveWireTool::getCostVisible( ) const {
 }
 
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
-  Tool( guiImage, viewer ), m_seeds( guiImage->getSize( ) ), m_res( guiImage->getDim( ) ),
-  m_cache( guiImage->getDim( ) ), m_transf( guiImage->getTransform( 0 ) ) {
+  Tool( guiImage, viewer ), m_seeds( guiImage->getSize( ) ),
+  m_cache( guiImage->width( 0 ), guiImage->heigth( 0 ), QImage::Format_ARGB32 ),
+  m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
       case Bial::MultiImageType::int_img: {
       m_grayImg = guiImage->getIntImage( );
@@ -79,10 +80,11 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   m_scene = viewer->getScene( 0 );
 
   m_methods = {
-    std::make_shared< LiveWireMethod >( m_pointIdxs, m_grayImg, m_grad, m_seeds ),
-    std::make_shared< RiverBedMethod >( m_pointIdxs, m_grayImg, m_grad, m_seeds ),
-    std::make_shared< LazyWalkMethod >( m_pointIdxs, m_grayImg, m_grad, m_seeds )
+    std::make_shared< LiveWireMethod >( m_pointIdxs, m_grayImg, m_grad ),
+    std::make_shared< RiverBedMethod >( m_pointIdxs, m_grayImg, m_grad ),
+    std::make_shared< LazyWalkMethod >( m_pointIdxs, m_grayImg, m_grad )
   };
+  m_currentMethod = LiveWireMethod::Type;
 
   setObjectName( "LiveWireTool" );
   m_costVisible = true;
@@ -135,14 +137,13 @@ void LiveWireTool::addPoint( QPointF pt ) {
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
 //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
-  updatePath( pt );
   m_points.append( point );
   updatePointIdxs( );
-
-  m_cache.Set( 0 );
+  m_cache.fill( Qt::transparent );
   for( auto method : m_methods ) {
-    method->updateCache( m_res );
+    method->updateCache( );
   }
+  //TODO : dfsjoiasjdfioasjdoisfjioajdsfoijasiofjdoisajiofdj PAÇOCA
   emit guiImage->imageUpdated( );
 }
 
@@ -156,13 +157,11 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
     m_drawing = true;
   }
   else if( buttons & Qt::RightButton ) {
-//    if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
-//      m_points.removeAll( dynamic_cast< QGraphicsEllipseItem* >( item ) );
-//      m_scene->removeItem( item );
-//      delete item;
-//    }
+    m_currentMethod = ( m_currentMethod + 1 ) % m_methods.size( );
+    updatePath( pt );
+  }
+  else if( buttons & Qt::MidButton ) {
     m_drawing = false;
-    m_res = m_cache;
   }
   emit guiImage->imageUpdated( );
 }
@@ -199,6 +198,26 @@ size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
   }
 }
 
+void LiveWireTool::updatePath( QPointF pt ) {
+  m_res = m_cache;
+  for( auto method : m_methods ) {
+    if( method->type( ) != m_currentMethod ) {
+      for( size_t pxl : method->updatePath( toPxIndex( pt ) ) ) {
+        auto coords = m_grayImg.Coordinates( pxl );
+        QColor clr = method->color;
+        clr.setAlpha( 100 );
+        m_res.setPixelColor( coords[ 0 ], coords[ 1 ], clr );
+      }
+    }
+  }
+  auto current_method = m_methods[ m_currentMethod ];
+  QColor clr = Qt::red;
+  for( size_t pxl : current_method->updatePath( toPxIndex( pt ) ) ) {
+    auto coords = m_grayImg.Coordinates( pxl );
+    m_res.setPixelColor( coords[ 0 ], coords[ 1 ], clr );
+  }
+}
+
 void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
   if( timer.elapsed( ) > 30 ) {
     if( m_drawing ) {
@@ -229,68 +248,12 @@ void LiveWireTool::sliceChanged( size_t axis, size_t slice ) {
 }
 
 QPixmap LiveWireTool::getLabel( size_t axis ) {
-  const size_t xsz = guiImage->width( axis );
-  const size_t ysz = guiImage->heigth( axis );
-/*
- *  if( !m_costVisible && !m_predVisible ) {
- *    return( QPixmap( ) );
- *  }
- */
   if( !needUpdate[ axis ] ) {
     return( m_pixmaps[ axis ] );
   }
-  const Bial::FastTransform &transf = guiImage->getTransform( axis );
-  QImage res( xsz, ysz, QImage::Format_ARGB32 );
-  res.fill( qRgba( 0, 0, 0, 128 ) );
-  if( m_gradVisible ) {
-#pragma omp parallel for firstprivate(axis, xsz, ysz)
-    for( size_t y = 0; y < ysz; ++y ) {
-      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
-      for( size_t x = 0; x < xsz; ++x ) {
-        Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-        QRgb color = scanLine[ x ];
-        scanLine[ x ] = qRgba( 0, m_grad( pos.x, pos.y, pos.z ), 0, qAlpha( color ) );
-      }
-    }
-  }
-//  if( m_costVisible && ( m_cost.size( ) == m_pred.size( ) ) ) {
-//#pragma omp parallel for firstprivate(axis, xsz, ysz)
-//    for( size_t y = 0; y < ysz; ++y ) {
-//      QRgb *scanLine = ( QRgb* ) res.scanLine( y );
-//      for( size_t x = 0; x < xsz; ++x ) {
-//        Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-//        int cst = m_cost( pos.x, pos.y, pos.z );
-//        QRgb color = scanLine[ x ];
-//        scanLine[ x ] = qRgba( cst, qGreen( color ), qBlue( color ), qAlpha( color ) );
-//      }
-//    }
-//  }
-  for( size_t y = 0; y < ysz; ++y ) {
-    QRgb *scanLine = ( QRgb* ) res.scanLine( y );
-    for( size_t x = 0; x < xsz; ++x ) {
-      Bial::Point3D pos = transf( x, y, guiImage->currentSlice( axis ) );
-      switch( m_res( pos.x, pos.y, pos.z ) ) {
-          case LiveWireMethod::Type:
-          scanLine[ x ] = qRgba( 0, 255, 0, 255 );
-          break;
-          case RiverBedMethod::Type:
-          scanLine[ x ] = qRgba( 0, 0, 255, 255 );
-          break;
-          case LazyWalkMethod::Type:
-          scanLine[ x ] = qRgba( 0, 255, 255, 255 );
-          break;
-          default:
-          break;
-      }
-      if( m_seeds[ m_res.Position( pos.x, pos.y, pos.z ) ] ) {
-        scanLine[ x ] = qRgba( 255, 255, 255, 255 );
-      }
-    }
-  }
-  m_pixmaps[ axis ] = QPixmap::fromImage( res );
+  m_pixmaps[ axis ] = QPixmap::fromImage( m_res );
   return( m_pixmaps[ axis ] );
 }
-
 
 /*
  * /////////////////////////////////////////////////////////////////
@@ -303,27 +266,19 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
  */
 
 void LiveWireTool::runLiveWire( int axis ) {
-  m_seeds.Set( false );
-  for( size_t pt : m_pointIdxs ) {
-    if( pt < m_seeds.size( ) ) {
-      m_seeds[ pt ] = true;
+  if( m_points.size( ) > 0 ) {
+    m_seeds.Set( false );
+    m_seeds[ m_pointIdxs.last( ) ] = true;
+//    for( size_t pt : m_pointIdxs ) {
+//      if( pt < m_seeds.size( ) ) {
+//        m_seeds[ pt ] = true;
+//      }
+//    }
+    for( auto method : m_methods ) {
+      method->run( m_seeds );
     }
-  }
-  for( auto method : m_methods ) {
-    method->run( );
-  }
-  needUpdate[ axis ] = true;
+    needUpdate[ axis ] = true;
 
-  emit guiImage->imageUpdated( );
-}
-
-
-void LiveWireTool::updatePath( QPointF pt ) {
-  if( m_points.isEmpty( ) ) {
-    return;
-  }
-  m_res = m_cache;
-  for( auto method : m_methods ) {
-    method->updatePath( m_res, toPxIndex( pt ) );
+    emit guiImage->imageUpdated( );
   }
 }

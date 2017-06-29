@@ -31,8 +31,8 @@
 #include <Vector.hpp>
 #include <algorithm>
 LiveWireMethod::LiveWireMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
-                                const Bial::Image< int > &grad, const Bial::Vector< bool > &seeds ) :
-  LWMethod( points, grayImg, grad, seeds ) {
+                                const Bial::Image< int > &grad ) :
+  LWMethod( points, grayImg, grad, QColor( 0, 255, 0 ) ) {
 
 }
 
@@ -40,7 +40,7 @@ int LiveWireMethod::type( ) {
   return( LiveWireMethod::Type );
 }
 
-void LiveWireMethod::run( ) {
+void LiveWireMethod::run( const Bial::Vector< bool > &seeds ) {
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -73,7 +73,7 @@ void LiveWireMethod::run( ) {
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
   Bial::GrowingBucketQueue queue( size, delta, true, true );
   for( size_t elm = 0; elm < size; ++elm ) {
-    if( m_seeds[ elm ] ) {
+    if( seeds[ elm ] ) {
       queue.Insert( elm, m_cost[ elm ] );
     }
     else {

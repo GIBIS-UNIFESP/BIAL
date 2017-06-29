@@ -3,32 +3,36 @@
 
 #include "Common.hpp"
 #include "Image.hpp"
+#include <QColor>
 #include <QVector>
+
+typedef Bial::Vector< size_t > Path;
 
 class LWMethod {
 public:
   enum {
-    Type = 1,
-    UserType = 65536
+    Type = -1,
   };
   const QVector< size_t > &m_points;
   const Bial::Image< int > &m_grayImg;
   const Bial::Image< int > &m_grad;
-  const Bial::Vector< bool > &m_seeds;
   Bial::Image< int > m_cost;
   Bial::Image< int > m_pred;
+  Bial::Vector< Path > m_paths;
 
   virtual int type( ) = 0;
 
   LWMethod( const QVector< size_t > &points,
             const Bial::Image< int > &grayImg,
             const Bial::Image< int > &grad,
-            const Bial::Vector< bool > &m_seeds );
+            QColor color );
 
-  virtual void run( ) = 0;
+  virtual void run( const Bial::Vector< bool > &seeds ) = 0;
 
-  void updateCache( Bial::Image< int > &img );
+  void updateCache( );
 
-  void updatePath( Bial::Image< int > &img, size_t v_end );
+  Path updatePath( size_t pxl );
+
+  const QColor color;
 };
 #endif // LWMETHOD_H

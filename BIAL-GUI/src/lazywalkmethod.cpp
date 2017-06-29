@@ -32,8 +32,8 @@
 #include <Vector.hpp>
 #include <algorithm>
 LazyWalkMethod::LazyWalkMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
-                                const Bial::Image< int > &grad, const Bial::Vector< bool > &seeds ) :
-  LWMethod( points, grayImg, grad, seeds ) {
+                                const Bial::Image< int > &grad ) :
+  LWMethod( points, grayImg, grad, QColor( 0, 255, 255 ) ) {
 
 }
 
@@ -41,7 +41,7 @@ int LazyWalkMethod::type( ) {
   return( LazyWalkMethod::Type );
 }
 
-void LazyWalkMethod::run( ) {
+void LazyWalkMethod::run( const Bial::Vector< bool > &seeds ) {
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -60,7 +60,7 @@ void LazyWalkMethod::run( ) {
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
   Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
   for( size_t elm = 0; elm < size; ++elm ) {
-    if( m_seeds[ elm ] ) {
+    if( seeds[ elm ] ) {
       queue.Insert( elm, m_cost[ elm ] );
     }
     else {

@@ -8,11 +8,10 @@ public:
 
   LiveWireMethod(const QVector< size_t > &points,
                   const Bial::Image< int > &grayImg,
-                  const Bial::Image< int > &grad,
-                  const Bial::Vector<bool> &seeds );
+                  const Bial::Image< int > &grad);
 
   int type( );
-  void run( );
+  void run(const Bial::Vector<bool> &seeds);
 };
 
 #endif // LIVEWIREMETHOD_H

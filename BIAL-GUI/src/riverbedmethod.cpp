@@ -31,8 +31,8 @@
 #include <Vector.hpp>
 #include <algorithm>
 RiverBedMethod::RiverBedMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
-                                const Bial::Image< int > &grad, const Bial::Vector< bool > &seeds ) :
-  LWMethod( points, grayImg, grad, seeds ) {
+                                const Bial::Image< int > &grad ) :
+  LWMethod( points, grayImg, grad, QColor( 0, 0, 255 ) ) {
 
 }
 
@@ -40,7 +40,7 @@ int RiverBedMethod::type( ) {
   return( RiverBedMethod::Type );
 }
 
-void RiverBedMethod::run( ) {
+void RiverBedMethod::run( const Bial::Vector< bool > &seeds ) {
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -55,7 +55,7 @@ void RiverBedMethod::run( ) {
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.1, m_grayImg.Dims( ) ) );
   Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
-  ift.InsertSeeds( m_seeds );
+  ift.InsertSeeds( seeds );
   ift.Run( );
 
   COMMENT( "Seting pixels for frendly displaying.", 0 );

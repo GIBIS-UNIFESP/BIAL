@@ -12,12 +12,14 @@ private:
   Bial::Image< int > m_grayImg;
   Bial::Image< int > m_grad;
   Bial::Vector< bool > m_seeds;
-  Bial::Image< int > m_res;
-  Bial::Image< int > m_cache;
+  QImage m_res;
+  QImage m_cache;
 
   QVector< QGraphicsEllipseItem* > m_points;
   QVector< size_t > m_pointIdxs;
   QVector< std::shared_ptr< LWMethod > > m_methods;
+
+  int m_currentMethod;
 
   bool m_gradVisible;
   bool m_costVisible;
@@ -59,9 +61,9 @@ public:
 
   void addPoint( QPointF pt );
 
-  void updatePath( QPointF pt );
-
   void updatePointIdxs( );
+
+  void updatePath( QPointF pt );
 
 private slots:
   void runLiveWire( int axis );
