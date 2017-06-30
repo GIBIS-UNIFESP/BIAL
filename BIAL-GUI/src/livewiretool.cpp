@@ -143,7 +143,7 @@ void LiveWireTool::addPoint( QPointF pt ) {
       int m = m_selectedMethods[ point ];
       for( size_t pxl : m_methods[ m ]->m_paths[ point ] ) {
         auto coord = m_grayImg.Coordinates( pxl );
-        m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 255, 0, 128 ) );
+        m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 0, 255, 255 ) );
       }
     }
   }
