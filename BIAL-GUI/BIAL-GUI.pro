@@ -71,7 +71,7 @@ DEPENDPATH += $$PWD/../bial/inc
 
 CONFIG += c++11
 
-LIBS += -lz -lANN
+LIBS += -lz -lopencv_core -lopencv_ml
 
 win32{
 LIBS += -fopenmp

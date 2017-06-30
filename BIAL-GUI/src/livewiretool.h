@@ -6,9 +6,10 @@
 #include "tool.h"
 #include <QGraphicsItem>
 
+#include <opencv2/ml.hpp>
+
 #define NUM_FTR 10
 #define MAX_PTS 1000
-#define K 1
 
 class LiveWireTool : public Tool {
 
@@ -24,8 +25,7 @@ private:
   QVector< size_t > m_pointIdxs;
   QVector< std::shared_ptr< LWMethod > > m_methods;
 
-
-
+  cv::Ptr< cv::ml::SVM > m_svm;
 
   int m_currentMethod;
 
