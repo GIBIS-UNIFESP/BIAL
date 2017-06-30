@@ -37,7 +37,7 @@ LazyWalkMethod::LazyWalkMethod( const QVector< size_t > &points, const Bial::Ima
 
 }
 
-int LazyWalkMethod::type( ) {
+int LazyWalkMethod::type( ) const {
   return( LazyWalkMethod::Type );
 }
 

@@ -36,7 +36,7 @@ RiverBedMethod::RiverBedMethod( const QVector< size_t > &points, const Bial::Ima
 
 }
 
-int RiverBedMethod::type( ) {
+int RiverBedMethod::type( ) const {
   return( RiverBedMethod::Type );
 }
 

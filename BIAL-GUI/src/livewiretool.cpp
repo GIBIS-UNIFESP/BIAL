@@ -1,11 +1,11 @@
 #include "Adjacency.hpp"
 #include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
-
 #include "ColorRGB.hpp"
 #include "File.hpp"
 #include "FileImage.hpp"
 #include "Geometrics.hpp"
+
 
 #include "MultiImage.hpp"
 #include "RealColor.hpp"
@@ -23,12 +23,63 @@
 #include "livewiretool.h"
 #include "riverbedmethod.h"
 
+#include <ANN/ANN.h>
 #include <Geometrics.hpp>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPointF>
 #include <Vector.hpp>
 #include <algorithm>
+
+
+ANNpointArray dataPts = nullptr;
+ANNpoint queryPt = nullptr;
+ANNidxArray nnIdx = nullptr;
+ANNdistArray dists = nullptr;
+ANNkd_tree *kdTree = nullptr;
+
+const Bial::Vector< Bial::Point3D > LiveWireTool::toPoint3DVector( const Path &path ) {
+  Bial::Vector< Bial::Point3D > points;
+  for( size_t pxl : path ) {
+    auto coords = m_grayImg.Coordinates( pxl );
+    points.push_back( Bial::Point3D( coords[ 0 ], coords[ 1 ], 0 ) );
+  }
+  return( points );
+}
+
+Bial::Vector< double > LiveWireTool::calcHistogram( const Path &path, const Bial::Image< int > &img, size_t bins ) {
+  double max = img.Maximum( );
+  Bial::Vector< double > hist( bins );
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      size_t bin = std::min( static_cast< size_t >( std::round( bins * ( img[ pxl ] / max ) ) ), bins - 1 );
+      hist[ bin ] += 1.0 / path.size( );
+    }
+  }
+  return( hist );
+}
+
+Bial::Array< double, NUM_FTR > LiveWireTool::pathDescription( const Path &path, const LWMethod *method ) {
+  Bial::Array< double, NUM_FTR > features;
+  features.Set( 0 );
+  features[ method->type( ) ] = 1.0;
+  if( path.empty( ) ) {
+    return( features );
+  }
+  const Bial::Vector< Bial::Point3D > points = toPoint3DVector( path );
+  double imgSz = m_grayImg.size( );
+  double perimeter = points.size( ) / imgSz;
+  double distance = Bial::Distance( points.front( ), points.back( ) ) / imgSz;
+  features[ 3 ] = perimeter;
+  features[ 4 ] = distance;
+  features[ 5 ] = distance / perimeter;
+//  auto grad_hist = calcHistogram( path, m_grad, 4 );
+  auto grad_hist = calcHistogram( path, method->m_cost, 4 );
+  for( size_t i = 0; i < grad_hist.size( ); ++i ) {
+    features[ i + 6 ] = grad_hist[ i ];
+  }
+  return( features );
+}
 
 
 void LiveWireTool::setGradVisibility( bool vis ) {
@@ -90,6 +141,9 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   m_costVisible = true;
   m_gradVisible = false;
   setHasLabel( true );
+
+  m_cache.fill( QColor( 0, 0, 0, 0 ) );
+  m_res.fill( QColor( 0, 0, 0, 0 ) );
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
 catch( std::bad_alloc &e ) {
@@ -121,9 +175,10 @@ int LiveWireTool::type( ) {
 }
 
 void LiveWireTool::addPoint( QPointF pt ) {
+  qDebug( ) << "ADD point: " << pt;
   float x = pt.x( ), y = pt.y( );
-  if( ( pt.x( ) < 0 ) || ( pt.y( ) < 0 ) || ( pt.x( ) > guiImage->width( 0 ) ) ||
-      ( pt.y( ) > guiImage->heigth( 0 ) ) ) {
+  if( ( x < 0 ) || ( y < 0 ) || ( x > guiImage->width( 0 ) ) ||
+      ( y > guiImage->heigth( 0 ) ) ) {
     return;
   }
   auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
@@ -136,6 +191,7 @@ void LiveWireTool::addPoint( QPointF pt ) {
     for( auto method : m_methods ) {
       auto path = method->updatePath( toPxIndex( point ) );
       method->m_paths.push_back( path );
+      qDebug( ) << method->type( ) << " " << method->m_paths.size( );
     }
     m_selectedMethods.append( m_currentMethod );
     m_cache.fill( QColor( 0, 0, 0, 0 ) );
@@ -146,18 +202,49 @@ void LiveWireTool::addPoint( QPointF pt ) {
         m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 0, 255, 255 ) );
       }
     }
+    dataPts = annAllocPts( MAX_PTS, NUM_FTR );
+    queryPt = annAllocPt( NUM_FTR ); // allocate query point
+    nnIdx = new ANNidx[ K ]; // allocate near neigh indices
+    dists = new ANNdist[ K ]; // allocate near neighbor dists
+    for( int point = 0; point < m_selectedMethods.size( ); ++point ) {
+      for( auto method : m_methods ) {
+        auto features = pathDescription( method->m_paths[ point ], method.get( ) );
+        for( int ftr = 0; ftr < ( int ) features.size( ); ++ftr ) {
+          dataPts[ point ][ ftr ] = features[ ftr ];
+        }
+      }
+    }
+    kdTree = new ANNkd_tree( dataPts, m_points.size( ), NUM_FTR );
   }
   emit guiImage->imageUpdated( );
 }
 
+void LiveWireTool::finishSegmentation( ) {
+  addPoint( m_points.first( )->scenePos( ) + m_points.first( )->rect( ).center( ) );
+  m_res = m_cache;
+  m_drawing = false;
+  m_finished = true;
+}
+
 void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
+  float x = pt.x( ), y = pt.y( );
+  if( ( x < 0 ) || ( y < 0 ) || ( x > guiImage->width( 0 ) ) ||
+      ( y > guiImage->heigth( 0 ) ) ) {
+    return;
+  }
   timer.start( );
   QGraphicsItem *item = m_scene->itemAt( pt, QTransform( ) );
+  if( m_finished ) {
+    return;
+  }
   if( buttons & Qt::LeftButton ) {
     if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
       addPoint( pt );
+      m_drawing = true;
     }
-    m_drawing = true;
+    else if( item == m_points.first( ) ) {
+      finishSegmentation( );
+    }
   }
   else if( buttons & Qt::RightButton ) {
     m_currentMethod = ( m_currentMethod + 1 ) % m_methods.size( );
@@ -166,11 +253,6 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
   else if( buttons & Qt::MidButton ) {
     if( m_drawing ) {
       m_drawing = false;
-      m_res = m_cache;
-    }
-    else {
-      m_drawing = true;
-      updatePath( pt );
     }
   }
   emit guiImage->imageUpdated( );
@@ -211,14 +293,16 @@ size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
 void LiveWireTool::updatePath( QPointF pt ) {
   m_res = m_cache;
   for( auto method : m_methods ) {
+    Path path = method->updatePath( toPxIndex( pt ) );
     if( method->type( ) != m_currentMethod ) {
-      for( size_t pxl : method->updatePath( toPxIndex( pt ) ) ) {
+      for( size_t pxl : path ) {
         auto coords = m_grayImg.Coordinates( pxl );
         QColor clr = method->color;
         clr.setAlpha( 100 );
         m_res.setPixelColor( coords[ 0 ], coords[ 1 ], clr );
       }
     }
+    std::cout << pathDescription( path, method.get( ) ) << std::endl;
   }
   auto current_method = m_methods[ m_currentMethod ];
   QColor clr = Qt::red;
@@ -242,7 +326,7 @@ void LiveWireTool::mouseReleased( QPointF pt, Qt::MouseButtons buttons, size_t a
   emit guiImage->imageUpdated( );
   Q_UNUSED( buttons );
   Q_UNUSED( pt );
-  runLiveWire( axis );
+  runLiveWire( );
 }
 
 void LiveWireTool::mouseDragged( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
@@ -275,16 +359,19 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
  * /////////////////////////////////////////////////////////////////
  */
 
-void LiveWireTool::runLiveWire( int axis ) {
+void LiveWireTool::runLiveWire( ) {
   if( m_points.size( ) > 0 ) {
     m_seeds.Set( false );
+//    for( size_t pxl: m_pointIdxs ) {
+//      m_seeds[ pxl ] = true;
+//    }
     m_seeds[ m_pointIdxs.last( ) ] = true;
 
 #pragma omp parallel for default(none) firstprivate(m_seeds) shared(m_methods)
     for( int m = 0; m < m_methods.size( ); ++m ) {
       m_methods[ m ]->run( m_seeds );
     }
-    needUpdate[ axis ] = true;
+    needUpdate[ 0 ] = true;
 
     emit guiImage->imageUpdated( );
   }

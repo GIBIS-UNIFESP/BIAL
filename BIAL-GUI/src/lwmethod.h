@@ -20,7 +20,7 @@ public:
   Bial::Image< int > m_pred;
   Bial::Vector< Path > m_paths;
 
-  virtual int type( ) = 0;
+  virtual int type( ) const = 0;
 
   LWMethod( const QVector< size_t > &points,
             const Bial::Image< int > &grayImg,

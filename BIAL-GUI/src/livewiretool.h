@@ -6,6 +6,10 @@
 #include "tool.h"
 #include <QGraphicsItem>
 
+#define NUM_FTR 10
+#define MAX_PTS 1000
+#define K 1
+
 class LiveWireTool : public Tool {
 
 private:
@@ -20,6 +24,9 @@ private:
   QVector< size_t > m_pointIdxs;
   QVector< std::shared_ptr< LWMethod > > m_methods;
 
+
+
+
   int m_currentMethod;
 
   bool m_gradVisible;
@@ -31,12 +38,16 @@ private:
   Bial::FastTransform m_transf;
 
   bool m_drawing = false;
+  bool m_finished = false;
 
   Bial::Point3D toPoint3D( QGraphicsEllipseItem *item );
   size_t toPxIndex( QGraphicsEllipseItem *item );
 
   Bial::Point3D toPoint3D( const QPointF &qpoint );
   size_t toPxIndex( const QPointF &qpoint );
+  Bial::Array< double, NUM_FTR > pathDescription( const Path &path, const LWMethod *method );
+  const Bial::Vector< Bial::Point3D > toPoint3DVector( const Path &path );
+  Bial::Vector< double > calcHistogram( const Path &path, const Bial::Image< int > &img, size_t bins );
 public:
   enum { Type = 42 };
   QGraphicsScene *m_scene;
@@ -64,8 +75,10 @@ public:
 
   void updatePath( QPointF pt );
 
+  void finishSegmentation( );
+
 private slots:
-  void runLiveWire( int axis );
+  void runLiveWire( );
 };
 
 #endif /* LIVEWIRE_H */

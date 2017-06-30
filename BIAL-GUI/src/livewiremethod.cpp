@@ -36,7 +36,7 @@ LiveWireMethod::LiveWireMethod( const QVector< size_t > &points, const Bial::Ima
 
 }
 
-int LiveWireMethod::type( ) {
+int LiveWireMethod::type( ) const {
   return( LiveWireMethod::Type );
 }
 
