@@ -136,9 +136,9 @@ void RobotUser::run( ) {
         draw( gt_map, pxl2 );
 
         Path path = method->updatePath( pxl2 );
-        if( pxl_idx2 % 10 == 0 ) {
-          plotPath( path, method->color );
-        }
+//        if( pxl_idx2 % 10 == 0 ) {
+//          plotPath( path, method->color );
+//        }
         int diff = 0;
         for( size_t pxl : path ) {
           if( gt_map[ pxl ] == 0 ) {

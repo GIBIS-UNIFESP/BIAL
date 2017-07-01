@@ -71,7 +71,7 @@
      <x>0</x>
      <y>0</y>
      <width>615</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -190,11 +190,19 @@
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuControls">
+    <property name="title">
+     <string>Controls</string>
+    </property>
+    <addaction name="actionPrevious"/>
+    <addaction name="actionNext"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuLayout"/>
    <addaction name="menuOverlay"/>
    <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuControls"/>
   </widget>
   <widget class="QDockWidget" name="thumbsDock">
    <property name="sizePolicy">
@@ -206,7 +214,7 @@
    <property name="minimumSize">
     <size>
      <width>100</width>
-     <height>35</height>
+     <height>38</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -616,6 +624,22 @@
    </property>
    <property name="text">
     <string>LiveWire dock</string>
+   </property>
+  </action>
+  <action name="actionPrevious">
+   <property name="text">
+    <string>Previous</string>
+   </property>
+   <property name="shortcut">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionNext">
+   <property name="text">
+    <string>Next</string>
+   </property>
+   <property name="shortcut">
+    <string>Right</string>
    </property>
   </action>
  </widget>

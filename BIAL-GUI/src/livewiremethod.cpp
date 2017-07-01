@@ -81,7 +81,7 @@ void LiveWireMethod::run( const Bial::Vector< bool > &seeds, const Path &current
     }
   }
   for( size_t pxl : currentPath ) {
-    m_cost[ pxl ] = std::numeric_limits< int >::max( );
+    m_cost[ pxl ] = 0;
   }
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
   ift.Run( );

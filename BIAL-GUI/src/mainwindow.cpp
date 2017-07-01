@@ -165,6 +165,8 @@ void MainWindow::on_actionWhite_background_triggered( ) {
 }
 
 void MainWindow::currentImageChanged( ) {
+  ui->actionNext->setEnabled( controller->size( ) > 1 );
+  ui->actionPrevious->setEnabled( controller->size( ) > 1 );
   if( controller->currentImage( ) ) {
     DisplayFormat *format = controller->currentFormat( );
     actionDefaultTool->setVisible( DefaultTool::supportedFormats & ( int ) format->modality( ) );
@@ -893,4 +895,12 @@ void MainWindow::actionFunctional_Tool_triggered( ) {
 
 void MainWindow::actionChange_default_parameters_triggered( ) {
   /* TODO: abrir janela para mostrar parametros */
+}
+
+void MainWindow::on_actionNext_triggered( ) {
+  controller->loadNextImage( );
+}
+
+void MainWindow::on_actionPrevious_triggered( ) {
+  controller->loadPreviousImage( );
 }

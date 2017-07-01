@@ -98,6 +98,10 @@ private slots:
 
   void actionChange_default_parameters_triggered( );
 
+  void on_actionNext_triggered( );
+
+  void on_actionPrevious_triggered( );
+
 private:
   Ui::MainWindow *ui;
   Controller *controller;

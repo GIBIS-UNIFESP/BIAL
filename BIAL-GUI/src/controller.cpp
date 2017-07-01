@@ -151,12 +151,11 @@ void Controller::setCurrentImagePos( int position ) {
 }
 
 void Controller::loadNextImage( ) {
-  if( currentImagePos( ) == ( m_images.count( ) - 1 ) ) {
-    setCurrentImagePos( 0 );
-  }
-  else {
-    setCurrentImagePos( currentImagePos( ) + 1 );
-  }
+  setCurrentImagePos( ( currentImagePos( ) + 1 ) % m_images.count( ) );
+}
+
+void Controller::loadPreviousImage( ) {
+  setCurrentImagePos( ( m_images.count( ) + currentImagePos( ) - 1 ) % m_images.count( ) );
 }
 
 void Controller::setCurrentSlice( size_t view, size_t slice ) {

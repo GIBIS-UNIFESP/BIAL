@@ -1,6 +1,8 @@
 #include "livewirewidget.h"
 #include "ui_livewirewidget.h"
 
+#include <QMessageBox>
+
 LiveWireWidget::LiveWireWidget( QWidget *parent ) :
   QWidget( parent ),
   ui( new Ui::LiveWireWidget ) {
@@ -23,5 +25,10 @@ void LiveWireWidget::on_pushButtonClear_clicked( ) {
 }
 
 void LiveWireWidget::on_pushButtonRobotUser_clicked( ) {
-  tool->roboto( );
+  try {
+    tool->roboto( );
+  }
+  catch( std::runtime_error &err ) {
+    QMessageBox::warning( this, tr( "Error" ), QString( err.what( ) ) );
+  }
 }

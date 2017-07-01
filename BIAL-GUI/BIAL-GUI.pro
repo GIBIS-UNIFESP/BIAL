@@ -128,7 +128,8 @@ HEADERS += \
     src/livewiremethod.h \
     src/riverbedmethod.h \
     src/lazywalkmethod.h \
-    src/robotuser.h
+    src/robotuser.h \
+    src/graphicsviewzoom.h
 
 SOURCES += \
     src/controller.cpp \
@@ -163,7 +164,8 @@ SOURCES += \
     src/livewiremethod.cpp \
     src/riverbedmethod.cpp \
     src/lazywalkmethod.cpp \
-    src/robotuser.cpp
+    src/robotuser.cpp \
+    src/graphicsviewzoom.cpp
 
 DISTFILES += \
     uncrustify.cfg
