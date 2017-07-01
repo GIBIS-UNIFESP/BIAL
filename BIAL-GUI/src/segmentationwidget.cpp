@@ -1,6 +1,8 @@
+#include "FileImage.hpp"
 #include "segmentationwidget.h"
 #include "ui_segmentationwidget.h"
-
+#include <QDir>
+#include <QFileInfo>
 #include <QMessageBox>
 
 SegmentationWidget::SegmentationWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::Segmentationwidget ) {
@@ -22,11 +24,11 @@ void SegmentationWidget::setTool( Tool *sTool ) {
     ui->pushButtonShowMask->setChecked( tool->getMaskVisible( ) );
     switch( tool->getDrawType( ) ) {
         case 0:
-          ui->eraserButton->setChecked( true );
+        ui->eraserButton->setChecked( true );
         break;
         case 1:
         case 2:
-          ui->drawButton->setChecked( true );
+        ui->drawButton->setChecked( true );
         break;
     }
   }
@@ -84,7 +86,8 @@ void SegmentationWidget::on_thickDoubleSpinBox_valueChanged( double arg1 ) {
 void SegmentationWidget::on_pfmaxgeo_toggled( bool checked ) {
 //    if( tool->isInitiated( ) ) {
 //      QMessageBox messageBox;
-//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart
+// the process.");
 //      messageBox.setFixedSize(500,200);
 //    }
 }
@@ -92,7 +95,8 @@ void SegmentationWidget::on_pfmaxgeo_toggled( bool checked ) {
 void SegmentationWidget::on_pfmax_toggled( bool checked ) {
 //    if( tool->isInitiated( ) ) {
 //      QMessageBox messageBox;
-//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart
+// the process.");
 //      messageBox.setFixedSize(500,200);
 //    }
 }
@@ -100,16 +104,26 @@ void SegmentationWidget::on_pfmax_toggled( bool checked ) {
 void SegmentationWidget::on_pfsum_toggled( bool checked ) {
 //    if( tool->isInitiated( ) ) {
 //      QMessageBox messageBox;
-//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart the process.");
+//      messageBox.critical(0,"Warining","Changing path-value propagation function after first execution will restart
+// the process.");
 //      messageBox.setFixedSize(500,200);
 //    }
 }
 
 void SegmentationWidget::on_morphological_grad_toggled( bool checked ) {
-    tool->MorphologicalGradient( );
+  tool->MorphologicalGradient( );
 }
 
 void SegmentationWidget::on_sobel_grad_toggled( bool checked ) {
-    tool->SobelGradient( );
+  tool->SobelGradient( );
 }
 
+
+void SegmentationWidget::on_pushButtonSave_clicked( ) {
+  QFileInfo finfo( tool->getGuiImage( )->fileName( ) );
+  QDir dir = finfo.dir( );
+  dir.mkpath( "segmentation" );
+  dir.cd( "segmentation" );
+  QString outFname = dir.absoluteFilePath( finfo.baseName( ) + ".pgm" );
+  Bial::Write( tool->getMask( ), outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
+}

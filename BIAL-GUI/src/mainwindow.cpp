@@ -27,6 +27,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   ui->dockWidgetLabels->hide( );
   ui->imageViewer->setController( controller );
   ui->actionPrint->setEnabled( false );
+  ui->dockWidgetSegmentation->setFloating( true );
   /*
    *  ui->dockWidgetFunctional->hide( );
    *  ui->widgetDragDrop->hide( );
