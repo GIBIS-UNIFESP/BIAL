@@ -202,6 +202,13 @@ void MainWindow::currentImageChanged( ) {
     actionLiveWireTool_triggered( );
     segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
     ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
+    if( controller->currentImage( ) ) {
+      QFileInfo finfo = controller->currentImage( )->fileName( );
+      setWindowTitle( QString( "%1 - BIAL" ).arg( finfo.fileName( ) ) );
+    }
+    else {
+      setWindowTitle( QString( "BIAL" ) );
+    }
   }
 }
 
@@ -320,6 +327,7 @@ bool MainWindow::loadFolder( QString dirname ) {
         continue;
       }
     }
+    qApp->processEvents( );
   }
   progress.setValue( list.size( ) );
 

@@ -27,7 +27,7 @@ public:
             const Bial::Image< int > &grad,
             QColor color );
 
-  virtual void run( const Bial::Vector< bool > &seeds ) = 0;
+  virtual void run( const Bial::Vector< bool > &seeds, const Path &currentPath ) = 0;
 
   Path updatePath( size_t pxl );
 

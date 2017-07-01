@@ -24,6 +24,7 @@ private:
 
   QVector< QGraphicsEllipseItem* > m_points;
   QVector< int > m_selectedMethods;
+  Path m_currentPath;
   QVector< size_t > m_pointIdxs;
   QVector< std::shared_ptr< LWMethod > > m_methods;
 

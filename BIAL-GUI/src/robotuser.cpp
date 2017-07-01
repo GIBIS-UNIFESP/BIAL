@@ -1,7 +1,10 @@
+#include "Adjacency.hpp"
+#include "AdjacencyRound.hpp"
 #include "FileImage.hpp"
 #include "livewiretool.h"
 #include "robotuser.h"
 
+#include <AdjacencyIterator.hpp>
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -25,9 +28,9 @@ void find_next( const Bial::Image< int > &img, std::array< int, 8 > disp, int p_
   }
 }
 
-Bial::Vector< size_t > contour_following( const Bial::Image< int > &img ) {
+Path contour_following( const Bial::Image< int > &img ) {
   Bial::Image< int > contour_map( img.Dim( ) );
-  Bial::Vector< size_t > contour;
+  Path contour;
   int label = 0;
   int width = img.size( 0 );
   int height = img.size( 1 );
@@ -106,44 +109,59 @@ QPointF RobotUser::toPointF( int pxl ) {
   return( QPointF( coord[ 0 ], coord[ 1 ] ) );
 }
 
+void draw( Bial::Image< int > &img, size_t pxl ) {
+  Bial::Adjacency adj = Bial::AdjacencyType::Circular( 1.9 );
+  Bial::AdjacencyIterator it( img, adj );
+  size_t adj_px;
+  for( size_t idx = 0; idx < adj.size( ); ++idx ) {
+    if( it.AdjIdx( pxl, idx, adj_px ) ) {
+      img[ adj_px ] = 1;
+    }
+  }
+}
+
 void RobotUser::run( ) {
 //  size_t end = m_contour.size( ) - 1;
   qDebug( ) << "CONTOUR : " << m_contour.size( );
+  Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
+  QPointF pt = toPointF( m_contour[ 0 ] );
+  m_tool.addPoint( pt );
+  m_tool.runLiveWire( );
   for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
-    int pxl = m_contour[ pxl_idx ];
-    QPointF pt = toPointF( pxl );
-    m_tool.mouseClicked( pt, Qt::LeftButton, 0 );
-    m_tool.mouseReleased( pt, Qt::LeftButton, 0 );
     size_t best_length = 0;
     for( auto method : m_tool.m_methods ) {
-      Path gt_path;
+      gt_map.Set( 0 );
       for( size_t pxl_idx2 = pxl_idx; pxl_idx2 < m_contour.size( ); ++pxl_idx2 ) {
         int pxl2 = m_contour[ pxl_idx2 ];
-        auto loc = std::lower_bound( gt_path.begin( ), gt_path.end( ), pxl2 );
-        gt_path.insert( loc, pxl2 );
+        draw( gt_map, pxl2 );
 
         Path path = method->updatePath( pxl2 );
-        plotPath( path, method->color );
-
-        std::sort( path.begin( ), path.end( ) );
-        Path diff( path.size( ) + gt_path.size( ) );
-        auto it = std::set_difference( path.begin( ), path.end( ), gt_path.begin( ), gt_path.end( ), diff.begin( ) );
-        diff.resize( it - diff.begin( ) );
-        if( diff.size( ) > 30 ) {
+        if( pxl_idx2 % 10 == 0 ) {
+          plotPath( path, method->color );
+        }
+        int diff = 0;
+        for( size_t pxl : path ) {
+          if( gt_map[ pxl ] == 0 ) {
+            diff++;
+          }
+        }
+        if( diff > 0 ) {
           break;
         }
-        else if( path.size( ) > best_length ) {
-          best_length = path.size( );
+        else if( pxl_idx2 > best_length ) {
+          best_length = pxl_idx2;
           m_tool.m_currentMethod = method->type( );
         }
       }
     }
-    pxl_idx += best_length;
-    emit m_tool.guiImage->imageUpdated( );
-    qApp->processEvents( );
-    thread( )->msleep( 10 );
+    pxl_idx = best_length;
+    if( pxl_idx < m_contour.size( ) - 1 ) {
+      QPointF pt2 = toPointF( m_contour[ pxl_idx ] );
+      m_tool.addPoint( pt2 );
+      m_tool.runLiveWire( );
+    }
   }
-  QPointF pt = toPointF( m_contour[ 0 ] );
-  m_tool.mouseClicked( pt, Qt::LeftButton, 0 );
-  m_tool.mouseReleased( pt, Qt::LeftButton, 0 );
+  m_tool.finishSegmentation( );
+  emit m_tool.guiImage->imageUpdated( );
+  qApp->processEvents( );
 }

@@ -10,7 +10,7 @@ public:
   LazyWalkMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg, const Bial::Image< int > &grad );
 
   int type( ) const;
-  void run( const Bial::Vector< bool > &seeds );
+  void run(const Bial::Vector< bool > &seeds, const Path &currentPath );
 };
 
 

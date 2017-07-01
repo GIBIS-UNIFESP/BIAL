@@ -160,6 +160,7 @@ void LiveWireTool::clear( ) {
   m_svm->clear( );
   m_drawing = false;
   m_finished = false;
+  m_currentPath.clear( );
   emit guiImage->imageUpdated( );
 }
 
@@ -186,11 +187,15 @@ void LiveWireTool::addPoint( QPointF pt ) {
   m_pointIdxs.append( toPxIndex( point ) );
   if( m_points.size( ) > 1 ) {
     for( auto method : m_methods ) {
-      auto path = method->updatePath( toPxIndex( point ) );
+      Path path = method->updatePath( toPxIndex( point ) );
       method->m_paths.push_back( path );
       qDebug( ) << method->type( ) << " " << method->m_paths.size( );
+      if( method->type( ) == m_currentMethod ) {
+        m_currentPath.insert( m_currentPath.end( ), path.begin( ), path.end( ) );
+      }
     }
     m_selectedMethods.append( m_currentMethod );
+
     m_cache.fill( QColor( 0, 0, 0, 0 ) );
     for( int point = 0; point < m_selectedMethods.size( ); ++point ) {
       int m = m_selectedMethods[ point ];
@@ -199,21 +204,21 @@ void LiveWireTool::addPoint( QPointF pt ) {
         m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 0, 255, 255 ) );
       }
     }
-    int num_samples = m_selectedMethods.size( );
-    float trainingData[ num_samples ][ NUM_FTR ];
-    int labels[ num_samples ];
-    for( int sample = 0; sample < num_samples; ++sample ) {
-      for( auto method : m_methods ) {
-        auto features = pathDescription( method->m_paths[ sample ], method.get( ) );
-        for( int ftr = 0; ftr < ( int ) features.size( ); ++ftr ) {
-          trainingData[ sample ][ ftr ] = features[ ftr ];
-          labels[ sample ] = ( method->type( ) == m_selectedMethods[ sample ] ) ? 1 : -1;
-        }
-      }
-    }
-    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, trainingData );
-    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, labels );
-    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
+//    int num_samples = m_selectedMethods.size( );
+//    float trainingData[ num_samples ][ NUM_FTR ];
+//    int labels[ num_samples ];
+//    for( int sample = 0; sample < num_samples; ++sample ) {
+//      for( auto method : m_methods ) {
+//        auto features = pathDescription( method->m_paths[ sample ], method.get( ) );
+//        for( int ftr = 0; ftr < ( int ) features.size( ); ++ftr ) {
+//          trainingData[ sample ][ ftr ] = features[ ftr ];
+//          labels[ sample ] = ( method->type( ) == m_selectedMethods[ sample ] ) ? 1 : -1;
+//        }
+//      }
+//    }
+//    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, trainingData );
+//    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, labels );
+//    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
   }
   emit guiImage->imageUpdated( );
 }
@@ -400,7 +405,7 @@ void LiveWireTool::runLiveWire( ) {
 
 #pragma omp parallel for default(none) firstprivate(m_seeds) shared(m_methods)
     for( int m = 0; m < m_methods.size( ); ++m ) {
-      m_methods[ m ]->run( m_seeds );
+      m_methods[ m ]->run( m_seeds, m_currentPath );
     }
     needUpdate[ 0 ] = true;
 

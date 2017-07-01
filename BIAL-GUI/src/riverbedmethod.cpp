@@ -40,14 +40,18 @@ int RiverBedMethod::type( ) const {
   return( RiverBedMethod::Type );
 }
 
-void RiverBedMethod::run( const Bial::Vector< bool > &seeds ) {
+void RiverBedMethod::run( const Bial::Vector< bool > &seeds, const Path &currentPath ) {
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
   COMMENT( "Running RiverBed.", 0 );
   m_cost = m_grad;
+  int max_grad = m_cost.Maximum( );
+  for( size_t pxl : currentPath ) {
+    m_cost[ pxl ] = max_grad;
+  }
   m_pred.Set( 0 );
-  size_t size = m_cost.size( ); Bial::Image< int > handicap( m_cost );
+  size_t size = m_cost.size( );
   Bial::LocalMaxPathFunction< Bial::Image, int > pf( m_cost, nullptr, &m_pred, false );
   COMMENT( "Computing IFT.", 0 );
   COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "

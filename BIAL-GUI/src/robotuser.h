@@ -11,7 +11,7 @@ class RobotUser : public QObject {
   Q_OBJECT
   LiveWireTool & m_tool;
   Bial::Image< int > m_groundTruth;
-  Bial::Vector< size_t > m_contour;
+  Path m_contour;
   void plotPath( const Path &path, QColor clr );
 public:
   RobotUser( LiveWireTool &tool );

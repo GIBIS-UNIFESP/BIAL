@@ -41,7 +41,7 @@ int LazyWalkMethod::type( ) const {
   return( LazyWalkMethod::Type );
 }
 
-void LazyWalkMethod::run( const Bial::Vector< bool > &seeds ) {
+void LazyWalkMethod::run( const Bial::Vector< bool > &seeds, const Path &currentPath ) {
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -66,6 +66,9 @@ void LazyWalkMethod::run( const Bial::Vector< bool > &seeds ) {
     else {
       m_cost( elm ) = std::numeric_limits< int >::max( );
     }
+  }
+  for( size_t pxl : currentPath ) {
+    m_cost[ pxl ] = std::numeric_limits< int >::max( );
   }
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
   ift.Run( );
