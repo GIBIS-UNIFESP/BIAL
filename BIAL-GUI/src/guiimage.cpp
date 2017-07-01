@@ -16,7 +16,7 @@
 #include <QtMath>
 GuiImage::GuiImage( QString fname, QObject *parent ) try : QObject( parent ),
   image( GDCM::OpenGImage( fname.toStdString( ) ) ), m_fileName( fname ), m_contrast( 0 ), m_brightness( 0 ) {
-  qDebug( ) << "guiimage.";
+  qDebug( ) << "Loading file:" << fname;
 
   COMMENT( "GuiImage 0.", 2 );
   transform.resize( 4 );
@@ -606,7 +606,9 @@ size_t GuiImage::currentToolPos( ) const {
 
 void GuiImage::setCurrentToolPos( const size_t &currentToolPos ) {
   if( currentToolPos < static_cast< size_t >( tools.size( ) ) ) {
+    currentTool( )->leave( );
     m_currentToolPos = currentToolPos;
+    currentTool( )->enter( );
   }
 }
 

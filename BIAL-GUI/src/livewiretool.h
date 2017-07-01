@@ -3,15 +3,17 @@
 
 #include "Common.hpp"
 #include "lwmethod.h"
+#include "robotuser.h"
 #include "tool.h"
 #include <QGraphicsItem>
-
 #include <opencv2/ml.hpp>
 
 #define NUM_FTR 10
 #define MAX_PTS 1000
 
+
 class LiveWireTool : public Tool {
+  friend class RobotUser;
 
 private:
   Bial::Image< int > m_grayImg;
@@ -29,10 +31,7 @@ private:
 
   int m_currentMethod;
 
-  bool m_gradVisible;
-  bool m_costVisible;
   QTime timer;
-  int circle_radius;
   std::array< QPixmap, 4 > m_pixmaps;
   std::array< bool, 4 > needUpdate;
   Bial::FastTransform m_transf;
@@ -58,18 +57,14 @@ public:
   /* Tool interface */
 public:
   int type( );
+  void clear( );
+  void roboto( );
   void mouseReleased( QPointF pt, Qt::MouseButtons buttons, size_t axis );
   void mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t axis );
   void mouseDragged( QPointF pt, Qt::MouseButtons buttons, size_t axis );
   void mouseMoved( QPointF pt, size_t axis );
   void sliceChanged( size_t axis, size_t slice );
   QPixmap getLabel( size_t axis );
-
-  void setGradVisibility( bool vis );
-  void setCostVisibility( bool vis );
-
-  bool getGradVisible( ) const;
-  bool getCostVisible( ) const;
 
   void addPoint( QPointF pt );
 
@@ -79,6 +74,11 @@ public:
 
 private slots:
   void runLiveWire( );
+
+  // Tool interface
+public:
+  void enter( );
+  void leave( );
 };
 
 #endif /* LIVEWIRE_H */

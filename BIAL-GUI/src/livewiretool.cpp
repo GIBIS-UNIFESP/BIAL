@@ -73,25 +73,6 @@ Bial::Array< double, NUM_FTR > LiveWireTool::pathDescription( const Path &path, 
   return( features );
 }
 
-
-void LiveWireTool::setGradVisibility( bool vis ) {
-  m_gradVisible = vis;
-  emit guiImage->imageUpdated( );
-}
-
-void LiveWireTool::setCostVisibility( bool vis ) {
-  m_costVisible = vis;
-  emit guiImage->imageUpdated( );
-}
-
-bool LiveWireTool::getGradVisible( ) const {
-  return( m_gradVisible );
-}
-
-bool LiveWireTool::getCostVisible( ) const {
-  return( m_costVisible );
-}
-
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   Tool( guiImage, viewer ), m_seeds( guiImage->getSize( ) ),
   m_cache( guiImage->width( 0 ), guiImage->heigth( 0 ), QImage::Format_ARGB32 ),
@@ -130,16 +111,14 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   m_currentMethod = LiveWireMethod::Type;
 
   setObjectName( "LiveWireTool" );
-  m_costVisible = true;
-  m_gradVisible = false;
+
   setHasLabel( true );
 
   m_svm->setType( cv::ml::SVM::C_SVC );
   m_svm->setKernel( cv::ml::SVM::LINEAR );
   m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
 
-  m_cache.fill( QColor( 0, 0, 0, 0 ) );
-  m_res.fill( QColor( 0, 0, 0, 0 ) );
+  clear( );
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
 catch( std::bad_alloc &e ) {
@@ -160,14 +139,36 @@ catch( const std::logic_error &e ) {
 }
 
 LiveWireTool::~LiveWireTool( ) {
-  for( auto pt : m_points ) {
-    m_scene->removeItem( pt );
-    delete pt;
-  }
+  clear( );
 }
 
 int LiveWireTool::type( ) {
   return( LiveWireTool::Type );
+}
+
+void LiveWireTool::clear( ) {
+  for( auto pt : m_points ) {
+    m_scene->removeItem( pt );
+  }
+  qDeleteAll( m_points );
+  m_points.clear( );
+  m_pointIdxs.clear( );
+  m_cache.fill( QColor( 0, 0, 0, 0 ) );
+  m_res.fill( QColor( 0, 0, 0, 0 ) );
+  m_seeds.Set( false );
+  m_selectedMethods.clear( );
+  m_svm->clear( );
+  m_drawing = false;
+  m_finished = false;
+  emit guiImage->imageUpdated( );
+}
+
+void LiveWireTool::roboto( ) {
+  clear( );
+  qDebug( ) << "Hello Mr Roboto!";
+  RobotUser mrRoboto( *this );
+  qDebug( ) << "Run, roboto, run!";
+  mrRoboto.run( );
 }
 
 void LiveWireTool::addPoint( QPointF pt ) {
@@ -236,6 +237,7 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
     return;
   }
   if( buttons & Qt::LeftButton ) {
+    qDebug( ) << "Left click, method = " << m_currentMethod;
     if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
       addPoint( pt );
       m_drawing = true;
@@ -326,17 +328,18 @@ void LiveWireTool::updatePath( QPointF pt ) {
 //    }
 //  }
   for( int m = 0; m < m_methods.size( ); ++m ) {
-    QColor clr = m_methods[ m ]->color;
-    if( m == m_currentMethod ) {
-      clr = Qt::red;
-    }
-    else {
+    if( m != m_currentMethod ) {
+      QColor clr = m_methods[ m ]->color;
       clr.setAlpha( 100 );
+      for( size_t pxl : paths[ m ] ) {
+        auto coords = m_grayImg.Coordinates( pxl );
+        m_res.setPixelColor( coords[ 0 ], coords[ 1 ], clr );
+      }
     }
-    for( size_t pxl : paths[ m ] ) {
-      auto coords = m_grayImg.Coordinates( pxl );
-      m_res.setPixelColor( coords[ 0 ], coords[ 1 ], clr );
-    }
+  }
+  for( size_t pxl : paths[ m_currentMethod ] ) {
+    auto coords = m_grayImg.Coordinates( pxl );
+    m_res.setPixelColor( coords[ 0 ], coords[ 1 ], Qt::red );
   }
 }
 
@@ -402,5 +405,17 @@ void LiveWireTool::runLiveWire( ) {
     needUpdate[ 0 ] = true;
 
     emit guiImage->imageUpdated( );
+  }
+}
+
+void LiveWireTool::enter( ) {
+  for( auto pt : m_points ) {
+    m_scene->addItem( pt );
+  }
+}
+
+void LiveWireTool::leave( ) {
+  for( auto pt : m_points ) {
+    m_scene->removeItem( pt );
   }
 }

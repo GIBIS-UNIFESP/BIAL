@@ -18,9 +18,10 @@ public:
   void setTool( Tool *sTool );
 
 private slots:
-  void on_rbCostMap_clicked( );
 
-  void on_rbPredMap_clicked( );
+  void on_pushButtonClear_clicked( );
+
+  void on_pushButtonRobotUser_clicked( );
 
 private:
   Ui::LiveWireWidget *ui;

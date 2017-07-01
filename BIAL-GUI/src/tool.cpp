@@ -28,6 +28,14 @@ catch( const std::logic_error &e ) {
   throw( std::logic_error( msg ) );
 }
 
+void Tool::leave( ) {
+
+}
+
+void Tool::enter( ) {
+
+}
+
 void Tool::setVisible( bool value ) {
   m_visible = value;
 }

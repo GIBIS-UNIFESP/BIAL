@@ -133,14 +133,20 @@ void Controller::update( ) {
 }
 
 void Controller::setCurrentImagePos( int position ) {
-  m_currentImagePos = position;
   if( currentImage( ) != nullptr ) {
     disconnect( currentImage( ), &GuiImage::imageUpdated, this, &Controller::update );
+    if( currentImage( )->currentTool( ) ) {
+      currentImage( )->currentTool( )->leave( );
+    }
   }
+  m_currentImagePos = position;
   if( currentImage( ) != nullptr ) {
     emit currentImageChanged( );
     update( );
     connect( currentImage( ), &GuiImage::imageUpdated, this, &Controller::update );
+    if( currentImage( )->currentTool( ) ) {
+      currentImage( )->currentTool( )->enter( );
+    }
   }
 }
 
