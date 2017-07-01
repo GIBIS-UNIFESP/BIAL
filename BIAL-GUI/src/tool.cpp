@@ -8,6 +8,11 @@ void Tool::setHasLabel( bool sHasLabel ) {
   m_hasLabel = sHasLabel;
 }
 
+GuiImage* Tool::getGuiImage( ) const {
+  return( guiImage );
+}
+
+
 Tool::Tool( GuiImage *guiImage, ImageViewer *viewer ) try : QObject( guiImage ), guiImage( guiImage ), viewer( viewer ),
   m_visible( false ) {
 }

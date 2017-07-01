@@ -36,8 +36,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>345</width>
-        <height>480</height>
+        <width>331</width>
+        <height>488</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -365,6 +365,13 @@
            </property>
           </widget>
          </widget>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QPushButton" name="pushButtonSave">
+         <property name="text">
+          <string>Save Segmentation</string>
+         </property>
         </widget>
        </item>
       </layout>

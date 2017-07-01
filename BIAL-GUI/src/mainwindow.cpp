@@ -62,7 +62,6 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
 //  livewireDock->hide( );
 //  livewireDock->setFloating( true );
 
-
   /*
    *  ui->dockWidgetFunctional->hide( );
    *  ui->widgetDragDrop->hide( );

@@ -32,6 +32,8 @@ public:
   bool visible( ) const;
   bool hasLabel( ) const;
 
+  GuiImage* getGuiImage( ) const;
+
 protected:
   void setHasLabel( bool sHasLabel );
 };
