@@ -17,6 +17,7 @@ public:
   RobotUser( LiveWireTool &tool );
   void run( );
   QPointF toPointF( int pxl );
+  void train( );
 };
 
 #endif // ROBOTUSER_H

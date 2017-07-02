@@ -6,11 +6,10 @@
 #include "robotuser.h"
 #include "tool.h"
 #include <QGraphicsItem>
-#include <opencv2/ml.hpp>
 
 #define NUM_FTR 10
 #define MAX_PTS 1000
-
+typedef Bial::Array< double, NUM_FTR > FeatureData;
 
 class LiveWireTool : public Tool {
   friend class RobotUser;
@@ -27,8 +26,7 @@ private:
   Path m_currentPath;
   QVector< size_t > m_pointIdxs;
   QVector< std::shared_ptr< LWMethod > > m_methods;
-
-  cv::Ptr< cv::ml::SVM > m_svm;
+  QPointF m_lastPoint;
 
   int m_currentMethod;
 
@@ -45,7 +43,6 @@ private:
 
   Bial::Point3D toPoint3D( const QPointF &qpoint );
   size_t toPxIndex( const QPointF &qpoint );
-  Bial::Array< double, NUM_FTR > pathDescription( const Path &path, const LWMethod *method );
   const Bial::Vector< Bial::Point3D > toPoint3DVector( const Path &path );
   Bial::Vector< double > calcHistogram( const Path &path, const Bial::Image< int > &img, size_t bins );
 public:
@@ -54,7 +51,8 @@ public:
   LiveWireTool( GuiImage *guiImage, ImageViewer *viewer );
   ~LiveWireTool( );
   static const int supportedFormats = ( ( int ) Modality::BW2D | ( int ) Modality::RGB2D );
-
+  Bial::Image< int > getResult( );
+  FeatureData pathDescription( const Path &path, const LWMethod *method );
   /* Tool interface */
 public:
   int type( );
@@ -80,6 +78,8 @@ private slots:
 public:
   void enter( );
   void leave( );
+  const QVector< int > &getSelectedMethods( ) const;
+  QVector< std::shared_ptr< LWMethod > > getMethods( ) const;
 };
 
 #endif /* LIVEWIRE_H */

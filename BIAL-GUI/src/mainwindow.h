@@ -104,7 +104,7 @@ private slots:
 
 private:
   Ui::MainWindow *ui;
-  Controller *controller;
+  Controller *m_controller;
   QString defaultFolder;
   QAction *recentFileActs[ Controller::MaxRecentFiles ];
   bool checkExtension( const QFileInfo &fileInfo );

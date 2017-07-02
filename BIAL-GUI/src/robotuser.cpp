@@ -4,7 +4,14 @@
 #include "livewiretool.h"
 #include "robotuser.h"
 
+#include "GradientMorphological.hpp"
+#include "MorphologyErosion.hpp"
+#include "SegmentationConnectedComponents.hpp"
 #include <AdjacencyIterator.hpp>
+#include <ConnPathFunction.hpp>
+#include <FastIncreasingFifoBucketQueue.hpp>
+#include <ImageIFT.hpp>
+#include <LocalMaxPathFunction.hpp>
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -53,8 +60,13 @@ Path contour_following( const Bial::Image< int > &img ) {
           }
         }
         while( next_pxl != start_pxl ) {
-          contour_map[ next_pxl ] = label;
+          auto coord = contour_map.Coordinates( next_pxl );
+          qDebug( ) << next_pxl << coord[ 0 ] << coord[ 1 ];
+          contour_map[ next_pxl ] = 255;
           contour.push_back( next_pxl );
+//          if( next_pxl == 24981 ) {
+//            Bial::Write( contour_map, "/tmp/map.pgm" );
+//          }
           find_next( img, disp, next_pxl, dcn, next_pxl, dcn );
         }
         ++label;
@@ -67,6 +79,31 @@ Path contour_following( const Bial::Image< int > &img ) {
   return( contour );
 }
 
+//Path contour_following( const Bial::Image< int > &img ) {
+//  Bial::Adjacency adj( Bial::AdjacencyType::Circular( 1.25 ) );
+//  Bial::Image< int > grad = img - Bial::Morphology::Erode( img );
+//  Bial::Image< int > pred( grad.Dim( ) );
+//  Bial::LocalMaxPathFunction< Bial::Image, int > connection_function( grad, nullptr, &pred, false );
+//  size_t size = grad.size( );
+//  size_t st_pxl = 0;
+//  Bial::FastIncreasingFifoBucketQueue queue( size, 0, 2 );
+//  for( size_t pxl = 0; pxl < size; ++pxl ) {
+//    if( grad[ pxl ] > 0 ) {
+//      queue.Insert( pxl, grad[ pxl ] );
+//      st_pxl = pxl;
+//    }
+//  }
+//  Bial::ImageIFT< int > ift( grad, adj, &connection_function, &queue );
+////  ift.EnableStopElement( pxl );
+//  ift.Run( );
+//  int pxl = pred[ st_pxl ];
+//  Path path = { st_pxl };
+//  while( pxl != st_pxl && pred[ pxl ] > 0 ) {
+//    path.push_back( pxl );
+//    pxl = pred[ pxl ];
+//  }
+//  return( path );
+//}
 
 RobotUser::RobotUser( LiveWireTool &tool ) :
   m_tool( tool ) {
@@ -81,8 +118,6 @@ RobotUser::RobotUser( LiveWireTool &tool ) :
         throw std::runtime_error( BIAL_ERROR( "Images should have the same dimensions!" ) );
       }
       m_contour = contour_following( m_groundTruth );
-
-
     }
     else {
       throw( std::runtime_error( BIAL_ERROR( "Could not find the ground truth file!" ) ) );
@@ -149,6 +184,56 @@ void RobotUser::run( ) {
           break;
         }
         else if( pxl_idx2 > best_length ) {
+          best_length = pxl_idx2;
+          m_tool.m_currentMethod = method->type( );
+        }
+      }
+    }
+    pxl_idx = best_length;
+    if( pxl_idx < m_contour.size( ) - 1 ) {
+      QPointF pt2 = toPointF( m_contour[ pxl_idx ] );
+      m_tool.addPoint( pt2 );
+      m_tool.runLiveWire( );
+    }
+  }
+  m_tool.finishSegmentation( );
+  emit m_tool.guiImage->imageUpdated( );
+  qApp->processEvents( );
+}
+
+void RobotUser::train( ) {
+//  size_t end = m_contour.size( ) - 1;
+  qDebug( ) << "CONTOUR : " << m_contour.size( );
+  QPointF pt = toPointF( m_contour[ 0 ] );
+  m_tool.addPoint( pt );
+  m_tool.runLiveWire( );
+  Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
+  for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
+    size_t best_length = 0;
+
+#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
+    for( int m = 0; m < m_tool.m_methods.size( ); ++m ) {
+      auto method = m_tool.m_methods[ m ];
+      gt_map.Set( 0 );
+      for( size_t pxl_idx2 = pxl_idx; pxl_idx2 < m_contour.size( ); ++pxl_idx2 ) {
+        int pxl2 = m_contour[ pxl_idx2 ];
+        draw( gt_map, pxl2 );
+
+        Path path = method->updatePath( pxl2 );
+//        if( pxl_idx2 % 10 == 0 ) {
+//          plotPath( path, method->color );
+//        }
+        int diff = 0;
+        for( size_t pxl : path ) {
+          if( gt_map[ pxl ] == 0 ) {
+            diff++;
+          }
+        }
+        if( diff > 0 ) {
+          break;
+        }
+#pragma omp critical
+        if( pxl_idx2 > best_length ) {
           best_length = pxl_idx2;
           m_tool.m_currentMethod = method->type( );
         }

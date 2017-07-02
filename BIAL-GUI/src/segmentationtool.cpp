@@ -20,6 +20,7 @@
 #include "SumPathFunction.hpp"
 #include "guiimage.h"
 #include "segmentationtool.h"
+#include <QApplication>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPointF>
@@ -173,6 +174,7 @@ void SegmentationTool::mouseMoved( QPointF pt, size_t axis ) {
     if( timer.elapsed( ) > 30 ) {
       emit guiImage->imageUpdated( );
       timer.start( );
+      qApp->processEvents( );
     }
   }
 }
@@ -247,6 +249,7 @@ void SegmentationTool::clearSeeds( ) {
   for( size_t i = 0; i < needUpdate.size( ); ++i ) {
     needUpdate[ i ] = true;
   }
+  maskVisible = false;
   emit guiImage->imageUpdated( );
 }
 

@@ -24,6 +24,7 @@
 #include "riverbedmethod.h"
 
 #include <Geometrics.hpp>
+#include <QApplication>
 #include <QDebug>
 #include <QMessageBox>
 #include <QPointF>
@@ -51,8 +52,8 @@ Bial::Vector< double > LiveWireTool::calcHistogram( const Path &path, const Bial
   return( hist );
 }
 
-Bial::Array< double, NUM_FTR > LiveWireTool::pathDescription( const Path &path, const LWMethod *method ) {
-  Bial::Array< double, NUM_FTR > features;
+FeatureData LiveWireTool::pathDescription( const Path &path, const LWMethod *method ) {
+  FeatureData features;
   features.Set( 0 );
   features[ method->type( ) ] = 1.0;
   if( path.empty( ) ) {
@@ -76,7 +77,7 @@ Bial::Array< double, NUM_FTR > LiveWireTool::pathDescription( const Path &path, 
 LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   Tool( guiImage, viewer ), m_seeds( guiImage->getSize( ) ),
   m_cache( guiImage->width( 0 ), guiImage->heigth( 0 ), QImage::Format_ARGB32 ),
-  m_svm( cv::ml::SVM::create( ) ), m_transf( guiImage->getTransform( 0 ) ) {
+  m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
       case Bial::MultiImageType::int_img: {
       m_grayImg = guiImage->getIntImage( );
@@ -114,10 +115,6 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
 
   setHasLabel( true );
 
-  m_svm->setType( cv::ml::SVM::C_SVC );
-  m_svm->setKernel( cv::ml::SVM::LINEAR );
-  m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
-
   clear( );
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
@@ -142,6 +139,14 @@ LiveWireTool::~LiveWireTool( ) {
   clear( );
 }
 
+Bial::Image< int > LiveWireTool::getResult( ) {
+  Bial::Image< int > result( m_grayImg.Dim( ) );
+  for( size_t pxl: m_currentPath ) {
+    result[ pxl ] = 255;
+  }
+  return( result );
+}
+
 int LiveWireTool::type( ) {
   return( LiveWireTool::Type );
 }
@@ -157,7 +162,6 @@ void LiveWireTool::clear( ) {
   m_res.fill( QColor( 0, 0, 0, 0 ) );
   m_seeds.Set( false );
   m_selectedMethods.clear( );
-  m_svm->clear( );
   m_drawing = false;
   m_finished = false;
   m_currentPath.clear( );
@@ -186,10 +190,12 @@ void LiveWireTool::addPoint( QPointF pt ) {
   m_points.append( point );
   m_pointIdxs.append( toPxIndex( point ) );
   if( m_points.size( ) > 1 ) {
-    for( auto method : m_methods ) {
+#pragma omp parallel for
+    for( int m = 0; m < m_methods.size( ); ++m ) {
+      auto method = m_methods[ m ];
       Path path = method->updatePath( toPxIndex( point ) );
       method->m_paths.push_back( path );
-      qDebug( ) << method->type( ) << " " << method->m_paths.size( );
+//      qDebug( ) << method->type( ) << " " << method->m_paths.size( );
       if( method->type( ) == m_currentMethod ) {
         m_currentPath.insert( m_currentPath.end( ), path.begin( ), path.end( ) );
       }
@@ -197,28 +203,10 @@ void LiveWireTool::addPoint( QPointF pt ) {
     m_selectedMethods.append( m_currentMethod );
 
     m_cache.fill( QColor( 0, 0, 0, 0 ) );
-    for( int point = 0; point < m_selectedMethods.size( ); ++point ) {
-      int m = m_selectedMethods[ point ];
-      for( size_t pxl : m_methods[ m ]->m_paths[ point ] ) {
-        auto coord = m_grayImg.Coordinates( pxl );
-        m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 0, 255, 255 ) );
-      }
+    for( size_t pxl: m_currentPath ) {
+      auto coord = m_grayImg.Coordinates( pxl );
+      m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 0, 255, 255 ) );
     }
-//    int num_samples = m_selectedMethods.size( );
-//    float trainingData[ num_samples ][ NUM_FTR ];
-//    int labels[ num_samples ];
-//    for( int sample = 0; sample < num_samples; ++sample ) {
-//      for( auto method : m_methods ) {
-//        auto features = pathDescription( method->m_paths[ sample ], method.get( ) );
-//        for( int ftr = 0; ftr < ( int ) features.size( ); ++ftr ) {
-//          trainingData[ sample ][ ftr ] = features[ ftr ];
-//          labels[ sample ] = ( method->type( ) == m_selectedMethods[ sample ] ) ? 1 : -1;
-//        }
-//      }
-//    }
-//    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, trainingData );
-//    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, labels );
-//    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
   }
   emit guiImage->imageUpdated( );
 }
@@ -244,7 +232,7 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
   if( buttons & Qt::LeftButton ) {
     qDebug( ) << "Left click, method = " << m_currentMethod;
     if( ( item == NULL ) || ( ( item->type( ) != QGraphicsEllipseItem::Type ) ) ) {
-      addPoint( pt );
+      addPoint( m_lastPoint );
       m_drawing = true;
     }
     else if( item == m_points.first( ) ) {
@@ -263,6 +251,14 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
   emit guiImage->imageUpdated( );
 }
 
+
+const QVector< int > &LiveWireTool::getSelectedMethods( ) const {
+  return( m_selectedMethods );
+}
+
+QVector< std::shared_ptr< LWMethod > > LiveWireTool::getMethods( ) const {
+  return( m_methods );
+}
 
 Bial::Point3D LiveWireTool::toPoint3D( QGraphicsEllipseItem *item ) {
   float px = item->rect( ).center( ).x( ) + item->pos( ).x( );
@@ -309,29 +305,8 @@ void LiveWireTool::updatePath( QPointF pt ) {
     paths.push_back( path );
     int m = method->type( );
     auto features = pathDescription( path, method.get( ) );
-//    if( features[ 5 ] < best_val ) {
-//      best_val = features[ 5 ];
-//      m_currentMethod = method->type( );
-//    }
-//    qDebug( ) << m << features[ 5 ];
     std::cout << m << " : " << features << std::endl;
   }
-//  if( m_points.size( ) > 1 ) {
-//    float testData[ m_methods.size( ) ][ NUM_FTR ];
-//    for( int m = 0; m < m_methods.size( ); ++m ) {
-//      auto method = m_methods[ m ];
-//      auto features = pathDescription( paths[ m ], method.get( ) );
-//      for( int ftr = 0; ftr < features.size( ); ++ftr ) {
-//        testData[ m ][ ftr ] = features[ ftr ];
-//      }
-//    }
-//    cv::Mat testDataMat( m_methods.size( ), NUM_FTR, cv::DataType< float >::type, testData );
-//    cv::Mat responsesMat( m_methods.size( ), 1, cv::DataType< int >::type );
-//    std::cout << "SVM PREDICT: " << m_svm->predict( testDataMat, responsesMat ) << std::endl;
-//    for( int m = 0; m < m_methods.size( ); ++m ) {
-//      std::cout << "LABEL [" << m << "] = " << responsesMat.at< int >( m ) << std::endl;
-//    }
-//  }
   for( int m = 0; m < m_methods.size( ); ++m ) {
     if( m != m_currentMethod ) {
       QColor clr = m_methods[ m ]->color;
@@ -353,8 +328,10 @@ void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
     if( m_drawing ) {
       updatePath( pt );
     }
+    m_lastPoint = pt;
     emit guiImage->imageUpdated( );
     timer.start( );
+    qApp->processEvents( );
   }
 }
 
