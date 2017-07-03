@@ -32,7 +32,7 @@
 #include <algorithm>
 LiveWireMethod::LiveWireMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
                                 const Bial::Image< int > &grad ) :
-  LWMethod( points, grayImg, grad, QColor( 0, 255, 0 ) ) {
+  ActiveContourMethod( points, grayImg, grad, QColor( 0, 255, 0 ) ) {
 
 }
 
@@ -40,7 +40,8 @@ int LiveWireMethod::type( ) const {
   return( LiveWireMethod::Type );
 }
 
-void LiveWireMethod::run( const Bial::Vector< bool > &seeds, const Path &currentPath ) {
+void LiveWireMethod::run( const Bial::Vector< size_t > &seeds, const Path &currentPath ) {
+  setLastPt( seeds.back( ) );
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -72,16 +73,14 @@ void LiveWireMethod::run( const Bial::Vector< bool > &seeds, const Path &current
            "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
   Bial::GrowingBucketQueue queue( size, delta, true, true );
-  for( size_t elm = 0; elm < size; ++elm ) {
-    if( seeds[ elm ] ) {
-      queue.Insert( elm, m_cost[ elm ] );
-    }
-    else {
-      m_cost( elm ) = std::numeric_limits< int >::max( );
-    }
+  Bial::Vector< std::pair< size_t, int > > seed_costs;
+  for( size_t seed : seeds ) {
+    seed_costs.push_back( std::make_pair( seed, m_cost[ seed ] ) );
+    queue.Insert( seed, m_cost[ seed ] );
   }
-  for( size_t pxl : currentPath ) {
-    m_cost[ pxl ] = 0;
+  m_cost.Set( std::numeric_limits< int >::max( ) );
+  for( auto c : seed_costs ) {
+    m_cost[ c.first ] = c.second;
   }
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
   ift.Run( );
@@ -93,4 +92,8 @@ void LiveWireMethod::run( const Bial::Vector< bool > &seeds, const Path &current
     }
   }
   m_cost.SetRange( 0, 255 );
+}
+
+std::string LiveWireMethod::name( ) {
+  return( "LiveWire" );
 }

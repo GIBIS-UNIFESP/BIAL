@@ -18,9 +18,10 @@
 #include "Image.hpp"
 #include "IntensityGlobals.hpp"
 
+#include "activeContourTool.h"
 #include "lazywalkmethod.h"
+#include "linepathmethod.h"
 #include "livewiremethod.h"
-#include "livewiretool.h"
 #include "riverbedmethod.h"
 
 #include <Geometrics.hpp>
@@ -31,7 +32,7 @@
 #include <Vector.hpp>
 #include <algorithm>
 
-const Bial::Vector< Bial::Point3D > LiveWireTool::toPoint3DVector( const Path &path ) {
+const Bial::Vector< Bial::Point3D > ActiveContourTool::toPoint3DVector( const Path &path ) {
   Bial::Vector< Bial::Point3D > points;
   for( size_t pxl : path ) {
     auto coords = m_grayImg.Coordinates( pxl );
@@ -40,7 +41,8 @@ const Bial::Vector< Bial::Point3D > LiveWireTool::toPoint3DVector( const Path &p
   return( points );
 }
 
-Bial::Vector< double > LiveWireTool::calcHistogram( const Path &path, const Bial::Image< int > &img, size_t bins ) {
+Bial::Vector< double > ActiveContourTool::calcHistogram( const Path &path, const Bial::Image< int > &img,
+                                                         size_t bins ) {
   double max = img.Maximum( );
   Bial::Vector< double > hist( bins );
   for( size_t pxl: path ) {
@@ -52,7 +54,7 @@ Bial::Vector< double > LiveWireTool::calcHistogram( const Path &path, const Bial
   return( hist );
 }
 
-FeatureData LiveWireTool::pathDescription( const Path &path, const LWMethod *method ) {
+FeatureData ActiveContourTool::pathDescription( const Path &path, const ActiveContourMethod *method ) {
   FeatureData features;
   features.Set( 0 );
   features[ method->type( ) ] = 1.0;
@@ -74,8 +76,8 @@ FeatureData LiveWireTool::pathDescription( const Path &path, const LWMethod *met
   return( features );
 }
 
-LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
-  Tool( guiImage, viewer ), m_seeds( guiImage->getSize( ) ),
+ActiveContourTool::ActiveContourTool( GuiImage *guiImage, ImageViewer *viewer ) try :
+  Tool( guiImage, viewer ),
   m_cache( guiImage->width( 0 ), guiImage->heigth( 0 ), QImage::Format_ARGB32 ),
   m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
@@ -107,7 +109,8 @@ LiveWireTool::LiveWireTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   m_methods = {
     std::make_shared< LiveWireMethod >( m_pointIdxs, m_grayImg, m_grad ),
     std::make_shared< RiverBedMethod >( m_pointIdxs, m_grayImg, m_grad ),
-    std::make_shared< LazyWalkMethod >( m_pointIdxs, m_grayImg, m_grad )
+    std::make_shared< LazyWalkMethod >( m_pointIdxs, m_grayImg, m_grad ),
+    std::make_shared< LinePathMethod >( m_pointIdxs, m_grayImg, m_grad )
   };
   m_currentMethod = LiveWireMethod::Type;
 
@@ -135,11 +138,11 @@ catch( const std::logic_error &e ) {
   throw( std::logic_error( msg ) );
 }
 
-LiveWireTool::~LiveWireTool( ) {
+ActiveContourTool::~ActiveContourTool( ) {
   clear( );
 }
 
-Bial::Image< int > LiveWireTool::getResult( ) {
+Bial::Image< int > ActiveContourTool::getResult( ) {
   Bial::Image< int > result( m_grayImg.Dim( ) );
   for( size_t pxl: m_currentPath ) {
     result[ pxl ] = 255;
@@ -147,11 +150,12 @@ Bial::Image< int > LiveWireTool::getResult( ) {
   return( result );
 }
 
-int LiveWireTool::type( ) {
-  return( LiveWireTool::Type );
+int ActiveContourTool::type( ) {
+  return( ActiveContourTool::Type );
 }
 
-void LiveWireTool::clear( ) {
+void ActiveContourTool::clear( ) {
+  timer.start( );
   for( auto pt : m_points ) {
     m_scene->removeItem( pt );
   }
@@ -160,7 +164,6 @@ void LiveWireTool::clear( ) {
   m_pointIdxs.clear( );
   m_cache.fill( QColor( 0, 0, 0, 0 ) );
   m_res.fill( QColor( 0, 0, 0, 0 ) );
-  m_seeds.Set( false );
   m_selectedMethods.clear( );
   m_drawing = false;
   m_finished = false;
@@ -168,22 +171,18 @@ void LiveWireTool::clear( ) {
   emit guiImage->imageUpdated( );
 }
 
-void LiveWireTool::roboto( ) {
-  clear( );
-  qDebug( ) << "Hello Mr Roboto!";
-  RobotUser mrRoboto( *this );
-  qDebug( ) << "Run, roboto, run!";
-  mrRoboto.run( );
-}
-
-void LiveWireTool::addPoint( QPointF pt ) {
-  qDebug( ) << "ADD point: " << pt;
+void ActiveContourTool::addPoint( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
   if( ( x < 0 ) || ( y < 0 ) || ( x >= guiImage->width( 0 ) ) ||
       ( y >= guiImage->heigth( 0 ) ) ) {
+    qDebug( ) << "Point is outside of the image:" << pt;
     return;
   }
-  auto point = m_scene->addEllipse( QRectF( x - 3, y - 3, 6, 6 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
+  QGraphicsItem *item = m_scene->itemAt( pt, QTransform( ) );
+  if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
+    qDebug( ) << "There is another item in this position " << pt;
+  }
+  auto point = m_scene->addEllipse( QRectF( x - 2, y - 2, 4, 4 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
 //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
 /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
@@ -194,13 +193,12 @@ void LiveWireTool::addPoint( QPointF pt ) {
     for( int m = 0; m < m_methods.size( ); ++m ) {
       auto method = m_methods[ m ];
       Path path = method->updatePath( toPxIndex( point ) );
-      method->m_paths.push_back( path );
-//      qDebug( ) << method->type( ) << " " << method->m_paths.size( );
       if( method->type( ) == m_currentMethod ) {
         m_currentPath.insert( m_currentPath.end( ), path.begin( ), path.end( ) );
       }
+      method->m_paths.push_back( path );
     }
-    m_selectedMethods.append( m_currentMethod );
+    m_selectedMethods.push_back( m_currentMethod );
 
     m_cache.fill( QColor( 0, 0, 0, 0 ) );
     for( size_t pxl: m_currentPath ) {
@@ -208,17 +206,18 @@ void LiveWireTool::addPoint( QPointF pt ) {
       m_cache.setPixelColor( coord[ 0 ], coord[ 1 ], QColor( 255, 0, 255, 255 ) );
     }
   }
+  m_res = m_cache;
   emit guiImage->imageUpdated( );
 }
 
-void LiveWireTool::finishSegmentation( ) {
+void ActiveContourTool::finishSegmentation( ) {
   addPoint( m_points.first( )->scenePos( ) + m_points.first( )->rect( ).center( ) );
-  m_res = m_cache;
   m_drawing = false;
   m_finished = true;
+  m_res = m_cache;
 }
 
-void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
+void ActiveContourTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
   float x = pt.x( ), y = pt.y( );
   if( ( x < 0 ) || ( y < 0 ) || ( x >= guiImage->width( 0 ) ) ||
       ( y >= guiImage->heigth( 0 ) ) ) {
@@ -252,22 +251,50 @@ void LiveWireTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t ax
 }
 
 
-const QVector< int > &LiveWireTool::getSelectedMethods( ) const {
+const Bial::Vector< int > &ActiveContourTool::getSelectedMethods( ) const {
   return( m_selectedMethods );
 }
 
-QVector< std::shared_ptr< LWMethod > > LiveWireTool::getMethods( ) const {
+QVector< std::shared_ptr< ActiveContourMethod > > ActiveContourTool::getMethods( ) const {
   return( m_methods );
 }
 
-Bial::Point3D LiveWireTool::toPoint3D( QGraphicsEllipseItem *item ) {
+Path ActiveContourTool::getCurrentPath( ) const {
+  return( m_currentPath );
+}
+
+int ActiveContourTool::getCurrentMethod( ) const {
+  return( m_currentMethod );
+}
+
+void ActiveContourTool::setCurrentMethod( int currentMethod ) {
+  m_currentMethod = currentMethod;
+}
+
+QImage ActiveContourTool::getRes( ) const {
+  return( m_res );
+}
+
+void ActiveContourTool::setRes( const QImage &res ) {
+  m_res = res;
+}
+
+QImage ActiveContourTool::getCache( ) const {
+  return( m_cache );
+}
+
+void ActiveContourTool::setCache( const QImage &cache ) {
+  m_cache = cache;
+}
+
+Bial::Point3D ActiveContourTool::toPoint3D( QGraphicsEllipseItem *item ) {
   float px = item->rect( ).center( ).x( ) + item->pos( ).x( );
   float py = item->rect( ).center( ).y( ) + item->pos( ).y( );
 /*  return( transf( px, py, ( double ) guiImage->currentSlice( axis ) ) ); */
   return( m_transf( px, py, 0 ) );
 }
 
-size_t LiveWireTool::toPxIndex( QGraphicsEllipseItem *item ) {
+size_t ActiveContourTool::toPxIndex( QGraphicsEllipseItem *item ) {
   const Bial::Point3D &point = toPoint3D( item );
   if( m_grayImg.ValidCoordinate( point.x, point.y ) ) {
     return( m_grayImg.Position( point.x, point.y ) );
@@ -277,11 +304,11 @@ size_t LiveWireTool::toPxIndex( QGraphicsEllipseItem *item ) {
   }
 }
 
-Bial::Point3D LiveWireTool::toPoint3D( const QPointF &qpoint ) {
+Bial::Point3D ActiveContourTool::toPoint3D( const QPointF &qpoint ) {
   return( m_transf( qpoint.x( ), qpoint.y( ), 0 ) );
 }
 
-size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
+size_t ActiveContourTool::toPxIndex( const QPointF &qpoint ) {
   const Bial::Point3D &point = toPoint3D( qpoint );
   if( m_grayImg.ValidCoordinate( point.x, point.y ) ) {
     return( m_grayImg.Position( point.x, point.y ) );
@@ -291,7 +318,7 @@ size_t LiveWireTool::toPxIndex( const QPointF &qpoint ) {
   }
 }
 
-void LiveWireTool::updatePath( QPointF pt ) {
+void ActiveContourTool::updatePath( QPointF pt ) {
   float x = pt.x( ), y = pt.y( );
   if( ( x < 0 ) || ( y < 0 ) || ( x >= guiImage->width( 0 ) ) ||
       ( y >= guiImage->heigth( 0 ) ) ) {
@@ -323,7 +350,7 @@ void LiveWireTool::updatePath( QPointF pt ) {
   }
 }
 
-void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
+void ActiveContourTool::mouseMoved( QPointF pt, size_t axis ) {
   if( timer.elapsed( ) > 30 ) {
     if( m_drawing ) {
       updatePath( pt );
@@ -335,26 +362,26 @@ void LiveWireTool::mouseMoved( QPointF pt, size_t axis ) {
   }
 }
 
-void LiveWireTool::mouseReleased( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
+void ActiveContourTool::mouseReleased( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
   emit guiImage->imageUpdated( );
   Q_UNUSED( buttons );
   Q_UNUSED( pt );
   runLiveWire( );
 }
 
-void LiveWireTool::mouseDragged( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
+void ActiveContourTool::mouseDragged( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
   Q_UNUSED( buttons );
   Q_UNUSED( axis );
   Q_UNUSED( pt );
   /* nothing happens */
 }
 
-void LiveWireTool::sliceChanged( size_t axis, size_t slice ) {
+void ActiveContourTool::sliceChanged( size_t axis, size_t slice ) {
   Q_UNUSED( slice );
   needUpdate[ axis ] = true;
 }
 
-QPixmap LiveWireTool::getLabel( size_t axis ) {
+QPixmap ActiveContourTool::getLabel( size_t axis ) {
   if( !needUpdate[ axis ] ) {
     return( m_pixmaps[ axis ] );
   }
@@ -372,31 +399,28 @@ QPixmap LiveWireTool::getLabel( size_t axis ) {
  * /////////////////////////////////////////////////////////////////
  */
 
-void LiveWireTool::runLiveWire( ) {
+void ActiveContourTool::runLiveWire( ) {
   if( m_points.size( ) > 0 ) {
-    m_seeds.Set( false );
-//    for( size_t pxl: m_pointIdxs ) {
-//      m_seeds[ pxl ] = true;
-//    }
-    m_seeds[ m_pointIdxs.last( ) ] = true;
+    const Bial::Vector< size_t > m_seeds = { m_pointIdxs.last( ) };
 
-#pragma omp parallel for default(none) firstprivate(m_seeds) shared(m_methods)
+#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
     for( int m = 0; m < m_methods.size( ); ++m ) {
       m_methods[ m ]->run( m_seeds, m_currentPath );
     }
     needUpdate[ 0 ] = true;
 
+
     emit guiImage->imageUpdated( );
   }
 }
 
-void LiveWireTool::enter( ) {
+void ActiveContourTool::enter( ) {
   for( auto pt : m_points ) {
     m_scene->addItem( pt );
   }
 }
 
-void LiveWireTool::leave( ) {
+void ActiveContourTool::leave( ) {
   for( auto pt : m_points ) {
     m_scene->removeItem( pt );
   }

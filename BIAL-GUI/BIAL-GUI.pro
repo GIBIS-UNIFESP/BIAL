@@ -122,14 +122,15 @@ HEADERS += \
     src/viewerinterface.h \
     thirdParty/qcustomplot.h \
     src/labelswidget.h \
-    src/livewiretool.h \
-    src/livewirewidget.h \
-    src/lwmethod.h \
     src/livewiremethod.h \
     src/riverbedmethod.h \
     src/lazywalkmethod.h \
     src/robotuser.h \
-    src/graphicsviewzoom.h
+    src/graphicsviewzoom.h \
+    src/linepathmethod.h \
+    src/activeContourTool.h \
+    src/activeContourWidget.h \
+    src/activeContourMethod.h
 
 SOURCES += \
     src/controller.cpp \
@@ -158,14 +159,15 @@ SOURCES += \
     src/tool.cpp \
     thirdParty/qcustomplot.cpp \
     src/labelswidget.cpp \
-    src/livewiretool.cpp \
-    src/livewirewidget.cpp \
-    src/lwmethod.cpp \
     src/livewiremethod.cpp \
     src/riverbedmethod.cpp \
     src/lazywalkmethod.cpp \
     src/robotuser.cpp \
-    src/graphicsviewzoom.cpp
+    src/graphicsviewzoom.cpp \
+    src/linepathmethod.cpp \
+    src/activeContourWidget.cpp \
+    src/activeContourMethod.cpp \
+    src/activeContourTool.cpp
 
 DISTFILES += \
     uncrustify.cfg

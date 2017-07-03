@@ -1,16 +1,17 @@
 #ifndef RIVERBEDMETHOD_H
 #define RIVERBEDMETHOD_H
 
-#include <src/lwmethod.h>
+#include <src/activeContourMethod.h>
 
-class RiverBedMethod : public LWMethod {
+class RiverBedMethod : public ActiveContourMethod {
 public:
-  enum { Type = LWMethod::Type + 2 };
+  enum { Type = ActiveContourMethod::Type + 2 };
 
   RiverBedMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg, const Bial::Image< int > &grad );
 
   int type( ) const;
-  void run(const Bial::Vector< bool > &seeds, const Path &currentPath );
+  void run( const Bial::Vector< size_t > &seeds, const Path &currentPath );
+  std::string name( );
 };
 
 #endif // RIVERBEDMETHOD_H

@@ -32,6 +32,7 @@ int main( int argc, char *argv[] ) {
   parser.process( app );
 
   MainWindow window;
+
   window.commandLineOpen( parser, dicomdir, folder, label );
   window.showMaximized( );
   return( app.exec( ) );

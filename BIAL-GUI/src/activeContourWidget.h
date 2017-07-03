@@ -1,7 +1,7 @@
 #ifndef LIVEWIREWIDGET_H
 #define LIVEWIREWIDGET_H
 
-#include "livewiretool.h"
+#include "activeContourTool.h"
 
 #include <QWidget>
 
@@ -9,12 +9,12 @@ namespace Ui {
   class LiveWireWidget;
 }
 
-class LiveWireWidget : public QWidget {
+class ActiveContourWidget : public QWidget {
   Q_OBJECT
   Controller * m_controller;
 public:
-  explicit LiveWireWidget( QWidget *parent = 0 );
-  ~LiveWireWidget( );
+  explicit ActiveContourWidget( QWidget *parent = 0 );
+  ~ActiveContourWidget( );
   void setTool( Tool *sTool );
 
   Controller* controller( ) const;
@@ -25,13 +25,16 @@ private slots:
   void on_pushButtonClear_clicked( );
 
   void on_pushButtonRobotUser_clicked( );
+
   void on_pushButtonSave_clicked( );
 
   void on_pushButtonProcessAll_clicked( );
 
+  void on_pushButtonClassifier_clicked( );
+
 private:
   Ui::LiveWireWidget *ui;
-  LiveWireTool *tool;
+  ActiveContourTool *m_tool;
 };
 
 #endif /* LIVEWIREWIDGET_H */

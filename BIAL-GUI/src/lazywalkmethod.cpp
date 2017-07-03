@@ -33,7 +33,7 @@
 #include <algorithm>
 LazyWalkMethod::LazyWalkMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
                                 const Bial::Image< int > &grad ) :
-  LWMethod( points, grayImg, grad, QColor( 0, 255, 255 ) ) {
+  ActiveContourMethod( points, grayImg, grad, QColor( 0, 255, 255 ) ) {
 
 }
 
@@ -41,7 +41,8 @@ int LazyWalkMethod::type( ) const {
   return( LazyWalkMethod::Type );
 }
 
-void LazyWalkMethod::run( const Bial::Vector< bool > &seeds, const Path &currentPath ) {
+void LazyWalkMethod::run( const Bial::Vector< size_t > &seeds, const Path &currentPath ) {
+  setLastPt( seeds.back( ) );
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -59,13 +60,11 @@ void LazyWalkMethod::run( const Bial::Vector< bool > &seeds, const Path &current
            "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
   Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
+  for( size_t seed : seeds ) {
+    queue.Insert( seed, m_cost[ seed ] );
+  }
   for( size_t elm = 0; elm < size; ++elm ) {
-    if( seeds[ elm ] ) {
-      queue.Insert( elm, m_cost[ elm ] );
-    }
-    else {
-      m_cost( elm ) = std::numeric_limits< int >::max( );
-    }
+    m_cost( elm ) = std::numeric_limits< int >::max( );
   }
   for( size_t pxl : currentPath ) {
     m_cost[ pxl ] = std::numeric_limits< int >::max( );
@@ -80,4 +79,8 @@ void LazyWalkMethod::run( const Bial::Vector< bool > &seeds, const Path &current
     }
   }
   m_cost.SetRange( 0, 255 );
+}
+
+std::string LazyWalkMethod::name( ) {
+  return( "LazyWalk" );
 }

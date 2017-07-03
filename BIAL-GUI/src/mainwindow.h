@@ -8,7 +8,7 @@
 #include <QFileInfo>
 #include <QMainWindow>
 
-#include "livewirewidget.h"
+#include "activeContourWidget.h"
 #include "segmentationwidget.h"
 
 namespace Ui {
@@ -117,7 +117,7 @@ private:
   QDockWidget *livewireDock;
 
   SegmentationWidget *segmentationWidget;
-  LiveWireWidget *livewireWidget;
+  ActiveContourWidget *livewireWidget;
 };
 
 class CursorChanger {

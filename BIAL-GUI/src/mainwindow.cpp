@@ -6,7 +6,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "livewiretool.h"
+#include "activeContourTool.h"
 #include "segmentationtool.h"
 
 
@@ -18,6 +18,13 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QSettings>
+
+
+//#undef BIAL_WARNING
+//#define BIAL_WARNING( exp ) \
+//  std::stringstream ss; \
+//  ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
+//  QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ),
   m_controller( new Controller( 4, this ) ) {
@@ -50,7 +57,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
 
 
   livewireDock = new QDockWidget( tr( "LiveWire" ), this );
-  livewireWidget = new LiveWireWidget( this );
+  livewireWidget = new ActiveContourWidget( this );
   livewireWidget->setController( m_controller );
 
   connect( ui->actionLiveWire_dock, &QAction::toggled, livewireDock, &QDockWidget::setVisible );
@@ -841,13 +848,13 @@ void MainWindow::actionLiveWireTool_triggered( ) {
   if( img ) {
     bool found = false;
     for( int tool = 0; tool < img->tools.size( ); ++tool ) {
-      if( img->tools[ tool ]->type( ) == LiveWireTool::Type ) {
+      if( img->tools[ tool ]->type( ) == ActiveContourTool::Type ) {
         found = true;
         img->setCurrentToolPos( tool );
       }
     }
     if( !found ) {
-      img->tools.push_back( new LiveWireTool( img, ui->imageViewer ) );
+      img->tools.push_back( new ActiveContourTool( img, ui->imageViewer ) );
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
     segmentationWidget->setTool( img->currentTool( ) );

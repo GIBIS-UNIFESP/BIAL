@@ -32,7 +32,7 @@
 #include <algorithm>
 RiverBedMethod::RiverBedMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
                                 const Bial::Image< int > &grad ) :
-  LWMethod( points, grayImg, grad, QColor( 0, 0, 255 ) ) {
+  ActiveContourMethod( points, grayImg, grad, QColor( 0, 0, 255 ) ) {
 
 }
 
@@ -40,7 +40,8 @@ int RiverBedMethod::type( ) const {
   return( RiverBedMethod::Type );
 }
 
-void RiverBedMethod::run( const Bial::Vector< bool > &seeds, const Path &currentPath ) {
+void RiverBedMethod::run( const Bial::Vector< size_t > &seeds, const Path &currentPath ) {
+  setLastPt( seeds.back( ) );
   m_cost.Set( 0 );
   m_pred.Set( 0 );
 
@@ -59,7 +60,9 @@ void RiverBedMethod::run( const Bial::Vector< bool > &seeds, const Path &current
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.1, m_grayImg.Dims( ) ) );
   Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
-  ift.InsertSeeds( seeds );
+  for( size_t seed : seeds ) {
+    queue.Insert( seed, m_cost[ seed ] );
+  }
   ift.Run( );
 
   COMMENT( "Seting pixels for frendly displaying.", 0 );
@@ -69,4 +72,8 @@ void RiverBedMethod::run( const Bial::Vector< bool > &seeds, const Path &current
     }
   }
   m_cost.SetRange( 0, 255 );
+}
+
+std::string RiverBedMethod::name( ) {
+  return( "RiverBed" );
 }
