@@ -218,9 +218,16 @@ void RobotUser::runSingle( std::shared_ptr< ActiveContourMethod > method ) {
   }
   m_tool.finishSegmentation( );
   report( method->name( ), total_errors );
-  QString fname = "/tmp/" + m_tool.getGuiImage( )->fileName( ) + "_" + QString::fromStdString( method->name( ) ) +
-                  ".pgm";
+  QFileInfo finfo( m_tool.getGuiImage( )->fileName( ) );
+  QString fname = "/tmp/" + finfo.baseName( ) + "_" +
+                  QString::fromStdString( method->name( ) ) + ".pgm";
+
   qDebug( ) << fname;
+  gt_map.Set( 0 );
+  Path currentPath = m_tool.getCurrentPath( );
+  for( size_t pxl : currentPath ) {
+    gt_map[ pxl ] = 255;
+  }
   Bial::Write( gt_map, fname.toStdString( ) );
 //
   emit m_tool.getGuiImage( )->imageUpdated( );
@@ -279,10 +286,18 @@ void RobotUser::run( ) {
   m_tool.finishSegmentation( );
 
   report( "Mixed", total_changes );
-  QString fname = "/tmp/" + m_tool.getGuiImage( )->fileName( ) + "_Mixed.pgm";
-  qDebug( ) << fname;
+  QFileInfo finfo( m_tool.getGuiImage( )->fileName( ) );
+  QString fname = "/tmp/" + finfo.baseName( ) + ".pgm";
   Bial::Write( gt_map, fname.toStdString( ) );
 
+  fname = "/tmp/" + finfo.baseName( ) + "_Mixed.pgm";
+  qDebug( ) << fname;
+  gt_map.Set( 0 );
+  Path currentPath = m_tool.getCurrentPath( );
+  for( size_t pxl : currentPath ) {
+    gt_map[ pxl ] = 255;
+  }
+  Bial::Write( gt_map, fname.toStdString( ) );
   emit m_tool.getGuiImage( )->imageUpdated( );
   qApp->processEvents( );
 }
