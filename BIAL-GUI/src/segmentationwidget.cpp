@@ -2,6 +2,7 @@
 #include "segmentationwidget.h"
 #include "ui_segmentationwidget.h"
 #include <QDir>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
 
@@ -121,9 +122,7 @@ void SegmentationWidget::on_sobel_grad_toggled( bool checked ) {
 
 void SegmentationWidget::on_pushButtonSave_clicked( ) {
   QFileInfo finfo( tool->getGuiImage( )->fileName( ) );
-  QDir dir = finfo.dir( );
-  dir.mkpath( "segmentation" );
-  dir.cd( "segmentation" );
-  QString outFname = dir.absoluteFilePath( finfo.baseName( ) + ".pgm" );
-  Bial::Write( tool->getMask( ), outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
+  QString outFname = QFileDialog::getSaveFileName( this, "Save segmentation as..", finfo.dir( ), "*" );
+  // TODO filter filename extension
+  Bial::Write( tool->getMask( ), outFname.toStdString( ), outFname.toStdString( ) );
 }
