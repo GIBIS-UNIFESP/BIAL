@@ -122,7 +122,7 @@ void SegmentationWidget::on_sobel_grad_toggled( bool checked ) {
 
 void SegmentationWidget::on_pushButtonSave_clicked( ) {
   QFileInfo finfo( tool->getGuiImage( )->fileName( ) );
-  QString outFname = QFileDialog::getSaveFileName( this, "Save segmentation as..", finfo.dir( ), "*" );
+  QString outFname = QFileDialog::getSaveFileName( this, tr( "Save segmentation as.." ), finfo.dir( ).absolutePath( ) );
   // TODO filter filename extension
   Bial::Write( tool->getMask( ), outFname.toStdString( ), outFname.toStdString( ) );
 }

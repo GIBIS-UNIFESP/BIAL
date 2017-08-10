@@ -67,8 +67,8 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   addDockWidget( Qt::LeftDockWidgetArea, livewireDock );
 
   livewireDock->setWidget( livewireWidget );
-//  livewireDock->hide( );
-//  livewireDock->setFloating( true );
+  livewireDock->hide( );
+  livewireDock->setFloating( true );
 
   /*
    *  ui->dockWidgetFunctional->hide( );
@@ -208,7 +208,7 @@ void MainWindow::currentImageChanged( ) {
       actionSegmentationTool->setChecked( true );
     }
 /* actionLiveWireTool->setChecked( true ); */
-    actionLiveWireTool_triggered( );
+//    actionLiveWireTool_triggered( );
     segmentationWidget->setTool( m_controller->currentImage( )->currentTool( ) );
     ui->labelsWidget->setTool( m_controller->currentImage( )->currentTool( ) );
     if( m_controller->currentImage( ) ) {
