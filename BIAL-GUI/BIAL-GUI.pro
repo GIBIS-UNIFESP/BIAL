@@ -71,7 +71,7 @@ DEPENDPATH += $$PWD/../bial/inc
 
 CONFIG += c++11
 
-LIBS += -lz -lopencv_core -lopencv_ml
+LIBS += -lz
 
 win32{
 LIBS += -fopenmp
@@ -171,3 +171,6 @@ SOURCES += \
 
 DISTFILES += \
     uncrustify.cfg
+
+
+#LIBS += -lopencv_core -lopencv_ml

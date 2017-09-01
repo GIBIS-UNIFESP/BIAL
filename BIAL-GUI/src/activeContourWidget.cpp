@@ -1,7 +1,7 @@
 #include "activeContourWidget.h"
 #include "controller.h"
 #include "ui_livewirewidget.h"
-#include <opencv2/ml.hpp>
+//#include <opencv2/ml.hpp>
 
 #include "FileImage.hpp"
 #include <QDebug>
@@ -121,55 +121,55 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
 }
 
 void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
-  try {
-    cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
-    m_svm->setType( cv::ml::SVM::C_SVC );
-    m_svm->setKernel( cv::ml::SVM::LINEAR );
-    m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
-    for( int img = 0; img < m_controller->size( ); ++img ) {
-      m_controller->setCurrentImagePos( img );
-      m_tool->clear( );
-      qDebug( ) << m_controller->currentImage( )->fileName( );
-      qDebug( ) << "Comment êtes-vous, Monsieur Robot?";
-      RobotUser mrRoboto( *m_tool );
-      qDebug( ) << "Courez, Mr. Robot!";
-      mrRoboto.train( );
-      qApp->processEvents( );
-    }
-    auto selectedMethods = m_tool->getSelectedMethods( );
-    auto methods = m_tool->getMethods( );
+//  try {
+//    cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
+//    m_svm->setType( cv::ml::SVM::C_SVC );
+//    m_svm->setKernel( cv::ml::SVM::LINEAR );
+//    m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
+//    for( int img = 0; img < m_controller->size( ); ++img ) {
+//      m_controller->setCurrentImagePos( img );
+//      m_tool->clear( );
+//      qDebug( ) << m_controller->currentImage( )->fileName( );
+//      qDebug( ) << "Comment êtes-vous, Monsieur Robot?";
+//      RobotUser mrRoboto( *m_tool );
+//      qDebug( ) << "Courez, Mr. Robot!";
+//      mrRoboto.train( );
+//      qApp->processEvents( );
+//    }
+//    auto selectedMethods = m_tool->getSelectedMethods( );
+//    auto methods = m_tool->getMethods( );
 
-    int num_samples = selectedMethods.size( );
-    std::vector< FeatureData > trainingData;
-    std::vector< int > labels;
-    trainingData.reserve( num_samples );
-    labels.reserve( num_samples );
-    for( int sample = 0; sample < num_samples; ++sample ) {
-      for( auto method : methods ) {
-        auto features = m_tool->pathDescription( method->m_paths[ sample ], method.get( ) );
-        trainingData.push_back( features );
-        labels.push_back( ( method->type( ) == selectedMethods[ sample ] ) ? 1 : -1 );
-      }
-    }
-    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
-    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
-    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
-  }
-  catch( std::bad_alloc &e ) {
-    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
-    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-  }
-  catch( std::runtime_error &e ) {
-    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Runtime error." );
-    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-  }
-  catch( const std::out_of_range &e ) {
-    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Out of range exception." );
-    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-  }
-  catch( const std::logic_error &e ) {
-    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
-      "Image, window end, and/or window size dimensions do not match." );
-    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-  }
+//    int num_samples = selectedMethods.size( );
+//    std::vector< FeatureData > trainingData;
+//    std::vector< int > labels;
+//    trainingData.reserve( num_samples );
+//    labels.reserve( num_samples );
+//    for( int sample = 0; sample < num_samples; ++sample ) {
+//      for( auto method : methods ) {
+//        auto features = m_tool->pathDescription( method->m_paths[ sample ], method.get( ) );
+//        trainingData.push_back( features );
+//        labels.push_back( ( method->type( ) == selectedMethods[ sample ] ) ? 1 : -1 );
+//      }
+//    }
+//    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
+//    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
+//    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
+//  }
+//  catch( std::bad_alloc &e ) {
+//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
+//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+//  }
+//  catch( std::runtime_error &e ) {
+//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Runtime error." );
+//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+//  }
+//  catch( const std::out_of_range &e ) {
+//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Out of range exception." );
+//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+//  }
+//  catch( const std::logic_error &e ) {
+//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
+//      "Image, window end, and/or window size dimensions do not match." );
+//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+//  }
 }
