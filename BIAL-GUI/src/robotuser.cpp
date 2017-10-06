@@ -312,7 +312,7 @@ void RobotUser::train( ) {
   for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
     size_t best_length = 0;
 
-#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
+//#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
     for( int m = 0; m < m_tool.getMethods( ).size( ); ++m ) {
       auto method = m_tool.getMethods( )[ m ];
       gt_map.Set( 0 );
@@ -333,7 +333,7 @@ void RobotUser::train( ) {
         if( diff > 0 ) {
           break;
         }
-#pragma omp critical
+//#pragma omp critical
         if( pxl_idx2 > best_length ) {
           best_length = pxl_idx2;
           m_tool.setCurrentMethod( method->type( ) );
