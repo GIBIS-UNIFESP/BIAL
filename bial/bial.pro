@@ -315,7 +315,8 @@ HEADERS += \
     inc/TransformEuclDist.hpp \
     inc/TransformEuclDistInv.hpp \
     inc/Vector.hpp \
-    inc/VideoIO.hpp
+    inc/VideoIO.hpp \
+    inc/DistanceBucketQueue.hpp
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -502,7 +503,8 @@ SOURCES += \
     src/Superpixel.cpp \
     src/Table.cpp \
     src/TransformEuclDist.cpp \
-    src/TransformEuclDistInv.cpp
+    src/TransformEuclDistInv.cpp \
+    src/DistanceBucketQueue.cpp
 
 DISTFILES += \
     uncrustify.cfg
