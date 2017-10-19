@@ -34,15 +34,17 @@ private slots:
 
   void on_thickDoubleSpinBox_valueChanged( double arg1 );
 
-  void on_pfmaxgeo_toggled(bool checked);
+  void on_pfmaxgeo_toggled( bool checked );
 
-  void on_pfmax_toggled(bool checked);
+  void on_pfmax_toggled( bool checked );
 
-  void on_pfsum_toggled(bool checked);
+  void on_pfsum_toggled( bool checked );
 
-  void on_morphological_grad_toggled(bool checked);
+  void on_morphological_grad_toggled( bool checked );
 
-  void on_sobel_grad_toggled(bool checked);
+  void on_sobel_grad_toggled( bool checked );
+
+  void on_pushButtonSave_clicked( );
 
 private:
   Ui::Segmentationwidget *ui;

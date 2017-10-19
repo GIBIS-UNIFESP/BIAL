@@ -8,7 +8,13 @@ void Tool::setHasLabel( bool sHasLabel ) {
   m_hasLabel = sHasLabel;
 }
 
-Tool::Tool( GuiImage *guiImage, ImageViewer *viewer ) try : QObject( guiImage ), guiImage( guiImage ), viewer( viewer ), m_visible(false) {
+GuiImage* Tool::getGuiImage( ) const {
+  return( guiImage );
+}
+
+
+Tool::Tool( GuiImage *guiImage, ImageViewer *viewer ) try : QObject( guiImage ), guiImage( guiImage ), viewer( viewer ),
+  m_visible( false ) {
 }
 catch( std::bad_alloc &e ) {
   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -25,6 +31,14 @@ catch( const std::out_of_range &e ) {
 catch( const std::logic_error &e ) {
   std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
   throw( std::logic_error( msg ) );
+}
+
+void Tool::leave( ) {
+
+}
+
+void Tool::enter( ) {
+
 }
 
 void Tool::setVisible( bool value ) {

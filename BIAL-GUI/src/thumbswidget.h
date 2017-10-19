@@ -27,6 +27,7 @@ public:
   void setController( Controller *value );
 
 public slots:
+  void currentImageChanged( );
 
 private:
   Ui::ThumbsWidget *ui;

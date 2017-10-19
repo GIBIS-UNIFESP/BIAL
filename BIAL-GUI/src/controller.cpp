@@ -1,10 +1,10 @@
 #include "controller.h"
 #include "thumbswidget.h"
 
+#include "defaulttool.h"
 #include <QDebug>
 #include <QFile>
 #include <qsettings.h>
-#include "defaulttool.h"
 Controller::Controller( int views, QObject *parent )
   : QObject( parent ), bw2dFormat( new BW2DFormat( this ) ), rgb2dFormat( new RGB2DFormat( this ) ),
   bw3dFormat( new BW3DFormat( this ) ) {
@@ -13,12 +13,10 @@ Controller::Controller( int views, QObject *parent )
     m_labelItems.append( new QGraphicsPixmapItem( ) );
   }
   m_currentImagePos = -1;
+
   connect( rgb2dFormat, &DisplayFormat::updated, this, &Controller::currentImageChanged );
   connect( bw3dFormat, &DisplayFormat::updated, this, &Controller::currentImageChanged );
   connect( bw2dFormat, &DisplayFormat::updated, this, &Controller::currentImageChanged );
-  connect( rgb2dFormat, &DisplayFormat::updated, this, &Controller::update );
-  connect( bw3dFormat, &DisplayFormat::updated, this, &Controller::update );
-  connect( bw2dFormat, &DisplayFormat::updated, this, &Controller::update );
 }
 
 GuiImage* Controller::currentImage( ) {
@@ -111,7 +109,6 @@ int Controller::size( ) {
 
 void Controller::update( ) {
   COMMENT( "UPDATING IMAGE!", 2 );
-
   GuiImage *img = currentImage( );
   if( img ) {
     std::array< bool, 4 > showItens = currentFormat( )->getViews( );
@@ -136,24 +133,29 @@ void Controller::update( ) {
 }
 
 void Controller::setCurrentImagePos( int position ) {
-  m_currentImagePos = position;
   if( currentImage( ) != nullptr ) {
     disconnect( currentImage( ), &GuiImage::imageUpdated, this, &Controller::update );
+    if( currentImage( )->currentTool( ) ) {
+      currentImage( )->currentTool( )->leave( );
+    }
   }
+  m_currentImagePos = position;
   if( currentImage( ) != nullptr ) {
     emit currentImageChanged( );
     update( );
     connect( currentImage( ), &GuiImage::imageUpdated, this, &Controller::update );
+    if( currentImage( )->currentTool( ) ) {
+      currentImage( )->currentTool( )->enter( );
+    }
   }
 }
 
 void Controller::loadNextImage( ) {
-  if( currentImagePos( ) == ( m_images.count( ) - 1 ) ) {
-    setCurrentImagePos( 0 );
-  }
-  else {
-    setCurrentImagePos( currentImagePos( ) + 1 );
-  }
+  setCurrentImagePos( ( currentImagePos( ) + 1 ) % m_images.count( ) );
+}
+
+void Controller::loadPreviousImage( ) {
+  setCurrentImagePos( ( m_images.count( ) + currentImagePos( ) - 1 ) % m_images.count( ) );
 }
 
 void Controller::setCurrentSlice( size_t view, size_t slice ) {

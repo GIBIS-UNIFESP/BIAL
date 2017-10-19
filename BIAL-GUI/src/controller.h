@@ -182,6 +182,13 @@ public slots:
    */
   void loadNextImage( );
   /**
+   *
+   * @brief loadPreviousImage is a slot called from controlsdock
+   * that loads the previous image ( like an circular list ).
+   *
+   */
+  void loadPreviousImage( );
+  /**
    * @brief setCurrentSlice is called by the imageViewer when the slider or
    *  the spinbox have theis values updated.
    * @param view

@@ -33,7 +33,7 @@ Debug:OBJECTS_DIR = $$PWD/../build/win/debug/obj
 
 unix: !macx{
 QMAKE_CXXFLAGS += -fopenmp -std=c++11
-QMAKE_LFLAGS += -fopenmp -std=c++11
+QMAKE_LFLAGS += -std=c++11 -fopenmp
 }
 
 macx{
@@ -92,7 +92,8 @@ FORMS += \
     ui/thumbswidget.ui \
     ui/dragdrop.ui \
     ui/functionalwidget.ui \
-    ui/labelswidget.ui
+    ui/labelswidget.ui \
+    src/livewirewidget.ui
 
 HEADERS += \
     src/controller.h \
@@ -120,7 +121,16 @@ HEADERS += \
     src/tool.h \
     src/viewerinterface.h \
     thirdParty/qcustomplot.h \
-    src/labelswidget.h
+    src/labelswidget.h \
+    src/livewiremethod.h \
+    src/riverbedmethod.h \
+    src/lazywalkmethod.h \
+    src/robotuser.h \
+    src/graphicsviewzoom.h \
+    src/linepathmethod.h \
+    src/activeContourTool.h \
+    src/activeContourWidget.h \
+    src/activeContourMethod.h
 
 SOURCES += \
     src/controller.cpp \
@@ -148,7 +158,19 @@ SOURCES += \
     src/thumbswidget.cpp \
     src/tool.cpp \
     thirdParty/qcustomplot.cpp \
-    src/labelswidget.cpp
+    src/labelswidget.cpp \
+    src/livewiremethod.cpp \
+    src/riverbedmethod.cpp \
+    src/lazywalkmethod.cpp \
+    src/robotuser.cpp \
+    src/graphicsviewzoom.cpp \
+    src/linepathmethod.cpp \
+    src/activeContourWidget.cpp \
+    src/activeContourMethod.cpp \
+    src/activeContourTool.cpp
 
 DISTFILES += \
     uncrustify.cfg
+
+
+#LIBS += -lopencv_core -lopencv_ml

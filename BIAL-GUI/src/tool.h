@@ -24,11 +24,15 @@ public:
   virtual void mouseDragged( QPointF pt, Qt::MouseButtons buttons, size_t axis ) = 0;
   virtual void mouseMoved( QPointF pt, size_t axis ) = 0;
   virtual void sliceChanged( size_t axis, size_t slice ) = 0;
+  virtual void enter( );
+  virtual void leave( );
   void setVisible( bool value );
   virtual QPixmap getLabel( size_t axis );
 
   bool visible( ) const;
   bool hasLabel( ) const;
+
+  GuiImage* getGuiImage( ) const;
 
 protected:
   void setHasLabel( bool sHasLabel );

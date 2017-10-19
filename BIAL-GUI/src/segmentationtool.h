@@ -62,20 +62,30 @@ public:
   void clearSeeds( );
 
   template< class D >
-  void InitiateSeeds( size_t map_set, const Bial::Vector< size_t > &obj_seeds,
-                      const Bial::Vector< size_t > &bkg_seeds, Bial::Image< D > &grad );
-  void GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
-                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta );
-  void GeodesicSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
-                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta );
-  void Watershed( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
+  void InitiateSeeds( size_t map_set,
+                      const Bial::Vector< size_t > &obj_seeds,
+                      const Bial::Vector< size_t > &bkg_seeds,
+                      Bial::Image< D > &grad );
+  void GeodesicSum( Bial::Image< int > &img,
+                    const Bial::Vector< size_t > &obj_seeds,
+                    const Bial::Vector< size_t > &bkg_seeds,
+                    float alpha,
+                    float beta );
+  void GeodesicSum( Bial::Image< float > &img,
+                    const Bial::Vector< size_t > &obj_seeds,
+                    const Bial::Vector< size_t > &bkg_seeds,
+                    float alpha,
+                    float beta );
+  void Watershed( Bial::Image< int > &img,
+                  const Bial::Vector< size_t > &obj_seeds,
                   const Bial::Vector< size_t > &bkg_seeds );
-  void Watershed( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
+  void Watershed( Bial::Image< float > &img,
+                  const Bial::Vector< size_t > &obj_seeds,
                   const Bial::Vector< size_t > &bkg_seeds );
   void FSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
-                               const Bial::Vector< size_t > &bkg_seeds );
+             const Bial::Vector< size_t > &bkg_seeds );
   void FSum( Bial::Image< float > &img, const Bial::Vector< size_t > &obj_seeds,
-                               const Bial::Vector< size_t > &bkg_seeds );
+             const Bial::Vector< size_t > &bkg_seeds );
 
   void MorphologicalGradient( );
   void SobelGradient( );
@@ -98,6 +108,7 @@ public:
 
   bool isInitiated( ) const;
 
+  Bial::Image< int > getMask( ) const;
 };
 
 #endif /* SEGMENTATIONTOOL_H */

@@ -4,6 +4,9 @@
 #include "gdcm.h"
 #include "guiimage.h"
 
+#include <QFileInfo>
+#include <QImageReader>
+
 #ifdef LIBGDCM
 #include <gdcmImageReader.h>
 
@@ -110,48 +113,82 @@ Bial::Image< int > GDCM::OpenGImage( const std::string &filename ) {
 #else
 
 Bial::MultiImage GDCM::OpenGImage( const std::string &filename ) {
-    try {
-        std::string extension( Bial::File::ToLowerExtension( filename ) );
-        if( ( extension.rfind( ".nii" ) != std::string::npos ) || ( extension.rfind( ".img" ) != std::string::npos ) ||
-                ( extension.rfind( ".hdr" ) != std::string::npos ) ) {
-            Bial::NiftiHeader hdr( filename );
-            Bial::NiftiType type( hdr.DataType( ) );
-            switch( type ) {
-            case Bial::NiftiType::INT8:
-            case Bial::NiftiType::INT16:
-            case Bial::NiftiType::INT32:
-            case Bial::NiftiType::UINT8:
-            case Bial::NiftiType::UINT16:
-            case Bial::NiftiType::UINT32:
-                return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
-            case Bial::NiftiType::FLOAT32:
-                return( Bial::MultiImage( Bial::Read< float >( filename ) ) );
-            default:
-                std::string msg( BIAL_ERROR( "Could not open Nifti image. Unsupported data type." ) );
-                throw( std::runtime_error( msg ) );
-            }
+  try {
+    QFileInfo fileInfo( QString::fromStdString( filename ) );
+    QRegExp regexpr3D( ".nii|.img|.scn" );
+    if( fileInfo.completeSuffix( ).contains( regexpr3D ) ) {
+      Bial::NiftiHeader hdr( filename );
+      Bial::NiftiType type( hdr.DataType( ) );
+      switch( type ) {
+          case Bial::NiftiType::INT8:
+          case Bial::NiftiType::INT16:
+          case Bial::NiftiType::INT32:
+          case Bial::NiftiType::UINT8:
+          case Bial::NiftiType::UINT16:
+          case Bial::NiftiType::UINT32:
+          return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
+          case Bial::NiftiType::FLOAT32:
+          return( Bial::MultiImage( Bial::Read< float >( filename ) ) );
+          default:
+          std::string msg( BIAL_ERROR( "Could not open Nifti image. Unsupported data type." ) );
+          throw( std::runtime_error( msg ) );
+      }
+    }
+    QImageReader imageReader( fileInfo.absoluteFilePath( ) );
+    if( imageReader.format( ).isEmpty( ) ) {
+      QRegExp regexprColorBial( ".ppm|.pnm" );
+      if( fileInfo.completeSuffix( ).contains( regexprColorBial ) ) {
+        return( Bial::MultiImage( Bial::Read< Bial::Color >( filename ) ) );
+      }
+      return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
+    }
+    else {
+      QImage qimage = imageReader.read( );
+      size_t xsize = qimage.width( ), ysize = qimage.height( );
+      Bial::Vector< size_t > dims = { xsize, ysize };
+      // FIXME : Enable colored jpg image...
+      if( qimage.isGrayscale( ) ) {
+        qimage = qimage.convertToFormat( QImage::Format_Grayscale8 );
+        Bial::Image< int > img( dims );
+        for( size_t y = 0; y < ysize; ++y ) {
+          uchar *scanLine = ( uchar* ) qimage.scanLine( y );
+          for( size_t x = 0; x < xsize; ++x ) {
+            uchar clr = scanLine[ x ];
+            img( x, y ) = clr;
+          }
         }
-        if( ( extension.rfind( ".ppm" ) != std::string::npos ) || ( extension.rfind( ".pnm" ) != std::string::npos ) ) {
-            return( Bial::MultiImage( Bial::Read< Bial::Color >( filename ) ) );
+        return( Bial::MultiImage( img ) );
+      }
+      else {
+        qimage = qimage.convertToFormat( QImage::Format_ARGB32 );
+        Bial::Image< Bial::Color > img( dims );
+        for( size_t y = 0; y < ysize; ++y ) {
+          QRgb *scanLine = ( QRgb* ) qimage.scanLine( y );
+          for( size_t x = 0; x < xsize; ++x ) {
+            QRgb clr = scanLine[ x ];
+            img( x, y ) = Bial::Color( qAlpha( clr ), qRed( clr ), qGreen( clr ), qBlue( clr ) );
+          }
         }
-        return( Bial::MultiImage( Bial::Read< int >( filename ) ) );
+        return( Bial::MultiImage( img ) );
+      }
     }
-    catch( std::bad_alloc &e ) {
-        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-        throw( std::runtime_error( msg ) );
-    }
-    catch( std::runtime_error &e ) {
-        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-        throw( std::runtime_error( msg ) );
-    }
-    catch( const std::out_of_range &e ) {
-        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-        throw( std::out_of_range( msg ) );
-    }
-    catch( const std::logic_error &e ) {
-        std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-        throw( std::logic_error( msg ) );
-    }
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
 }
 
 #endif

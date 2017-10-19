@@ -6,27 +6,70 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "activeContourTool.h"
 #include "segmentationtool.h"
+
+
+#include <QDockWidget>
 #include <QFileDialog>
 #include <QFileInfoList>
 #include <QGraphicsPixmapItem>
+#include <QImageReader>
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QSettings>
 
+
+//#undef BIAL_WARNING
+//#define BIAL_WARNING( exp ) \
+//  std::stringstream ss; \
+//  ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
+//  QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
+
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ),
-  controller( new Controller( 4, this ) ) {
+  m_controller( new Controller( 4, this ) ) {
 
   ui->setupUi( this );
 
-  controller->setThumbsWidget( ui->thumbsWidget );
+  m_controller->setThumbsWidget( ui->thumbsWidget );
 
-  ui->controlsWidget->setController( controller );
+  ui->controlsWidget->setController( m_controller );
   ui->controlsDock->hide( );
-  ui->dockWidgetSegmentation->hide( );
+
   ui->dockWidgetLabels->hide( );
-  ui->imageViewer->setController( controller );
+  ui->imageViewer->setController( m_controller );
   ui->actionPrint->setEnabled( false );
+
+
+  segmentationDock = new QDockWidget( tr( "Segmentation" ), this );
+  segmentationWidget = new SegmentationWidget( this );
+
+  connect( ui->actionSegmentation_dock, &QAction::toggled, segmentationDock, &QDockWidget::setVisible );
+  connect( segmentationDock, &QDockWidget::visibilityChanged, ui->actionSegmentation_dock,
+           &QAction::setChecked );
+
+
+  addDockWidget( Qt::LeftDockWidgetArea, segmentationDock );
+
+  segmentationDock->setWidget( segmentationWidget );
+  segmentationDock->hide( );
+  segmentationDock->setFloating( true );
+
+
+  livewireDock = new QDockWidget( tr( "LiveWire" ), this );
+  livewireWidget = new ActiveContourWidget( this );
+  livewireWidget->setController( m_controller );
+
+  connect( ui->actionLiveWire_dock, &QAction::toggled, livewireDock, &QDockWidget::setVisible );
+  connect( livewireDock, &QDockWidget::visibilityChanged, ui->actionLiveWire_dock,
+           &QAction::setChecked );
+
+  addDockWidget( Qt::LeftDockWidgetArea, livewireDock );
+
+  livewireDock->setWidget( livewireWidget );
+  livewireDock->hide( );
+  livewireDock->setFloating( true );
+
   /*
    *  ui->dockWidgetFunctional->hide( );
    *  ui->widgetDragDrop->hide( );
@@ -45,13 +88,18 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   QActionGroup *group = new QActionGroup( this );
   actionDefaultTool = group->addAction( "Default Tool" );
   actionSegmentationTool = group->addAction( "Segmentation Tool" );
+  actionLiveWireTool = group->addAction( "LiveWire Tool" );
+
   actionDefaultTool->setCheckable( true );
-  actionDefaultTool->setChecked( true );
+
+  actionLiveWireTool->setCheckable( true );
+
   actionSegmentationTool->setCheckable( true );
-  actionSegmentationTool->setChecked( false );
+
 
   connect( actionDefaultTool, &QAction::triggered, this, &MainWindow::actionDefaultTool_triggered );
   connect( actionSegmentationTool, &QAction::triggered, this, &MainWindow::actionSegmentationTool_triggered );
+  connect( actionLiveWireTool, &QAction::triggered, this, &MainWindow::actionLiveWireTool_triggered );
 
   ui->toolBar->addActions( group->actions( ) );
 
@@ -65,22 +113,19 @@ void MainWindow::createConnections( ) {
   connect( ui->actionShow_controls_dock, &QAction::toggled, ui->controlsDock, &QDockWidget::setVisible );
   connect( ui->actionHistogram_dock, &QAction::toggled, ui->dockWidgetHistogram, &QDockWidget::setVisible );
   connect( ui->actionShow_images_dock, &QAction::toggled, ui->thumbsDock, &QDockWidget::setVisible );
-  connect( ui->actionSegmentation_dock, &QAction::toggled, ui->dockWidgetSegmentation, &QDockWidget::setVisible );
   connect( ui->actionLabels_dock, &QAction::toggled, ui->dockWidgetLabels, &QDockWidget::setVisible );
   connect( ui->controlsDock, &QDockWidget::visibilityChanged, ui->actionShow_controls_dock, &QAction::setChecked );
   connect( ui->thumbsDock, &QDockWidget::visibilityChanged, ui->actionShow_images_dock, &QAction::setChecked );
   connect( ui->dockWidgetHistogram, &QDockWidget::visibilityChanged, ui->actionHistogram_dock, &QAction::setChecked );
-  connect( ui->dockWidgetSegmentation, &QDockWidget::visibilityChanged, ui->actionSegmentation_dock,
-           &QAction::setChecked );
   connect( ui->dockWidgetLabels, &QDockWidget::visibilityChanged, ui->actionLabels_dock,
            &QAction::setChecked );
 
 
   /* Controller. */
-  connect( controller, &Controller::currentImageChanged, this, &MainWindow::currentImageChanged );
-  connect( controller, &Controller::imageUpdated, this, &MainWindow::imageUpdated );
-  connect( controller, &Controller::containerUpdated, this, &MainWindow::containerUpdated );
-  connect( controller, &Controller::recentFilesUpdated, this, &MainWindow::updateRecentFileActions );
+  connect( m_controller, &Controller::currentImageChanged, this, &MainWindow::currentImageChanged );
+  connect( m_controller, &Controller::imageUpdated, this, &MainWindow::imageUpdated );
+  connect( m_controller, &Controller::containerUpdated, this, &MainWindow::containerUpdated );
+  connect( m_controller, &Controller::recentFilesUpdated, this, &MainWindow::updateRecentFileActions );
 
   /* ImageViewer */
   connect( ui->imageViewer, &ImageViewer::mouseClicked, this, &MainWindow::updateIntensity );
@@ -128,8 +173,10 @@ void MainWindow::on_actionWhite_background_triggered( ) {
 }
 
 void MainWindow::currentImageChanged( ) {
-  if( controller->currentImage( ) ) {
-    DisplayFormat *format = controller->currentFormat( );
+  ui->actionNext->setEnabled( m_controller->size( ) > 1 );
+  ui->actionPrevious->setEnabled( m_controller->size( ) > 1 );
+  if( m_controller->currentImage( ) ) {
+    DisplayFormat *format = m_controller->currentFormat( );
     actionDefaultTool->setVisible( DefaultTool::supportedFormats & ( int ) format->modality( ) );
     actionSegmentationTool->setVisible( SegmentationTool::supportedFormats & ( int ) format->modality( ) );
 
@@ -151,22 +198,31 @@ void MainWindow::currentImageChanged( ) {
 
     ui->action3_Views->setVisible( format->has3Views( ) );
     ui->action4_Views->setVisible( format->has4Views( ) );
-    if( controller->currentImage( )->tools.empty( ) ) {
+    if( m_controller->currentImage( )->tools.empty( ) ) {
       actionDefaultTool->setChecked( true );
     }
-    else if( controller->currentImage( )->currentTool( )->type( ) == DefaultTool::Type ) {
+    else if( m_controller->currentImage( )->currentTool( )->type( ) == DefaultTool::Type ) {
       actionDefaultTool->setChecked( true );
     }
-    else if( controller->currentImage( )->currentTool( )->type( ) == SegmentationTool::Type ) {
+    else if( m_controller->currentImage( )->currentTool( )->type( ) == SegmentationTool::Type ) {
       actionSegmentationTool->setChecked( true );
     }
-    ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
-    ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
+/* actionLiveWireTool->setChecked( true ); */
+//    actionLiveWireTool_triggered( );
+    segmentationWidget->setTool( m_controller->currentImage( )->currentTool( ) );
+    ui->labelsWidget->setTool( m_controller->currentImage( )->currentTool( ) );
+    if( m_controller->currentImage( ) ) {
+      QFileInfo finfo = m_controller->currentImage( )->fileName( );
+      setWindowTitle( QString( "%1 - BIAL" ).arg( finfo.fileName( ) ) );
+    }
+    else {
+      setWindowTitle( QString( "BIAL" ) );
+    }
   }
 }
 
 void MainWindow::imageUpdated( ) {
-  const Bial::Signal &hist = controller->currentImage( )->getHistogram( );
+  const Bial::Signal &hist = m_controller->currentImage( )->getHistogram( );
   QCustomPlot *plot = ui->histogramWidget;
   QVector< double > x( hist.size( ) ), y( hist.size( ) );
   for( size_t bin = 0; bin < hist.size( ); ++bin ) {
@@ -186,21 +242,21 @@ void MainWindow::imageUpdated( ) {
   plot->yAxis->setLabel( "Frequency" );
   plot->rescaleAxes( true );
   plot->replot( );
-  if( controller->currentImage( ) ) {
-    ui->segmentationWidget->setTool( controller->currentImage( )->currentTool( ) );
-    ui->labelsWidget->setTool( controller->currentImage( )->currentTool( ) );
+  if( m_controller->currentImage( ) ) {
+    segmentationWidget->setTool( m_controller->currentImage( )->currentTool( ) );
+    ui->labelsWidget->setTool( m_controller->currentImage( )->currentTool( ) );
   }
 }
 
 void MainWindow::containerUpdated( ) {
   COMMENT( "MainWindow::containerUpdated( )", 0 );
-  if( controller->size( ) <= 1 ) {
+  if( m_controller->size( ) <= 1 ) {
     ui->thumbsDock->hide( );
   }
   else {
     ui->thumbsDock->show( );
   }
-  bool hasImage = ( controller->currentImage( ) != nullptr );
+  bool hasImage = ( m_controller->currentImage( ) != nullptr );
   ui->toolBar->setVisible( hasImage );
   COMMENT( "Has Image = " << hasImage, 0 );
   ui->menuWindow->setEnabled( hasImage );
@@ -235,19 +291,21 @@ QString MainWindow::getFileDialog( ) {
   return( QFileDialog::getOpenFileName(
             this, tr( "Open" ), defaultFolder,
             tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.pnm *.pnm.gz *.dcm *.dcm.gz *.nii *.nii.gz "
-                "*.scn *.scn.gz *.bmat *.bmat.gz);; PBM images (*.pbm *.pbm.gz);;"
+                "*.scn *.scn.gz *.bmat *.bmat.gz *.jpeg *.jpg *.png);; PBM images (*.pbm *.pbm.gz);;"
                 "PGM images (*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);;"
                 "PNM images (*.pnm *.pnm.gz);; DICOM images (*.dcm *.dcm.gz);;"
                 "NIfTI images (*.nii *.nii.gz);;"
                 "SCN Files (*.scn *.scn.gz);;"
                 "BMAT images (*.bmat *.bmat.gz);;"
+                "JPG images (*.jpg *.jpeg);;"
+                "PNG images (*.png);;"
                 "All files (*)" ) ) );
 }
 
 bool MainWindow::loadFile( QString filename ) {
   COMMENT( "Loading file: " << filename.toStdString( ), 0 );
-  controller->clear( );
-  return( controller->addImage( filename ) );
+  m_controller->clear( );
+  return( m_controller->addImage( filename ) );
 }
 
 bool MainWindow::loadFolder( QString dirname ) {
@@ -267,9 +325,9 @@ bool MainWindow::loadFolder( QString dirname ) {
       break;
     }
     QFileInfo fileInfo = list.at( i );
-    if( fileInfo.isFile( ) and checkExtension( fileInfo.completeSuffix( ).toLower( ) ) ) {
+    if( fileInfo.isFile( ) and checkExtension( fileInfo ) ) {
       QString fileName = fileInfo.absoluteFilePath( );
-      if( controller->addImage( fileName ) ) {
+      if( m_controller->addImage( fileName ) ) {
         value = true;
       }
       else {
@@ -278,21 +336,27 @@ bool MainWindow::loadFolder( QString dirname ) {
         continue;
       }
     }
+    qApp->processEvents( );
   }
   progress.setValue( list.size( ) );
 
   return( value );
 }
 
-bool MainWindow::checkExtension( const QString &suffix ) { /* receive to lower */
-  if( suffix == "scn" or suffix == "scn.gz" or suffix == "img" or suffix == "img.gz" or suffix == "hdr" or
-      suffix == "hdr.gz" or suffix == "nii" or suffix == "nii.gz" or suffix == "pnm" or suffix == "pnm.gz" or
-      suffix == "pgm" or suffix == "pgm.gz" or suffix == "pbm" or suffix == "pbm.gz" or suffix == "dcm" or
-      suffix == "pnm" or suffix == "pnm.gz" or suffix == "dcm.gz" or suffix == "bmat" or suffix == "bmat.gz" ) {
+bool MainWindow::checkExtension( const QFileInfo &fileInfo ) { /* receive to lower */
+  QStringList list;
+  list << "scn" << "scn.gz" << "img" << "img.gz" << "hdr"
+  << "hdr.gz" << "nii" << "nii.gz" << "pnm" << "pnm.gz"
+  << "pgm" << "pgm.gz" << "pbm" << "pbm.gz" << "dcm"
+  << "dcm.gz" << "pnm" << "pnm.gz" <<"bmat" << "bmat.gz";
+
+  QString suffix = fileInfo.completeSuffix( ).toLower( );
+  if( list.contains( suffix ) ) {
     return( true );
   }
   else {
-    return( false );
+    QImageReader reader( fileInfo.absoluteFilePath( ) );
+    return( !reader.format( ).isEmpty( ) );
   }
 }
 
@@ -319,7 +383,7 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
       QFileInfo file( arg );
       if( file.exists( ) ) {
         if( file.isFile( ) ) {
-          if( controller->addImage( file.absoluteFilePath( ) ) ) {
+          if( m_controller->addImage( file.absoluteFilePath( ) ) ) {
             ui->statusBar->showMessage( file.baseName( ) + " loaded succesfully.", 2000 );
           }
           else {
@@ -336,7 +400,7 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
         errorMsg = file.absoluteFilePath( ) + " does not exist.";
         BIAL_WARNING( errorMsg.toStdString( ) );
       }
-      if( controller->size( ) > 1 ) {
+      if( m_controller->size( ) > 1 ) {
         ui->thumbsDock->show( );
       }
     }
@@ -468,7 +532,7 @@ bool MainWindow::loadDicomdir( QString dicomFName ) {
   }
   const QStringList files = dicomdir.getImages( );
   if( files.size( ) > 0 ) {
-    controller->clear( );
+    m_controller->clear( );
     QProgressDialog progress( tr( "Reading dicomdir files..." ), tr( "Abort" ), 0, files.size( ), this );
     progress.setWindowModality( Qt::WindowModal );
     for( int i = 0, size = files.size( ); i < size; ++i ) {
@@ -476,10 +540,10 @@ bool MainWindow::loadDicomdir( QString dicomFName ) {
       if( progress.wasCanceled( ) ) {
         break;
       }
-      controller->addImage( files[ i ].trimmed( ) );
+      m_controller->addImage( files[ i ].trimmed( ) );
     }
     progress.setValue( files.size( ) );
-    if( controller->size( ) < 1 ) {
+    if( m_controller->size( ) < 1 ) {
       statusBar( )->showMessage( tr( "Could not load any dicomdir images" ), 2000 );
       return( false );
     }
@@ -493,7 +557,7 @@ bool MainWindow::loadDicomdir( QString dicomFName ) {
 
 bool MainWindow::loadLabel( QString filename ) {
   actionDefaultTool_triggered( );
-  DefaultTool *tool = dynamic_cast< DefaultTool* >( controller->currentImage( )->currentTool( ) );
+  DefaultTool *tool = dynamic_cast< DefaultTool* >( m_controller->currentImage( )->currentTool( ) );
   if( tool ) {
     bool status = tool->addLabel( filename );
     ui->dockWidgetLabels->show( );
@@ -513,7 +577,7 @@ void MainWindow::on_actionOpen_folder_triggered( ) {
   QString folderString = QFileDialog::getExistingDirectory( this, tr( "Open folder" ), defaultFolder );
   COMMENT( "Opening folder: \"" << folderString.toStdString( ) << "\"", 1 )
   if( !folderString.isEmpty( ) ) {
-    controller->clear( );
+    m_controller->clear( );
     if( !loadFolder( folderString ) ) {
       BIAL_WARNING( "Could not read folder!" )
       QMessageBox::warning( this, "Warning", tr( "Could not read folder!" ) );
@@ -527,11 +591,11 @@ void MainWindow::on_actionOpen_DicomDir_triggered( ) {
 }
 
 void MainWindow::on_actionAdd_image_triggered( ) {
-  controller->addImage( getFileDialog( ) );
+  m_controller->addImage( getFileDialog( ) );
 }
 
 void MainWindow::on_actionRemove_current_image_triggered( ) {
-  controller->removeCurrentImage( );
+  m_controller->removeCurrentImage( );
 }
 
 void MainWindow::on_actionSelect_default_folder_triggered( ) {
@@ -546,12 +610,12 @@ void MainWindow::on_actionSelect_default_folder_triggered( ) {
 }
 
 void MainWindow::on_actionRemove_current_label_triggered( ) {
-  controller->removeCurrentLabel( );
+  m_controller->removeCurrentLabel( );
 }
 
 void MainWindow::updateIntensity( QPointF scnPos, Qt::MouseButtons buttons, size_t axis ) {
   Q_UNUSED( buttons )
-  GuiImage * img = controller->currentImage( );
+  GuiImage * img = m_controller->currentImage( );
   if( img != nullptr ) {
     Bial::Point3D pt = img->getPosition( scnPos, axis );
     QString msg;
@@ -671,68 +735,69 @@ void MainWindow::updateIntensity( QPointF scnPos, Qt::MouseButtons buttons, size
 }
 
 void MainWindow::on_actionAxial_triggered( ) {
-  controller->currentFormat( )->setNumberOfViews( 1 );
-  controller->currentFormat( )->setCurrentViews( Views::SHOW0 );
+  m_controller->currentFormat( )->setNumberOfViews( 1 );
+  m_controller->currentFormat( )->setCurrentViews( Views::SHOW0 );
 }
 
 void MainWindow::on_actionCoronal_triggered( ) {
-  controller->currentFormat( )->setNumberOfViews( 1 );
-  controller->currentFormat( )->setCurrentViews( Views::SHOW1 );
+  m_controller->currentFormat( )->setNumberOfViews( 1 );
+  m_controller->currentFormat( )->setCurrentViews( Views::SHOW1 );
 }
 
 void MainWindow::on_actionSagittal_triggered( ) {
-  controller->currentFormat( )->setNumberOfViews( 1 );
-  controller->currentFormat( )->setCurrentViews( Views::SHOW2 );
+  m_controller->currentFormat( )->setNumberOfViews( 1 );
+  m_controller->currentFormat( )->setCurrentViews( Views::SHOW2 );
 }
 
 void MainWindow::on_action3_Views_triggered( ) {
-  controller->currentFormat( )->setNumberOfViews( 3 );
+  m_controller->currentFormat( )->setNumberOfViews( 3 );
 }
 
 void MainWindow::on_action4_Views_triggered( ) {
-  controller->currentFormat( )->setNumberOfViews( 4 );
+  m_controller->currentFormat( )->setNumberOfViews( 4 );
 }
 
 void MainWindow::on_actionVertical_triggered( ) {
-  controller->currentFormat( )->setCurrentLayout( Layout::VERTICAL );
+  m_controller->currentFormat( )->setCurrentLayout( Layout::VERTICAL );
 }
 
 void MainWindow::on_actionHorizontal_triggered( ) {
-  controller->currentFormat( )->setCurrentLayout( Layout::HORIZONTAL );
+  m_controller->currentFormat( )->setCurrentLayout( Layout::HORIZONTAL );
 }
 
 void MainWindow::on_actionGrid_triggered( ) {
-  controller->currentFormat( )->setCurrentLayout( Layout::GRID );
+  m_controller->currentFormat( )->setCurrentLayout( Layout::GRID );
 }
 
 void MainWindow::on_actionWhitePen_triggered( ) {
-  controller->currentFormat( )->setOverlayColor( Qt::white );
+  m_controller->currentFormat( )->setOverlayColor( Qt::white );
 }
 
 void MainWindow::on_actionRedPen_triggered( ) {
-  controller->currentFormat( )->setOverlayColor( Qt::red );
+  m_controller->currentFormat( )->setOverlayColor( Qt::red );
 }
 
 void MainWindow::on_actionBluePen_triggered( ) {
-  controller->currentFormat( )->setOverlayColor( Qt::blue );
+  m_controller->currentFormat( )->setOverlayColor( Qt::blue );
 }
 
 void MainWindow::on_actionGreenPen_triggered( ) {
-  controller->currentFormat( )->setOverlayColor( Qt::green );
+  m_controller->currentFormat( )->setOverlayColor( Qt::green );
 }
 
 void MainWindow::on_actionBlackPen_triggered( ) {
-  controller->currentFormat( )->setOverlayColor( Qt::black );
+  m_controller->currentFormat( )->setOverlayColor( Qt::black );
 }
 
 void MainWindow::on_actionToggle_overlay_triggered( ) {
-  if( controller->currentFormat( ) ) {
-    controller->currentFormat( )->toggleOverlay( );
+  if( m_controller->currentFormat( ) ) {
+    m_controller->currentFormat( )->toggleOverlay( );
   }
 }
 
 void MainWindow::actionDefaultTool_triggered( ) {
-  GuiImage *img = controller->currentImage( );
+  actionDefaultTool->setChecked( true );
+  GuiImage *img = m_controller->currentImage( );
   if( img ) {
     bool found = false;
     for( int tool = 0; tool < img->tools.size( ); ++tool ) {
@@ -746,14 +811,15 @@ void MainWindow::actionDefaultTool_triggered( ) {
       img->tools.push_back( new DefaultTool( img, ui->imageViewer ) );
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
-    ui->segmentationWidget->setTool( img->currentTool( ) );
+    segmentationWidget->setTool( img->currentTool( ) );
     ui->labelsWidget->setTool( img->currentTool( ) );
     emit img->imageUpdated( );
   }
 }
 
 void MainWindow::actionSegmentationTool_triggered( ) {
-  GuiImage *img = controller->currentImage( );
+  actionSegmentationTool->setChecked( true );
+  GuiImage *img = m_controller->currentImage( );
   if( img ) {
     bool found = false;
     for( int tool = 0; tool < img->tools.size( ); ++tool ) {
@@ -766,9 +832,38 @@ void MainWindow::actionSegmentationTool_triggered( ) {
       img->tools.push_back( new SegmentationTool( img, ui->imageViewer ) );
       img->setCurrentToolPos( img->tools.size( ) - 1 );
     }
-    ui->segmentationWidget->setTool( img->currentTool( ) );
+    segmentationWidget->setTool( img->currentTool( ) );
     ui->labelsWidget->setTool( img->currentTool( ) );
-    ui->dockWidgetSegmentation->show( );
+    segmentationDock->show( );
+    livewireWidget->setTool( img->currentTool( ) );
+    livewireDock->hide( );
+
+    emit img->imageUpdated( );
+  }
+}
+
+void MainWindow::actionLiveWireTool_triggered( ) {
+  actionLiveWireTool->setChecked( true );
+  GuiImage *img = m_controller->currentImage( );
+  if( img ) {
+    bool found = false;
+    for( int tool = 0; tool < img->tools.size( ); ++tool ) {
+      if( img->tools[ tool ]->type( ) == ActiveContourTool::Type ) {
+        found = true;
+        img->setCurrentToolPos( tool );
+      }
+    }
+    if( !found ) {
+      img->tools.push_back( new ActiveContourTool( img, ui->imageViewer ) );
+      img->setCurrentToolPos( img->tools.size( ) - 1 );
+    }
+    segmentationWidget->setTool( img->currentTool( ) );
+    ui->labelsWidget->setTool( img->currentTool( ) );
+
+    livewireWidget->setTool( img->currentTool( ) );
+
+    livewireDock->show( );
+    segmentationDock->hide( );
     emit img->imageUpdated( );
   }
 }
@@ -808,4 +903,12 @@ void MainWindow::actionFunctional_Tool_triggered( ) {
 
 void MainWindow::actionChange_default_parameters_triggered( ) {
   /* TODO: abrir janela para mostrar parametros */
+}
+
+void MainWindow::on_actionNext_triggered( ) {
+  m_controller->loadNextImage( );
+}
+
+void MainWindow::on_actionPrevious_triggered( ) {
+  m_controller->loadPreviousImage( );
 }

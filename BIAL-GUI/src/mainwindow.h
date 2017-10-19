@@ -5,7 +5,11 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QFileInfo>
 #include <QMainWindow>
+
+#include "activeContourWidget.h"
+#include "segmentationwidget.h"
 
 namespace Ui {
   class MainWindow;
@@ -82,6 +86,8 @@ private slots:
 
   void actionDefaultTool_triggered( );
 
+  void actionLiveWireTool_triggered( );
+
   void actionSegmentationTool_triggered( );
 
   void on_actionEnglish_triggered( );
@@ -92,15 +98,26 @@ private slots:
 
   void actionChange_default_parameters_triggered( );
 
+  void on_actionNext_triggered( );
+
+  void on_actionPrevious_triggered( );
+
 private:
   Ui::MainWindow *ui;
-  Controller *controller;
+  Controller *m_controller;
   QString defaultFolder;
   QAction *recentFileActs[ Controller::MaxRecentFiles ];
-  bool checkExtension( const QString &suffix );
+  bool checkExtension( const QFileInfo &fileInfo );
 
   QAction *actionDefaultTool;
   QAction *actionSegmentationTool;
+  QAction *actionLiveWireTool;
+
+  QDockWidget *segmentationDock;
+  QDockWidget *livewireDock;
+
+  SegmentationWidget *segmentationWidget;
+  ActiveContourWidget *livewireWidget;
 };
 
 class CursorChanger {

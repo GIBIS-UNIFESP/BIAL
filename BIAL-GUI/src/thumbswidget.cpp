@@ -2,7 +2,7 @@
 #include "thumbswidget.h"
 #include "ui_thumbswidget.h"
 
-ThumbsWidget::ThumbsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::ThumbsWidget ), controller(nullptr) {
+ThumbsWidget::ThumbsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::ThumbsWidget ), controller( nullptr ) {
   ui->setupUi( this );
 }
 
@@ -31,6 +31,21 @@ void ThumbsWidget::addThumbnail( GuiImage *image ) {
 
 void ThumbsWidget::setController( Controller *value ) {
   controller = value;
+  connect( controller, &Controller::currentImageChanged, this, &ThumbsWidget::currentImageChanged );
+}
+
+void ThumbsWidget::currentImageChanged( ) {
+  if( controller ) {
+    for( Thumbnail *thumb: thumbs ) {
+      if( controller->currentImagePos( ) == thumb->imageNumber( ) ) {
+        thumb->setFrameShadow( QFrame::Raised );
+        ui->thumbsScrollArea->ensureWidgetVisible( thumb );
+      }
+      else {
+        thumb->setFrameShadow( QFrame::Plain );
+      }
+    }
+  }
 }
 
 void ThumbsWidget::removeAt( int pos ) {

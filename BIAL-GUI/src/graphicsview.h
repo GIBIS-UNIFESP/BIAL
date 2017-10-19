@@ -1,6 +1,8 @@
 #ifndef GRAPHICSVIEW_H
 #define GRAPHICSVIEW_H
 
+#include "graphicsviewzoom.h"
+
 #include <QGraphicsView>
 
 class GraphicsView : public QGraphicsView {
@@ -23,6 +25,23 @@ protected:
   virtual void dragMoveEvent( QDragMoveEvent *event ) override;
   virtual void dragLeaveEvent( QDragLeaveEvent *event ) override;
   virtual void dropEvent( QDropEvent *event ) override;
+
+
+protected:
+  void mousePressEvent( QMouseEvent *e );
+  void mouseReleaseEvent( QMouseEvent *e );
+  void mouseMoveEvent( QMouseEvent *e );
+  void keyPressEvent( QKeyEvent *e );
+  void keyReleaseEvent( QKeyEvent *e );
+
+private:
+  bool _pan;
+  bool _space;
+  int _panStartX;
+  int _panStartY;
+
+  GraphicsViewZoom *m_gvzoom;
+
 
   /* QWidget interface */
 protected:
