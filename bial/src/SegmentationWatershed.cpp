@@ -19,7 +19,7 @@
 
 #include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
-#include "FastIncreasingFifoBucketQueue.hpp"
+#include "DistanceBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "IntensityLocals.hpp"
@@ -31,7 +31,7 @@ namespace Bial {
   Image< int > Segmentation::Watershed( Image< D > &gradient, float radius ) {
     try {
       Adjacency spheric( AdjacencyType::HyperSpheric( radius, gradient.Dims( ) ) );
-      Vector< bool > local_minima = Intensity::LocalMinima( gradient, spheric );
+      Vector< bool > local_minima( Intensity::LocalMinima( gradient, spheric ) );
       return( Segmentation::Watershed( gradient, local_minima ) );
     }
     catch( std::bad_alloc &e ) {
@@ -55,8 +55,7 @@ namespace Bial {
   template< class D >
   Image< int > Segmentation::Watershed( Image< D > &gradient, const Vector< bool > &seeds ) {
     try {
-      D min_val = gradient.Minimum( );
-      size_t value_range = gradient.Maximum( ) - gradient.Minimum( ) + 1;
+      D max_val = gradient.Maximum( );
       size_t size = gradient.size( );
       IF_DEBUG( seeds.size( ) != size ) {
         std::string msg( BIAL_ERROR( "Gradient image and seed vector must have the same number of elements." ) );
@@ -64,50 +63,18 @@ namespace Bial {
       }
       Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
       Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
-      MaxPathFunction< Image, D > max_function( gradient, &label, nullptr, true, gradient );
-      COMMENT( "Setting seeds. Image size: " << size, 0 );
-      FastIncreasingFifoBucketQueue queue( size, min_val, value_range );
+      Image< D > value( gradient );
+      COMMENT( "Setting seeds. Image size: " << size << ". Max val: " << max_val, 0 );
+      DistanceBucketQueue queue( size, max_val + 2 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
         if( seeds[ pxl ] ) {
-          gradient[ pxl ] += 1.0;
-          queue.Insert( pxl, gradient[ pxl ] );
+          value[ pxl ] += 1;
+          queue.Insert( pxl, value[ pxl ] );
         }
         else
-          gradient[ pxl ] = std::numeric_limits< D >::max( );
+          value[ pxl ] = std::numeric_limits< D >::max( );
       }
       COMMENT( "Running IFT.", 0 );
-      //ImageIFT< D > ift( gradient, spheric, &max_function, &queue );
-      //ift.Run( );
-      COMMENT( "Initializing the maps.", 1 );
-      // AdjacencyIterator adj_itr( gradient, spheric );
-      // size_t adj_size = spheric.size( );
-      // size_t adj_index;
-      // COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
-      // while( !queue.Empty( ) ) {
-      //   COMMENT( "Initializing removed data.", 4 );
-      //   int index = queue.Remove( );
-      //   bool capable = max_function.RemoveLabel( index, queue.State( index ) );
-      //   COMMENT( "Index: " << index << ", value: " << gradient[ index ] << ", is capable: " <<
-      //            ( capable ? "true" : "false" ), 4 );
-      //   queue.Finished( index );
-      //   if( capable ) {
-      //     for( size_t adj = 0; adj < adj_size; ++adj ) {
-      //       if( ( adj_itr.AdjIdx( index, adj, adj_index ) ) &&
-      //           ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
-      //         COMMENT( "Conquering: " << adj_index, 4 );
-      //         D previous_value = gradient[ adj_index ];
-      //         COMMENT( "previous_value: " << previous_value, 4 );
-      //         if( max_function.Propagate( index, adj_index ) ) {
-      //           COMMENT( "propagated!", 4 );
-      //           queue.Update( adj_index, previous_value, gradient[ adj_index ] );
-      //           COMMENT( "queue updated!", 4 );
-      //           label( adj_index ) = label( index );
-      //           COMMENT( "function updated!", 4 );
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
       AdjacencyIterator adj_itr( gradient, spheric );
       size_t adj_size = spheric.size( );
       size_t adj_index;
@@ -120,59 +87,67 @@ namespace Bial {
       size_t z_size_1 = z_size - 1;
       Vector< size_t > src_vector( 3 );
       Vector< size_t > adj_vector( 3 );
+      size_t next_label = 1;
       COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
       while( !queue.Empty( ) ) {
         COMMENT( "Initializing removed data.", 4 );
         int index = queue.Remove( );
-        bool capable = max_function.RemoveLabel( index, queue.State( index ) );
-        COMMENT( "Index: " << index << ", value: " << gradient[ index ] << ", is capable: " <<
-                 ( capable ? "true" : "false" ), 4 );
+        if( queue.State( index ) == BucketState::INSERTED ) {
+          value[ index ] = gradient[ index ];
+          label[ index ] = next_label;
+          ++next_label;
+          queue.ResetMinimum( );
+        }
+        COMMENT( "Index: " << index << ", value: " << value[ index ], 4 );
         queue.Finished( index );
-        if( capable ) {
-          div_t div_index_by_xy = std::div( static_cast< int >( index ), static_cast< int >( xy_size ) );
-          div_t div_rem_by_x =  std::div( div_index_by_xy.rem, static_cast< int >( x_size ) );
-          src_vector[ 0 ] = static_cast< size_t >( div_rem_by_x.rem );
-          src_vector[ 1 ] = static_cast< size_t >( div_rem_by_x.quot );
-          src_vector[ 2 ] = static_cast< size_t >( div_index_by_xy.quot );
-          if( ( src_vector[ 0 ] > 0 ) && ( src_vector[ 0 ] < x_size_1 ) && ( src_vector[ 1 ] > 0 ) && 
-              ( src_vector[ 1 ] < y_size_1 ) && ( src_vector[ 2 ] > 0 ) && ( src_vector[ 2 ] < z_size_1 ) ) {
-            for( size_t adj = 0; adj < adj_size; ++adj ) {
-              adj_index = adj_itr( index, adj );
-              if( queue.State( adj_index ) != BucketState::REMOVED ) {
-                COMMENT( "Conquering: " << adj_index, 4 );
-                D previous_value = gradient[ adj_index ];
-                COMMENT( "previous_value: " << previous_value, 4 );
-                if( max_function.Propagate( index, adj_index, adj ) ) {
-                  COMMENT( "propagated!", 4 );
-                  queue.Update( adj_index, previous_value, gradient[ adj_index ] );
-                  COMMENT( "queue updated!", 4 );
-                  label( adj_index ) = label( index );
-                  COMMENT( "function updated!", 4 );
-                }
+        div_t div_index_by_xy = std::div( static_cast< int >( index ), static_cast< int >( xy_size ) );
+        div_t div_rem_by_x =  std::div( div_index_by_xy.rem, static_cast< int >( x_size ) );
+        src_vector[ 0 ] = static_cast< size_t >( div_rem_by_x.rem );
+        src_vector[ 1 ] = static_cast< size_t >( div_rem_by_x.quot );
+        src_vector[ 2 ] = static_cast< size_t >( div_index_by_xy.quot );
+        if( ( src_vector[ 0 ] > 0 ) && ( src_vector[ 0 ] < x_size_1 ) && ( src_vector[ 1 ] > 0 ) && 
+            ( src_vector[ 1 ] < y_size_1 ) && ( src_vector[ 2 ] > 0 ) && ( src_vector[ 2 ] < z_size_1 ) ) {
+          COMMENT( "For pixels that are not in the image border, there is no need for adjacency validation.", 4 );
+          for( size_t adj = 0; adj < adj_size; ++adj ) {
+            adj_index = adj_itr( index, adj );
+            if( queue.State( adj_index ) != BucketState::REMOVED ) {
+              COMMENT( "Conquering: " << adj_index, 4 );
+              D previous_value = value[ adj_index ];
+              COMMENT( "previous_value: " << previous_value, 4 );
+              D arc_weight = gradient( adj_index );
+              D prp_value = std::max( value( index ), arc_weight );
+              if( previous_value > prp_value ) {
+                COMMENT( "propagated!", 4 );
+                value( adj_index ) = prp_value;
+                label( adj_index ) = label( index );
+                queue.Update( adj_index, previous_value, prp_value );
+                COMMENT( "queue updated!", 4 );
               }
             }
           }
-          else {
-            for( size_t adj = 0; adj < adj_size; ++adj ) {
-              adj_index = adj_itr( index, adj );
-              if( ( adj_itr.AdjVct( src_vector, adj, adj_vector ) ) &&
-                  ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
-                COMMENT( "Conquering: " << adj_index, 4 );
-                D previous_value = gradient[ adj_index ];
-                COMMENT( "previous_value: " << previous_value, 4 );
-                if( max_function.Propagate( index, adj_index, adj ) ) {
-                  COMMENT( "propagated!", 4 );
-                  queue.Update( adj_index, previous_value, gradient[ adj_index ] );
-                  COMMENT( "queue updated!", 4 );
-                  label( adj_index ) = label( index );
-                  COMMENT( "function updated!", 4 );
-                }
+        }
+        else {
+          COMMENT( "For pixels in the image border, adjacency must be validated.", 4 );
+          for( size_t adj = 0; adj < adj_size; ++adj ) {
+            adj_index = adj_itr( index, adj );
+            if( ( adj_itr.AdjVct( src_vector, adj, adj_vector ) ) &&
+                ( queue.State( adj_index ) != BucketState::REMOVED ) ) {
+              COMMENT( "Conquering: " << adj_index, 4 );
+              D previous_value = gradient[ adj_index ];
+              COMMENT( "previous_value: " << previous_value, 4 );
+              D arc_weight = gradient( adj_index );
+              D prp_value = std::max( value( index ), arc_weight );
+              if( previous_value > prp_value ) {
+                COMMENT( "propagated!", 4 );
+                value( adj_index ) = prp_value;
+                label( adj_index ) = label( index );
+                queue.Update( adj_index, previous_value, prp_value );
+                COMMENT( "queue updated!", 4 );
               }
             }
           }
         }
       }
-
       return( label );
     }
     catch( std::bad_alloc &e ) {
@@ -204,14 +179,13 @@ namespace Bial {
                                      std::to_string( bkg_seeds.size( ) ) ) );
         throw( std::logic_error( msg ) );
       }
-      D min_val = gradient.Minimum( );
-      size_t value_range = gradient.Maximum( ) - gradient.Minimum( ) + 1;
+      D max_val = gradient.Maximum( );
       Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
       Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
       size_t size = gradient.size( );
       Image< D > handicap( gradient );
       MaxPathFunction< Image, D > max_function( gradient, &label, nullptr, true, handicap );
-      FastIncreasingFifoBucketQueue queue( size, min_val, value_range );
+      DistanceBucketQueue queue( size, max_val + 1 );
       for( size_t elm = 0; elm < size; ++elm )
         gradient[ elm ] = std::numeric_limits< D >::max( );
       for( size_t elm = 0; elm < obj_seeds.size( ); ++elm ) {
@@ -226,8 +200,8 @@ namespace Bial {
         gradient[ bkg_elm ] = handicap[ bkg_elm ] + 1.0;
         queue.Insert( bkg_elm, gradient[ bkg_elm ] );
       }
-      ImageIFT< D > ift( gradient, spheric, &max_function, &queue );
-      ift.Run( );
+      //ImageIFT< D > ift( gradient, spheric, &max_function, &queue );
+      //ift.Run( );
       return( label );
     }
     catch( std::bad_alloc &e ) {

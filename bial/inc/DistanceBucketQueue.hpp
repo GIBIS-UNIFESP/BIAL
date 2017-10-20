@@ -113,6 +113,15 @@ namespace Bial {
     size_t Buckets( ) const;
 
     /**
+     * @date 2017/Oct/20 
+     * @param none.
+     * @return none. 
+     * @brief Restarts minimum.
+     * @warning none.
+     */
+    void ResetMinimum( );
+
+    /**
      * @date 2016/Jan/27 
      * @param none.
      * @return none. 

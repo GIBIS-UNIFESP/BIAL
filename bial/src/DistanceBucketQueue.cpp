@@ -29,8 +29,7 @@
 namespace Bial {
 
   DistanceBucketQueue::DistanceBucketQueue( size_t size, size_t max_dist ) try :
-    identity( Vector< IdentityNode >( size, IdentityNode( ) ) ), 
-    weight( Vector< WeightNode >( max_dist + 1, WeightNode( ) ) ), elements( 0 ), minimum( 0 ) {
+    identity( size, IdentityNode( ) ), weight( max_dist + 1, WeightNode( ) ), elements( 0 ), minimum( 0 ) {
       COMMENT( "Creating queue with " << weight.size( ) << " elements.", 3 );
     }
   catch( std::bad_alloc &e ) {
@@ -107,6 +106,10 @@ namespace Bial {
     return( weight.size( ) );
   }
 
+  void DistanceBucketQueue::ResetMinimum( ) {
+    minimum = 0;
+  }
+
   void DistanceBucketQueue::Reset( ) {
     size_t size = identity.size( );
     for( size_t elm = 0; elm < size; ++ elm )
@@ -162,7 +165,6 @@ namespace Bial {
   size_t DistanceBucketQueue::Remove( ) {
     try {
       COMMENT( "Current amount of elements prior to removal: " << elements, 3 );
-      COMMENT( "Check if queue is initialized.", 4 );
       IF_DEBUG( elements == 0 ) {
         std::string msg( BIAL_ERROR( "Removing element from empty queue." ) );
         throw( std::underflow_error( msg ) );
