@@ -20,6 +20,7 @@
 #include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
 #include "DistanceBucketQueue.hpp"
+#include "FastIncreasingFifoBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
 #include "IntensityLocals.hpp"
@@ -55,12 +56,21 @@ namespace Bial {
   template< class D >
   Image< int > Segmentation::Watershed( Image< D > &gradient, const Vector< bool > &seeds ) {
     try {
+      COMMENT( "Computing initial values from input gradient image.", 0 );
       D max_val = gradient.Maximum( );
       size_t size = gradient.size( );
+      size_t x_size = gradient.size( 0 );
+      size_t y_size = gradient.size( 1 );
+      size_t z_size = gradient.size( 2 );
+      size_t x_size_1 = x_size - 1;
+      size_t y_size_1 = y_size - 1;
+      size_t z_size_1 = z_size - 1;
+      size_t xy_size = gradient.Displacement( 1 );
       IF_DEBUG( seeds.size( ) != size ) {
         std::string msg( BIAL_ERROR( "Gradient image and seed vector must have the same number of elements." ) );
         throw( std::logic_error( msg ) );
       }
+      COMMENT( "Creating adjacency and images.", 0 );
       Adjacency spheric( AdjacencyType::HyperSpheric( 1.0, gradient.Dims( ) ) );
       Image< int > label( gradient.Dim( ), gradient.PixelSize( ) );
       Image< D > value( gradient );
@@ -78,13 +88,6 @@ namespace Bial {
       AdjacencyIterator adj_itr( gradient, spheric );
       size_t adj_size = spheric.size( );
       size_t adj_index;
-      size_t xy_size = gradient.Displacement( 1 );
-      size_t x_size = gradient.size( 0 );
-      size_t y_size = gradient.size( 1 );
-      size_t z_size = gradient.size( 2 );
-      size_t x_size_1 = x_size - 1;
-      size_t y_size_1 = y_size - 1;
-      size_t z_size_1 = z_size - 1;
       Vector< size_t > src_vector( 3 );
       Vector< size_t > adj_vector( 3 );
       size_t next_label = 1;
@@ -185,6 +188,7 @@ namespace Bial {
       size_t size = gradient.size( );
       Image< D > handicap( gradient );
       MaxPathFunction< Image, D > max_function( gradient, &label, nullptr, true, handicap );
+      //FastIncreasingFifoBucketQueue queue( size, max_val + 1 );
       DistanceBucketQueue queue( size, max_val + 1 );
       for( size_t elm = 0; elm < size; ++elm )
         gradient[ elm ] = std::numeric_limits< D >::max( );
