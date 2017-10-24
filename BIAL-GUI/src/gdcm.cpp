@@ -115,8 +115,8 @@ Bial::Image< int > GDCM::OpenGImage( const std::string &filename ) {
 Bial::MultiImage GDCM::OpenGImage( const std::string &filename ) {
   try {
     QFileInfo fileInfo( QString::fromStdString( filename ) );
-    QRegExp regexpr3D( ".nii|.img|.scn" );
-    if( fileInfo.completeSuffix( ).contains( regexpr3D ) ) {
+    QString regexpr3D( ".nii|.img|.scn|.hdr|.nii.gz|.img.gz|.scn.gz|.hdr.gz" );
+    if( regexpr3D.contains( fileInfo.completeSuffix( ) ) ) {
       Bial::NiftiHeader hdr( filename );
       Bial::NiftiType type( hdr.DataType( ) );
       switch( type ) {

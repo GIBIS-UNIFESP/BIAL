@@ -81,7 +81,10 @@ namespace Bial {
       COMMENT( "Check for zero size dimensions.", 2 );
       for( size_t dms = 0; dms < 3; ++dms ) {
         if( dims[ dms ] == 0 ) {
-          std::string msg( BIAL_ERROR( "Dimension " + std::to_string( dms ) + " with zero elements." ) );
+          std::string msg( BIAL_ERROR( "Dimensions: " + std::to_string( dimensions ) +
+                                       ". Dimension " + std::to_string( dms ) + " with zero elements. " +
+                                       "spc_dim: " + std::to_string( spc_dim[ 0 ] ) + ", " +
+                                       std::to_string( spc_dim[ 1 ] ) + ", " + std::to_string( spc_dim[ 2 ] ) + "." ) );
           throw( std::logic_error( msg ) );
         }
       }
