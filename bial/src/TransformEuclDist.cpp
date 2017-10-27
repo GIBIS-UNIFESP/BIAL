@@ -20,11 +20,11 @@
 
 #include "AdjacencyRound.hpp"
 #include "AdjacencyIterator.hpp"
-#include "DistanceBucketQueue.hpp"
 #include "GeodesicPathFunction.hpp"
 #include "GrowingBucketQueue.hpp"
 #include "Image.hpp"
 #include "ImageIFT.hpp"
+#include "SimpleBucketQueue.hpp"
 
 namespace Bial {
 
@@ -43,7 +43,7 @@ namespace Bial {
       size_t adj_size = adj.size( );
       COMMENT( "Setting seed pixels.", 0 );
       COMMENT( "Creating bucket queue with the longest distance in the image.", 0 );
-      DistanceBucketQueue queue( size, border.size( 0 ) * border.size( 0 ) + border.size( 1 ) * border.size( 1 ) + 
+      SimpleBucketQueue queue( size, border.size( 0 ) * border.size( 0 ) + border.size( 1 ) * border.size( 1 ) + 
                                  border.size( 2 ) * border.size( 2 ) + 1 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
         if( border[ pxl ] != 0 ) {
@@ -151,8 +151,8 @@ namespace Bial {
       size_t adj_size = adj.size( );
       COMMENT( "Setting seed pixels.", 0 );
       COMMENT( "Creating bucket queue with the longest distance in the image.", 0 );
-      DistanceBucketQueue queue( size, border.size( 0 ) * border.size( 0 ) + border.size( 1 ) * border.size( 1 ) + 
-                                 border.size( 2 ) * border.size( 2 ) + 1 );
+      SimpleBucketQueue queue( size, border.size( 0 ) * border.size( 0 ) + border.size( 1 ) * border.size( 1 ) +
+                               border.size( 2 ) * border.size( 2 ) + 1 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
         if( mask[ pxl ] != 0 ) {
           if( border[ pxl ] != 0 ) {

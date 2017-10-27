@@ -32,6 +32,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) try : QObject( parent ),
       case Bial::MultiImageType::int_img: {
       Bial::Image< int > &img( getIntImage( ) );
       m_fmax = m_max = img.Maximum( );
+      COMMENT( "Opening int image with maximum intensity: " << m_max, 2 );
       if( m_max <= 66000 ) {
         histogram = Bial::SignalType::ZeroStartHistogram( img );
       }
@@ -45,6 +46,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) try : QObject( parent ),
       case Bial::MultiImageType::flt_img: {
       Bial::Image< float > &img( getFltImage( ) );
       m_max = m_fmax = img.Maximum( );
+      COMMENT( "Opening float image with maximum intensity: " << m_fmax, 2 );
       if( m_fmax <= 66000 ) {
         histogram = Bial::SignalType::ZeroStartHistogram( img );
       }
@@ -60,6 +62,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) try : QObject( parent ),
       Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyBrightness< int >( clr_img ) );
       Bial::Color clr( clr_img.Maximum( ) );
       m_fmax = m_max = std::max( clr[ 0 ], std::max( clr[ 1 ], clr[ 2 ] ) );
+      COMMENT( "Opening color image with maximum intensity: " << m_max, 2 );
       if( m_max <= 66000 ) {
         histogram = Bial::SignalType::ZeroStartHistogram( img );
       }
@@ -76,6 +79,7 @@ GuiImage::GuiImage( QString fname, QObject *parent ) try : QObject( parent ),
       Bial::Image< float > img( Bial::ColorSpace::Channel< float >( rcl_img, 2 ) );
       Bial::RealColor rcl( rcl_img.Maximum( ) );
       m_max = m_fmax = rcl[ 2 ];
+      COMMENT( "Opening real color image with maximum intensity: " << m_max, 2 );
       if( m_fmax <= 66000 ) {
         histogram = Bial::SignalType::ZeroStartHistogram( img );
       }

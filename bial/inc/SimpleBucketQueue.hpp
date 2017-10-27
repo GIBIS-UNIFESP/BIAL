@@ -15,8 +15,8 @@
  * that may do exactly the same as Vector< WeightNode >. 
  */
 
-#ifndef BIALDISTANCEBUCKETQUEUE_H
-#define BIALDISTANCEBUCKETQUEUE_H
+#ifndef BIALSIMPLEBUCKETQUEUE_H
+#define BIALSIMPLEBUCKETQUEUE_H
 
 #include "BucketQueueElements.hpp"
 #include "Common.hpp"
@@ -25,7 +25,7 @@
 namespace Bial {
 
   /** @brief Standard bucket queue class, that may work with both integer or real values. */
-  class DistanceBucketQueue {
+  class SimpleBucketQueue {
 
   protected:
 
@@ -39,12 +39,12 @@ namespace Bial {
     /**
      * @date 2012/Sep/06 
      * @param size: Total number of elements to be inserted in the queue. 
-     * @param max_dist: Maximum distance between elements that simultaneously present in the queue.
+     * @param max_dist: Maximum simple between elements that simultaneously present in the queue.
      * @return none. 
      * @brief Basic Constructor. 
      * @warning none. 
      */
-    DistanceBucketQueue( size_t size, size_t max_dist );
+    SimpleBucketQueue( size_t size, size_t max_dist );
 
   public:
 
@@ -178,6 +178,6 @@ namespace Bial {
 
 }
 
-#include "DistanceBucketQueue.cpp"
+#include "SimpleBucketQueue.cpp"
 
 #endif

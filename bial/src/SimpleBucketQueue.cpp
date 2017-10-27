@@ -15,20 +15,20 @@
  * that may do exactly the same as Vector< WeightNode >. 
  */
 
-#ifndef BIALDISTANCEBUCKETQUEUE_C
-#define BIALDISTANCEBUCKETQUEUE_C
+#ifndef BIALSIMPLEBUCKETQUEUE_C
+#define BIALSIMPLEBUCKETQUEUE_C
 
-#include "DistanceBucketQueue.hpp"
+#include "SimpleBucketQueue.hpp"
 
-#if defined ( BIAL_EXPLICIT_LIB ) && ( BIAL_DistanceBucketQueue )
-#define BIAL_EXPLICIT_DistanceBucketQueue
+#if defined ( BIAL_EXPLICIT_LIB ) && ( BIAL_SimpleBucketQueue )
+#define BIAL_EXPLICIT_SimpleBucketQueue
 #endif
 
-#if defined ( BIAL_EXPLICIT_DistanceBucketQueue ) || ( BIAL_IMPLICIT_BIN )
+#if defined ( BIAL_EXPLICIT_SimpleBucketQueue ) || ( BIAL_IMPLICIT_BIN )
 
 namespace Bial {
 
-  DistanceBucketQueue::DistanceBucketQueue( size_t size, size_t max_dist ) try :
+  SimpleBucketQueue::SimpleBucketQueue( size_t size, size_t max_dist ) try :
     identity( size, IdentityNode( ) ), weight( max_dist + 1, WeightNode( ) ), elements( 0 ), minimum( 0 ) {
       COMMENT( "Creating queue with " << weight.size( ) << " elements.", 3 );
     }
@@ -49,18 +49,18 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  bool DistanceBucketQueue::Empty( ) const {
+  bool SimpleBucketQueue::Empty( ) const {
     if( elements == 0 ) {
       return( true );
     }
     return( false );
   }
 
-  size_t DistanceBucketQueue::Elements( ) const {
+  size_t SimpleBucketQueue::Elements( ) const {
     return( elements );
   }
 
-  BucketState DistanceBucketQueue::State( size_t idt ) const {
+  BucketState SimpleBucketQueue::State( size_t idt ) const {
     try {
       return( identity( idt ).state );
     }
@@ -74,7 +74,7 @@ namespace Bial {
     }
   }
 
-  void DistanceBucketQueue::State( size_t idt, BucketState new_state ) {
+  void SimpleBucketQueue::State( size_t idt, BucketState new_state ) {
     try {
       identity( idt ).state = new_state;
     }
@@ -88,7 +88,7 @@ namespace Bial {
     }
   }
 
-  void DistanceBucketQueue::Finished( size_t idt ) {
+  void SimpleBucketQueue::Finished( size_t idt ) {
     try {
       identity( idt ).state = BucketState::REMOVED;
     }
@@ -102,22 +102,22 @@ namespace Bial {
     }
   }
 
-  size_t DistanceBucketQueue::Buckets( ) const {
+  size_t SimpleBucketQueue::Buckets( ) const {
     return( weight.size( ) );
   }
 
-  void DistanceBucketQueue::ResetMinimum( ) {
+  void SimpleBucketQueue::ResetMinimum( ) {
     minimum = 0;
   }
 
-  void DistanceBucketQueue::Reset( ) {
+  void SimpleBucketQueue::Reset( ) {
     size_t size = identity.size( );
     for( size_t elm = 0; elm < size; ++ elm )
       identity[ elm ].state = BucketState::NOT_VISITED;
     minimum = 0;
   }
 
-  void DistanceBucketQueue::Insert( size_t idt, int weight_idx ) {
+  void SimpleBucketQueue::Insert( size_t idt, int weight_idx ) {
     try {
       COMMENT( "Current amount of elements prior to insertion: " << elements, 3 );
       COMMENT( "Inserting element: " << idt << ", with weight index: " << weight_idx << ".", 4 );
@@ -162,7 +162,7 @@ namespace Bial {
     }
   }
 
-  size_t DistanceBucketQueue::Remove( ) {
+  size_t SimpleBucketQueue::Remove( ) {
     try {
       COMMENT( "Current amount of elements prior to removal: " << elements, 3 );
       IF_DEBUG( elements == 0 ) {
@@ -205,7 +205,7 @@ namespace Bial {
     }
   }
 
-  void DistanceBucketQueue::Remove( size_t idt, int weight_idx ) {
+  void SimpleBucketQueue::Remove( size_t idt, int weight_idx ) {
     try {
       COMMENT( "Current amount of elements prior to index removal: " << elements, 3 );
       COMMENT( "Check if queue is initialized.", 4 );
@@ -255,7 +255,7 @@ namespace Bial {
     }
   }
 
-  void DistanceBucketQueue::Update( size_t idt, int cur_wgt, int new_wgt ) {
+  void SimpleBucketQueue::Update( size_t idt, int cur_wgt, int new_wgt ) {
     try {
       if( ( identity( idt ).state == BucketState::INSERTED ) || 
           ( identity( idt ).state == BucketState::UPDATED ) ) {

@@ -582,7 +582,7 @@ Relaxometria: libbial
 
 
 
-Segmentation: Segmentation-Background Segmentation-ConnectedComponents Segmentation-ConvertSeeds Segmentation-Disconnected Segmentation-OrientedExternGeodesicStar Segmentation-Octants Segmentation-OrientedInternGeodesicStar Segmentation-Quadrants Segmentation-Threshold Segmentation-Watershed
+Segmentation: Segmentation-Background Segmentation-ConnectedComponents Segmentation-ConvertSeeds Segmentation-Disconnected Segmentation-GeodesicStar Segmentation-OrientedExternGeodesicStar Segmentation-Octants Segmentation-OrientedInternGeodesicStar Segmentation-Quadrants Segmentation-Threshold Segmentation-Watershed
 
 Segmentation-Background: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -594,6 +594,9 @@ Segmentation-ConvertSeeds: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Segmentation-Disconnected: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Segmentation-GeodesicStar: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Segmentation-Octants: libbial
