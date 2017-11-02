@@ -28,10 +28,11 @@
 
 namespace Bial {
 
+  // Erro aqui. Corrigir size e buckets. buckets é usado para calcular o indice.
   RotatingBucketQueue::RotatingBucketQueue( size_t size, size_t max_dist ) try :
     identity( size, IdentityNode( ) ), weight( max_dist + 1, WeightNode( ) ), elements( 0 ), minimum( 0 ), 
-      size( size ) {
-      COMMENT( "Creating queue with " << size << " elements.", 3 );
+      buckets( max_dist ), size( size ) {
+      COMMENT( "Creating queue with " << size << " elements and " << buckets << " buckets." , 3 );
     }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -104,7 +105,7 @@ namespace Bial {
   }
 
   size_t RotatingBucketQueue::Buckets( ) const {
-    return( size );
+    return( buckets );
   }
 
   void RotatingBucketQueue::ResetMinimum( ) {
@@ -130,7 +131,7 @@ namespace Bial {
                ", weight_idx: " << weight_idx << ", first: " << weight( weight_idx ).first  <<
                ", last: " << weight( weight_idx ).last, 3 );
       ++elements;
-      int idx = weight_idx % size;
+      int idx = weight_idx % buckets;
       if( weight( idx ).first == -1 ) {
         COMMENT( "First element in bucket.", 4 );
         weight( idx ).first = idt;
@@ -165,27 +166,27 @@ namespace Bial {
 
   size_t RotatingBucketQueue::Remove( ) {
     try {
-      COMMENT( "Current amount of elements prior to removal: " << elements, 3 );
+      COMMENT( "Current amount of elements prior to removal: " << elements, 1 );
       IF_DEBUG( elements == 0 ) {
         std::string msg( BIAL_ERROR( "Removing element from empty queue." ) );
         throw( std::underflow_error( msg ) );
       }
-      COMMENT( "Removing! elements: " << elements << ", minimum: " << minimum, 3 );
-      COMMENT( "Finding next element or returning EMPTY bucket queue.", 4 );
+      COMMENT( "Removing! elements: " << elements << ", minimum: " << minimum, 1 );
+      COMMENT( "Finding next element or returning EMPTY bucket queue. Bucket size: " << buckets, 1 );
       while( weight( minimum ).first == -1 )
-        ++minimum;
-      COMMENT( "Found index: " << minimum, 3 );
+        minimum = ( minimum + 1 ) % buckets;
+      COMMENT( "Found index: " << minimum, 1 );
       --elements;
       int idt = weight( minimum ).first;
       int next = identity( idt ).next;
       COMMENT( "Removing idt: " << idt << ", weight_idx: " << minimum << ", prev: " << 
-               identity( idt ).prev << ", next:" << next, 3 );
+               identity( idt ).prev << ", next:" << next, 1 );
       weight( minimum ).first = next;
       if( next == -1 )
         weight( minimum ).last = -1;
       else
         identity( next ).prev = -1;
-      COMMENT( "Remove done.", 3 );
+      COMMENT( "Remove done.", 1 );
       return( idt );
     }
     catch( std::bad_alloc &e ) {
@@ -221,7 +222,7 @@ namespace Bial {
                << ", weight_idx: " << weight_idx << ", previous: " << prev << ", next:" << next 
                << ", first: " << weight( weight_idx ).first, 3 );
       --elements;
-      int idx = weight_idx % size;
+      int idx = weight_idx % buckets;
       if( prev == -1 ) {
         COMMENT( idt << " << is the first element.", 4 );
         weight( idx ).first = next;

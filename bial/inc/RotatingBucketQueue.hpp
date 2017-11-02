@@ -33,7 +33,8 @@ namespace Bial {
     Vector< WeightNode > weight; /** @brief vector containing pointers to elements that fall into each bucket weight. */
     size_t elements; /** @brief Number of elements currently in the queue. Not required, but worth it for debugging. */
     size_t minimum; /** @brief minimum element currently inserted in the queue. */
-    size_t size; /** @brief Number of buckets. */
+    size_t buckets; /** @brief Number of buckets. */
+    size_t size; /** @brief Number of pixels to be processed. */
 
   public:
 

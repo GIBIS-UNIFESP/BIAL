@@ -72,6 +72,7 @@ namespace Bial {
         pred[ elm ] = -1;
         queue.Insert( elm, value[ elm ] );
       }
+      COMMENT( "Queue size: " << queue.Elements( ), 0 );
       Adjacency adjacency( AdjacencyType::HyperSpheric( 1.5, grad.Dims( ) ) );
       AdjacencyIterator adj_itr( value, adjacency );
       size_t adj_size = adjacency.size( );
@@ -85,10 +86,10 @@ namespace Bial {
       Vector< size_t > src_vector( 3 );
       Vector< size_t > adj_vector( 3 );
       COMMENT( "Running geodesic star restriction IFT.", 0 );
-      while( queue.Empty( ) ) {
-        COMMENT( "Initializing removed data.", 4 ); // Nao entrou aqui.
+      while( !queue.Empty( ) ) {
+        COMMENT( "Initializing removed data.", 3 );
         size_t index = queue.Remove( );
-        COMMENT( "Index: " << index << ", value: " << value[ index ], 4 );
+        COMMENT( "Index: " << index << ", value: " << value[ index ], 3 );
         queue.Finished( index );
         div_t div_index_by_xy = std::div( static_cast< int >( index ), static_cast< int >( xy_size ) );
         div_t div_rem_by_x =  std::div( div_index_by_xy.rem, static_cast< int >( x_size ) );
@@ -97,20 +98,20 @@ namespace Bial {
         src_vector[ 2 ] = static_cast< size_t >( div_index_by_xy.quot );
         if( ( src_vector[ 0 ] > 0 ) && ( src_vector[ 0 ] < x_size_1 ) && ( src_vector[ 1 ] > 0 ) && 
             ( src_vector[ 1 ] < y_size_1 ) && ( src_vector[ 2 ] > 0 ) && ( src_vector[ 2 ] < z_size_1 ) ) {
-          COMMENT( "For pixels that are not in the image border, there is no need for adjacency validation.", 4 );
+          COMMENT( "For pixels that are not in the image border, there is no need for adjacency validation.", 3 );
           for( size_t adj = 0; adj < adj_size; ++adj ) {
             adj_index = adj_itr( index, adj );
             // SegmentationGeoStar: Check if the following comparison is worth doing.
             if( ( queue.State( adj_index ) != BucketState::REMOVED ) && ( value[ index ] < value[ adj_index ] ) ) {
-              COMMENT( "Conquering: " << adj_index, 4 );
+              COMMENT( "Conquering: " << adj_index, 3 );
               D previous_value = value[ adj_index ];
-              COMMENT( "previous_value: " << previous_value, 4 );
+              COMMENT( "previous_value: " << previous_value, 3 );
               COMMENT( "Computing arc weight.", 3 );
               D arc_weight = grad[ index ] + grad[ adj_index ];
               COMMENT( "Suppressing non-zero.", 3 );
               ++arc_weight;
               COMMENT( "Computing spacial distance.", 3 );
-              double distance = dists[ adj_index ];
+              double distance = dists[ adj ];
               COMMENT( "Propagated value.", 3 );
               D prp_value = static_cast< D >( value[ index ] + beta_pows[ arc_weight ] - 1.0 + distance );
               COMMENT( "Updating value.", 3 );
@@ -123,17 +124,16 @@ namespace Bial {
           }
         }
         else {
-          COMMENT( "For pixels in the image border, adjacency must be validated.", 4 );
+          COMMENT( "For pixels in the image border, adjacency must be validated.", 3 );
           for( size_t adj = 0; adj < adj_size; ++adj ) {
             if( ( adj_itr.AdjVct( src_vector, adj, adj_vector ) ) && ( adj_index = adj_itr( index, adj ) ) &&
                 ( queue.State( adj_index ) != BucketState::REMOVED ) && ( value[ index ] < value[ adj_index ] ) ) {
-              COMMENT( "Conquering: " << adj_index, 4 );
+              COMMENT( "Conquering: " << adj_index, 3 );
               D previous_value = value[ adj_index ];
-              COMMENT( "previous_value: " << previous_value, 4 );
-              COMMENT( "Computing arc weight.", 3 );
+              COMMENT( "Computing arc weight with previous_value: " << previous_value, 3 );
               D arc_weight = grad[ index ] + grad[ adj_index ] + 1;
               COMMENT( "Computing spacial distance.", 3 );
-              double distance = dists[ adj_index ];
+              double distance = dists[ adj ];
               COMMENT( "Propagated value.", 3 );
               D prp_value = static_cast< D >( value[ index ] + beta_pows[ arc_weight ] - 1.0 + distance );
               COMMENT( "Updating value.", 3 );
@@ -148,7 +148,7 @@ namespace Bial {
       }
 
       COMMENT( "SECOND STEP. Running with background and foreground seeds.", 0 );
-      queue.Reset( );
+      queue.ResetMinimum( );
       Image< int > label( grad.Dim( ), grad.PixelSize( ) );
       label.Set( -1 );
       COMMENT( "Setting seeds with background.", 0 );
@@ -172,15 +172,15 @@ namespace Bial {
         queue.Insert( elm, value[ elm ] );
       }
       COMMENT( "Running path function.", 0 );
-      while( queue.Empty( ) ) {
-        COMMENT( "Initializing removed data.", 4 ); // Tambem nao entrou aqui.
+      while( !queue.Empty( ) ) {
+        COMMENT( "Initializing removed data.", 3 );
         size_t index = queue.Remove( );
-        COMMENT( "Index: " << index << ", value: " << value[ index ], 4 );
+        COMMENT( "Index: " << index << ", value: " << value[ index ], 3 );
         queue.Finished( index );
         for( size_t adj = 0; adj < adj_size; ++adj ) {
           if( ( adj_itr.AdjIdx( index, adj, adj_index ) ) && ( queue.State( adj_index ) != BucketState::REMOVED ) &&
               ( value[ index ] < value[ adj_index ] ) ) {
-            COMMENT( "Conquering: " << adj_index, 4 );
+            COMMENT( "Conquering: " << adj_index, 3 );
             D previous_value = value[ adj_index ];
             COMMENT( "previous_value: " << previous_value << ". Computing arc weight.", 3 );
             double arc_weight = grad( index ) + grad( adj_index ) + 1;
