@@ -61,9 +61,11 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
 
   segmentationDock = new QDockWidget( tr( "Segmentation" ), this );
   segmentationWidget = new SegmentationWidget( this );
+  segmentationWidget->adjustSize( );
   segmentationDock->setWidget( segmentationWidget );
   segmentationDock->setFloating( true );
   segmentationDock->hide( );
+  segmentationDock->adjustSize( );
   connect( ui->actionSegmentation_dock, &QAction::toggled, segmentationDock, &QDockWidget::setVisible );
   connect( segmentationDock, &QDockWidget::visibilityChanged, ui->actionSegmentation_dock,
            &QAction::setChecked );
@@ -72,9 +74,11 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   livewireDock = new QDockWidget( tr( "LiveWire" ), this );
   livewireWidget = new ActiveContourWidget( this->ui->imageViewer, this );
   livewireWidget->setController( m_controller );
+  livewireWidget->adjustSize( );
   livewireDock->setWidget( livewireWidget );
   livewireDock->setFloating( true );
   livewireDock->hide( );
+  livewireDock->adjustSize( );
 
   connect( ui->actionLiveWire_dock, &QAction::toggled, livewireDock, &QDockWidget::setVisible );
   connect( livewireDock, &QDockWidget::visibilityChanged, ui->actionLiveWire_dock,
