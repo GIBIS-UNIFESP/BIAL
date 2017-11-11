@@ -2,7 +2,7 @@
 #define LIVEWIREWIDGET_H
 
 #include "activeContourTool.h"
-
+#include "robotuser.h"
 #include <QWidget>
 
 namespace Ui {
@@ -32,9 +32,16 @@ private slots:
 
   void on_pushButtonClassifier_clicked( );
 
+  void on_pushButtonTest1_clicked();
+
+  void on_pushButtonTest2_clicked();
+
 private:
   Ui::LiveWireWidget *ui;
   ActiveContourTool *m_tool;
+  CvSVM* m_SVM;
+
+
 };
 
 #endif /* LIVEWIREWIDGET_H */

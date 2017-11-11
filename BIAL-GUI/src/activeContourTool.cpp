@@ -5,7 +5,8 @@
 #include "File.hpp"
 #include "FileImage.hpp"
 #include "Geometrics.hpp"
-
+#include "DescriptionGCH.hpp"
+#include "DescriptionLBP.hpp"
 
 #include "MultiImage.hpp"
 #include "RealColor.hpp"
@@ -53,26 +54,93 @@ Bial::Vector< double > ActiveContourTool::calcHistogram( const Path &path, const
   }
   return( hist );
 }
+double ActiveContourTool::calcMean( const Path &path, const Bial::Image< int > &img) {
+  double sum = 0.0;
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      sum += img[pxl];
+//      qDebug( )<< "Somando img["<< pxl <<"] = " << img[pxl];
+    }
+  }
+  return( sum/path.size() );
+}
 
-FeatureData ActiveContourTool::pathDescription( const Path &path, const ActiveContourMethod *method ) {
+double ActiveContourTool::calcDP( const Path &path, const Bial::Image< int > &img){
+  double mean = calcMean( path, img );
+  double acum = 0.0;
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      acum += pow((double)(img[pxl] - mean),2);
+    }
+  }
+  return(sqrt((acum/path.size())));
+}
+double ActiveContourTool::calcColor( const Path &path, const Bial::Image< int > &img){
+  return 0.0;
+}
+double ActiveContourTool::calcTexture( const Path &path, const Bial::Image< int > &img){
+  return 0.0;
+}
+double ActiveContourTool::calcMomentum( const Path &path, const Bial::Image< int > &img, int m){
+  double max = img.Maximum( );
+  Bial::Vector< double > count( max );
+  count.Set(0.0);
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      count[ img[ pxl ] ]++;
+    }
+  }
+  double momentum = 0.0;
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      momentum += pow(img[pxl],m) * count[ img[ pxl ] ]/path.size();
+    }
+  }
+  return momentum;
+}
+double ActiveContourTool::calcLBP( const Path &path, const Bial::Image< int > &img){
+
+  return 0.0;
+}
+double ActiveContourTool::calcGCH( const Path &path, const Bial::Image< int > &img){
+  return 0.0;
+}
+
+FeatureData ActiveContourTool::pathDescription( const Path &path ) {
   FeatureData features;
   features.Set( 0 );
-  features[ method->type( ) ] = 1.0;
   if( path.empty( ) ) {
     return( features );
   }
   const Bial::Vector< Bial::Point3D > points = toPoint3DVector( path );
   double imgSz = m_grayImg.size( );
-  double perimeter = points.size( ) / imgSz;
-  double distance = Bial::Distance( points.front( ), points.back( ) ) / imgSz;
-  features[ 3 ] = perimeter;
-  features[ 4 ] = distance;
-  features[ 5 ] = perimeter / distance;
-//  auto grad_hist = calcHistogram( path, m_grad, 4 );
-  auto grad_hist = calcHistogram( path, method->m_cost, 4 );
-  for( size_t i = 0; i < grad_hist.size( ); ++i ) {
-    features[ i + 6 ] = grad_hist[ i ];
+  double perimeter = points.size( );
+  double distance = Bial::Distance( points.front( ), points.back( ) );
+  features[ 0 ] = calcTexture(path,m_grayImg);//perimetro
+  features[ 1 ] = perimeter;//perimetro
+  features[ 2 ] = distance;//distancia
+  features[ 3 ] = perimeter / distance;//curvatura
+  features[ 4 ] = calcMean(path, m_grayImg);//Media
+  features[ 5 ] = calcDP(path, m_grayImg);//Desvio padrão
+  features[ 6 ] = calcMomentum(path, m_grayImg,3);//3 momento
+  features[ 7 ] = calcMomentum(path, m_grayImg,4);//4 momento
+  features[ 8 ] = calcLBP(path, m_grayImg);//descritor LBP
+  features[ 9 ] = calcGCH(path, m_grayImg);//descritor GCH
+
+  //  auto grad_hist = calcHistogram( path, method->m_cost, 4 );
+
+  //Histograma da imagem
+  auto img_hist = calcHistogram( path, m_grayImg, 4 );
+  for( size_t i = 0; i < img_hist.size( ); ++i ) {
+    features[ i + 10 ] = img_hist[ i ];
   }
+
+  //Histograma do gradiente
+  auto grad_hist = calcHistogram( path, m_grad, 4 );
+  for( size_t i = 0; i < grad_hist.size( ); ++i ) {
+    features[ i + 14 ] = grad_hist[ i ];
+  }
+  Bial::Write(m_grayImg,"Gray.pgm");
   return( features );
 }
 
@@ -331,7 +399,7 @@ void ActiveContourTool::updatePath( QPointF pt ) {
     Path path = method->updatePath( toPxIndex( pt ) );
     paths.push_back( path );
     int m = method->type( );
-    auto features = pathDescription( path, method.get( ) );
+    auto features = pathDescription( path );
     std::cout << m << " : " << features << std::endl;
   }
   for( int m = 0; m < m_methods.size( ); ++m ) {
@@ -403,7 +471,7 @@ void ActiveContourTool::runLiveWire( ) {
   if( m_points.size( ) > 0 ) {
     const Bial::Vector< size_t > m_seeds = { m_pointIdxs.last( ) };
 
-#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
+//#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
     for( int m = 0; m < m_methods.size( ); ++m ) {
       m_methods[ m ]->run( m_seeds, m_currentPath );
     }

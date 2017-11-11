@@ -7,7 +7,7 @@
 #include "tool.h"
 #include <QGraphicsItem>
 
-#define NUM_FTR 10
+#define NUM_FTR 18
 #define MAX_PTS 1000
 typedef Bial::Array< double, NUM_FTR > FeatureData;
 
@@ -50,7 +50,7 @@ public:
   ~ActiveContourTool( );
   static const int supportedFormats = ( ( int ) Modality::BW2D | ( int ) Modality::RGB2D );
   Bial::Image< int > getResult( );
-  FeatureData pathDescription( const Path &path, const ActiveContourMethod *method );
+  FeatureData pathDescription( const Path &path );
   /* Tool interface */
 public:
   int type( );
