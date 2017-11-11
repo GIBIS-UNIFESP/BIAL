@@ -1,3 +1,6 @@
+#include "activeContourTool.h"
+#include "defaulttool.h"
+#include "segmentationtool.h"
 #include "tool.h"
 
 bool Tool::hasLabel( ) const {
@@ -10,6 +13,31 @@ void Tool::setHasLabel( bool sHasLabel ) {
 
 GuiImage* Tool::getGuiImage( ) const {
   return( guiImage );
+}
+
+Tool* Tool::buildTool( int toolType, GuiImage *img, ImageViewer *viewer ) {
+  switch( toolType ) {
+      case DefaultTool::Type:
+      return( new DefaultTool( img, viewer ) );
+      case ActiveContourTool::Type:
+      return( new ActiveContourTool( img, viewer ) );
+      case SegmentationTool::Type:
+      return( new SegmentationTool( img, viewer ) );
+      default:
+      throw std::logic_error( "Invalid tool" );
+  }
+}
+
+Tool* Tool::setImageTool( int tool_type, GuiImage *img, ImageViewer *viewer ) {
+  for( int toolPos = 0; toolPos < img->tools.size( ); ++toolPos ) {
+    if( img->tools.at( toolPos )->type( ) == tool_type ) {
+      img->setCurrentToolPos( toolPos );
+    }
+  }
+  if( img->currentTool( )->type( ) != tool_type ) {
+    img->tools.append( Tool::buildTool( tool_type, img, viewer ) );
+    img->setCurrentToolPos( img->tools.size( ) - 1 );
+  }
 }
 
 

@@ -9,11 +9,13 @@ namespace Ui {
   class LiveWireWidget;
 }
 
+class ImageViewer;
+
 class ActiveContourWidget : public QWidget {
   Q_OBJECT
   Controller * m_controller;
 public:
-  explicit ActiveContourWidget( QWidget *parent = 0 );
+  explicit ActiveContourWidget( ImageViewer *viewer, QWidget *parent = 0 );
   ~ActiveContourWidget( );
   void setTool( Tool *sTool );
 
@@ -39,9 +41,13 @@ private slots:
 private:
   Ui::LiveWireWidget *ui;
   ActiveContourTool *m_tool;
+<<<<<<< HEAD
   CvSVM* m_SVM;
 
 
+=======
+  ImageViewer *m_viewer;
+>>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
 };
 
 #endif /* LIVEWIREWIDGET_H */

@@ -14,10 +14,8 @@ class ControlsWidget : public QWidget {
   Q_OBJECT
 
 public:
-  explicit ControlsWidget( QWidget *parent = 0 );
+  explicit ControlsWidget( Controller *controller, QWidget *parent = 0 );
   ~ControlsWidget( );
-
-  void setController( Controller *value );
 
 private slots:
   void imageChanged( );
