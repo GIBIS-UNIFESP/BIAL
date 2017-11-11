@@ -104,24 +104,28 @@ Path contour_following( const Bial::Image< int > &img ) {
 
 RobotUser::RobotUser( ActiveContourTool &tool ) :
   m_tool( tool ) {
-
   QFileInfo finfo( m_tool.getGuiImage( )->fileName( ) );
+  qDebug( ) << "Loading RobotUser for " << finfo.absoluteFilePath( );
   QDir dir = finfo.dir( );
   if( dir.cd( "segmentation" ) ) {
     QFileInfo gtFile( dir.absoluteFilePath( finfo.baseName( ) + ".pgm" ) );
     if( gtFile.exists( ) && gtFile.isFile( ) ) {
       m_groundTruth = Bial::Read< int >( gtFile.absoluteFilePath( ).toStdString( ) );
       if( m_groundTruth.size( ) != m_tool.getGuiImage( )->getSize( ) ) {
-        BIAL_WARNING( "Images should have the same dimensions!" );
+        throw std::logic_error( BIAL_ERROR( "Images should have the same dimensions!" ) );
       }
+      qDebug( ) << "Groundtruth of " << finfo.fileName( ) << "is" << gtFile.fileName( );
       m_contour = contour_following( m_groundTruth );
+      qDebug( ) << "The Groundtruth contour have " << m_contour.size( ) << "pixels";
     }
     else {
-      BIAL_WARNING( "Could not find the ground truth file!" );
+      throw std::logic_error( BIAL_ERROR( "Could not find the ground truth file for " +
+                                          finfo.absoluteFilePath( ).toStdString( ) ) );
     }
   }
   else {
-    BIAL_WARNING( "Could not find the ground truth file!" );
+    throw std::logic_error( BIAL_ERROR( "Could not find the ground truth file for " +
+                                        finfo.absoluteFilePath( ).toStdString( ) ) );
   }
 }
 
@@ -304,15 +308,14 @@ void RobotUser::run( ) {
 
 void RobotUser::train( ) {
 //  size_t end = m_contour.size( ) - 1;
-  qDebug( ) << "CONTOUR : " << m_contour.size( );
+  qDebug( ) << "CONTOUR of " << m_tool.getGuiImage( )->fileName( ) << ":" << m_contour.size( );
   QPointF pt = toPointF( m_contour[ 0 ] );
   m_tool.addPoint( pt );
   m_tool.runLiveWire( );
   Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
   for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
     size_t best_length = 0;
-
-#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
+//#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
     for( int m = 0; m < m_tool.getMethods( ).size( ); ++m ) {
       auto method = m_tool.getMethods( )[ m ];
       gt_map.Set( 0 );
@@ -333,7 +336,7 @@ void RobotUser::train( ) {
         if( diff > 0 ) {
           break;
         }
-#pragma omp critical
+//#pragma omp critical
         if( pxl_idx2 > best_length ) {
           best_length = pxl_idx2;
           m_tool.setCurrentMethod( method->type( ) );

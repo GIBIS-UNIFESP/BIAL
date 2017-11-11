@@ -12,7 +12,6 @@
 #include <QVector>
 
 class Tool;
-
 /**
  * @brief The GuiImage class is a bridge to the Bial::Image data structure to the QImage data structure. <br>
  * It have many important functions, such as the views spatial transforms, histogram equalization and others.

@@ -173,4 +173,4 @@ DISTFILES += \
     uncrustify.cfg
 
 
-#LIBS += -lopencv_core -lopencv_ml
+LIBS += -lopencv_core -lopencv_ml

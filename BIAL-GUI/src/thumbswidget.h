@@ -15,7 +15,7 @@ class ThumbsWidget : public QWidget {
   Q_OBJECT
 
 public:
-  explicit ThumbsWidget( QWidget *parent = 0 );
+  explicit ThumbsWidget( Controller *controller, QWidget *parent = 0 );
   ~ThumbsWidget( );
 
   void clear( );
@@ -23,8 +23,6 @@ public:
   void removeAt( int pos );
 
   void addThumbnail( GuiImage *image );
-
-  void setController( Controller *value );
 
 public slots:
   void currentImageChanged( );

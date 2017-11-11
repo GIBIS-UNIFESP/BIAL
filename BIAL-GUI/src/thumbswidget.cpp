@@ -2,8 +2,10 @@
 #include "thumbswidget.h"
 #include "ui_thumbswidget.h"
 
-ThumbsWidget::ThumbsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::ThumbsWidget ), controller( nullptr ) {
+ThumbsWidget::ThumbsWidget( Controller *controller, QWidget *parent ) : QWidget( parent ), ui( new Ui::ThumbsWidget ),
+  controller( controller ) {
   ui->setupUi( this );
+  controller->setThumbsWidget( this );
 }
 
 ThumbsWidget::~ThumbsWidget( ) {
@@ -27,12 +29,9 @@ void ThumbsWidget::addThumbnail( GuiImage *image ) {
   ui->thumbsLayout->setVerticalSpacing( 1 );
   /*  thumbnail->show(); */
   connect( thumbnail, &Thumbnail::changeImage, controller, &Controller::setCurrentImagePos );
-}
-
-void ThumbsWidget::setController( Controller *value ) {
-  controller = value;
   connect( controller, &Controller::currentImageChanged, this, &ThumbsWidget::currentImageChanged );
 }
+
 
 void ThumbsWidget::currentImageChanged( ) {
   if( controller ) {
