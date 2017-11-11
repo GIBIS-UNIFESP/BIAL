@@ -43,6 +43,13 @@ private:
   size_t toPxIndex( const QPointF &qpoint );
   const Bial::Vector< Bial::Point3D > toPoint3DVector( const Path &path );
   Bial::Vector< double > calcHistogram( const Path &path, const Bial::Image< int > &img, size_t bins );
+  double calcLBP(const Path &path, const Bial::Image<int> &img);
+  double calcGCH(const Path &path, const Bial::Image<int> &img);
+  double calcTexture(const Path &path, const Bial::Image<int> &img);
+  double calcDP(const Path &path, const Bial::Image<int> &img);
+  double calcMean(const Path &path, const Bial::Image<int> &img);
+  double calcMomentum(const Path &path, const Bial::Image<int> &img, int m);
+  double calcColor(const Path &path, const Bial::Image<int> &img);
 public:
   enum { Type = 42 };
   QGraphicsScene *m_scene;

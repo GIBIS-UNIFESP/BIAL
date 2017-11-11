@@ -13,7 +13,7 @@ TEMPLATE = app
 
 QMAKE_CXXFLAGS += -O0 -Wno-unused-function -Wno-unused-parameter \
 -I$$PWD/../bial/inc -I$$PWD/../bial/src -I$$PWD/../bial/lsh/inc \
--I$$PWD/../bial/cpplex/inc -I$$PWD/../bial/SLIC/inc -I$$PWD/../bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
+-I$$PWD/../bial/cpplex/inc -I$$PWD/../bial/SLIC/inc -I$$PWD/../bial/description/inc -I$$PWD/../bial/zlib -DREAL_FLOAT -DBIAL_$(basename $(notdir $(@)))
 
 QMAKE_CXXFLAGS += -DBIAL_EXPLICIT_LIB
 QMAKE_CXXFLAGS_DEBUG -= -pipe
@@ -173,4 +173,4 @@ DISTFILES += \
     uncrustify.cfg
 
 
-#LIBS += -lopencv_core -lopencv_ml
+LIBS += -lopencv_core -lopencv_ml
