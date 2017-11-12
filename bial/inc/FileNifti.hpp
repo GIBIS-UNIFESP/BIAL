@@ -379,7 +379,7 @@ namespace Bial {
       }
       }
       delete[] ( reinterpret_cast< unsigned char* >( dataptr ) );
-      if( hdr.SclSlope( ) != 0.0 )
+      if( hdr.SclSlope( ) > 0.0001 )
         res = res * hdr.SclSlope( ) + hdr.SclInter( );
       return( res );
     }

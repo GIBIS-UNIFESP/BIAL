@@ -277,7 +277,7 @@ void RobotUser::run( ) {
     }
     pxl_idx = best_length;
     if( pxl_idx < m_contour.size( ) - STEP ) {
-      if( m_tool.getCurrentMethod( ) != nextMethod ) {
+      if( m_tool.getCurrentMethod( ) != static_cast< int >( nextMethod ) ) {
         total_changes++;
         m_tool.setCurrentMethod( nextMethod );
       }

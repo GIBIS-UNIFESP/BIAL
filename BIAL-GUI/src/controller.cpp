@@ -39,6 +39,7 @@ bool Controller::addImage( QString fname ) {
   COMMENT( "Loading file " << fname.toStdString( ), 0 );
   GuiImage *img = nullptr;
   try {
+    qDebug( ) << "Creating Gui Image.";
     img = new GuiImage( fname, this );
   }
   catch( std::bad_alloc &e ) {

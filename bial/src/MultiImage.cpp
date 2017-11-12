@@ -187,7 +187,7 @@ namespace Bial {
   }
 
   MultiImage::~MultiImage( ) {
-    COMMENT( "Deteting Multiimage.", 0 );
+    COMMENT( "Deleting Multiimage.", 0 );
     switch( type ) {
     case MultiImageType::int_img:
       COMMENT( "liberating int.", 1 );

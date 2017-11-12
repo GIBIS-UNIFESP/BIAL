@@ -18,7 +18,7 @@ namespace Bial {
   class Image;
 
   namespace Transform {
-
+    
     /**
      * @date 2015/May/21
      * @param border: Border of binary image.

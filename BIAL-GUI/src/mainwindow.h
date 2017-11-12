@@ -27,10 +27,10 @@ public:
   explicit MainWindow( QWidget *parent = 0 );
   ~MainWindow( );
 
-  void commandLineOpen( const QCommandLineParser &parser,
+  void commandLineOpen(const QCommandLineParser &parser,
                         const QCommandLineOption &dicomdir,
                         const QCommandLineOption &folder,
-                        const QCommandLineOption &label );
+                        const QCommandLineOption &label , const QCommandLineOption &liveWire);
 
   bool loadLabel( QString filename );
 

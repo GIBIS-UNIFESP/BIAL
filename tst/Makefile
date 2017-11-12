@@ -312,7 +312,7 @@ Hough: Hough-Circles
 Hough-Circles: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
-Image: Image-AND Image-BinaryMask Image-Copy Image-CMeansClustering Image-Compare Image-Convert Image-CutHorizontal Image-Diff Image-DiffPixel Image-Dilate Image-Equalize Image-Erode Image-Flip Image-GetSlice Image-MinimumSpanningForest Image-Merge Image-Print Image-ROI Image-Rotate_90 Image-Size Image-Sum
+Image: Image-AND Image-BinaryMask Image-Copy Image-CMeansClustering Image-Compare Image-Convert Image-CutHorizontal Image-Diff Image-DiffPixel Image-Dilate Image-Equalize Image-Erode Image-Flip Image-GetSlice Image-MinimumSpanningForest Image-Merge Image-Normalize.cpp Image-Print Image-ROI Image-Rotate_90 Image-Size Image-Sum
 
 Image-AND: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -369,6 +369,9 @@ Image-Multiply: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-MultiplyMask: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Image-Normalize: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-Print: libbial
@@ -579,7 +582,7 @@ Relaxometria: libbial
 
 
 
-Segmentation: Segmentation-Background Segmentation-ConnectedComponents Segmentation-ConvertSeeds Segmentation-Disconnected Segmentation-OrientedExternGeodesicStar Segmentation-Octants Segmentation-OrientedInternGeodesicStar Segmentation-Quadrants Segmentation-Threshold Segmentation-Watershed
+Segmentation: Segmentation-Background Segmentation-ConnectedComponents Segmentation-ConvertSeeds Segmentation-Disconnected Segmentation-GeodesicStar Segmentation-OrientedExternGeodesicStar Segmentation-Octants Segmentation-OrientedInternGeodesicStar Segmentation-Quadrants Segmentation-Threshold Segmentation-Watershed
 
 Segmentation-Background: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -591,6 +594,9 @@ Segmentation-ConvertSeeds: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Segmentation-Disconnected: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Segmentation-GeodesicStar: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Segmentation-Octants: libbial
