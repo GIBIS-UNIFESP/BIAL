@@ -117,6 +117,9 @@ RobotUser::RobotUser( ActiveContourTool &tool ) :
       qDebug( ) << "Groundtruth of " << finfo.fileName( ) << "is" << gtFile.fileName( );
       m_contour = contour_following( m_groundTruth );
       qDebug( ) << "The Groundtruth contour have " << m_contour.size( ) << "pixels";
+      if( m_contour.size( ) == 0 ) {
+        throw std::logic_error( BIAL_ERROR( "The groundtruth contour is empty!" ) );
+      }
     }
     else {
       throw std::logic_error( BIAL_ERROR( "Could not find the ground truth file for " +
