@@ -2,23 +2,6 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
-  <property name="enabled">
-   <bool>true</bool>
-  </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>615</width>
-    <height>1183</height>
-   </rect>
-  </property>
-  <property name="minimumSize">
-   <size>
-    <width>190</width>
-    <height>0</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Bial</string>
   </property>
@@ -70,8 +53,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>615</width>
-     <height>25</height>
+     <width>382</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -192,7 +175,7 @@
    </widget>
    <widget class="QMenu" name="menuControls">
     <property name="title">
-     <string>Controls</string>
+     <string>Co&amp;ntrols</string>
     </property>
     <addaction name="actionPrevious"/>
     <addaction name="actionNext"/>
@@ -203,120 +186,6 @@
    <addaction name="menuWindow"/>
    <addaction name="menuHelp"/>
    <addaction name="menuControls"/>
-  </widget>
-  <widget class="QDockWidget" name="thumbsDock">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>38</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>524287</width>
-     <height>524287</height>
-    </size>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>I&amp;mages</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
-    <layout class="QGridLayout" name="gridLayout_12">
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="ThumbsWidget" name="thumbsWidget" native="true">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetHistogram">
-   <property name="windowTitle">
-    <string>Histog&amp;ram</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QCustomPlot" name="histogramWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>250</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="controlsDock">
-   <property name="windowTitle">
-    <string>Co&amp;ntrols</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_7">
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="ControlsWidget" name="controlsWidget" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>300</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
@@ -331,21 +200,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-  </widget>
-  <widget class="QDockWidget" name="dockWidgetLabels">
-   <property name="windowTitle">
-    <string>Labels</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_5">
-    <layout class="QGridLayout" name="gridLayout_5">
-     <item row="0" column="0">
-      <widget class="LabelsWidget" name="labelsWidget" native="true"/>
-     </item>
-    </layout>
-   </widget>
   </widget>
   <action name="actionOpen_image">
    <property name="text">
@@ -623,12 +477,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>LiveWire dock</string>
+    <string>LiveWire &amp;dock</string>
    </property>
   </action>
   <action name="actionPrevious">
    <property name="text">
-    <string>Previous</string>
+    <string>&amp;Previous</string>
    </property>
    <property name="shortcut">
     <string>Left</string>
@@ -636,7 +490,7 @@
   </action>
   <action name="actionNext">
    <property name="text">
-    <string>Next</string>
+    <string>&amp;Next</string>
    </property>
    <property name="shortcut">
     <string>Right</string>
@@ -651,33 +505,9 @@
    <header>src/graphicsview.h</header>
   </customwidget>
   <customwidget>
-   <class>ControlsWidget</class>
-   <extends>QWidget</extends>
-   <header>src/controlswidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ThumbsWidget</class>
-   <extends>QWidget</extends>
-   <header>src/thumbswidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ImageViewer</class>
    <extends>QWidget</extends>
    <header>src/imageviewer.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QCustomPlot</class>
-   <extends>QWidget</extends>
-   <header>thirdParty/qcustomplot.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>LabelsWidget</class>
-   <extends>QWidget</extends>
-   <header>src/labelswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
