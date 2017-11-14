@@ -5,9 +5,9 @@
 
 namespace Bial {
 
-  typedef Vector< Features< int > > LUCOLORfeature;
+  typedef Vector< Features< double > > LUCOLORfeature;
 
-  class LUCOLOR : public FeatureExtractor< Color, int > {
+  class LUCOLOR : public FeatureExtractor< Color, double > {
 private:
     size_t dim;
     size_t qtd_blocos;

@@ -5,7 +5,7 @@
 #include "GeometricsScale.hpp"
 
 namespace Bial {
-  
+
   Vector< double > TAR::ComputeScale( const Curve &contour, size_t n, size_t ts ) {
     try {
       Vector< double > tar( n );
@@ -49,7 +49,10 @@ namespace Bial {
         if( max != 0 )
           scale /= max;
         else
+        {
+          std::cout<< "divisao por zero";
           throw "divisao por zero";
+        }
         tar[ ts ] = scale;
       }
       return( tar );
@@ -74,6 +77,7 @@ namespace Bial {
 
   double TAR::ShapeComplexity( const Vector< Vector< double > > &tar, size_t samples ) {
     try {
+      std::cout << "\n\nalive\n\n" << '\n';
       double sc = 0.0;
       size_t nscales = ( samples - 1 ) / 2;
       Vector< Vector< double > > reverse_tar( samples );
@@ -126,7 +130,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  TAR::TAR( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected ) try : 
+  TAR::TAR( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected ) try :
     FeatureExtractor< int, double >( detected ) {
       this->SAMPLES = 128;
     }
@@ -214,6 +218,7 @@ namespace Bial {
         Curve rcontour( SAMPLES );
         for( size_t x = 0; x < SAMPLES; ++x )
           rcontour[ x ] = std::tie( img2[ x ], img2[ x + cont_size ] );
+        std::cout<<"still alive\n\n\n\n\n";
         Vector< Vector< double > > tar = ComputeSignature( rcontour, SAMPLES );
         double sc = ShapeComplexity( tar, SAMPLES );
         COMMENT( "Histogram-----------------------------------------------------------------", 3 );
