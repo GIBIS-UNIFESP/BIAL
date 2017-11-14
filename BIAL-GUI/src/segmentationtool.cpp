@@ -294,11 +294,8 @@ void SegmentationTool::InitiateSeeds( size_t map_set,
   }
 }
 
-void SegmentationTool::GeodesicSum( Bial::Image< int > &img,
-                                    const Bial::Vector< size_t > &obj_seeds,
-                                    const Bial::Vector< size_t > &bkg_seeds,
-                                    float alpha,
-                                    float beta ) {
+void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
+                                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta ) {
   try {
     qDebug( ) << "GEOSUM: pf: " << pf;
     if( ( initiated ) && ( ( pf != 0 ) || ( curr_alpha != alpha ) || ( curr_beta != beta ) ) ) {

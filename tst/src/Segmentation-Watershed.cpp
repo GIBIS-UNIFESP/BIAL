@@ -20,7 +20,7 @@ int main( int argc, char **argv ) {
 
   Image< int > gradient( Read< int >( argv[ 1 ] ) );
   float radius = atof( argv[ 2 ] );
-  Image< int > label = Segmentation::Watershed( gradient, radius );
+  Image< int > label( Segmentation::Watershed( gradient, radius ) );
   Write( label, argv[ 3 ], argv[ 1 ] );
 
   return( 0 );

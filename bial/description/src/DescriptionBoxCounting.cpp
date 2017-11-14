@@ -63,7 +63,7 @@ namespace Bial {
         size_t x_size = img.size( 0 );
         size_t y_size = img.size( 1 );
         size_t mask_size = mask.size( );
-        size_t img_size = img.size( );
+        //size_t img_size = img.size( );
         if( mask_size == 0 ) {
           std::string msg( BIAL_ERROR( "Empty mask. " ) );
           throw( std::logic_error( msg ) );

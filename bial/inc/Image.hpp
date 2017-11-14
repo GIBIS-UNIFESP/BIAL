@@ -549,6 +549,15 @@ namespace Bial {
 
     /**
      * @date 2014/Apr/10
+     * @param index: element position.
+     * @return The coordinates of the input position in this image.
+     * @brief Returns the coordinates of the input position in a 2D image.
+     * @warning Dimensions are not checked.
+     */
+    Vector< size_t > Coordinates2( size_t position ) const;
+
+    /**
+     * @date 2014/Apr/10
      * @param p_0: dim 0 coordinate.
      * @param p_1: dim 1 coordinate.
      * @return The position corresponding to the input coordinates in this image.

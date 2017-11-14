@@ -403,7 +403,7 @@ void ActiveContourTool::runLiveWire( ) {
   if( m_points.size( ) > 0 ) {
     const Bial::Vector< size_t > m_seeds = { m_pointIdxs.last( ) };
 
-#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
+//#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
     for( int m = 0; m < m_methods.size( ); ++m ) {
       m_methods[ m ]->run( m_seeds, m_currentPath );
     }

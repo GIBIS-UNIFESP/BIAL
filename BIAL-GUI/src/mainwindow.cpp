@@ -22,9 +22,9 @@
 
 //#undef BIAL_WARNING
 //#define BIAL_WARNING( exp ) \
-//  std::stringstream ss; \
-//  ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
-//  QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
+    std::stringstream ss; \
+    ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
+    QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ),
   m_controller( new Controller( 4, this ) ) {
@@ -290,10 +290,10 @@ void MainWindow::on_actionOpen_image_triggered( ) {
 QString MainWindow::getFileDialog( ) {
   return( QFileDialog::getOpenFileName(
             this, tr( "Open" ), defaultFolder,
-            tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.dcm *.dcm.gz *.nii *.nii.gz "
+            tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.pnm *.pnm.gz *.dcm *.dcm.gz *.nii *.nii.gz "
                 "*.scn *.scn.gz *.bmat *.bmat.gz *.jpeg *.jpg *.png);; PBM images (*.pbm *.pbm.gz);;"
                 "PGM images (*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);;"
-                "DICOM images (*.dcm *.dcm.gz);;"
+                "PNM images (*.pnm *.pnm.gz);; DICOM images (*.dcm *.dcm.gz);;"
                 "NIfTI images (*.nii *.nii.gz);;"
                 "SCN Files (*.scn *.scn.gz);;"
                 "BMAT images (*.bmat *.bmat.gz);;"
@@ -346,9 +346,9 @@ bool MainWindow::loadFolder( QString dirname ) {
 bool MainWindow::checkExtension( const QFileInfo &fileInfo ) { /* receive to lower */
   QStringList list;
   list << "scn" << "scn.gz" << "img" << "img.gz" << "hdr"
-       << "hdr.gz" << "nii" << "nii.gz" << "pnm" << "pnm.gz"
-       << "pgm" << "pgm.gz" << "pbm" << "pbm.gz" << "dcm"
-       << "dcm.gz" << "bmat" << "bmat.gz";
+  << "hdr.gz" << "nii" << "nii.gz" << "pnm" << "pnm.gz"
+  << "pgm" << "pgm.gz" << "pbm" << "pbm.gz" << "dcm"
+  << "dcm.gz" << "pnm" << "pnm.gz" <<"bmat" << "bmat.gz";
 
   QString suffix = fileInfo.completeSuffix( ).toLower( );
   if( list.contains( suffix ) ) {
