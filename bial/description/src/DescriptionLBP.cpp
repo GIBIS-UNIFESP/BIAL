@@ -29,7 +29,7 @@ namespace Bial {
   uchar LBP::Signal( int x ) {
     if( x >= 0 )
       return( 1 );
-    else 
+    else
       return( 0 );
   }
 
@@ -52,7 +52,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  LBP::LBP( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected ) try : 
+  LBP::LBP( const Vector< std::tuple< Image< int >, Vector< size_t > > > &detected ) try :
     FeatureExtractor< int, int >( detected ) {
   }
   catch( std::bad_alloc &e ) {
@@ -98,9 +98,9 @@ namespace Bial {
           throw( std::logic_error( msg ) );
         }
         Vector< bool > mask_vct( img_size, false );
-        for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx )      
+        for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx )
           mask_vct[ mask[ pxl_idx ] ] = true;
-      
+
         COMMENT( "Local Binary Pattern------------------------------------------------", 3 );
         Vector< int > property( img_size );
         for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx ) {
@@ -132,7 +132,7 @@ namespace Bial {
         for( size_t j = 0; j < img_size; ++j )
           ++histogram[ property[ j ] ];
         for( size_t j = 0; j < size; j++ )
-          histogram[ j ] = Log( histogram[ j ], img_size );
+          histogram[ j ] = Log( histogram[ j ], mask_size );
         feat.push_back( histogram );
       }
       return( feat );

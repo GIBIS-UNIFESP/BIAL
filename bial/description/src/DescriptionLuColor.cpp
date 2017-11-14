@@ -22,8 +22,8 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  LUCOLOR::LUCOLOR( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected ) try : 
-    FeatureExtractor< Color, int >( detected ) {
+  LUCOLOR::LUCOLOR( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected ) try :
+    FeatureExtractor< Color, double >( detected ) {
     this->dim = 4;
     this->qtd_blocos = 100;
   }
@@ -114,7 +114,7 @@ namespace Bial {
         }
         size_t img_size = img.size( );
         Vector< bool > mask_vct( img_size, false );
-        for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx )      
+        for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx )
           mask_vct[ mask[ pxl_idx ] ] = true;
         size_t nelem = img_size / qtd_blocos;
         size_t resto = img_size % qtd_blocos;
@@ -169,7 +169,7 @@ namespace Bial {
           }
           else {
             if( resto == 0 )
-              resto = nelem;
+              size_soma = nelem;
             for( size_t k = aux; k < img_size; ++k ) {
               if( mask_vct[ k ] ) { /* percorrer até final da imagem */
                 somaR += img[ k ].channel[ 1 ];
@@ -185,7 +185,7 @@ namespace Bial {
           aux = aux + nelem;
         }
         COMMENT( "Histograma------------------------------------------------", 3 );
-        Features< int > histogram( size + 7 );
+        Features< double > histogram( size + 7 );
         histogram[ 0 ] = qtd_blocos;
         histogram[ 1 ] = mediaR;
         histogram[ 2 ] = mediaG;

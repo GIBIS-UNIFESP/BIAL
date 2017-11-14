@@ -23,6 +23,10 @@ ifneq ($(profile), 0)
 	LIB=../build/linux/profile/lib
 endif
 
+DESCRIPTION_LINK_FLAGS = -L../bial/description/inc -L../bial/description/src
+DESCRIPTION_CC_FLAGS = -I../bial/description/inc -I../bial/description/src
+
+
 BIAL_LINK_FLAGS=-Wl,-rpath $(LIB) -L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -fopenmp -lpthread -lz -lm
 ifneq ($(profile), 0)
 	BIAL_LINK_FLAGS=-Wl,-rpath $(LIB) -L$(LIB) -lbial -L../bial/SLIC/obj/* -L../bial/cpplex/obj/* -L../bial/lsh/obj/* -lpthread -lz -lm -lprofiler
@@ -41,7 +45,6 @@ endif
 ifneq ($(profile), 0)
 	BIAL_CC_FLAGS=-pg -Wno-unused-function -Wno-literal-conversion -O0 -I../bial/inc -I../bial/src -I../bial/SLIC/inc -I../bial/cpplex/inc -I../bial/lsh/inc -DREAL_FLOAT
 endif
-
 
 ifeq ($(debug), 1)
 	QMAKE_PARAMS=../master.pro -r -spec linux-g++ CONFIG+=debug -o ../Makefile
@@ -695,6 +698,73 @@ Vector: Vector-Basic
 
 Vector-Basic:libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+
+
+Description: Description-Color Description-Texture Description-Shape
+
+
+Description-Color: libbial Description-ACC Description-BIC Description-CCH Description-CCV Description-CLD Description-CSD Description-GCH Description-LCH Description-SCD Description-LuColor
+
+Description-ACC: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-BIC: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-CCH: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-CCV: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-CLD: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-CSD: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-GCH: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-LCH: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-SCD: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-LuColor: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+
+Description-Texture: Description-EHD Description-LAS Description-LBP Description-UNSER
+
+Description-EHD: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-LAS: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-LBP: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-UNSER: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+
+Description-Shape: Description-BAS Description-BoxCounting Description-TAR Description-SS
+
+Description-BAS: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-BoxCounting: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-TAR: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
+
+Description-SS: libbial
+	$(CXX) $(BIAL_CC_FLAGS) $(DESCRIPTION_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS) $(DESCRIPTION_LINK_FLAGS)
 
 
 clean:
