@@ -22,14 +22,14 @@
 
 //#undef BIAL_WARNING
 //#define BIAL_WARNING( exp ) \
-//  std::stringstream ss; \
-//  ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
-//  QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
+//     std::stringstream ss; \
+//     ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
+//     QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ),
   m_controller( new Controller( 4, this ) ) {
   ui->setupUi( this );
-  setDockOptions( DockOption::AllowNestedDocks );
+  setDockOptions( DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
   thumbsWidget = new ThumbsWidget( m_controller, this );
   thumbsWidget->setFixedWidth( 100 );
@@ -63,7 +63,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   segmentationWidget = new SegmentationWidget( this );
   segmentationWidget->adjustSize( );
   segmentationDock->setWidget( segmentationWidget );
-  segmentationDock->setFloating( true );
+
   segmentationDock->hide( );
   segmentationDock->adjustSize( );
   connect( ui->actionSegmentation_dock, &QAction::toggled, segmentationDock, &QDockWidget::setVisible );
@@ -76,16 +76,14 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
   livewireWidget->setController( m_controller );
   livewireWidget->adjustSize( );
   livewireDock->setWidget( livewireWidget );
-  livewireDock->setFloating( true );
   livewireDock->hide( );
   livewireDock->adjustSize( );
+
 
   connect( ui->actionLiveWire_dock, &QAction::toggled, livewireDock, &QDockWidget::setVisible );
   connect( livewireDock, &QDockWidget::visibilityChanged, ui->actionLiveWire_dock,
            &QAction::setChecked );
 
-
-  tabifyDockWidget( controlsDock, livewireDock );
   /*
    *  ui->dockWidgetFunctional->hide( );
    *  ui->widgetDragDrop->hide( );
@@ -122,6 +120,12 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::M
 #ifndef LIBGDCM
   ui->actionOpen_DicomDir->setVisible( false );
 #endif
+
+//  tabifyDockWidget( controlsDock, segmentationDock );
+//  tabifyDockWidget( controlsDock, livewireDock );
+  segmentationDock->setFloating( true );
+  livewireDock->setFloating( true );
+
 }
 
 void MainWindow::createConnections( ) {
@@ -305,10 +309,10 @@ void MainWindow::on_actionOpen_image_triggered( ) {
 QString MainWindow::getFileDialog( ) {
   return( QFileDialog::getOpenFileName(
             this, tr( "Open" ), defaultFolder,
-            tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.dcm *.dcm.gz *.nii *.nii.gz "
+            tr( "All images (*.pbm *.pbm.gz *.pgm *.pgm.gz *.ppm *.ppm.gz *.pnm *.pnm.gz *.dcm *.dcm.gz *.nii *.nii.gz "
                 "*.scn *.scn.gz *.bmat *.bmat.gz *.jpeg *.jpg *.png);; PBM images (*.pbm *.pbm.gz);;"
                 "PGM images (*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);;"
-                "DICOM images (*.dcm *.dcm.gz);;"
+                "PNM images (*.pnm *.pnm.gz);; DICOM images (*.dcm *.dcm.gz);;"
                 "NIfTI images (*.nii *.nii.gz);;"
                 "SCN Files (*.scn *.scn.gz);;"
                 "BMAT images (*.bmat *.bmat.gz);;"
@@ -363,7 +367,7 @@ bool MainWindow::checkExtension( const QFileInfo &fileInfo ) { /* receive to low
   list << "scn" << "scn.gz" << "img" << "img.gz" << "hdr"
        << "hdr.gz" << "nii" << "nii.gz" << "pnm" << "pnm.gz"
        << "pgm" << "pgm.gz" << "pbm" << "pbm.gz" << "dcm"
-       << "dcm.gz" << "bmat" << "bmat.gz";
+       << "dcm.gz" << "pnm" << "pnm.gz" << "bmat" << "bmat.gz";
 
   QString suffix = fileInfo.completeSuffix( ).toLower( );
   if( list.contains( suffix ) ) {
@@ -389,7 +393,8 @@ void MainWindow::readSettings( ) {
 void MainWindow::commandLineOpen( const QCommandLineParser &parser,
                                   const QCommandLineOption &dicomdir,
                                   const QCommandLineOption &folder,
-                                  const QCommandLineOption &label ) {
+                                  const QCommandLineOption &label,
+                                  const QCommandLineOption &liveWire ) {
   COMMENT( "Command Line Open", 0 );
   const QStringList args = parser.positionalArguments( );
   QString errorMsg;
@@ -483,6 +488,9 @@ void MainWindow::commandLineOpen( const QCommandLineParser &parser,
   if( !errorMsg.isEmpty( ) ) {
     QMessageBox::warning( this, "Warning", errorMsg );
     ui->statusBar->showMessage( errorMsg, 5000 );
+  }
+  if( parser.isSet( liveWire ) ) {
+    setTool( ActiveContourTool::Type );
   }
 }
 

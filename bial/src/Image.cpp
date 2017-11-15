@@ -81,7 +81,10 @@ namespace Bial {
       COMMENT( "Check for zero size dimensions.", 2 );
       for( size_t dms = 0; dms < 3; ++dms ) {
         if( dims[ dms ] == 0 ) {
-          std::string msg( BIAL_ERROR( "Dimension " + std::to_string( dms ) + " with zero elements." ) );
+          std::string msg( BIAL_ERROR( "Dimensions: " + std::to_string( dimensions ) +
+                                       ". Dimension " + std::to_string( dms ) + " with zero elements. " +
+                                       "spc_dim: " + std::to_string( spc_dim[ 0 ] ) + ", " +
+                                       std::to_string( spc_dim[ 1 ] ) + ", " + std::to_string( spc_dim[ 2 ] ) + "." ) );
           throw( std::logic_error( msg ) );
         }
       }
@@ -673,10 +676,9 @@ namespace Bial {
   template< class D >
   void Image< D >::PixelSize( const Vector< float > &val ) {
     COMMENT( "Verifies if new pixel size vector matchs image number of spatial dimension.", 2 );
-    size_t dims = _data.dims;
+    size_t dims = val.size( );
     if( ( dims < 2 ) || ( dims > 3 ) ) {
-      std::string msg( BIAL_ERROR( "Pixel size must have 2 or 3 dimension. Given: " + 
-                                   std::to_string( val.size( ) ) + "." ) );
+      std::string msg( BIAL_ERROR( "Pixel size must have 2 or 3 dimension. Given: " + std::to_string( dims ) + "." ) );
       throw( std::logic_error( msg ) );
     }
     pixel_size = val;
@@ -712,9 +714,8 @@ namespace Bial {
       throw( std::logic_error( msg ) );
     }
     for( size_t dms = 0; dms < dims; ++dms ) {
-      if( _data.dim_size( dms ) <= pxl[ dms ] ) {
+      if( _data.dim_size( dms ) <= pxl[ dms ] )
         return( false );
-      }
     }
     return( true );
   }
@@ -1451,6 +1452,15 @@ namespace Bial {
   }
 
   template< class D >
+  Vector< size_t > Image< D >::Coordinates2( size_t position ) const {
+    std::div_t pos_div_xsize = std::div( static_cast< int >( position ), _data.acc_dim_size( 0 ) );
+    Vector< size_t > index( 3, 0 );
+    index[ 0 ] = pos_div_xsize.rem;
+    index[ 1 ] = pos_div_xsize.quot;
+    return( index );
+  }
+
+  template< class D >
   size_t Image< D >::Position( size_t p_0, size_t p_1 ) const {
     return( _data.Position( p_0, p_1 ) );
   }
@@ -1497,25 +1507,15 @@ namespace Bial {
 
   template< class D >
   size_t Image< D >::MinDim( ) const {
-    COMMENT( "Searching form minimum dimension size among spatial dimensions.", 2 );
-    size_t min_dim = _data.dim_size( 0 );
-    for( size_t dms = 1; dms < 3; ++dms ) {
-      if( min_dim > _data.dim_size( dms ) ) {
-        min_dim = _data.dim_size( dms );
-      }
-    }
+    size_t min_dim = std::min( _data.dim_size( 0 ), _data.dim_size( 1 ) );
+    if( _data.dim_size( 2 ) != 1 )
+      min_dim = std::min( min_dim, _data.dim_size( 2 ) );
     return( min_dim );
   }
 
   template< class D >
   size_t Image< D >::MaxDim( ) const {
-    COMMENT( "Searching form maximum dimension size among spatial dimensions.", 2 );
-    size_t max_dim = _data.dim_size( 0 );
-    for( size_t dms = 1; dms < 3; ++dms ) {
-      if( max_dim < _data.dim_size( dms ) ) {
-        max_dim = _data.dim_size( dms );
-      }
-    }
+    size_t max_dim = std::max( std::max( _data.dim_size( 0 ), _data.dim_size( 1 ) ), _data.dim_size( 2 ) );
     return( max_dim );
   }
 

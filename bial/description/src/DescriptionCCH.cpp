@@ -23,7 +23,7 @@ namespace Bial {
   }
 
 
-  CCH::CCH( const Vector < std::tuple< Image< Color >, Vector< size_t > > > &detected ) try : 
+  CCH::CCH( const Vector < std::tuple< Image< Color >, Vector< size_t > > > &detected ) try :
     FeatureExtractor< Color, int >( detected ) {
       this->grid = 4;
       this->dim = 4;
@@ -127,6 +127,7 @@ namespace Bial {
           uchar b = dim * img[ j ][ 3 ] / 256;
           quantized[ j ] = ( r + fator_g * g + fator_b * b );
         }
+
         COMMENT( "Histograma------------------------------------------------", 3 );
         Features< int >colors( bins );
         Features< int > area( size );
@@ -152,16 +153,19 @@ namespace Bial {
           }
         }
         colors.resize( n );
+        size_t colors_size = n;
         Features< int > histogram( 2 + n + size );
         n = 0;
         histogram[ n++ ] = dim;
         histogram[ n++ ] = grid;
         for( size_t j = 0; j < size; ++j )
           histogram[ n++ ] = Log( area[ j ], mask_size );
-        for( size_t j = 0; j < bins; ++j )
+        for( size_t j = 0; j < colors_size; ++j )
           histogram[ n++ ] = Log( colors[ j ], mask_size );
+
         feat.push_back( histogram );
       }
+
       return( feat );
     }
     catch( std::bad_alloc &e ) {

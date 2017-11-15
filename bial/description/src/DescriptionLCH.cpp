@@ -22,7 +22,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  LCH::LCH( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected ) try : 
+  LCH::LCH( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected ) try :
     FeatureExtractor< Color, int >( detected ) {
       this->dim = 4;
       this->BINS = 4;
@@ -106,7 +106,7 @@ namespace Bial {
       LCHfeature feat;
       unsigned char fator_g = dim;
       unsigned char fator_b = fator_g * dim;
-    
+
       for( size_t i = 0; i < this->detected.size( ); ++i ) {
         COMMENT( "quantização------------------------------------------------", 3 );
         const Image< Color > &img( std::get< 0 >( detected[ i ] ) );
@@ -119,7 +119,7 @@ namespace Bial {
           std::string msg( BIAL_ERROR( "Empty mask. " ) );
           throw( std::logic_error( msg ) );
         }
-      
+
         Image< int > quantized( x_size, y_size );
         for( size_t j = 0; j < img_size; ++j ) {
           uchar r = dim * img[ j ].channel[ 1 ] / 256;
@@ -136,14 +136,14 @@ namespace Bial {
           div_t pxl_coords = std::div( static_cast< int >( mask[ pxl_idx ] ), static_cast< int >( x_size ) );
           size_t c = pxl_coords.rem;
           size_t r = pxl_coords.quot;
-          size_t x = BINS * r / y_size; // Is this correct? Division of x by y?
+          size_t x = BINS * r / y_size;
           size_t y = BINS * c / x_size;
           ++histogram[ quantized[ r * x_size + c ] + fator_x * x + fator_y * y ];
         }
         COMMENT( "Compressão do Histograma------------------------------------------------", 3 );
         size_t hist_size = histogram.size( );
         for( size_t j = 0; j < hist_size; ++j )
-          histogram[ j ] = static_cast< uchar >( 255.0f * ( static_cast< float >( histogram[ j ] ) / mask_size ) );
+          histogram[ j ] = Log( histogram[ j ] , mask_size );
         feat.push_back( histogram );
       }
       return( feat );

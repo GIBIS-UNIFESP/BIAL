@@ -22,7 +22,7 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
-  BIC::BIC( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected ) try : 
+  BIC::BIC( const Vector< std::tuple< Image< Color >, Vector< size_t > > > &detected ) try :
     FeatureExtractor< Color, int >( detected ) {
       this->dim = 4;
     }
@@ -105,8 +105,8 @@ namespace Bial {
       size_t adj_size = adjpixels.size( );
       for( size_t i = 0; i < this->detected.size( ); ++i ) {
         COMMENT( "quantização------------------------------------------------", 3 );
-        const Image< Color > &img( std::get< 0 >( detected[ i ] ) );
-        const Vector< size_t > &mask( std::get< 1 >( detected[ i ] ) );
+        const Image< Color > &img( std::get< 0 >( this->detected[ i ] ) );
+        const Vector< size_t > &mask( std::get< 1 >( this->detected[ i ] ) );
         size_t x_size = img.size( 0 );
         size_t y_size = img.size( 1 );
         size_t mask_size = mask.size( );
@@ -116,7 +116,7 @@ namespace Bial {
           throw( std::logic_error( msg ) );
         }
         Vector< bool > mask_vct( img_size, false );
-        for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx )      
+        for( size_t pxl_idx = 0; pxl_idx < mask_size; ++pxl_idx )
           mask_vct[ mask[ pxl_idx ] ] = true;
         Image< int > quantized( x_size, y_size );
         for( size_t j = 0; j < img_size; ++j ) {
@@ -156,6 +156,7 @@ namespace Bial {
         feat.push_back( complete_histogram );
       }
       return( feat );
+
     }
     catch( std::bad_alloc &e ) {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );

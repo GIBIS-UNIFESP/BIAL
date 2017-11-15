@@ -727,7 +727,7 @@ namespace Bial {
     }
     default: { /* All other data types. */
       std::cout << "void NiftiHeader::SetBitPix( ): Warning: Invalid data type. Setting to 8 bits signed integer."
-    << std::endl;
+                << std::endl;
       datatype = NiftiType::INT8;
       bitpix = 8;
       break;

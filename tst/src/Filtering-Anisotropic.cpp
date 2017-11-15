@@ -79,7 +79,11 @@ int main( int argc, char **argv ) {
   }
   Image< int > res( Filtering::AnisotropicDiffusion( src, diff_func, kappa, iterations, radius ) );
 
-  Write( res, argv[ 2 ] );
+  NiftiHeader nii( res );
+  cout << nii << endl;
+  cout << "DataTypeDecode: " << sizeof( nii.DataTypeDecode( res[ 0 ] ) ) << endl;
+  
+  Write( res, argv[ 2 ], argv[ 1 ] );
   if( argc < 4 ) {
     delete ( dynamic_cast< RobustDiffusionFunction* >( diff_func ) );
   }

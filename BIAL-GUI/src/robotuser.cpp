@@ -127,6 +127,9 @@ RobotUser::RobotUser( ActiveContourTool &tool ) :
 >>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
       m_contour = contour_following( m_groundTruth );
       qDebug( ) << "The Groundtruth contour have " << m_contour.size( ) << "pixels";
+      if( m_contour.size( ) == 0 ) {
+        throw std::logic_error( BIAL_ERROR( "The groundtruth contour is empty!" ) );
+      }
     }
     else {
       throw std::logic_error( BIAL_ERROR( "Could not find the ground truth file for " +
@@ -303,7 +306,7 @@ void RobotUser::run( ) {
     }
     pxl_idx = best_length;
     if( pxl_idx < m_contour.size( ) - STEP ) {
-      if( m_tool.getCurrentMethod( ) != nextMethod ) {
+      if( m_tool.getCurrentMethod( ) != static_cast< int >( nextMethod ) ) {
         total_changes++;
         m_tool.setCurrentMethod( nextMethod );
       }

@@ -47,7 +47,7 @@ Path ActiveContourMethod::updatePath( const size_t end_pxl ) {
   Path path;
   size_t pxl = end_pxl;
   if( !cachedPath.empty( ) ) {
-    if( m_pred[ pxl ] == cachedPath.front( ) ) {
+    if( m_pred[ pxl ] == static_cast< int >( cachedPath.front( ) ) ) {
       path = cachedPath;
       path.push_back( pxl );
       cachedPath = path;

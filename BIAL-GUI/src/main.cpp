@@ -26,14 +26,17 @@ int main( int argc, char *argv[] ) {
   QCommandLineOption label( QStringList( ) << "l" << "label",
                             QCoreApplication::translate( "main", "Input label." ),
                             QCoreApplication::translate( "main", "label" ) );
+
   parser.addOption( label );
 
+  QCommandLineOption liveWire( "ac", QCoreApplication::translate( "main", "Open active contour tool." ) );
+  parser.addOption( liveWire );
 
   parser.process( app );
 
   MainWindow window;
 
-  window.commandLineOpen( parser, dicomdir, folder, label );
+  window.commandLineOpen( parser, dicomdir, folder, label, liveWire );
   window.showMaximized( );
   return( app.exec( ) );
 }
