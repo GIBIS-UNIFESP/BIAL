@@ -104,10 +104,8 @@ Path contour_following( const Bial::Image< int > &img ) {
 
 RobotUser::RobotUser( ActiveContourTool &tool ) :
   m_tool( tool ) {
-<<<<<<< HEAD
+
   // Aqui que vc define a localização relativa do groud truth.
-=======
->>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
   QFileInfo finfo( m_tool.getGuiImage( )->fileName( ) );
   qDebug( ) << "Loading RobotUser for " << finfo.absoluteFilePath( );
   QDir dir = finfo.dir( );
@@ -119,12 +117,12 @@ RobotUser::RobotUser( ActiveContourTool &tool ) :
       if( m_groundTruth.size( ) != m_tool.getGuiImage( )->getSize( ) ) {
         throw std::logic_error( BIAL_ERROR( "Images should have the same dimensions!" ) );
       }
-<<<<<<< HEAD
+
       //percorre a borda do gt para obter o contorno.
       qDebug( ) << "Obtendo contorno";
-=======
+
       qDebug( ) << "Groundtruth of " << finfo.fileName( ) << "is" << gtFile.fileName( );
->>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
+
       m_contour = contour_following( m_groundTruth );
       qDebug( ) << "The Groundtruth contour have " << m_contour.size( ) << "pixels";
       if( m_contour.size( ) == 0 ) {
@@ -161,7 +159,7 @@ QPointF RobotUser::toPointF( int pxl ) {
 }
 
 void draw( Bial::Image< int > &img, size_t pxl ) {
-  Bial::Adjacency adj = Bial::AdjacencyType::Circular( 1.5 );
+  Bial::Adjacency adj = Bial::AdjacencyType::Circular( 2 );
   Bial::AdjacencyIterator it( img, adj );
   size_t adj_px;
   for( size_t idx = 0; idx < adj.size( ); ++idx ) {
@@ -306,7 +304,7 @@ void RobotUser::run( ) {
     }
     pxl_idx = best_length;
     if( pxl_idx < m_contour.size( ) - STEP ) {
-      if( m_tool.getCurrentMethod( ) != static_cast< int >( nextMethod ) ) {
+      if( m_tool.getCurrentMethod( ) != static_cast< int >(nextMethod) ) {
         total_changes++;
         m_tool.setCurrentMethod( nextMethod );
       }
@@ -362,7 +360,7 @@ void RobotUser::runTest1()
     }
     auto feat = m_tool.pathDescription(gtPath);
     qDebug( ) << "Feature: " << feat;
-    Mat feat_samp(1,NUM_FTR,DataType< float >::type,&feat[0]);
+    cv::Mat feat_samp(1,NUM_FTR,cv::DataType< float >::type,&feat[0]);
 
     //Utiliza SVM para prever o metodo
     auto pred_method = m_SVM->predict(feat_samp);
@@ -414,13 +412,9 @@ void RobotUser::runTest2()
 }
 
 void RobotUser::train( ) {
-<<<<<<< HEAD
-  //  size_t end = m_contour.size( ) - 1;
-  qDebug( ) << "CONTOUR : " << m_contour.size( );
-=======
+
 //  size_t end = m_contour.size( ) - 1;
   qDebug( ) << "CONTOUR of " << m_tool.getGuiImage( )->fileName( ) << ":" << m_contour.size( );
->>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
   QPointF pt = toPointF( m_contour[ 0 ] );
   m_GTpaths.clear();
 
@@ -430,7 +424,7 @@ void RobotUser::train( ) {
 
   //imagem com contorno aumentado para calcular o erro
   Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
-<<<<<<< HEAD
+
 
   size_t best_length;
   //percorre o contorno ancora por ancora
@@ -438,11 +432,7 @@ void RobotUser::train( ) {
     best_length = 0;
     //para cada metodo : live wire, lazywalk, riverbed, line
     //#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
-=======
-  for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
-    size_t best_length = 0;
-//#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
->>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
+
     for( int m = 0; m < m_tool.getMethods( ).size( ); ++m ) {
       auto method = m_tool.getMethods( )[ m ];
 
@@ -475,13 +465,10 @@ void RobotUser::train( ) {
         if( diff > 0 ) {
           break;
         }
-<<<<<<< HEAD
+
         //#pragma omp critical
         if( pxl_idx2 > best_length ) {// se o metódo foi mais longe
-=======
-//#pragma omp critical
-        if( pxl_idx2 > best_length ) {
->>>>>>> f8e14232c8ae9e1e2489e6a6848c27fa366ca903
+
           best_length = pxl_idx2;
           m_tool.setCurrentMethod( method->type( ) );//seleciona como metodo atual(linha em vermelho)
         }

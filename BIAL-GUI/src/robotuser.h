@@ -6,8 +6,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <QObject>
 
-using namespace cv;
-
 class ActiveContourTool;
 class ActiveContourMethod;
 

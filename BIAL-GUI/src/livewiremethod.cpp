@@ -73,6 +73,7 @@ void LiveWireMethod::run( const Bial::Vector< size_t > &seeds, const Path &curre
            "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.9, m_grayImg.Dims( ) ) );
   Bial::GrowingBucketQueue queue( size, delta, true, true );
+//  Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
   Bial::Vector< std::pair< size_t, int > > seed_costs;
   for( size_t seed : seeds ) {
     seed_costs.push_back( std::make_pair( seed, m_cost[ seed ] ) );
