@@ -1,13 +1,17 @@
 #include "activeContourWidget.h"
 #include "controller.h"
 #include "ui_livewirewidget.h"
-#include <opencv2/ml.hpp>
-
 #include "FileImage.hpp"
+#include <opencv2/ml/ml.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <fstream>
+#include <iterator>
+
 
 Controller* ActiveContourWidget::controller( ) const {
   return( m_controller );
@@ -21,6 +25,7 @@ ActiveContourWidget::ActiveContourWidget( ImageViewer *viewer, QWidget *parent )
   m_viewer( viewer ),
   QWidget( parent ),
   ui( new Ui::LiveWireWidget ) {
+  m_SVM = NULL;
   ui->setupUi( this );
 
 }
@@ -58,7 +63,7 @@ void ActiveContourWidget::on_pushButtonRobotUser_clicked( ) {
   }
   catch( const std::logic_error &e ) {
     std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
-      "Image, window end, and/or window size dimensions do not match." );
+          "Image, window end, and/or window size dimensions do not match." );
     QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
   }
 }
@@ -117,49 +122,72 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
   }
   catch( const std::logic_error &e ) {
     std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
-      "Image, window end, and/or window size dimensions do not match." );
+          "Image, window end, and/or window size dimensions do not match." );
     QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
   }
 }
 
 void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
   try {
-    cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
-    m_svm->setType( cv::ml::SVM::C_SVC );
-    m_svm->setKernel( cv::ml::SVM::LINEAR );
-    m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
-    for( int img = 0; img < m_controller->size( ); ++img ) {
-      m_controller->setCurrentImagePos( img );
-      GuiImage *guiImg = m_controller->currentImage( );
-      Tool::setImageTool( ActiveContourTool::Type, guiImg, m_viewer );
-      m_tool = dynamic_cast< ActiveContourTool* >( guiImg->currentTool( ) );
-      m_tool->clear( );
 
-      qDebug( ) << m_controller->currentImage( )->fileName( );
 
-      RobotUser mrRoboto( *m_tool );
-//      mrRoboto.train( );
-      qApp->processEvents( );
-    }
-    return;
-    auto selectedMethods = m_tool->getSelectedMethods( );
-    auto methods = m_tool->getMethods( );
+    //Parametros da svm
+    CvSVMParams m_params;
+    m_params.svm_type = CvSVM::C_SVC;
+    m_params.kernel_type = CvSVM::LINEAR;
+    m_params.term_crit = cvTermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 );
 
-    int num_samples = selectedMethods.size( );
+    //Para armazenar os dados extraidos de todas as imagens
     std::vector< FeatureData > trainingData;
     std::vector< int > labels;
-    trainingData.reserve( num_samples );
-    labels.reserve( num_samples );
-    for( int sample = 0; sample < num_samples; ++sample ) {
-      for( auto method : methods ) {
-        auto features = m_tool->pathDescription( method->m_paths[ sample ], method.get( ) );
-        trainingData.push_back( features );
-        labels.push_back( ( method->type( ) == selectedMethods[ sample ] ) ? 1 : -1 );
+
+    //percorre todas a imagens abertas e executa o treinamento
+    for( int img = 0; img < m_controller->size( ); ++img ) {
+      m_controller->setCurrentImagePos( img );
+      m_tool->clear( );
+      qDebug( ) << m_controller->currentImage( )->fileName( );
+      qDebug( ) << "Comment êtes-vous, Monsieur Robot?";
+      RobotUser MrRoboto( *m_tool );
+      qDebug( ) << "Entraînement, Mr.Robot!";
+      MrRoboto.train( );
+      //////////////////////////////////////////////////////////////////////////
+      ///extrai as caracteristicas encontradas no treinamente da imagem atual///
+      //////////////////////////////////////////////////////////////////////////
+      auto selectedMethods = m_tool->getSelectedMethods( );
+      auto methods = m_tool->getMethods( );
+
+      int num_samples = selectedMethods.size( );
+      qDebug( ) << "Extracting features";
+      for( int sample = 0; sample < num_samples; ++sample ) {
+        for( auto method : methods ) {
+          if( method->type( ) == selectedMethods[ sample ] ){
+            auto features = m_tool->pathDescription( MrRoboto.m_GTpaths[ sample ] );
+            qDebug( ) << "Feature: " << features << selectedMethods[ sample ];
+            trainingData.push_back( features );
+            labels.push_back( selectedMethods[ sample ] );
+          }
+        }
       }
+
+      qApp->processEvents( );
     }
-    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
-    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
-    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
+    std::ofstream output_file("./feature.txt");
+    std::ostream_iterator< Bial::Array< double, 90 > > output_iterator(output_file, "\n");
+    std::copy(trainingData.begin(), trainingData.end(), output_iterator);
+
+    std::ofstream output_file2("./label.txt");
+    std::ostream_iterator< int > output_iterator2(output_file2, "\n");
+    std::copy(labels.begin(), labels.end(), output_iterator2);
+
+    qDebug( ) << "Creating Training Matrix";
+    cv::Mat trainingDataMat( trainingData.size(), NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
+    cv::Mat labelsMat( labels.size(), 1, cv::DataType< int >::type, &labels[ 0 ] );
+
+    qDebug( ) << "Training SVM with " << trainingData.size() <<" rows and " << labels.size() << " labels";
+    //m_SVM = new CvSVM;
+    //m_SVM->train(trainingDataMat,labelsMat,cv::Mat(),cv::Mat(),m_params);
+
+    //    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
   }
   catch( std::bad_alloc &e ) {
     std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
@@ -175,7 +203,56 @@ void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
   }
   catch( const std::logic_error &e ) {
     std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
-      "Image, window end, and/or window size dimensions do not match." );
+          "Image, window end, and/or window size dimensions do not match." );
     QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
   }
+}
+
+void ActiveContourWidget::on_pushButtonTest1_clicked()
+{
+  try{
+    //percorre todas a imagens abertas e executa o treinamento
+    if(m_SVM != NULL){
+      for( int img = 0; img < m_controller->size( ); ++img ) {
+        m_controller->setCurrentImagePos( img );
+        m_tool->clear( );
+        qDebug( ) << m_controller->currentImage( )->fileName( );
+        qDebug( ) << "Comment êtes-vous, Monsieur Robot?";
+        RobotUser MrRobot( *m_tool );
+        MrRobot.setSVM(m_SVM);
+        qDebug( ) << "Courez, Mr. Robot!";
+        MrRobot.runTest1();
+
+        qApp->processEvents( );
+      }
+    }
+    else{
+      qDebug( ) << "Robo não treinado";
+    }
+
+  }
+  catch( std::bad_alloc &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Runtime error." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Out of range exception." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
+
+          "Image, window end, and/or window size dimensions do not match." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+}
+
+void ActiveContourWidget::on_pushButtonTest2_clicked()
+{
+
+
 }

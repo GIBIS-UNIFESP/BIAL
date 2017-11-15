@@ -3,11 +3,13 @@
 
 #include "Common.hpp"
 #include "activeContourMethod.h"
+#include "DescriptionGH.hpp"
+#include "DescriptionLBP.hpp"
 #include "robotuser.h"
 #include "tool.h"
 #include <QGraphicsItem>
 
-#define NUM_FTR 10
+#define NUM_FTR 90
 #define MAX_PTS 1000
 typedef Bial::Array< double, NUM_FTR > FeatureData;
 
@@ -43,6 +45,13 @@ private:
   size_t toPxIndex( const QPointF &qpoint );
   const Bial::Vector< Bial::Point3D > toPoint3DVector( const Path &path );
   Bial::Vector< double > calcHistogram( const Path &path, const Bial::Image< int > &img, size_t bins );
+  Bial::LBPfeature calcLBP(const Path &path, const Bial::Image<int> &img);
+  Bial::GHfeature calcGH(const Path &path, const Bial::Image<int> &img);
+  double calcTexture(const Path &path, const Bial::Image<int> &img);
+  double calcDP(const Path &path, const Bial::Image<int> &img);
+  double calcMean(const Path &path, const Bial::Image<int> &img);
+  double calcMomentum(const Path &path, const Bial::Image<int> &img, int m);
+
 public:
   enum { Type = 42 };
   QGraphicsScene *m_scene;
@@ -50,7 +59,7 @@ public:
   ~ActiveContourTool( );
   static const int supportedFormats = ( ( int ) Modality::BW2D | ( int ) Modality::RGB2D );
   Bial::Image< int > getResult( );
-  FeatureData pathDescription( const Path &path, const ActiveContourMethod *method );
+  FeatureData pathDescription( const Path &path );
   /* Tool interface */
 public:
   int type( );

@@ -61,8 +61,8 @@ Path contour_following( const Bial::Image< int > &img ) {
           }
         }
         while( next_pxl != start_pxl ) {
-//          auto coord = contour_map.Coordinates( next_pxl );
-//          qDebug( ) << next_pxl << coord[ 0 ] << coord[ 1 ];
+          //          auto coord = contour_map.Coordinates( next_pxl );
+          //          qDebug( ) << next_pxl << coord[ 0 ] << coord[ 1 ];
           contour_map[ next_pxl ] = 255;
           contour.push_back( next_pxl );
           find_next( img, disp, next_pxl, dcn, next_pxl, dcn );
@@ -104,17 +104,25 @@ Path contour_following( const Bial::Image< int > &img ) {
 
 RobotUser::RobotUser( ActiveContourTool &tool ) :
   m_tool( tool ) {
+
+  // Aqui que vc define a localização relativa do groud truth.
   QFileInfo finfo( m_tool.getGuiImage( )->fileName( ) );
   qDebug( ) << "Loading RobotUser for " << finfo.absoluteFilePath( );
   QDir dir = finfo.dir( );
-  if( dir.cd( "segmentation" ) ) {
+  m_SVM = NULL;
+  if( dir.cd( "gt" ) ) {
     QFileInfo gtFile( dir.absoluteFilePath( finfo.baseName( ) + ".pgm" ) );
     if( gtFile.exists( ) && gtFile.isFile( ) ) {
       m_groundTruth = Bial::Read< int >( gtFile.absoluteFilePath( ).toStdString( ) );
       if( m_groundTruth.size( ) != m_tool.getGuiImage( )->getSize( ) ) {
         throw std::logic_error( BIAL_ERROR( "Images should have the same dimensions!" ) );
       }
+
+      //percorre a borda do gt para obter o contorno.
+      qDebug( ) << "Obtendo contorno";
+
       qDebug( ) << "Groundtruth of " << finfo.fileName( ) << "is" << gtFile.fileName( );
+
       m_contour = contour_following( m_groundTruth );
       qDebug( ) << "The Groundtruth contour have " << m_contour.size( ) << "pixels";
       if( m_contour.size( ) == 0 ) {
@@ -151,7 +159,7 @@ QPointF RobotUser::toPointF( int pxl ) {
 }
 
 void draw( Bial::Image< int > &img, size_t pxl ) {
-  Bial::Adjacency adj = Bial::AdjacencyType::Circular( 1.5 );
+  Bial::Adjacency adj = Bial::AdjacencyType::Circular( 2 );
   Bial::AdjacencyIterator it( img, adj );
   size_t adj_px;
   for( size_t idx = 0; idx < adj.size( ); ++idx ) {
@@ -171,35 +179,51 @@ void RobotUser::report( const std::string &methodName, size_t total_errors ) {
   std::cout << "Order: " << m_tool.getSelectedMethods( ) << std::endl;
 }
 
+void RobotUser::setSVM(CvSVM *SVM)
+{
+  m_SVM = SVM;
+}
+
+bool RobotUser::trained()
+{
+  return(m_SVM != NULL);
+}
+
 void RobotUser::runSingle( std::shared_ptr< ActiveContourMethod > method ) {
   if( m_contour.empty( ) ) {
     BIAL_WARNING( "Empty contour!" );
     return;
   }
+
   Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
+
+  //ponto inicial do contorno
   QPointF pt = toPointF( m_contour[ 0 ] );
   m_tool.clear( );
   m_tool.setCurrentMethod( method->type( ) );
   m_tool.addPoint( pt );
   m_tool.runLiveWire( );
+
   size_t best_pxl = 0;
   size_t errors = 0;
   size_t total_errors = 0;
   size_t last_anchor = 0;
+
+  //percorre todo contorno atual
   for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
     m_tool.setCurrentMethod( method->type( ) );
     draw( gt_map, m_contour[ pxl_idx ] );
     int pxl = m_contour[ pxl_idx ];
     Path path = method->updatePath( pxl );
-//    if( pxl_idx ) {
-//    }
+    //    if( pxl_idx ) {
+    //    }
     int diff = 0;
     for( size_t pxl : path ) {
       if( gt_map[ pxl ] == 0 ) {
         diff++;
       }
     }
-//    plotPath( path, method->color );
+    //    plotPath( path, method->color );
     if( diff > 0 ) {
       errors++;
       if( errors >= 10 ) {
@@ -213,7 +237,7 @@ void RobotUser::runSingle( std::shared_ptr< ActiveContourMethod > method ) {
         QPointF pt2 = toPointF( m_contour[ best_pxl ] );
         m_tool.addPoint( pt2 );
         m_tool.runLiveWire( );
-//        Bial::Write( gt_map, "/tmp/" + method->name( ) + ".pgm" );
+        //        Bial::Write( gt_map, "/tmp/" + method->name( ) + ".pgm" );
         qApp->processEvents( );
       }
     }
@@ -227,7 +251,7 @@ void RobotUser::runSingle( std::shared_ptr< ActiveContourMethod > method ) {
   report( method->name( ), total_errors );
   QFileInfo finfo( m_tool.getGuiImage( )->fileName( ) );
   QString fname = "/tmp/" + finfo.baseName( ) + "_" +
-                  QString::fromStdString( method->name( ) ) + ".pgm";
+      QString::fromStdString( method->name( ) ) + ".pgm";
 
   qDebug( ) << fname;
   gt_map.Set( 0 );
@@ -236,7 +260,7 @@ void RobotUser::runSingle( std::shared_ptr< ActiveContourMethod > method ) {
     gt_map[ pxl ] = 255;
   }
   Bial::Write( gt_map, fname.toStdString( ) );
-//
+  //
   emit m_tool.getGuiImage( )->imageUpdated( );
   qApp->processEvents( );
 }
@@ -246,7 +270,7 @@ void RobotUser::run( ) {
   size_t total_changes = 0;
   size_t nextMethod = m_tool.getCurrentMethod( );
   const size_t STEP = 1;
-//  size_t end = m_contour.size( ) - 1;
+  //  size_t end = m_contour.size( ) - 1;
   Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
   QPointF pt = toPointF( m_contour[ 0 ] );
   m_tool.addPoint( pt );
@@ -260,7 +284,7 @@ void RobotUser::run( ) {
         draw( gt_map, pxl2 );
 
         Path path = method->updatePath( pxl2 );
-//        plotPath( path, method->color );
+        //        plotPath( path, method->color );
         int diff = 0;
         for( size_t pxl : path ) {
           if( gt_map[ pxl ] == 0 ) {
@@ -280,7 +304,7 @@ void RobotUser::run( ) {
     }
     pxl_idx = best_length;
     if( pxl_idx < m_contour.size( ) - STEP ) {
-      if( m_tool.getCurrentMethod( ) != static_cast< int >( nextMethod ) ) {
+      if( m_tool.getCurrentMethod( ) != static_cast< int >(nextMethod) ) {
         total_changes++;
         m_tool.setCurrentMethod( nextMethod );
       }
@@ -309,51 +333,168 @@ void RobotUser::run( ) {
   qApp->processEvents( );
 }
 
-void RobotUser::train( ) {
-//  size_t end = m_contour.size( ) - 1;
-  qDebug( ) << "CONTOUR of " << m_tool.getGuiImage( )->fileName( ) << ":" << m_contour.size( );
+void RobotUser::runTest1()
+{
+  m_tool.clear( );
+
+  const size_t STEP = 20;
+  size_t misses = 0;
+  size_t hits = 0;
+  size_t total = 0;
+
+  Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
   QPointF pt = toPointF( m_contour[ 0 ] );
   m_tool.addPoint( pt );
   m_tool.runLiveWire( );
+  gt_map.Set( 0 );
+
+  //Percorre a borda em STEP em STEP
+  for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ) - STEP; pxl_idx += STEP ) {
+    total++;
+
+    //Caminho do gabarito para prever
+    Path gtPath;
+    for(size_t i = pxl_idx; i < pxl_idx + STEP;i++){
+      gtPath.push_back(m_contour[i]);
+      draw( gt_map, m_contour[i] );
+    }
+    auto feat = m_tool.pathDescription(gtPath);
+    qDebug( ) << "Feature: " << feat;
+    cv::Mat feat_samp(1,NUM_FTR,cv::DataType< float >::type,&feat[0]);
+
+    //Utiliza SVM para prever o metodo
+    auto pred_method = m_SVM->predict(feat_samp);
+    qDebug( ) << "Predicted: " << pred_method;
+    auto method = m_tool.getMethods( )[ pred_method ];
+
+    int pxl2 = m_contour[ pxl_idx + STEP ];
+
+    //atualiza o caminho do método e calcula os erros
+    Path path = method->updatePath( pxl2 );
+    //        plotPath( path, method->color );
+    int diff = 0;
+    for( size_t pxl : path ) {
+      if( gt_map[ pxl ] == 0 ) {
+        diff++;
+      }
+    }
+    if( diff > 0 ) {
+      misses++;
+    }
+    else{
+      hits++;
+    }
+
+    emit m_tool.getGuiImage( )->imageUpdated( );
+    qApp->processEvents( );
+
+    //atualiza ancora
+    if( pxl_idx < m_contour.size( ) - STEP ) {
+      if( m_tool.getCurrentMethod( ) != method->type( ) ) {
+        m_tool.setCurrentMethod( method->type( ) );
+      }
+      QPointF pt2 = toPointF( m_contour[ pxl_idx + STEP ] );
+      m_tool.addPoint( pt2 );
+      m_tool.runLiveWire( );
+      qApp->processEvents( );
+    }
+  }
+  m_tool.finishSegmentation( );
+  qDebug( ) << "Hits : " << ((double)hits/total)*100.0 <<"%(" << hits<<")";
+  qDebug( ) << "Misses : " << ((double)misses/total)*100.0 <<"%(" << misses<<")";
+  report(m_tool.getMethods()[m_tool.getCurrentMethod()]->name( ),misses);
+
+}
+
+void RobotUser::runTest2()
+{
+
+}
+
+void RobotUser::train( ) {
+
+//  size_t end = m_contour.size( ) - 1;
+  qDebug( ) << "CONTOUR of " << m_tool.getGuiImage( )->fileName( ) << ":" << m_contour.size( );
+  QPointF pt = toPointF( m_contour[ 0 ] );
+  m_GTpaths.clear();
+
+  //inicia no primeiro ponto do contorno
+  m_tool.addPoint( pt );
+  m_tool.runLiveWire( );
+
+  //imagem com contorno aumentado para calcular o erro
   Bial::Image< int > gt_map( m_groundTruth.Dim( ) );
+
+
+  size_t best_length;
+  //percorre o contorno ancora por ancora
   for( size_t pxl_idx = 0; pxl_idx < m_contour.size( ); ++pxl_idx ) {
-    size_t best_length = 0;
-//#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
+    best_length = 0;
+    //para cada metodo : live wire, lazywalk, riverbed, line
+    //#pragma omp parallel for default ( none ) firstprivate( gt_map, m_contour, pxl_idx ) shared( m_tool, best_length )
+
     for( int m = 0; m < m_tool.getMethods( ).size( ); ++m ) {
       auto method = m_tool.getMethods( )[ m ];
+
+      //zera o mapa de contorno
       gt_map.Set( 0 );
+
+      //percorre todos os pixel da ancora atual até o fim do contorno
       for( size_t pxl_idx2 = pxl_idx; pxl_idx2 < m_contour.size( ); ++pxl_idx2 ) {
         int pxl2 = m_contour[ pxl_idx2 ];
+
+        //desenha no mapa a borda aumentada
         draw( gt_map, pxl2 );
 
+        //anda um pixel na borda e calcula o caminho
         Path path = method->updatePath( pxl2 );
-//        if( pxl_idx2 % 10 == 0 ) {
-//          plotPath( path, method->color );
-//        }
+
+        //DESCOMENTE PARA VER O METODO EM TEMPO REAL
+        if( pxl_idx2 % 10 == 0 ) {
+          plotPath( path, method->color );
+        }
+
+        //calcula o quanto o método saiu do caminho
         int diff = 0;
         for( size_t pxl : path ) {
           if( gt_map[ pxl ] == 0 ) {
             diff++;
           }
         }
+        //se houve erros , troca o método, este é o mais longe que vai chegar
         if( diff > 0 ) {
           break;
         }
-//#pragma omp critical
-        if( pxl_idx2 > best_length ) {
+
+        //#pragma omp critical
+        if( pxl_idx2 > best_length ) {// se o metódo foi mais longe
+
           best_length = pxl_idx2;
-          m_tool.setCurrentMethod( method->type( ) );
+          m_tool.setCurrentMethod( method->type( ) );//seleciona como metodo atual(linha em vermelho)
         }
       }
     }
-    pxl_idx = best_length;
-    if( pxl_idx < m_contour.size( ) - 1 ) {
-      QPointF pt2 = toPointF( m_contour[ pxl_idx ] );
-      m_tool.addPoint( pt2 );
-      m_tool.runLiveWire( );
+    //atualiza nova ancora
+    //    pxl_idx = best_length;
+    if( best_length < m_contour.size( ) - 1 ) {// chegou ao fim?
+      Path gtPath;
+      for(size_t p = pxl_idx; p < best_length; p++){
+        gtPath.push_back(m_contour[p]);
+      }
+      m_GTpaths.push_back(gtPath);
+
+      QPointF pt2 = toPointF( m_contour[ best_length ] );
+      m_tool.addPoint( pt2 );//adiciona nova ancora
+      m_tool.runLiveWire( );// recalcula mapas
     }
+    pxl_idx = best_length;
   }
   m_tool.finishSegmentation( );
+  Path gtPath;
+  for(size_t p = best_length; p < m_contour.size(); p++){
+    gtPath.push_back(m_contour[p]);
+  }
+  m_GTpaths.push_back(gtPath);
   emit m_tool.getGuiImage( )->imageUpdated( );
   qApp->processEvents( );
 }

@@ -30,6 +30,7 @@
 #include <QMessageBox>
 #include <QPointF>
 #include <Vector.hpp>
+#include <tuple>
 #include <algorithm>
 
 const Bial::Vector< Bial::Point3D > ActiveContourTool::toPoint3DVector( const Path &path ) {
@@ -53,26 +54,112 @@ Bial::Vector< double > ActiveContourTool::calcHistogram( const Path &path, const
   }
   return( hist );
 }
+double ActiveContourTool::calcMean( const Path &path, const Bial::Image< int > &img) {
+  double sum = 0.0;
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      sum += img[pxl];
+      //      qDebug( )<< "Somando img["<< pxl <<"] = " << img[pxl];
+    }
+  }
+  return( sum/path.size() );
+}
 
-FeatureData ActiveContourTool::pathDescription( const Path &path, const ActiveContourMethod *method ) {
+double ActiveContourTool::calcDP( const Path &path, const Bial::Image< int > &img){
+  double mean = calcMean( path, img );
+  double acum = 0.0;
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      acum += pow((double)(img[pxl] - mean),2);
+    }
+  }
+  return(sqrt((acum/path.size())));
+}
+
+double ActiveContourTool::calcTexture( const Path &path, const Bial::Image< int > &img){
+  return 0.0;
+}
+double ActiveContourTool::calcMomentum( const Path &path, const Bial::Image< int > &img, int m){
+  double max = img.Maximum( );
+  Bial::Vector< double > count( max );
+  count.Set(0.0);
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      count[ img[ pxl ] ]++;
+    }
+  }
+  double momentum = 0.0;
+  for( size_t pxl: path ) {
+    if( pxl < img.size( ) ) {
+      momentum += pow(img[pxl],m) * count[ img[ pxl ] ]/path.size();
+    }
+  }
+  return momentum;
+}
+Bial::LBPfeature ActiveContourTool::calcLBP( const Path &path, const Bial::Image< int > &img){
+  Bial::Vector< std::tuple< Bial::Image< int >, Bial::Vector< size_t > > > v;
+  std::tuple< Bial::Image< int >, Bial::Vector< size_t > > t;
+  t = std::tie( img, path );
+  v.push_back( t );
+
+  Bial::LBP desc ( v );
+
+  Bial::LBPfeature ft = desc.Run () ;
+  return ft;
+}
+Bial::GHfeature ActiveContourTool::calcGH( const Path &path, const Bial::Image< int > &img){
+  Bial::Vector< std::tuple< Bial::Image< int >, Bial::Vector< size_t > > > v;
+  std::tuple< Bial::Image< int >, Bial::Vector< size_t > > t;
+  t = std::tie( img, path );
+  v.push_back( t );
+
+  Bial::GH desc ( v );
+
+  Bial::GHfeature ft = desc.Run () ;
+  return ft;
+}
+
+FeatureData ActiveContourTool::pathDescription( const Path &path ) {
   FeatureData features;
   features.Set( 0 );
-  features[ method->type( ) ] = 1.0;
   if( path.empty( ) ) {
     return( features );
   }
   const Bial::Vector< Bial::Point3D > points = toPoint3DVector( path );
   double imgSz = m_grayImg.size( );
-  double perimeter = points.size( ) / imgSz;
-  double distance = Bial::Distance( points.front( ), points.back( ) ) / imgSz;
-  features[ 3 ] = perimeter;
-  features[ 4 ] = distance;
-  features[ 5 ] = perimeter / distance;
-//  auto grad_hist = calcHistogram( path, m_grad, 4 );
-  auto grad_hist = calcHistogram( path, method->m_cost, 4 );
-  for( size_t i = 0; i < grad_hist.size( ); ++i ) {
-    features[ i + 6 ] = grad_hist[ i ];
+  double perimeter = points.size( );
+  double distance = Bial::Distance( points.front( ), points.back( ) );
+  features[ 0 ] = calcTexture(path,m_grayImg);//perimetro
+  features[ 1 ] = perimeter;//perimetro
+  features[ 2 ] = distance;//distancia
+  features[ 3 ] = perimeter / distance;//curvatura
+  features[ 4 ] = calcMean(path, m_grayImg);//Media
+  features[ 5 ] = calcDP(path, m_grayImg);//Desvio padrão
+  features[ 6 ] = calcMomentum(path, m_grayImg,3);//3 momento
+  features[ 7 ] = calcMomentum(path, m_grayImg,4);//4 momento
+
+  //descritor LBP
+  auto img_lbp = calcLBP(path, m_grayImg);
+  for(size_t i=0; i<img_lbp[0].size(); i++)
+      features[ i + 8 ] = img_lbp[0][ i ];
+
+  //descritor GH
+  auto img_gh = calcGH(path, m_grayImg);
+  for(size_t i=0; i<img_gh[0].size(); i++)
+      features[ i + 18 ] = img_gh[0][ i ];
+
+  //Histograma da imagem
+  auto img_hist = calcHistogram( path, m_grayImg, 4 );
+  for( size_t i = 0; i < img_hist.size( ); ++i ) {
+    features[ i + 82 ] = img_hist[ i ];
   }
+
+  //Histograma do gradiente
+  auto grad_hist = calcHistogram( path, m_grad, 4 );
+  for( size_t i = 0; i < grad_hist.size( ); ++i ) {
+    features[ i + 86 ] = grad_hist[ i ];
+  }
+  Bial::Write(m_grayImg,"Gray.pgm");
   return( features );
 }
 
@@ -81,24 +168,24 @@ ActiveContourTool::ActiveContourTool( GuiImage *guiImage, ImageViewer *viewer ) 
   m_cache( guiImage->width( 0 ), guiImage->heigth( 0 ), QImage::Format_ARGB32 ),
   m_transf( guiImage->getTransform( 0 ) ) {
   switch( guiImage->getImageType( ) ) {
-      case Bial::MultiImageType::int_img: {
-      m_grayImg = guiImage->getIntImage( );
-      break;
-    }
-      case Bial::MultiImageType::flt_img: {
-      m_grayImg = guiImage->getFltImage( );
-      break;
-    }
-      case Bial::MultiImageType::clr_img: {
-      m_grayImg = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) );
-      break;
-    }
-      case Bial::MultiImageType::rcl_img: {
-      m_grayImg = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) );
-      break;
-    }
-      case Bial::MultiImageType::none:
-      throw std::runtime_error( BIAL_ERROR( "Unsupported image type." ) );
+  case Bial::MultiImageType::int_img: {
+    m_grayImg = guiImage->getIntImage( );
+    break;
+  }
+  case Bial::MultiImageType::flt_img: {
+    m_grayImg = guiImage->getFltImage( );
+    break;
+  }
+  case Bial::MultiImageType::clr_img: {
+    m_grayImg = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) );
+    break;
+  }
+  case Bial::MultiImageType::rcl_img: {
+    m_grayImg = Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) );
+    break;
+  }
+  case Bial::MultiImageType::none:
+    throw std::runtime_error( BIAL_ERROR( "Unsupported image type." ) );
   }
   m_grad = Bial::Gradient::Morphological( m_grayImg );
   Bial::Intensity::Complement( m_grad );
@@ -184,8 +271,8 @@ void ActiveContourTool::addPoint( QPointF pt ) {
   }
   auto point = m_scene->addEllipse( QRectF( x - 2, y - 2, 4, 4 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );
-//  point->setFlag( QGraphicsItem::ItemIsMovable, true );
-/*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
+  //  point->setFlag( QGraphicsItem::ItemIsMovable, true );
+  /*  point->setFlag( QGraphicsItem::ItemIsSelectable, true ); */
   m_points.append( point );
   m_pointIdxs.append( toPxIndex( point ) );
   if( m_points.size( ) > 1 ) {
@@ -290,7 +377,7 @@ void ActiveContourTool::setCache( const QImage &cache ) {
 Bial::Point3D ActiveContourTool::toPoint3D( QGraphicsEllipseItem *item ) {
   float px = item->rect( ).center( ).x( ) + item->pos( ).x( );
   float py = item->rect( ).center( ).y( ) + item->pos( ).y( );
-/*  return( transf( px, py, ( double ) guiImage->currentSlice( axis ) ) ); */
+  /*  return( transf( px, py, ( double ) guiImage->currentSlice( axis ) ) ); */
   return( m_transf( px, py, 0 ) );
 }
 
@@ -326,12 +413,12 @@ void ActiveContourTool::updatePath( QPointF pt ) {
   }
   m_res = m_cache;
   std::vector< Path > paths;
-//  double best_val = std::numeric_limits< double >::max( );
+  //  double best_val = std::numeric_limits< double >::max( );
   for( auto method : m_methods ) {
     Path path = method->updatePath( toPxIndex( pt ) );
     paths.push_back( path );
     int m = method->type( );
-    auto features = pathDescription( path, method.get( ) );
+    auto features = pathDescription( path );
     std::cout << m << " : " << features << std::endl;
   }
   for( int m = 0; m < m_methods.size( ); ++m ) {
@@ -402,7 +489,8 @@ QPixmap ActiveContourTool::getLabel( size_t axis ) {
 void ActiveContourTool::runLiveWire( ) {
   if( m_points.size( ) > 0 ) {
     const Bial::Vector< size_t > m_seeds = { m_pointIdxs.last( ) };
-//#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
+
+    //#pragma omp parallel for default(none) firstprivate(m_seeds, m_currentPath) shared(m_methods)
     for( int m = 0; m < m_methods.size( ); ++m ) {
       m_methods[ m ]->run( m_seeds, m_currentPath );
     }

@@ -58,7 +58,7 @@ void RiverBedMethod::run( const Bial::Vector< size_t > &seeds, const Path &curre
   COMMENT( "Weight parameter is the control of the lazy-runner. Set it to a value lower than 1.0 for Live-Wire "
            "similarity, or to a value higher than 1.0 for River Bed similarity.", 1 );
   Bial::Adjacency adj( Bial::AdjacencyType::HyperSpheric( 1.1, m_grayImg.Dims( ) ) );
-  //Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
+//  Bial::FastIncreasingFifoBucketQueue queue( size, 0, m_grad.Maximum( ) + 1 );
   Bial::GrowingBucketQueue queue( size, 1, true, true );
   Bial::ImageIFT< int > ift( m_cost, adj, &pf, &queue );
   for( size_t seed : seeds ) {
