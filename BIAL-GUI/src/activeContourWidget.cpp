@@ -1,8 +1,9 @@
 #include "activeContourWidget.h"
 #include "controller.h"
 #include "ui_livewirewidget.h"
+#ifdef OPENCV
 #include <opencv2/ml.hpp>
-
+#endif
 #include "FileImage.hpp"
 #include <QDebug>
 #include <QDir>
@@ -123,6 +124,7 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
 }
 
 void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
+#ifdef OPENCV
   try {
     cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
     m_svm->setType( cv::ml::SVM::C_SVC );
@@ -178,4 +180,5 @@ void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
       "Image, window end, and/or window size dimensions do not match." );
     QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
   }
+#endif
 }
