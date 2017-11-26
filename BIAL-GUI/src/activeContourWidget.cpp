@@ -1,8 +1,9 @@
 #include "activeContourWidget.h"
 #include "controller.h"
 #include "ui_livewirewidget.h"
+#ifdef OPENCV
 #include <opencv2/ml.hpp>
-
+#endif
 #include "FileImage.hpp"
 #include <QDebug>
 #include <QDir>
@@ -124,6 +125,7 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
 
 void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
   try {
+#ifdef OPENCV
     cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
     m_svm->setType( cv::ml::SVM::C_SVC );
     m_svm->setKernel( cv::ml::SVM::LINEAR );
@@ -160,6 +162,7 @@ void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
     cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
     cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
     std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
+#endif
   }
   catch( std::bad_alloc &e ) {
     std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
