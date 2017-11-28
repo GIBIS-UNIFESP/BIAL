@@ -6,6 +6,7 @@
 #include "FileImage.hpp"
 #include <QDebug>
 #include <QDir>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
 
@@ -65,11 +66,56 @@ void ActiveContourWidget::on_pushButtonRobotUser_clicked( ) {
 
 void ActiveContourWidget::on_pushButtonSave_clicked( ) {
   QFileInfo finfo( m_tool->getGuiImage( )->fileName( ) );
-  QDir dir = finfo.dir( );
-  dir.mkpath( "segmentation" );
-  dir.cd( "segmentation" );
-  QString outFname = dir.absoluteFilePath( finfo.baseName( ) + ".pgm" );
-  Bial::Write( m_tool->getResult( ), outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
+  QString suffix = finfo.completeSuffix( );
+  if( !QString( "pbm,pbm.gz,pgm,pgm.gz,ppm,ppm.gz,pnm,pnm.gz,dcm,dcm.gz,nii,nii.gz"
+                ",scn,scn.gz,bmat,bmat.gz" ).split( ',' ).contains( suffix.toLower( ) ) ) {
+    suffix = "pnm";
+  }
+  QString outFname = finfo.dir( ).absoluteFilePath( finfo.baseName( ) + "_seeds." + suffix );
+  outFname = QFileDialog::getSaveFileName( this, tr( "Save seeds as.." ),
+                                           outFname,
+                                           "PBM images (*.pbm *.pbm.gz);;"
+                                           "PGM images (*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);;"
+                                           "PNM images (*.pnm *.pnm.gz);; DICOM images (*.dcm *.dcm.gz);;"
+                                           "NIfTI images (*.nii *.nii.gz);;"
+                                           "SCN Files (*.scn *.scn.gz);;"
+                                           "BMAT images (*.bmat *.bmat.gz);;" );
+  if( !outFname.isEmpty( ) ) {
+    try {
+      qDebug( ) << "Saving to " << outFname;
+      Bial::Write( m_tool->getResult( ), outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
+    }
+    catch( std::invalid_argument &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( std::bad_alloc &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( std::runtime_error &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( const std::out_of_range &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( const std::logic_error &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+  }
 }
 
 //  if( m_points.size( ) > 1 ) {

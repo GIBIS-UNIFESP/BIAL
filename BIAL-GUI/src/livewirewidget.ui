@@ -37,7 +37,7 @@
    <item>
     <widget class="QPushButton" name="pushButtonSave">
      <property name="text">
-      <string>Save</string>
+      <string>Save Mask</string>
      </property>
     </widget>
    </item>
