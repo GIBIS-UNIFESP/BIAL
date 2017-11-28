@@ -46,6 +46,8 @@ private slots:
 
   void on_pushButtonSave_clicked( );
 
+  void on_pushButtonSaveSeeds_clicked( );
+
 private:
   Ui::Segmentationwidget *ui;
   SegmentationTool *tool;

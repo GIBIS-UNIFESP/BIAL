@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>265</width>
-    <height>526</height>
+    <width>283</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QScrollArea" name="scrollArea">
      <property name="horizontalScrollBarPolicy">
       <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -30,8 +30,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>245</width>
-        <height>477</height>
+        <width>263</width>
+        <height>512</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -235,7 +235,7 @@
             <bool>true</bool>
            </property>
            <property name="text">
-            <string>Sobel</string>
+            <string>Sobe&amp;l</string>
            </property>
            <property name="checked">
             <bool>false</bool>
@@ -363,6 +363,13 @@
        </item>
       </layout>
      </widget>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButtonSaveSeeds">
+     <property name="text">
+      <string>Save Seeds</string>
+     </property>
     </widget>
    </item>
    <item row="0" column="0">
