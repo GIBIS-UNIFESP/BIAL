@@ -174,3 +174,4 @@ DISTFILES += \
 
 
 LIBS += -lopencv_core -lopencv_ml
+QMAKE_CXXFLAGS += -DOPENCV
