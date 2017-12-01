@@ -77,6 +77,10 @@ Bial::Image< int > SegmentationTool::getMask( ) const {
   return( label[ 0 ] );
 }
 
+Bial::Image< int > SegmentationTool::getSeeds( ) const {
+  return( seeds );
+}
+
 SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   Tool( guiImage, viewer ), seeds( guiImage->getDim( ) ), adj( ), queue( nullptr ) {
   COMMENT( "Initiating segmentation tool.", 0 );
@@ -253,6 +257,16 @@ void SegmentationTool::clearSeeds( ) {
   emit guiImage->imageUpdated( );
 }
 
+bool SegmentationTool::hasMask( ) {
+  bool hasMask = false;
+  for( auto pxl: mask ) {
+    if( pxl > 0 ) {
+      hasMask = true;
+    }
+  }
+  return( hasMask );
+}
+
 template< class D >
 void SegmentationTool::InitiateSeeds( size_t map_set,
                                       const Bial::Vector< size_t > &obj_seeds,
@@ -294,8 +308,11 @@ void SegmentationTool::InitiateSeeds( size_t map_set,
   }
 }
 
-void SegmentationTool::GeodesicSum( Bial::Image< int > &img, const Bial::Vector< size_t > &obj_seeds,
-                                    const Bial::Vector< size_t > &bkg_seeds, float alpha, float beta ) {
+void SegmentationTool::GeodesicSum( Bial::Image< int > &img,
+                                    const Bial::Vector< size_t > &obj_seeds,
+                                    const Bial::Vector< size_t > &bkg_seeds,
+                                    float alpha,
+                                    float beta ) {
   try {
     qDebug( ) << "GEOSUM: pf: " << pf;
     if( ( initiated ) && ( ( pf != 0 ) || ( curr_alpha != alpha ) || ( curr_beta != beta ) ) ) {

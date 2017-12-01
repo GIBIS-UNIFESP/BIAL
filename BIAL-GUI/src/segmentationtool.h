@@ -61,6 +61,8 @@ public:
   void setDrawType( int type );
   void clearSeeds( );
 
+  bool hasMask( );
+
   template< class D >
   void InitiateSeeds( size_t map_set,
                       const Bial::Vector< size_t > &obj_seeds,
@@ -109,6 +111,7 @@ public:
   bool isInitiated( ) const;
 
   Bial::Image< int > getMask( ) const;
+  Bial::Image< int > getSeeds( ) const;
 };
 
 #endif /* SEGMENTATIONTOOL_H */
