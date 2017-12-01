@@ -169,7 +169,7 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
   }
 }
 
-void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
+void ActiveContourWidget::on_pushButtonClassifier_clicked(
   try {
 #ifdef OPENCV
     cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
@@ -207,7 +207,7 @@ void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
     }
     cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
     cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
-    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
+    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::en
 #endif
   }
   catch( std::bad_alloc &e ) {
@@ -227,4 +227,5 @@ void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
       "Image, window end, and/or window size dimensions do not match." );
     QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
   }
+
 }
