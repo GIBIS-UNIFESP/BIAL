@@ -81,7 +81,7 @@ int main( int argc, char **argv ) {
 
   NiftiHeader nii( res );
   cout << nii << endl;
-  cout << "DataTypeDecode: " << sizeof( nii.DataTypeDecode( res[ 0 ] ) ) << endl;
+  // cout << "DataTypeDecode: " << sizeof( nii.DataTypeDecode( res[ 0 ] ) ) << endl;
   
   Write( res, argv[ 2 ], argv[ 1 ] );
   if( argc < 4 ) {
