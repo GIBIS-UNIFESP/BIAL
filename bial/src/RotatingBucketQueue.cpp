@@ -126,19 +126,19 @@ namespace Bial {
         std::string msg( BIAL_ERROR( "Inserting element " + std::to_string( idt ) + " that is already in queue." ) );
         throw( std::logic_error( msg ) );
       }
-      COMMENT( "Inserting! elements: " << elements << ", idt: " << idt << ", minimum: " << minimum <<
-               ", weight_idx: " << weight_idx << ", first: " << weight( weight_idx ).first  <<
-               ", last: " << weight( weight_idx ).last, 3 );
       ++elements;
       int idx = weight_idx % size;
+      COMMENT( "Inserting! elements: " << elements << ", idt: " << idt << ", minimum: " << minimum <<
+               ", weight_idx: " << weight_idx << ", first: " << weight( idx ).first <<
+               ", last: " << weight( idx ).last << ", idx: " << idx << ".", 3 );
       if( weight( idx ).first == -1 ) {
-        COMMENT( "First element in bucket.", 4 );
+        COMMENT( "First element in bucket!", 3 );
         weight( idx ).first = idt;
         identity( idt ).prev = -1;
       }
       else {
-        COMMENT( "Last element in bucket.", 4 );
-        identity( weight( idx ).last ).next = idt;
+        COMMENT( "Last element in bucket!", 3 );
+        identity( weight( idx ).last ).next = idt; // ERRO AQUI. Por alguma razão, last é -1 e não deveria ser.
         identity( idt ).prev = weight( idx ).last;
       }
       weight( idx ).last = idt;
@@ -170,7 +170,7 @@ namespace Bial {
         std::string msg( BIAL_ERROR( "Removing element from empty queue." ) );
         throw( std::underflow_error( msg ) );
       }
-      COMMENT( "Removing! elements: " << elements << ", minimum: " << minimum, 3 );
+      COMMENT( "Removing! elements: " << elements << ", minimum: " << minimum << ", buckets: " << weight.size( ), 3 );
       COMMENT( "Finding next element or returning EMPTY bucket queue.", 4 );
       while( weight( minimum ).first == -1 )
         ++minimum;
@@ -266,6 +266,9 @@ namespace Bial {
       }
       else {
         COMMENT( "Inserting element: " << idt << " with weight: " << new_wgt << ".", 3 );
+      }
+      if( static_cast< int >( minimum ) > new_wgt ) {
+	COMMENT( "minimum: " << minimum << ". ERROR!!!!", 3 );
       }
       identity( idt ).state = BucketState::REMOVED;
       Insert( idt, new_wgt );

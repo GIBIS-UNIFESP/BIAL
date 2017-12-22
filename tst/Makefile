@@ -654,12 +654,18 @@ Sorting-QuickIndex: libbial
 
 
 
-SuperPixel: SuperPixel-Image SuperPixel-Brain
+SuperPixel: SuperPixel-Brain SuperPixel-IFT SuperPixel-Image SuperPixel-RhombicDodecahedronSeeds
 
 SuperPixel-Brain: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
+SuperPixel-IFT: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
 SuperPixel-Image: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+SuperPixel-RhombicDodecahedronSeeds: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 

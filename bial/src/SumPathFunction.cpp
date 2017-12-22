@@ -245,7 +245,7 @@ namespace Bial {
       COMMENT( "Trying to propagate from " << index << " to " << adj_index << ".", 4 );
       COMMENT( "orig value " << src_value << ", tgt value: " << prp_value << ".", 4 );
       if( ( src_value > prp_value ) ||
-          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+          ( ( this->predecessor->operator()( adj_index ) == static_cast< int >( index ) ) &&
             ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
         COMMENT( "Conquested.", 4 );
         this->value->operator()( adj_index ) = prp_value;

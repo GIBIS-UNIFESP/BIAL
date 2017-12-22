@@ -59,7 +59,7 @@ namespace Bial {
       size_t z_size_1 = z_size - 1;
       size_t xy_size = grad.Displacement( 1 );
       Vector< double > beta_pows( max_val, 0.0 );
-      for( size_t elm = 0; elm < max_val; ++elm )
+      for( size_t elm = 0; elm < static_cast< size_t >( max_val ); ++elm )
         beta_pows[ elm ] = std::pow( elm, beta );
 
       COMMENT( "FIRST STEP. Running with foreground seeds.", 0 );
@@ -185,8 +185,8 @@ namespace Bial {
             COMMENT( "previous_value: " << previous_value << ". Computing arc weight.", 3 );
             double arc_weight = grad( index ) + grad( adj_index ) + 1;
             COMMENT( "Zero weight edges.", 3 );
-            if( ( ( label[ index ] != 0 ) && ( pred[ index ] == adj_index ) ) ||
-                ( ( label[ index ] == 0 ) && ( pred[ adj_index ] == index ) ) ) {
+            if( ( ( label[ index ] != 0 ) && ( pred[ index ] == static_cast< int >( adj_index ) ) ) ||
+                ( ( label[ index ] == 0 ) && ( pred[ adj_index ] == static_cast< int >( index ) ) ) ) {
               arc_weight = 0;
             }
             ++arc_weight;

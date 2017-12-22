@@ -169,7 +169,7 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
   }
 }
 
-void ActiveContourWidget::on_pushButtonClassifier_clicked(
+void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
   try {
 #ifdef OPENCV
     cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );

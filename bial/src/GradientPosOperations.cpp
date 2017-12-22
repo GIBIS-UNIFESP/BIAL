@@ -42,8 +42,8 @@ namespace Bial {
         size_t img_size = canny.size( );
         for( size_t elm = 0; elm < img_size; ++elm ) {
           div_t elm_by_imgx = std::div( static_cast< int >( elm ), static_cast< int >( img_xsize ) );
-          if( ( elm_by_imgx.rem > 0 ) && ( elm_by_imgx.rem < img_xsize - 1 ) &&
-              ( elm_by_imgx.quot > 0 ) && ( elm_by_imgx.quot < img_ysize - 1 ) &&
+          if( ( elm_by_imgx.rem > 0 ) && ( elm_by_imgx.rem < static_cast< int >( img_xsize ) - 1 ) &&
+              ( elm_by_imgx.quot > 0 ) && ( elm_by_imgx.quot < static_cast< int >( img_ysize ) - 1 ) &&
               ( canny[ elm ] == 0 ) ) {
             for( int adj_dir = 7; adj_dir != 4; adj_dir = ( adj_dir + 1 ) % 8 ) {
               size_t adj_elm = adj_itr( elm, adj_dir );
