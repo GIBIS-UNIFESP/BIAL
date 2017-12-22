@@ -7,9 +7,10 @@ cache: apt
 #     - /opt/qt57/
 os:
   - linux
-  - osx
+  #- osx
 
 dist: trusty
+group: edge
 
 env:
   - QT=qt57
@@ -63,7 +64,9 @@ script:
       && LDFLAGS=-L${QTDIR}/lib
       && CPPFLAGS=-I${QTDIR}/include;
     fi;
-  - qmake -r master.pro
+  - qmake -v
+  - g++ -v
+  - qmake master.pro -r
   - make -j4
   - cd tst
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
