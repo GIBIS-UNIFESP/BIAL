@@ -38,6 +38,7 @@ Tool* Tool::setImageTool( int tool_type, GuiImage *img, ImageViewer *viewer ) {
     img->tools.append( Tool::buildTool( tool_type, img, viewer ) );
     img->setCurrentToolPos( img->tools.size( ) - 1 );
   }
+  return( img->tools[ 0 ] );
 }
 
 

@@ -65,6 +65,73 @@ void SuperVoxelDodecahedronInit( Image< int > &supervoxel_seed, double supervoxe
   }
 }
 
+void CheckSuperPixelCenter( const Image< int > &label, Vector< Vector< double > > &cntr,
+			    const Vector< size_t > &superpixel_size ) {
+  try {
+    COMMENT( "Checking if each superpixel center lays in a superpixel that belong to itself.", 0 );
+    size_t superpixels = cntr.size( );
+    Adjacency spheric( AdjacencyType::HyperSpheric( 1.1, label.Dims( ) ) );
+    AdjacencyIterator adj_itr( label, spheric );
+    size_t x_size = label.size( 0 );
+    size_t xy_size = label.Displacement( 1 );
+    size_t adj_size = spheric.size( );
+    for( size_t lbl = 0; lbl < superpixels; ++lbl ) {
+      COMMENT( "Avoiding size 0 superpixels.", 0 );
+      if( superpixel_size[ lbl ] == 0 )
+	continue;
+      size_t x = std::round( cntr[ lbl ][ 0 ] );
+      size_t y = std::round( cntr[ lbl ][ 1 ] );
+      size_t z = std::round( cntr[ lbl ][ 2 ] );
+      if( label( x, y, z ) != static_cast< int >( lbl ) ) {
+	COMMENT( "center is out of superpixel domain. Correcting it.", 3 );
+	size_t src_pxl = x + y * x_size + z * xy_size;
+	size_t adj_pxl;
+	COMMENT( "Searching for the closest adjacent pixel belonging to the superpixel.", 0 );
+	Vector< bool > visited( label.size( ), false );
+	std::queue< size_t > queue;
+	visited[ src_pxl ] = true;
+	do {
+	  for( size_t adj = 1; adj < adj_size; ++adj ) {
+	    if( ( adj_itr.AdjIdx( src_pxl, adj, adj_pxl ) ) && ( !visited( adj_pxl ) ) ) {
+	      queue.push( adj_pxl );
+	      visited[ adj_pxl ] = true;
+	    }
+	  }
+	  src_pxl = queue.front( );
+	  queue.pop( );
+	} while( ( label( src_pxl ) != static_cast< int >( lbl ) ) && ( !queue.empty( ) ) );
+	if( label( src_pxl ) != static_cast< int >( lbl ) ) {
+	  std::string msg( BIAL_ERROR( "Error. Could not find pixel bellonging to superpixel " +
+				       std::to_string( lbl ) + "." ) );
+	  throw( std::logic_error( msg ) );
+	}
+	COMMENT( "Updating center with correct reference pixel.", 0 );
+	div_t div_index_by_xy = std::div( static_cast< int >( src_pxl ), static_cast< int >( xy_size ) );
+	div_t div_rem_by_x =  std::div( div_index_by_xy.rem, static_cast< int >( x_size ) );
+	cntr[ lbl ][ 0 ] = static_cast< size_t >( div_rem_by_x.rem );
+	cntr[ lbl ][ 1 ] = static_cast< size_t >( div_rem_by_x.quot );
+	cntr[ lbl ][ 2 ] = static_cast< size_t >( div_index_by_xy.quot );
+      }
+    }
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
 template< class D >
 Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alpha, size_t iterations ) {
   try {
@@ -88,15 +155,24 @@ Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alph
     COMMENT( "Setting seeds. Image size: " << size, 0 );
     RotatingBucketQueue queue( size, img.Maximum( ) + 10 );
     size_t superpixels = 0;
+    size_t next_label = 0;
     for( size_t pxl = 0; pxl < size; ++pxl ) {
       root[ pxl ] = pxl;
       if( seeds[ pxl ] != 0 ) {
 	value[ pxl ] = 0;
+	label[ pxl ] = next_label;
+	++next_label;
 	queue.Insert( pxl, value[ pxl ] );
 	++superpixels;
       }
       else
 	value[ pxl ] = std::numeric_limits< D >::max( );
+    }
+    COMMENT( "Setting superpixel center auxiliary structures.", 0 );
+    Vector< double > center_intensity( superpixels + 1 );
+    for( size_t pxl = 0; pxl < size; ++pxl ) {
+      if( seeds[ pxl ] != 0 )
+	center_intensity[ label[ pxl ] ] = static_cast< double >( img[ pxl ] );
     }
     COMMENT( "Setting adjacency related variables.", 0 );
     Adjacency spheric( AdjacencyType::HyperSpheric( 1.1, img.Dims( ) ) );
@@ -106,15 +182,10 @@ Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alph
     Vector< size_t > src_vector( 3 );
     Vector< size_t > adj_vector( 3 );
     for( size_t itr = 0; itr < iterations; ++itr ) {
-      size_t next_label = 0;
       COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
       while( !queue.Empty( ) ) {
 	COMMENT( "Initializing removed data.", 4 );
 	int src_index = queue.Remove( );
-	if( queue.State( src_index ) == BucketState::INSERTED ) {
-	  label[ src_index ] = next_label;
-	  ++next_label;
-	}
 	COMMENT( "Src_Index: " << src_index << ", value: " << value[ src_index ], 4 );
 	queue.Finished( src_index );
 	div_t div_index_by_xy = std::div( static_cast< int >( src_index ), static_cast< int >( xy_size ) );
@@ -135,7 +206,7 @@ Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alph
 	      D dist = ( src_vector[ 0 ] - adj_vector[ 0 ] ) * ( src_vector[ 0 ] - adj_vector[ 0 ] ) +
 		( src_vector[ 1 ] - adj_vector[ 1 ] ) * ( src_vector[ 1 ] - adj_vector[ 1 ] ) +
 		( src_vector[ 2 ] - adj_vector[ 2 ] ) * ( src_vector[ 2 ] - adj_vector[ 2 ] );
-	      D arc_weight = std::abs( img( root( src_index ) ) - img( adj_index ) ) * alpha + dist;
+	      D arc_weight = std::abs( center_intensity[ label[ src_index ] ] - img[ adj_index ] ) * alpha + dist;
 	      D prp_value = value( src_index ) + arc_weight;
 	      if( previous_value > prp_value ) {
 		COMMENT( "propagated!", 4 );
@@ -160,7 +231,7 @@ Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alph
 	      D dist = ( src_vector[ 0 ] - adj_vector[ 0 ] ) * ( src_vector[ 0 ] - adj_vector[ 0 ] ) +
 		( src_vector[ 1 ] - adj_vector[ 1 ] ) * ( src_vector[ 1 ] - adj_vector[ 1 ] ) +
 		( src_vector[ 2 ] - adj_vector[ 2 ] ) * ( src_vector[ 2 ] - adj_vector[ 2 ] );
-	      D arc_weight = std::abs( img( root( src_index ) ) - img( adj_index ) ) * alpha + dist;
+	      D arc_weight = std::abs( center_intensity[ label[ src_index ] ] - img[ adj_index ] ) * alpha + dist;
 	      D prp_value = value( src_index ) + arc_weight;
 	      if( previous_value > prp_value ) {
 		COMMENT( "propagated! From " << previous_value << ", to: " << prp_value, 3 );
@@ -179,15 +250,17 @@ Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alph
       COMMENT( "Updating the superpixel centers.", 3 );
       Vector< Vector< double > > center_coords( superpixels + 1, Vector< double >( 3, 0.0 ) );
       Vector< size_t > superpixel_size( superpixels + 1, 0 );
+      center_intensity = Vector< double >( superpixels + 1, 0.0 );
       for( size_t z = 0; z < z_size; ++z ) {
 	for( size_t y = 0; y < y_size; ++y ) {
 	  for( size_t x = 0; x < x_size; ++x ) {
 	    int lbl = label( x, y, z );
-	    if( lbl > superpixels )
+	    if( lbl > static_cast< int >( superpixels ) )
 	      cout << "Erro" << ": lbl: " << lbl << ", superpixels: " << superpixels << endl;
 	    center_coords[ lbl ][ 0 ] += x;
 	    center_coords[ lbl ][ 1 ] += y;
 	    center_coords[ lbl ][ 2 ] += z;
+	    center_intensity[ lbl ] += img( x, y, z );
 	    ++superpixel_size[ lbl ];
 	  }
 	}
@@ -198,8 +271,11 @@ Image< D > IFTSlic( const Image< D > &img, const Image< int > &seeds, float alph
 	  center_coords[ lbl ][ 0 ] *= inv_size;
 	  center_coords[ lbl ][ 1 ] *= inv_size;
 	  center_coords[ lbl ][ 2 ] *= inv_size;
+	  center_intensity[ lbl ] *= inv_size;
 	}
       }
+      COMMENT( "Checking if the center of the superpixels are pixels that belong to the superpixels themselves.", 0 );
+      CheckSuperPixelCenter( label, center_coords, superpixel_size );
       COMMENT( "Updating priority queue to run next round of the IFT.", 0 );
       queue.Reset( );
       for( size_t pxl = 0; pxl < size; ++pxl ) {

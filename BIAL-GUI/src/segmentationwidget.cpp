@@ -1,5 +1,6 @@
 #include "FileImage.hpp"
 #include "segmentationwidget.h"
+#include "segmentationwidget.h"
 #include "ui_segmentationwidget.h"
 #include <QDebug>
 #include <QDir>
@@ -45,7 +46,8 @@ void SegmentationWidget::on_SegmentationButton_clicked( ) {
   double beta = ui->BetaSpinBox->value( );
   int pf_type = ( ui->pfmaxgeo->isChecked( ) ? 0 : ( ui->pfmax->isChecked( ) ? 1 : 2 ) );
   try {
-    tool->connect( pf_type, alpha, beta );
+    int new_val = tool->connect( pf_type, alpha, beta );
+    ui->AnchorPointsspinBox->setValue( new_val );
   }
   catch( std::runtime_error &err ) {
     QMessageBox::warning( this, "ERROR", err.what( ) );
@@ -63,7 +65,12 @@ void SegmentationWidget::on_drawButton_clicked( ) {
 }
 
 void SegmentationWidget::on_ClearButton_clicked( ) {
-  tool->clearSeeds( );
+    tool->clearSeeds( );
+}
+
+void SegmentationWidget::on_LiveWirePostButton_clicked( ) {
+    size_t anchors = ui->AnchorPointsspinBox->value( );
+    tool->LiveWirePostProcessing( anchors );
 }
 
 void SegmentationWidget::on_AlphaSpinBox_valueChanged( double arg1 ) {
@@ -72,6 +79,10 @@ void SegmentationWidget::on_AlphaSpinBox_valueChanged( double arg1 ) {
 
 void SegmentationWidget::on_BetaSpinBox_valueChanged( double arg1 ) {
   tool->setBeta( arg1 );
+}
+
+void SegmentationWidget::on_AnchorPointsspinBox_valueChanged( int arg1 ) {
+  tool->setAnchors( arg1 );
 }
 
 void SegmentationWidget::on_pushButtonShowSeeds_clicked( bool checked ) {
