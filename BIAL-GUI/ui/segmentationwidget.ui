@@ -7,13 +7,27 @@
     <x>0</x>
     <y>0</y>
     <width>283</width>
-    <height>650</height>
+    <height>601</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <item row="1" column="0">
+    <widget class="QPushButton" name="pushButtonSaveSeeds">
+     <property name="text">
+      <string>Save Seeds</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="pushButtonSave">
+     <property name="text">
+      <string>Save Segmentation</string>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="0">
     <widget class="QScrollArea" name="scrollArea">
      <property name="enabled">
@@ -34,7 +48,7 @@
         <x>0</x>
         <y>0</y>
         <width>263</width>
-        <height>568</height>
+        <height>519</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
@@ -252,7 +266,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>144</height>
+           <height>206</height>
           </size>
          </property>
          <property name="title">
@@ -300,7 +314,7 @@
             </widget>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0">
            <widget class="QPushButton" name="ClearButton">
             <property name="minimumSize">
              <size>
@@ -313,7 +327,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0">
            <widget class="QSplitter" name="splitter_3">
             <property name="minimumSize">
              <size>
@@ -348,7 +362,7 @@
             </widget>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QPushButton" name="SegmentationButton">
             <property name="minimumSize">
              <size>
@@ -361,98 +375,55 @@
             </property>
            </widget>
           </item>
+          <item row="1" column="0">
+           <widget class="QSplitter" name="splitter_6">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QPushButton" name="LiveWirePostButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>10</width>
+               <height>27</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>109</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Livewire</string>
+             </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+            </widget>
+            <widget class="QSpinBox" name="AnchorPointsspinBox">
+             <property name="minimum">
+              <number>3</number>
+             </property>
+            </widget>
+           </widget>
+          </item>
          </layout>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QGroupBox" name="groupBoxPost">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="title">
-          <string>Post Processing</string>
-         </property>
-         <widget class="QPushButton" name="LiveWirePostButton">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>30</y>
-            <width>221</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>221</width>
-            <height>27</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Livewire</string>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="AnchorPointsspinBox">
-          <property name="geometry">
-           <rect>
-            <x>180</x>
-            <y>70</y>
-            <width>45</width>
-            <height>26</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <number>3</number>
-          </property>
-         </widget>
-         <widget class="QLabel" name="label_4">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>70</y>
-            <width>111</width>
-            <height>27</height>
-           </rect>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>27</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anchor Points:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
         </widget>
        </item>
       </layout>
      </widget>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QPushButton" name="pushButtonSaveSeeds">
-     <property name="text">
-      <string>Save Seeds</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QPushButton" name="pushButtonSave">
-     <property name="text">
-      <string>Save Segmentation</string>
-     </property>
     </widget>
    </item>
   </layout>

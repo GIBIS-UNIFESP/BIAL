@@ -24,7 +24,6 @@ ActiveContourWidget::ActiveContourWidget( ImageViewer *viewer, QWidget *parent )
   QWidget( parent ),
   ui( new Ui::LiveWireWidget ) {
   ui->setupUi( this );
-
 }
 
 ActiveContourWidget::~ActiveContourWidget( ) {

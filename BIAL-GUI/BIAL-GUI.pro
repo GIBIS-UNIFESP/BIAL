@@ -131,7 +131,6 @@ HEADERS += \
     src/activeContourTool.h \
     src/activeContourWidget.h \
     src/activeContourMethod.h
-
 SOURCES += \
     src/controller.cpp \
     src/controlswidget.cpp \

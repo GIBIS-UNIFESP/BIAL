@@ -54,6 +54,8 @@ Bial::Vector< double > ActiveContourTool::calcHistogram( const Path &path, const
   return( hist );
 }
 
+// Error here. Features 1 to 4 are related to Livewire, Riverbed, Lazywalk, and Line methods. Mixed with other features.
+// Must increase the vector size.
 FeatureData ActiveContourTool::pathDescription( const Path &path, const ActiveContourMethod *method ) {
   FeatureData features;
   features.Set( 0 );
@@ -180,7 +182,7 @@ void ActiveContourTool::addPoint( QPointF pt ) {
   }
   QGraphicsItem *item = m_scene->itemAt( pt, QTransform( ) );
   if( item && ( item->type( ) == QGraphicsEllipseItem::Type ) ) {
-    qDebug( ) << "There is another item in this position " << pt;
+    qDebug( ) << "There is another item at this position " << pt;
   }
   auto point = m_scene->addEllipse( QRectF( x - 2, y - 2, 4, 4 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
                                     QBrush( QColor( 0, 255, 0, 64 ) ) );

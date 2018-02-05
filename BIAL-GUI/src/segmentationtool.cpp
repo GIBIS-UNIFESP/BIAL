@@ -25,6 +25,7 @@
 #include "guiimage.h"
 #include "segmentationtool.h"
 #include "segmentationtool.h"
+#include "segmentationtool.h"
 #include <QApplication>
 #include <QDebug>
 #include <QMessageBox>
@@ -92,7 +93,7 @@ Bial::Image< int > SegmentationTool::getSeeds( ) const {
 }
 
 SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) try :
-  Tool( guiImage, viewer ), seeds( guiImage->getDim( ) ), adj( ), queue( nullptr ) {
+  Tool( guiImage, viewer ), seeds( guiImage->getDim( ) ), adj( ), queue( nullptr ), m_scene( viewer->getScene( 0 ) ) {
   COMMENT( "Initiating segmentation tool.", 0 );
   drawType = 1;
   drawing = false;
@@ -153,6 +154,11 @@ SegmentationTool::~SegmentationTool( ) {
     int_ift[ 1 ] = nullptr;
     flt_ift[ 0 ] = nullptr;
     flt_ift[ 1 ] = nullptr;
+    for( auto pt : anchor_ellipse ) {
+      m_scene->removeItem( ( QGraphicsItem* ) pt );
+    }
+    //qDeleteAll( anchor_ellipse );
+    anchor_ellipse.clear( );
   }
   catch( std::runtime_error &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
@@ -1254,8 +1260,74 @@ void SegmentationTool::SobelGradient( ) {
   }
 }
 
+void SegmentationTool::DeleteEllipses( ) {
+  try {
+    COMMENT( "Deleting old ellipses.", 0 );
+    for( auto pt : anchor_ellipse )
+      m_scene->removeItem( ( QGraphicsItem* ) pt );
+    //qDeleteAll( anchor_ellipse );
+    anchor_ellipse.clear( );
+    COMMENT( "Done deleting old ellipses.", 0 );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
+void SegmentationTool::PrintAnchors( size_t x_size ) {
+  try {
+    COMMENT( "Printing " << anchor_position.size( ) - 1 << " anchors.", 0 );
+    for( size_t idx = 0; idx < static_cast< size_t >( anchor_position.size( ) - 1 ); ++idx ) {
+      size_t pos = anchor_position[ idx ];
+      std::div_t pos_div_xsize = std::div( static_cast< int >( pos ), static_cast< int >( x_size ) );
+      size_t x = pos_div_xsize.rem;
+      size_t y = pos_div_xsize.quot;
+      COMMENT( "Adding ellipse " << x << ", " << y << " to scene.", 0 );
+      auto point = m_scene->addEllipse( QRectF( x - 2, y - 2, 4, 4 ), QPen( QColor( 0, 255, 0, 128 ), 1 ),
+                                        QBrush( QColor( 0, 255, 0, 64 ) ) );
+      //point->setFlag( QGraphicsItem::ItemIsMovable, true );
+      //point->setFlag( QGraphicsItem::ItemIsSelectable, true );
+      COMMENT( "Adding ellipse " << x << ", " << y << " to vector.", 0 );
+      anchor_ellipse.append( point );
+    }
+    COMMENT( "Updating image.", 0 );
+    emit guiImage->imageUpdated( );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
 // This function may be executed along with region growing algorithm. A seed label is required for that.
 Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
+  if( anchor_ellipse.size( ) != 0 )
+    DeleteEllipses( );
   size_t img_size = seeds.size( );
   Bial::Image< int > my_seed( seeds ); // In this function, negative values are used for background seeds and positive to object seeds.
   Bial::Vector< bool > visited( img_size, false );
@@ -1308,7 +1380,7 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
       my_pred[ pxl ] = -1;
     }
   }
-  COMMENT( "Run fill algorithm starting from the seeds and detect the first shock point between two object/background seed groups.", 0 );
+  COMMENT( "Run fill algorithm starting from the seeds and detecting the first shock point between two object/background seed groups.", 0 );
   Bial::Image< int > my_label( my_seed );
   Bial::Matrix< int > obj_adj( obj_seed_lbl, obj_seed_lbl );
   Bial::Matrix< int > bkg_adj( -bkg_seed_lbl, -bkg_seed_lbl );
@@ -1328,15 +1400,15 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
         }
         // Equality test to check if both pixels belong to object or background. Inequality test to check if seed components are distinct.
         else if( ( my_label[ src_pxl ] * my_label[ adj_pxl ] > 0 ) && ( my_label[ src_pxl ] != my_label[ adj_pxl ] ) ) {
-          COMMENT( "Both object or background rooted pixels, but with distinct source seed groups.", 3 );
+          COMMENT( "Both object or background rooted pixels, but with distinct source seed groups.", 0 );
           if( ( my_label[ src_pxl ] > 0 ) && ( obj_adj( my_label[ src_pxl ], my_label[ adj_pxl ] ) == static_cast< int >( img_size ) ) ) {
-            COMMENT( "First time these two object seed component labels touch each other.", 3 );
+            COMMENT( "First time these two object seed component labels touch each other.", 0 );
             obj_adj( my_label[ src_pxl ], my_label[ adj_pxl ] ) = src_pxl;
             obj_adj( my_label[ adj_pxl ], my_label[ src_pxl ] ) = adj_pxl;
             obj_order.push_back( std::make_tuple( my_label[ src_pxl ], my_label[ adj_pxl ] ) );
           }
           if( ( my_label[ src_pxl ] < 0 ) && ( bkg_adj( -my_label[ src_pxl ], -my_label[ adj_pxl ] ) == static_cast< int >( img_size ) ) ) {
-            COMMENT( "First time these two backgorund seed component labels touch each other.", 3 );
+            COMMENT( "First time these two backgorund seed component labels touch each other.", 0 );
             bkg_adj( -my_label[ src_pxl ], -my_label[ adj_pxl ] ) = src_pxl;
             bkg_adj( -my_label[ adj_pxl ], -my_label[ src_pxl ] ) = adj_pxl;
             bkg_order.push_back( std::make_tuple( -my_label[ src_pxl ], -my_label[ adj_pxl ] ) );
@@ -1510,7 +1582,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
       anchors = std::max< int >( 3, last_pxl / 10 ); // Ensuring at least 2 anchors.
     double anchor_distance = last_pxl / static_cast< double >( anchors );
     size_t anchor_radius = std::floor( anchor_distance / 4.0 );
-    Bial::Vector< size_t > anchor_position( anchors + 1 );
+    anchor_position = Bial::Vector< size_t >( anchors + 1 );
     anchor_position[ 0 ] = higher_pixel;
     size_t ancr_idx = 1;
     COMMENT( "anchor_distance: " << anchor_distance << ", last_pxl: " << last_pxl, 0 );
@@ -1532,7 +1604,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
       }
       ++ancr_idx;
     }
-    anchor_position[ anchors ] = contour[ last_pxl - 1 ];
+    anchor_position[ anchors ] = contour[ last_pxl - 1 ]; // Error: It should be last_pxl, but it is not closing the last border segment with it.
     COMMENT( "Anchors: " << anchors + 1, 0 );
     for( size_t ancr_idx = 0; ancr_idx <= anchors; ++ancr_idx ) {
       COMMENT( "Anchor[ " << ancr_idx << " ]: " << anchor_position[ ancr_idx ], 0 );
@@ -1673,15 +1745,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     mask = label[ 2 ];
     Bial::Write( mask, "/tmp/my_livewire.pgm" );
     COMMENT( "Printing the anchors into the label.", 0 );
-    Bial::Adjacency circumference( Bial::AdjacencyType::Circunference( 2.0 ) );
-    size_t cc_size = circumference.size( );
-    Bial::AdjacencyIterator cc_itr( label[ 0 ], circumference );
-    for( ancr_idx = 0; ancr_idx < anchors; ++ancr_idx ) {
-      for( adj_idx = 0; adj_idx < cc_size; ++adj_idx ) {
-        if( cc_itr.AdjIdx2( anchor_position[ ancr_idx ], adj_idx, adj_pxl ) )
-          mask[ adj_pxl ] = 2;
-      }
-    }
+    PrintAnchors( my_grad.size( 0 ) );
     emit guiImage->imageUpdated( );
   }
   catch( std::bad_alloc &e ) {

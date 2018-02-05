@@ -25,6 +25,9 @@ private:
   Bial::ImageIFT< float > *flt_ift[ 2 ];
   double curr_alpha;
   double curr_beta;
+  QGraphicsScene *m_scene; // Qt scene for drawing.
+  QVector< QGraphicsEllipseItem* > anchor_ellipse; // Ellipses of LW anchors.
+  Bial::Vector< size_t > anchor_position; // Indexes of the LW anchors.
 
   Bial::Point3D lastPoint;
   bool drawing;
@@ -93,6 +96,8 @@ public:
   void MorphologicalGradient( );
   void SobelGradient( );
 
+  void DeleteEllipses( );
+  void PrintAnchors( size_t x_size );
   Bial::Image< int > ConnectSeeds( );
   void LiveWirePostProcessing( size_t anchors );
   int LiveWire(const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_img, const Bial::Image< int > &borders, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl );
