@@ -32,6 +32,7 @@
 #include <QPointF>
 #include <algorithm>
 #include <tuple>
+#include <QGraphicsEllipseItem>
 
 double SegmentationTool::getAlpha( ) const {
   return( alpha );
@@ -115,6 +116,8 @@ SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) tr
   flt_path_func[ 0 ] = nullptr;
   flt_path_func[ 1 ] = nullptr;
   grad_type = -1;
+  moved_anchor = nullptr;
+  moved_anchor_index = -1;
   COMMENT( "Finished constructor for segmentation tool.", 0 );
 }
 catch( std::bad_alloc &e ) {
@@ -181,20 +184,44 @@ int SegmentationTool::type( ) {
 void SegmentationTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
   try {
     timer.start( );
-    drawing = true;
-    seedsVisible = true;
-    if( ( drawType == 1 ) || ( drawType == 2 ) ) {
-      switch( buttons ) {
-          case Qt::LeftButton:
-          drawType = 1;
-          break;
-          case Qt::RightButton:
-          drawType = 2;
-          break;
+    if( drawType == 3 ) {
+      COMMENT( "Moving anchor.", 0 );
+      moved_anchor = m_scene->itemAt( pt, QTransform( ) );
+      if( moved_anchor != nullptr ) {
+        moved_anchor_index = 0;
+        while( anchor_ellipse[ moved_anchor_index ] != moved_anchor )
+          ++moved_anchor_index;
+        COMMENT( "Moving anchor " << moved_anchor_index, 0 );
+        size_t img_size = seed_img.size( );
+        int previous_anchor_index = moved_anchor_index == 0 ? anchors : moved_anchor_index;
+        COMMENT( "Erasing current paths to run Livewire.", 0 );
+        for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+          int contour_label = border[ pxl ];
+          if( ( contour_label == moved_anchor_index + 1 ) || ( contour_label == previous_anchor_index ) ) {
+            label[ 2 ][ pxl ] = 0;
+            mask[ pxl ] = 0;
+          }
+        }
+        emit guiImage->imageUpdated( );
       }
     }
-    const Bial::FastTransform &transf = guiImage->getTransform( axis );
-    lastPoint = transf( pt.x( ), pt.y( ), ( double ) guiImage->currentSlice( axis ) );
+    else {
+      COMMENT( "Drawing seeds.", 0 );
+      drawing = true;
+      seedsVisible = true;
+      if( ( drawType == 1 ) || ( drawType == 2 ) ) {
+        switch( buttons ) {
+            case Qt::LeftButton:
+            drawType = 1;
+            break;
+            case Qt::RightButton:
+            drawType = 2;
+            break;
+        }
+      }
+      const Bial::FastTransform &transf = guiImage->getTransform( axis );
+      lastPoint = transf( pt.x( ), pt.y( ), ( double ) guiImage->currentSlice( axis ) );
+    }
   }
   catch( std::runtime_error &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
@@ -212,6 +239,29 @@ void SegmentationTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_
 
 void SegmentationTool::mouseMoved( QPointF pt, size_t axis ) {
   try {
+//    if( moved_anchor != nullptr ) {
+//      size_t x_size = seed_img.size( 0 );
+//      size_t img_size = seed_img.size( );
+//      int previous_anchor_index = moved_anchor_index == 0 ? anchors : moved_anchor_index + 1;
+//      COMMENT( "Erasing current paths to run Livewire.", 0 );
+//      for( size_t pxl = 0; pxl < img_size; ++pxl ) {
+//        int contour_label = border[ pxl ];
+//        if( ( contour_label == moved_anchor_index ) || ( contour_label == previous_anchor_index ) )
+//          label[ 2 ][ pxl ] = 0;
+//      }
+//      COMMENT( "Computing new anchor postion from " << pt.x( ) << ", " <<  pt.y( ), 0 );
+//      size_t pos = static_cast< size_t >( pt.x( ) + pt.y( ) * x_size );
+//      COMMENT( "Updating anchor position from " << anchor_position[ moved_anchor_index ] << " to " << pos, 0 );
+//      anchor_position[ moved_anchor_index ] = pos;
+//      if( moved_anchor_index == 0 ) {
+//        anchor_position[ anchors ] = pos - 1;
+//        SegmentationTool::LiveWire( grad.IntImage( ), my_seed, seed_img, border, anchors, anchor_position[ anchors - 1 ], anchor_position[ anchors ], -1 );
+//      }
+//      else
+//        SegmentationTool::LiveWire( grad.IntImage( ), my_seed, seed_img, border, moved_anchor_index, anchor_position[ moved_anchor_index - 1 ], anchor_position[ moved_anchor_index ], -1 );
+//      SegmentationTool::LiveWire( grad.IntImage( ), my_seed, seed_img, border, moved_anchor_index + 1, anchor_position[ moved_anchor_index ], anchor_position[ moved_anchor_index + 1 ], -1 );
+//    }
+//    else
     if( drawing ) {
       const Bial::FastTransform &transf = guiImage->getTransform( axis );
       Bial::Point3D current = transf( pt.x( ), pt.y( ), ( double ) guiImage->currentSlice( axis ) );
@@ -220,11 +270,11 @@ void SegmentationTool::mouseMoved( QPointF pt, size_t axis ) {
       }
       drawSeed( lastPoint, current );
       lastPoint = current;
-      if( timer.elapsed( ) > 30 ) {
-        emit guiImage->imageUpdated( );
-        timer.start( );
-        qApp->processEvents( );
-      }
+    }
+    if( timer.elapsed( ) > 30 ) {
+      emit guiImage->imageUpdated( );
+      timer.start( );
+      qApp->processEvents( );
     }
   }
   catch( std::bad_alloc &e ) {
@@ -247,11 +297,29 @@ void SegmentationTool::mouseMoved( QPointF pt, size_t axis ) {
 
 void SegmentationTool::mouseReleased( QPointF pt, Qt::MouseButtons buttons, size_t axis ) {
   try {
-    drawing = false;
-    if( drawing ) {
+    if( moved_anchor != nullptr ) {
+      size_t x_size = seed_img.size( 0 );
+      COMMENT( "Computing new anchor postion.", 0 );
+      size_t pos = static_cast< size_t >( pt.x( ) ) + static_cast< size_t >( pt.y( ) ) * x_size;
+      COMMENT( "Updating anchor position from " << anchor_position[ moved_anchor_index ] << " to " << pos, 0 );
+      anchor_position[ moved_anchor_index ] = pos;
+      Bial::Image< int > my_grad( grad.IntImage( ) );
+      Bial::Intensity::Complement( my_grad );
+      if( moved_anchor_index == 0 ) {
+        anchor_position[ anchors ] = pos - 1;
+        SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, anchors, anchor_position[ anchors - 1 ], anchor_position[ anchors ], -1 );
+      }
+      else
+        SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, moved_anchor_index, anchor_position[ moved_anchor_index - 1 ], anchor_position[ moved_anchor_index ], -1 );
+      SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, moved_anchor_index + 1, anchor_position[ moved_anchor_index ], anchor_position[ moved_anchor_index + 1 ], -1 );
+
+      moved_anchor = nullptr;
+    }
+    else if( drawing ) {
       const Bial::FastTransform &transf = guiImage->getTransform( axis );
       Bial::Point3D current = transf( pt.x( ), pt.y( ), ( double ) guiImage->currentSlice( axis ) );
       drawSeed( lastPoint, current );
+      drawing = false;
     }
     emit guiImage->imageUpdated( );
     Q_UNUSED( buttons );
@@ -330,9 +398,8 @@ void SegmentationTool::drawSeed( Bial::Point3D last, Bial::Point3D current ) {
     for( size_t px = 0; px < size; ++px ) {
       if( seeds[ px ] == 255 ) {
         for( size_t idx = 0; idx < adj_size; ++idx ) {
-          if( it.AdjIdx( px, idx, adj_px ) ) {
+          if( it.AdjIdx( px, idx, adj_px ) )
             seeds[ adj_px ] = drawType;
-          }
         }
       }
     }
@@ -371,6 +438,7 @@ void SegmentationTool::clearSeeds( ) {
       needUpdate[ i ] = true;
     }
     maskVisible = false;
+    DeleteEllipses( );
     emit guiImage->imageUpdated( );
   }
   catch( std::bad_alloc &e ) {
@@ -388,6 +456,14 @@ void SegmentationTool::clearSeeds( ) {
   catch( const std::logic_error &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
     throw( std::logic_error( msg ) );
+  }
+}
+
+void SegmentationTool::setEllipsesMovable( bool movable ) {
+  for( size_t idx = 0; idx < anchors; ++idx ) {
+    auto ellipse = anchor_ellipse[ idx ];
+    ellipse->setFlag( QGraphicsItem::ItemIsSelectable, movable );
+    ellipse->setFlag( QGraphicsItem::ItemIsMovable, movable );
   }
 }
 
@@ -1064,14 +1140,16 @@ int SegmentationTool::connect(int pf_type, double alpha, double beta ) {
         break;
       }
     }
-    mask = Bial::Gradient::Morphological( label[ 0 ] );
+    mask = label[ 0 ] - Bial::Morphology::ErodeBin( label[ 0 ], Bial::AdjacencyType::Circular( 1.0 ) );
     emit guiImage->imageUpdated( );
     if( ( label[ 0 ].Dims( ) == 2 ) &&
         ( guiImage->getImageType( ) == Bial::MultiImageType::int_img ) ) {
       int border_length = GetBorderLength( );
       COMMENT( "border_length: " << border_length, 0 );
+      LiveWirePostProcessing( border_length / 20 );
       return( border_length / 20 );
     }
+    LiveWirePostProcessing( 3 );
     return( 3 );
   }
   else {
@@ -1196,7 +1274,7 @@ int SegmentationTool::GetBorderLength( ) {
   Bial::Adjacency adj( Bial::AdjacencyType::Circular( 1.1 ) );
   Bial::AdjacencyIterator adj_itr( label[ 0 ], adj );
   size_t adj_size = adj.size( );
-  Bial::Vector< char > borders( label[ 0 ].size( ), 0 );
+  Bial::Vector< char > my_border( label[ 0 ].size( ), 0 );
   size_t adj_pxl;
   COMMENT( "Computing the higest energy in the object contourn and the size of the contourn.", 0 );
   for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
@@ -1204,7 +1282,7 @@ int SegmentationTool::GetBorderLength( ) {
       for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
         if( ( adj_itr.AdjIdx2( src_pxl, adj_idx, adj_pxl ) ) && ( label[ 0 ][ adj_pxl ] == 0 ) ) {
           ++contour_size;
-          borders[ src_pxl ] = 1;
+          my_border[ src_pxl ] = 1;
           break;
         }
       }
@@ -1329,7 +1407,7 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
   if( anchor_ellipse.size( ) != 0 )
     DeleteEllipses( );
   size_t img_size = seeds.size( );
-  Bial::Image< int > my_seed( seeds ); // In this function, negative values are used for background seeds and positive to object seeds.
+  my_seed = Bial::Image< int >( seeds ); // In this function, negative values are used for background seeds and positive to object seeds.
   Bial::Vector< bool > visited( img_size, false );
   Bial::Adjacency adj( Bial::AdjacencyType::Circular( 1.7 ) );
   Bial::AdjacencyIterator adj_itr( label[ 0 ], adj );
@@ -1501,7 +1579,7 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
 
 void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
   try {
-    if( ( label[ 0 ].Dims( ) != 2 ) ||
+    if( ( label[ 0 ].Dims( ) != 2 ) || ( label[ 0 ].size( ) < 10 ) ||
         ( guiImage->getImageType( ) != Bial::MultiImageType::int_img ) ) {
       qDebug( "Warning: LiveWire Post Processing available only for 2D integer image." );
       return;
@@ -1518,7 +1596,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     Bial::Write( my_grad, "/tmp/my_grad.pgm" );
     Bial::Write( label[ 0 ], "/tmp/my_label.pgm" );
     Bial::Write( seeds, "/tmp/my_ini_seeds.pgm" );
-    Bial::Image< int > borders( label[ 0 ].Dim( ) );
+    border = Bial::Image< int >( label[ 0 ].Dim( ) );
     size_t adj_pxl;
     COMMENT( "Computing the higest energy in the object contourn and the size of the contourn.", 0 );
     for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
@@ -1526,7 +1604,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
         for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
           if( ( adj_itr.AdjIdx2( src_pxl, adj_idx, adj_pxl ) ) && ( label[ 0 ][ adj_pxl ] == 0 ) ) {
             ++contour_size;
-            borders[ src_pxl ] = 1;
+            border[ src_pxl ] = 1;
             if( higher_eng_val < my_grad[ src_pxl ] ) {
               higher_eng_val = my_grad[ src_pxl ];
               higher_pixel = src_pxl;
@@ -1541,7 +1619,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
       return;
     }
     COMMENT( "Border tracing.", 0 );
-    Bial::Vector< size_t > contour( contour_size * 3 );
+    contour = Bial::Vector< size_t >( contour_size * 3 );
     contour[ 0 ] = higher_pixel;
     Bial::Adjacency trc_adj( 8, 2 ); // Sorted adjacency
     trc_adj( 0, 0 ) = 1; trc_adj( 0 , 1 ) = -1; // NE
@@ -1556,7 +1634,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     size_t trc_adj_size = trc_adj.size( );
     size_t curr_cntr_pxl = 1;
     size_t adj_idx = 0;
-    ++borders[ curr_cntr_pxl ];
+    ++border[ curr_cntr_pxl ];
     do {
       if( curr_cntr_pxl == contour_size * 3 ) {
         qDebug( "Error in contour tracking. Contour must be holeless and without pixel-wise width paths." );
@@ -1567,9 +1645,9 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
                ( contour[ curr_cntr_pxl - 1 ] ) % label[ 0 ].size( 0 ) << ", " << std::floor( ( contour[ curr_cntr_pxl - 1 ] ) / label[ 0 ].size( 0 ) ), 0 );
       adj_idx = ( adj_idx + 5 ) % trc_adj_size;
       do{
-        if( ( trc_adj_itr.AdjIdx2( contour[ curr_cntr_pxl - 1 ], adj_idx, adj_pxl ) ) && ( borders[ adj_pxl ] == 1 ) ) {
+        if( ( trc_adj_itr.AdjIdx2( contour[ curr_cntr_pxl - 1 ], adj_idx, adj_pxl ) ) && ( border[ adj_pxl ] == 1 ) ) {
           contour[ curr_cntr_pxl ] = adj_pxl;
-          ++borders[ curr_cntr_pxl ];
+          ++border[ curr_cntr_pxl ];
           curr_cntr_pxl++;
           break;
         }
@@ -1577,6 +1655,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
       } while( true );
     } while( ( curr_cntr_pxl < 22 ) || ( contour[ curr_cntr_pxl - 1 ] != contour[ 1 ] ) || ( contour[ curr_cntr_pxl - 2 ] != contour[ 0 ] ) );
     size_t last_pxl = curr_cntr_pxl - 3;
+    contour[ last_pxl + 1 ] = img_size;
     COMMENT( "Getting the anchor pixels in n +- m intervals.", 0 );
     if( anchors > last_pxl / 10 ) // Ensure that there are at most 1/10th of the contour size anchors.
       anchors = std::max< int >( 3, last_pxl / 10 ); // Ensuring at least 2 anchors.
@@ -1612,11 +1691,11 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     COMMENT( "Labeling contour sectors. Used as limitation for livewire to avoid crossing the wrong borders.", 0 );
     ancr_idx = 0;
     for( size_t cntr_idx = 0; cntr_idx < last_pxl; ++cntr_idx ) {
-      borders[ contour[ cntr_idx ] ] = ancr_idx + 1;
+      border[ contour[ cntr_idx ] ] = ancr_idx + 1;
       if( contour[ cntr_idx ] == anchor_position[ ancr_idx + 1 ] )
         ++ancr_idx;
     }
-    Bial::Write( borders, "/tmp/my_border.pgm" );
+    Bial::Write( border, "/tmp/my_border.pgm" );
     COMMENT( "Linking all background/object seeds in order to avoid leaving them in/out of the contour.", 0 );
     Bial::Image< int > my_seed( ConnectSeeds( ) );
     Bial::Write( my_seed, "/tmp/my_conn_seeds.pgm" );
@@ -1656,7 +1735,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
       }
     }
     std::queue< size_t > seed_queue;
-    Bial::Image< int > seed_img( my_grad.Dim( ) ); // -2: Forbidden pixel; -1: allowed pixel; 0: not visited; > 0: non-seed adjacent to seed border.
+    seed_img = Bial::Image< int >( my_grad.Dim( ) ); // -2: Forbidden pixel; -1: allowed pixel; 0: not visited; > 0: non-seed adjacent to seed border.
     int seed_side_lbl = 1; // Label assigned to each side of a single pixel line of seeds.
     COMMENT( "Building seed_img. It contains the forbidden regions with -2, allowed regions with -1. " <<
              "Values higher than 0 are set to non-seed pixels adjacent to object seed borders. " <<
@@ -1728,22 +1807,22 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     COMMENT( "border labels:" << seed_side_lbl, 0 );
     Bial::Write( seed_bdr, "/tmp/my_seed_brd.pgm" );
     COMMENT( "Computing gradient complement.", 0 );
-    Bial::Intensity::Complement( my_grad );
-    COMMENT( "Linking anchors with livewire.", 0 );
-    label[ 2 ] = Bial::Image< int >( label[ 0 ].Dim( ) );
-    int brd_lbl = seed_img[ anchor_position[ 0 ] ];
-    for( ancr_idx = 0; ancr_idx < anchors; ++ancr_idx )
-      brd_lbl = LiveWire( my_grad, my_seed, seed_img, borders, ancr_idx + 1, anchor_position[ ancr_idx ], anchor_position[ ancr_idx + 1 ], brd_lbl );
-    COMMENT( "Returning result.", 0 );
-    for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
-      if( seed_img[ src_pxl ] == -1 )
-        seed_img[ src_pxl ] = 0;
-      if( seed_img[ src_pxl ] == -2 )
-        seed_img[ src_pxl ] = seed_side_lbl + 1;
-    }
-    Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
-    mask = label[ 2 ];
-    Bial::Write( mask, "/tmp/my_livewire.pgm" );
+//    Bial::Intensity::Complement( my_grad );
+//    COMMENT( "Linking anchors with livewire.", 0 );
+    label[ 2 ] = mask;
+//    int brd_lbl = seed_img[ anchor_position[ 0 ] ];
+//    for( ancr_idx = 0; ancr_idx < anchors; ++ancr_idx )
+//      brd_lbl = LiveWire( my_grad, my_seed, seed_img, borders, ancr_idx + 1, anchor_position[ ancr_idx ], anchor_position[ ancr_idx + 1 ], brd_lbl );
+//    COMMENT( "Returning result.", 0 );
+//    for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
+//      if( seed_img[ src_pxl ] == -1 )
+//        seed_img[ src_pxl ] = 0;
+//      if( seed_img[ src_pxl ] == -2 )
+//        seed_img[ src_pxl ] = seed_side_lbl + 1;
+//    }
+//    Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
+//    mask = label[ 2 ];
+//    Bial::Write( mask, "/tmp/my_livewire.pgm" );
     COMMENT( "Printing the anchors into the label.", 0 );
     PrintAnchors( my_grad.size( 0 ) );
     emit guiImage->imageUpdated( );
@@ -1861,15 +1940,16 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     COMMENT( "Painting final path.", 0 );
     for( src_pxl = end_pxl; src_pxl != ini_pxl; src_pxl = predecessor[ src_pxl ] ) {
       label[ 2 ][ src_pxl ] = 1;
-      if( src_pxl == 0 )  {// There is a bug here. Must be corrected.
+      if( src_pxl == 0 )  {// There is a bug here. Must be corrected. Bug occurs when last path reaches dead end and current path can not leave.
         std::cout << "bug detected." << ". ini_pxl = " << ini_pxl << ", end_pxl: " << end_pxl << std::endl;
-        Bial::Write( value, "/tmp/my_lw_value.pgm" );
-        Bial::Write( seed_brd, "/tmp/my_lw_seed_br.pgm" );
-        Bial::Write( predecessor, "/tmp/my_lw_pred.pgm" );
+        //Bial::Write( value, "/tmp/my_lw_value.pgm" );
+        //Bial::Write( seed_brd, "/tmp/my_lw_seed_br.pgm" );
+        //Bial::Write( predecessor, "/tmp/my_lw_pred.pgm" );
         break;
       }
     }
     label[ 2 ][ ini_pxl ] = 1;
+    mask = label[ 2 ];
     return( seed_brd[ end_pxl ] );
   }
   catch( std::bad_alloc &e ) {

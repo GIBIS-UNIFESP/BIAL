@@ -23,11 +23,17 @@ private:
   Bial::GrowingBucketQueue *queue;
   Bial::ImageIFT< int > *int_ift[ 2 ];
   Bial::ImageIFT< float > *flt_ift[ 2 ];
+  Bial::Image< int > my_seed;
+  Bial::Image< int > seed_img;
+  Bial::Image< int > border;
+  Bial::Vector< size_t > contour;
   double curr_alpha;
   double curr_beta;
   QGraphicsScene *m_scene; // Qt scene for drawing.
   QVector< QGraphicsEllipseItem* > anchor_ellipse; // Ellipses of LW anchors.
   Bial::Vector< size_t > anchor_position; // Indexes of the LW anchors.
+  QGraphicsItem *moved_anchor;
+  int moved_anchor_index;
 
   Bial::Point3D lastPoint;
   bool drawing;
@@ -64,6 +70,7 @@ public:
   void drawSeed( Bial::Point3D last, Bial::Point3D actual );
   void setDrawType( int type );
   void clearSeeds( );
+  void setEllipsesMovable( bool movable );
 
   bool hasMask( );
 
@@ -100,7 +107,7 @@ public:
   void PrintAnchors( size_t x_size );
   Bial::Image< int > ConnectSeeds( );
   void LiveWirePostProcessing( size_t anchors );
-  int LiveWire(const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_img, const Bial::Image< int > &borders, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl );
+  int LiveWire(const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_img, const Bial::Image< int > &border, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl );
 
   /* pf_type: 0-maxgeo, 1-max, 2-sum */
   int connect( int pf_type, double alpha, double beta );

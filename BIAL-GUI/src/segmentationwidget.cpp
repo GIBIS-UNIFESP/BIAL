@@ -34,6 +34,9 @@ void SegmentationWidget::setTool( Tool *sTool ) {
         case 2:
         ui->drawButton->setChecked( true );
         break;
+        case 3:
+        ui->LiveWirePostButton->setChecked( true );
+        break;
     }
   }
   else {
@@ -57,11 +60,13 @@ void SegmentationWidget::on_SegmentationButton_clicked( ) {
 void SegmentationWidget::on_eraserButton_clicked( ) {
   tool->setDrawType( 0 );
   tool->setSeedsVisibility( true );
+  tool->setEllipsesMovable( false );
 }
 
 void SegmentationWidget::on_drawButton_clicked( ) {
   tool->setDrawType( 1 );
   tool->setSeedsVisibility( true );
+  tool->setEllipsesMovable( false );
 }
 
 void SegmentationWidget::on_ClearButton_clicked( ) {
@@ -69,8 +74,9 @@ void SegmentationWidget::on_ClearButton_clicked( ) {
 }
 
 void SegmentationWidget::on_LiveWirePostButton_clicked( ) {
-    size_t anchors = ui->AnchorPointsspinBox->value( );
-    tool->LiveWirePostProcessing( anchors );
+  tool->setDrawType( 3 );
+  tool->setSeedsVisibility( true );
+  tool->setEllipsesMovable( true );
 }
 
 void SegmentationWidget::on_AlphaSpinBox_valueChanged( double arg1 ) {
@@ -83,6 +89,7 @@ void SegmentationWidget::on_BetaSpinBox_valueChanged( double arg1 ) {
 
 void SegmentationWidget::on_AnchorPointsspinBox_valueChanged( int arg1 ) {
   tool->setAnchors( arg1 );
+  tool->LiveWirePostProcessing( arg1 );
 }
 
 void SegmentationWidget::on_pushButtonShowSeeds_clicked( bool checked ) {
