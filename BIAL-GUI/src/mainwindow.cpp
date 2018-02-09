@@ -20,12 +20,6 @@
 #include <QSettings>
 
 
-//#undef BIAL_WARNING
-//#define BIAL_WARNING( exp ) \
-    std::stringstream ss; \
-    ss << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " Warning: " << exp;\
-    QMessageBox::critical( this, "Erro", "Erro carregando tradução!" );
-
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ),
   m_controller( new Controller( 4, this ) ) {
 

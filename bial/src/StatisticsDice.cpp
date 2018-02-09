@@ -31,6 +31,7 @@ namespace Bial {
       }
       size_t TP, TN, FP, FN;
       std::tie( TP, TN, FP, FN ) = Statistics::PositiveNegative( src_label, tgt_label );
+      COMMENT( "TP: " << TP << ", TN: " << TN << ", FP: " << FP << ", FN: " << FN, 1 );
       return( ( 2.0 * TP ) / ( 2.0 * TP + FP + FN ) );
     }
     catch( std::bad_alloc &e ) {
@@ -60,6 +61,7 @@ namespace Bial {
       }
       size_t TP, TN, FP, FN;
       std::tie( TP, TN, FP, FN ) = Statistics::PositiveNegative( src_label, tgt_label, dist );
+      COMMENT( "TP: " << TP << ", TN: " << TN << ", FP: " << FP << ", FN: " << FN, 1 );
       return( ( 2.0 * TP ) / ( 2.0 * TP + FP + FN ) );
     }
     catch( std::bad_alloc &e ) {

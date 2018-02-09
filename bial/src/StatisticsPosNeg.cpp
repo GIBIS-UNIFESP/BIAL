@@ -32,18 +32,14 @@ namespace Bial {
       }
       size_t TP = 0, TN = 0, FP = 0, FN = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
-        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) != 0 ) ) {
+        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) != 0 ) )
           ++TP;
-        }
-        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) == 0 ) ) {
+        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) == 0 ) )
           ++TN;
-        }
-        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) == 0 ) ) {
+        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) == 0 ) )
           ++FP;
-        }
-        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) != 0 ) ) {
+        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) != 0 ) )
           ++FN;
-        }
       }
       return( std::tie( TP, TN, FP, FN ) );
     }
@@ -80,20 +76,16 @@ namespace Bial {
       size_t TP = 0, TN = 0, FP = 0, FN = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
         if( src_label[ pxl ] != 0 ) {
-          if( tgt_dist[ pxl ] <= dist ) {
+          if( tgt_dist[ pxl ] <= dist )
             ++TN;
-          }
-          else {
+          else
             ++FN;
-          }
         }
         else if( tgt_label[ pxl ] != 0 ) {
-          if( src_dist[ pxl ] <= dist ) {
+          if( src_dist[ pxl ] <= dist )
             ++TP;
-          }
-          else {
+          else
             ++FP;
-          }
         }
       }
       return( std::tie( TP, TN, FP, FN ) );
@@ -125,9 +117,8 @@ namespace Bial {
       }
       size_t res = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
-        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) != 0 ) ) {
+        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) != 0 ) )
           ++res;
-        }
       }
       return( res );
     }
@@ -161,9 +152,8 @@ namespace Bial {
       size_t TP = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
         if( tgt_label[ pxl ] != 0 ) {
-          if( src_dist[ pxl ] <= dist ) {
+          if( src_dist[ pxl ] <= dist )
             ++TP;
-          }
         }
       }
       return( TP );
@@ -195,9 +185,8 @@ namespace Bial {
       }
       size_t res = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
-        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) == 0 ) ) {
+        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) == 0 ) )
           ++res;
-        }
       }
       return( res );
     }
@@ -231,9 +220,8 @@ namespace Bial {
       size_t TN = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
         if( src_label[ pxl ] != 0 ) {
-          if( tgt_dist[ pxl ] <= dist ) {
+          if( tgt_dist[ pxl ] <= dist )
             ++TN;
-          }
         }
       }
       return( TN );
@@ -265,9 +253,8 @@ namespace Bial {
       }
       size_t res = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
-        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) == 0 ) ) {
+        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) == 0 ) )
           ++res;
-        }
       }
       return( res );
     }
@@ -301,9 +288,8 @@ namespace Bial {
       size_t FP = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
         if( tgt_label[ pxl ] != 0 ) {
-          if( src_dist[ pxl ] > dist ) {
+          if( src_dist[ pxl ] > dist )
             ++FP;
-          }
         }
       }
       return( FP );
@@ -335,9 +321,8 @@ namespace Bial {
       }
       size_t res = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
-        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) != 0 ) ) {
+        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) != 0 ) )
           ++res;
-        }
       }
       return( res );
     }
@@ -371,9 +356,8 @@ namespace Bial {
       size_t FN = 0;
       for( size_t pxl = 0; pxl < src_label.size( ); ++pxl ) {
         if( src_label[ pxl ] != 0 ) {
-          if( tgt_dist[ pxl ] > dist ) {
+          if( tgt_dist[ pxl ] > dist )
             ++FN;
-          }
         }
       }
       return( FN );
