@@ -14,7 +14,7 @@ CONFIG(release, release|debug|profile) : message( "Release 1" )
 CONFIG(profile, profile|release|debug) : CONFIG+=static
 CONFIG(profile, profile|release|debug) : message( "Profile 1" )
 
-CONFIG(debug, debug|release|profile) : QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=2
+CONFIG(debug, debug|release|profile) : QMAKE_CXXFLAGS_DEBUG += -DBIAL_DEBUG=1
 CONFIG(debug, debug|release|profile) : message( "Debug 1" )
 
 #-I$$PWD/SLIC/inc

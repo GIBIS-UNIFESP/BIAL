@@ -251,8 +251,10 @@ namespace Bial {
       ++arc_weight;
       COMMENT( "Zero weight edges.", 3 );
       if( geodesic_restriction != nullptr ) {
-        if( ( ( this->label->operator()( index ) != 0 ) && ( ( *geodesic_restriction )[ index ] == adj_index ) ) ||
-            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) ) {
+        if( ( ( this->label->operator()( index ) != 0 ) &&
+              ( ( *geodesic_restriction )[ index ] == static_cast< int >( adj_index ) ) ) ||
+            ( ( this->label->operator()( index ) == 0 ) &&
+              ( ( *geodesic_restriction )[ adj_index ] == static_cast< int >( index ) ) ) ) {
           arc_weight = 0;
         }
       }
@@ -307,8 +309,10 @@ namespace Bial {
       ++arc_weight;
       COMMENT( "Zero weight edges.", 3 );
       if( geodesic_restriction != nullptr ) {
-        if( ( ( this->label->operator()( index ) != 0 ) && ( ( *geodesic_restriction )[ index ] == adj_index ) ) ||
-            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) ) {
+        if( ( ( this->label->operator()( index ) != 0 ) &&
+                ( ( *geodesic_restriction )[ index ] == static_cast< int >( adj_index ) ) ) ||
+            ( ( this->label->operator()( index ) == 0 ) &&
+                ( ( *geodesic_restriction )[ adj_index ] == static_cast< int >( index ) ) ) ) {
           arc_weight = 0;
         }
       }

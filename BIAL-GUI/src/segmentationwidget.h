@@ -23,10 +23,13 @@ private slots:
   void on_eraserButton_clicked( );
   void on_drawButton_clicked( );
   void on_ClearButton_clicked( );
+  void on_LiveWirePostButton_clicked( );
 
   void on_AlphaSpinBox_valueChanged( double arg1 );
 
   void on_BetaSpinBox_valueChanged( double arg1 );
+
+  void on_AnchorPointsspinBox_valueChanged( int arg1 );
 
   void on_pushButtonShowSeeds_clicked( bool checked );
 
@@ -45,6 +48,8 @@ private slots:
   void on_sobel_grad_toggled( bool checked );
 
   void on_pushButtonSave_clicked( );
+
+  void on_pushButtonSaveSeeds_clicked( );
 
 private:
   Ui::Segmentationwidget *ui;

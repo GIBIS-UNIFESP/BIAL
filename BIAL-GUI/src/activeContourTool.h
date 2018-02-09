@@ -62,7 +62,7 @@ public:
   void sliceChanged( size_t axis, size_t slice );
   QPixmap getLabel( size_t axis );
 
-  void addPoint(QPointF pt);
+  void addPoint( QPointF pt );
 
   void updatePath( QPointF pt );
 

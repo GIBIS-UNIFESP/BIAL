@@ -246,7 +246,7 @@ namespace Bial {
       D arc_weight = handicap( adj_index );
       D prp_value = std::max( this->value->operator()( index ), arc_weight );
       if( ( src_value > prp_value ) ||
-          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+          ( ( this->predecessor->operator()( adj_index ) == static_cast< int >( index ) ) &&
             ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
         COMMENT( "propagated!", 4 );
         this->value->operator()( adj_index ) = prp_value;
@@ -282,8 +282,9 @@ namespace Bial {
       D src_value = this->value->operator()( adj_index );
       D arc_weight = handicap( adj_index );
       D prp_value = std::max( this->value->operator()( index ), arc_weight );
-      if( ( ( this->predecessor != nullptr ) && ( this->predecessor->operator()( adj_index ) == index ) ) 
-          || ( src_value > prp_value ) ) {
+      if( ( ( this->predecessor != nullptr ) &&
+            ( this->predecessor->operator()( adj_index ) == static_cast< int >( index ) ) )
+            || ( src_value > prp_value ) ) {
         COMMENT( "propagated!", 4 );
         this->value->operator()( adj_index ) = prp_value;
         ( this->*this->UpdateData )( index, adj_index );

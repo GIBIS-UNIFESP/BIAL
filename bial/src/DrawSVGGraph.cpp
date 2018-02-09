@@ -180,7 +180,7 @@ namespace Bial {
           short red = ( *label )( pxl ) % 256;
           short green = ( ( *label )( pxl ) / 256 ) % 256;
           short blue = ( ( *label )( pxl ) / ( 256 * 256 ) ) % 256;
-          if( ( pred( pxl ) == -1 ) || ( pred( pxl ) == pxl ) )
+          if( ( pred( pxl ) == -1 ) || ( pred( pxl ) == static_cast< int >( pxl ) ) )
             file << "  <circle cx=\"" << x_pos << "\" cy=\"" << y_pos << "\" r=\"1.5\" fill=\"#"
                  << std::hex << ( red < 10 ? "0" : "" ) << red << ( green < 10 ? "0" : "" ) << green
                  << ( blue < 10 ? "0" : "" ) << blue << std::dec << "\" />" << std::endl;
@@ -190,7 +190,7 @@ namespace Bial {
                  << ( blue < 10 ? "0" : "" ) << blue << std::dec << "\" />" << std::endl;
         }
         else {
-          if( ( pred( pxl ) == -1 ) || ( pred( pxl ) == pxl ) )
+          if( ( pred( pxl ) == -1 ) || ( pred( pxl ) == static_cast< int >( pxl ) ) )
             file << "  <circle cx=\"" << x_pos << "\" cy=\"" << y_pos << "\" r=\"1.5\" fill=\"black\" />" << std::endl;
           else
             file << "  <circle cx=\"" << x_pos << "\" cy=\"" << y_pos << "\" r=\"1\" fill=\"black\" />" << std::endl;

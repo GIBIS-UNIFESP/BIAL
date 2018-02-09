@@ -12,7 +12,7 @@ Since it is an **Open Source** Library, its tools and functions can be used by d
 
 ## Compiling BIAL
 
-First, you will need Qt ( > 5.5 ), an opensource C++ framework, that can be found in [http://download.qt.io/](http://download.qt.io/).
+First, you will need Qt ( >= 5.6 ), an opensource C++ framework, that can be found in [http://download.qt.io/](http://download.qt.io/).
 
 The easiest way to install the library is opening the file "master.pro" on QtCreator, and selecting the "Build", according to the desired build mode (release or debug). Then, the library will be generated at BIAL/build/&lt;linux/windows>/&lt;release/debug>/lib, and the BIAL GUI will be found at BIAL/build/&lt;linux/windows>/&lt;release/debug>/bialgui.
 
@@ -22,11 +22,14 @@ _Warning:_
         export LD_LIBRARY_PATH=<BIAL_PATH>/build/<linux|windows>/<release|debug>/lib
 ```
 **Example:**
-    In a machine running ubuntu 16.04, you could download Qt 5.7, and compile the whole library and run a test example with the following commands:
+    In a machine running ubuntu 16.04, you could download Qt 5.9, and compile the whole library and run a test example with the following commands:
 ```bash
-    #Installing Qt 5.7
+    # In ubuntu Xenial Xerus 16.04 you could use the following commands to install Qt 5.9
+    sudo add-apt-repository ppa:beineri/opt-qt591-xenial -y && sudo apt-get update;
     sudo apt update
-    sudo apt install qt-sdk git
+    sudo apt install -y qt59base 
+    
+    
 
     #Downloading BIAL library from github
     git clone https://github.com/GIBIS-UNIFESP/BIAL

@@ -34,6 +34,8 @@ public:
 
   GuiImage* getGuiImage( ) const;
 
+  static Tool* buildTool( int toolType, GuiImage *img, ImageViewer *viewer );
+  static Tool* setImageTool( int tool_type, GuiImage *img, ImageViewer *viewer );
 protected:
   void setHasLabel( bool sHasLabel );
 };

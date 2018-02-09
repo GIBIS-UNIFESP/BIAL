@@ -243,8 +243,10 @@ namespace Bial {
       ++arc_weight;
       COMMENT( "Zero weight edges.", 4 );
       if( geodesic_restriction != nullptr ) {
-        if( ( ( this->label->operator()( index ) != 0 ) && ( ( *geodesic_restriction )[ index ] == adj_index ) ) ||
-            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) )
+        if( ( ( this->label->operator()( index ) != 0 ) &&
+              ( ( *geodesic_restriction )[ index ] == static_cast< int >( adj_index ) ) ) ||
+            ( ( this->label->operator()( index ) == 0 ) &&
+              ( ( *geodesic_restriction )[ adj_index ] == static_cast< int >( index ) ) ) )
           arc_weight = 0;
       }
       ++arc_weight;
@@ -252,7 +254,7 @@ namespace Bial {
       D prp_value = static_cast< D >( arc_weight );
       COMMENT( "Updating path value.", 4 );
       if( ( src_value > prp_value ) ||
-          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+          ( ( this->predecessor->operator()( adj_index ) == static_cast< int >( index ) ) &&
             ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
         this->value->operator()( adj_index ) = prp_value;
         ( this->*this->UpdateData )( index, adj_index );
@@ -297,8 +299,10 @@ namespace Bial {
       ++arc_weight;
       COMMENT( "Zero weight edges.", 4 );
       if( geodesic_restriction != nullptr ) {
-        if( ( ( this->label->operator()( index ) != 0 ) && ( ( *geodesic_restriction )[ index ] == adj_index ) ) ||
-            ( ( this->label->operator()( index ) == 0 ) && ( ( *geodesic_restriction )[ adj_index ] == index ) ) )
+        if( ( ( this->label->operator()( index ) != 0 ) &&
+              ( ( *geodesic_restriction )[ index ] == static_cast< int >( adj_index ) ) ) ||
+            ( ( this->label->operator()( index ) == 0 ) &&
+              ( ( *geodesic_restriction )[ adj_index ] == static_cast< int >( index ) ) ) )
           arc_weight = 0;
       }
       ++arc_weight;

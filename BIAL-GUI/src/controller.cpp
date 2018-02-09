@@ -221,7 +221,6 @@ void Controller::setRecentFile( QString fname ) {
 
 void Controller::setThumbsWidget( ThumbsWidget *thumbsWidget ) {
   m_thumbsWidget = thumbsWidget;
-  m_thumbsWidget->setController( this );
 }
 
 DisplayFormat* Controller::currentFormat( ) {

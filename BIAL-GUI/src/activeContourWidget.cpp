@@ -1,11 +1,13 @@
 #include "activeContourWidget.h"
 #include "controller.h"
 #include "ui_livewirewidget.h"
-//#include <opencv2/ml.hpp>
-
+#ifdef OPENCV
+#include <opencv2/ml.hpp>
+#endif
 #include "FileImage.hpp"
 #include <QDebug>
 #include <QDir>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
 
@@ -17,10 +19,12 @@ void ActiveContourWidget::setController( Controller *controller ) {
   m_controller = controller;
 }
 
-ActiveContourWidget::ActiveContourWidget( QWidget *parent ) :
+ActiveContourWidget::ActiveContourWidget( ImageViewer *viewer, QWidget *parent ) :
+  m_viewer( viewer ),
   QWidget( parent ),
   ui( new Ui::LiveWireWidget ) {
   ui->setupUi( this );
+
 }
 
 ActiveContourWidget::~ActiveContourWidget( ) {
@@ -63,11 +67,56 @@ void ActiveContourWidget::on_pushButtonRobotUser_clicked( ) {
 
 void ActiveContourWidget::on_pushButtonSave_clicked( ) {
   QFileInfo finfo( m_tool->getGuiImage( )->fileName( ) );
-  QDir dir = finfo.dir( );
-  dir.mkpath( "segmentation" );
-  dir.cd( "segmentation" );
-  QString outFname = dir.absoluteFilePath( finfo.baseName( ) + ".pgm" );
-  Bial::Write( m_tool->getResult( ), outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
+  QString suffix = finfo.completeSuffix( );
+  if( !QString( "pbm,pbm.gz,pgm,pgm.gz,ppm,ppm.gz,pnm,pnm.gz,dcm,dcm.gz,nii,nii.gz"
+                ",scn,scn.gz,bmat,bmat.gz" ).split( ',' ).contains( suffix.toLower( ) ) ) {
+    suffix = "pnm";
+  }
+  QString outFname = finfo.dir( ).absoluteFilePath( finfo.baseName( ) + "_seeds." + suffix );
+  outFname = QFileDialog::getSaveFileName( this, tr( "Save seeds as.." ),
+                                           outFname,
+                                           "PBM images (*.pbm *.pbm.gz);;"
+                                           "PGM images (*.pgm *.pgm.gz);; PPM images (*.ppm *.ppm.gz);;"
+                                           "PNM images (*.pnm *.pnm.gz);; DICOM images (*.dcm *.dcm.gz);;"
+                                           "NIfTI images (*.nii *.nii.gz);;"
+                                           "SCN Files (*.scn *.scn.gz);;"
+                                           "BMAT images (*.bmat *.bmat.gz);;" );
+  if( !outFname.isEmpty( ) ) {
+    try {
+      qDebug( ) << "Saving to " << outFname;
+      Bial::Write( m_tool->getResult( ), outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
+    }
+    catch( std::invalid_argument &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( std::bad_alloc &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( std::runtime_error &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( const std::out_of_range &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+    catch( const std::logic_error &e ) {
+      QMessageBox messageBox( this );
+      messageBox.critical( 0,
+                           "ERROR",
+                           "Could not save file:\n" + QString( e.what( ) ) );
+    }
+  }
 }
 
 //  if( m_points.size( ) > 1 ) {
@@ -121,55 +170,62 @@ void ActiveContourWidget::on_pushButtonProcessAll_clicked( ) {
 }
 
 void ActiveContourWidget::on_pushButtonClassifier_clicked( ) {
-//  try {
-//    cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
-//    m_svm->setType( cv::ml::SVM::C_SVC );
-//    m_svm->setKernel( cv::ml::SVM::LINEAR );
-//    m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
-//    for( int img = 0; img < m_controller->size( ); ++img ) {
-//      m_controller->setCurrentImagePos( img );
-//      m_tool->clear( );
-//      qDebug( ) << m_controller->currentImage( )->fileName( );
-//      qDebug( ) << "Comment êtes-vous, Monsieur Robot?";
-//      RobotUser mrRoboto( *m_tool );
-//      qDebug( ) << "Courez, Mr. Robot!";
-//      mrRoboto.train( );
-//      qApp->processEvents( );
-//    }
-//    auto selectedMethods = m_tool->getSelectedMethods( );
-//    auto methods = m_tool->getMethods( );
+  try {
+#ifdef OPENCV
+    cv::Ptr< cv::ml::SVM > m_svm = cv::ml::SVM::create( );
+    m_svm->setType( cv::ml::SVM::C_SVC );
+    m_svm->setKernel( cv::ml::SVM::LINEAR );
+    m_svm->setTermCriteria( cv::TermCriteria( cv::TermCriteria::MAX_ITER, 100, 1e-6 ) );
+    for( int img = 0; img < m_controller->size( ); ++img ) {
+      m_controller->setCurrentImagePos( img );
+      GuiImage *guiImg = m_controller->currentImage( );
+      Tool::setImageTool( ActiveContourTool::Type, guiImg, m_viewer );
+      m_tool = dynamic_cast< ActiveContourTool* >( guiImg->currentTool( ) );
+      m_tool->clear( );
 
-//    int num_samples = selectedMethods.size( );
-//    std::vector< FeatureData > trainingData;
-//    std::vector< int > labels;
-//    trainingData.reserve( num_samples );
-//    labels.reserve( num_samples );
-//    for( int sample = 0; sample < num_samples; ++sample ) {
-//      for( auto method : methods ) {
-//        auto features = m_tool->pathDescription( method->m_paths[ sample ], method.get( ) );
-//        trainingData.push_back( features );
-//        labels.push_back( ( method->type( ) == selectedMethods[ sample ] ) ? 1 : -1 );
-//      }
-//    }
-//    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
-//    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
-//    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::endl;
-//  }
-//  catch( std::bad_alloc &e ) {
-//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
-//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-//  }
-//  catch( std::runtime_error &e ) {
-//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Runtime error." );
-//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-//  }
-//  catch( const std::out_of_range &e ) {
-//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Out of range exception." );
-//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-//  }
-//  catch( const std::logic_error &e ) {
-//    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
-//      "Image, window end, and/or window size dimensions do not match." );
-//    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
-//  }
+      qDebug( ) << m_controller->currentImage( )->fileName( );
+
+      RobotUser mrRoboto( *m_tool );
+//      mrRoboto.train( );
+      qApp->processEvents( );
+    }
+    return;
+    auto selectedMethods = m_tool->getSelectedMethods( );
+    auto methods = m_tool->getMethods( );
+
+    int num_samples = selectedMethods.size( );
+    std::vector< FeatureData > trainingData;
+    std::vector< int > labels;
+    trainingData.reserve( num_samples );
+    labels.reserve( num_samples );
+    for( int sample = 0; sample < num_samples; ++sample ) {
+      for( auto method : methods ) {
+        auto features = m_tool->pathDescription( method->m_paths[ sample ], method.get( ) );
+        trainingData.push_back( features );
+        labels.push_back( ( method->type( ) == selectedMethods[ sample ] ) ? 1 : -1 );
+      }
+    }
+    cv::Mat trainingDataMat( num_samples, NUM_FTR, cv::DataType< float >::type, &trainingData[ 0 ][ 0 ] );
+    cv::Mat labelsMat( num_samples, 1, cv::DataType< int >::type, &labels[ 0 ] );
+    std::cout << "Train result: " << m_svm->train( trainingDataMat, cv::ml::ROW_SAMPLE, labelsMat ) << std::en
+#endif
+  }
+  catch( std::bad_alloc &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Memory allocation error." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Runtime error." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR( "Out of range exception." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string error = std::string( e.what( ) ) + "<br>" + BIAL_ERROR(
+      "Image, window end, and/or window size dimensions do not match." );
+    QMessageBox::warning( this, tr( "Error" ), QString::fromStdString( error ) );
+  }
+
 }

@@ -51,7 +51,7 @@ namespace Bial {
           queue.Insert( pxl, sqr_value[ pxl ] );
         }
         else
-          sqr_value[ pxl ] = std::numeric_limits< D >::max( ); // Mudado de D para float. Voltei aqora...
+          sqr_value[ pxl ] = std::numeric_limits< int >::max( ); // Mudado de D para float. Voltei aqora...
       }
       COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
       Vector< size_t > adj_coords( 3 );
@@ -75,7 +75,7 @@ namespace Bial {
                 ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] ) + 
                 ( root_coords[ 2 ] - adj_coords[ 2 ] ) * ( root_coords[ 2 ] - adj_coords[ 2 ] );
               COMMENT( "Updating value.", 3 );
-              if( previous_value > prp_value ) {
+              if( static_cast< int >( previous_value ) > prp_value ) {
                 sqr_value[ adj_index ] = prp_value;
                 root[ adj_index ] = root[ src_index ];
                 queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
@@ -103,7 +103,7 @@ namespace Bial {
               D prp_value = ( root_coords[ 0 ] - adj_coords[ 0 ] ) * ( root_coords[ 0 ] - adj_coords[ 0 ] ) +
                 ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] );
               COMMENT( "Updating value.", 3 );
-              if( previous_value > prp_value ) {
+              if( static_cast< int >( previous_value ) > prp_value ) {
                 sqr_value[ adj_index ] = prp_value;
                 root[ adj_index ] = root[ src_index ];
                 queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
@@ -160,7 +160,7 @@ namespace Bial {
             queue.Insert( pxl, sqr_value[ pxl ] );
           }
           else
-            sqr_value[ pxl ] = std::numeric_limits< D >::max( ); // Mudado de D para float. Voltei aqora...
+            sqr_value[ pxl ] = std::numeric_limits< int >::max( ); // Mudado de D para float. Voltei aqora...
         }
       }
       COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
@@ -185,7 +185,7 @@ namespace Bial {
                 ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] ) + 
                 ( root_coords[ 2 ] - adj_coords[ 2 ] ) * ( root_coords[ 2 ] - adj_coords[ 2 ] );
               COMMENT( "Updating value.", 3 );
-              if( previous_value > prp_value ) {
+              if( static_cast< int >( previous_value ) > prp_value ) {
                 sqr_value[ adj_index ] = prp_value;
                 root[ adj_index ] = root[ src_index ];
                 queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
@@ -213,7 +213,7 @@ namespace Bial {
               D prp_value = ( root_coords[ 0 ] - adj_coords[ 0 ] ) * ( root_coords[ 0 ] - adj_coords[ 0 ] ) +
                 ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] );
               COMMENT( "Updating value.", 3 );
-              if( previous_value > prp_value ) {
+              if( static_cast< int >( previous_value ) > prp_value ) {
                 sqr_value[ adj_index ] = prp_value;
                 root[ adj_index ] = root[ src_index ];
                 queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );

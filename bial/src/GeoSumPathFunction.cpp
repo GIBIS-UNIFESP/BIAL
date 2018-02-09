@@ -266,7 +266,7 @@ namespace Bial {
                                       - 1.0 + distance );
       COMMENT( "Updating value.", 3 );
       if( ( src_value > prp_value ) ||
-          ( ( this->predecessor->operator()( adj_index ) == index ) &&
+          ( ( this->predecessor->operator()( adj_index ) == static_cast< int >( index ) ) &&
             ( this->label->operator()( adj_index ) != this->label->operator()( index ) ) ) ) {
         this->value->operator()( adj_index ) = prp_value;
         ( this->*this->UpdateData )( index, adj_index );

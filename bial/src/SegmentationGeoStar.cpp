@@ -60,7 +60,7 @@ namespace Bial {
       size_t xy_size = grad.Displacement( 1 );
       COMMENT( "Pre-computing beta powers in order in speedup the computation.", 0 );
       Vector< double > beta_pows( max_val, 0.0 );
-      for( size_t elm = 0; elm < max_val; ++elm )
+      for( size_t elm = 0; elm < static_cast< size_t >( max_val ); ++elm )
         beta_pows[ elm ] = std::pow( elm, beta );
       RotatingBucketQueue queue( size, beta_pows[ max_val - 1 ] + 3 );
 
@@ -189,8 +189,8 @@ namespace Bial {
             COMMENT( "curr_adj_value: " << curr_adj_value << ". Computing arc weight.", 3 );
             double arc_weight = grad( index ) + grad( adj_index ) + 1;
             COMMENT( "Zero weight edges.", 3 );
-            if( ( ( label[ index ] != 0 ) && ( pred[ index ] == adj_index ) ) ||
-                ( ( label[ index ] == 0 ) && ( pred[ adj_index ] == index ) ) ) {
+            if( ( ( label[ index ] != 0 ) && ( pred[ index ] == static_cast< int >( adj_index ) ) ) ||
+                ( ( label[ index ] == 0 ) && ( pred[ adj_index ] == static_cast< int >( index ) ) ) ) {
               arc_weight = 0;
             }
             ++arc_weight;

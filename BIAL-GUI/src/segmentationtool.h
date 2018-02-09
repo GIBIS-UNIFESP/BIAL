@@ -16,7 +16,7 @@ private:
   Bial::MultiImage grad;
   Bial::MultiImage cost[ 2 ];
   Bial::Image< int > pred[ 2 ];
-  Bial::Image< int > label[ 2 ];
+  Bial::Image< int > label[ 3 ];
   Bial::PathFunction< Bial::Image, int > *int_path_func[ 2 ];
   Bial::PathFunction< Bial::Image, float > *flt_path_func[ 2 ];
   Bial::Adjacency adj;
@@ -31,6 +31,7 @@ private:
   int drawType;
   double alpha;
   double beta;
+  size_t anchors;
   bool seedsVisible;
   bool maskVisible;
   QTime timer;
@@ -61,6 +62,8 @@ public:
   void setDrawType( int type );
   void clearSeeds( );
 
+  bool hasMask( );
+
   template< class D >
   void InitiateSeeds( size_t map_set,
                       const Bial::Vector< size_t > &obj_seeds,
@@ -90,13 +93,19 @@ public:
   void MorphologicalGradient( );
   void SobelGradient( );
 
+  Bial::Image< int > ConnectSeeds( );
+  void LiveWirePostProcessing( size_t anchors );
+  int LiveWire(const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_img, const Bial::Image< int > &borders, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl );
+
   /* pf_type: 0-maxgeo, 1-max, 2-sum */
-  Bial::Image< int > connect( int pf_type, double alpha, double beta );
+  int connect( int pf_type, double alpha, double beta );
+  int GetBorderLength( );
 
   double getAlpha( ) const;
   void setAlpha( double value );
   double getBeta( ) const;
   void setBeta( double value );
+  void setAnchors( int value );
   int getDrawType( ) const;
 
   void setSeedsVisibility( bool vis );
@@ -109,6 +118,7 @@ public:
   bool isInitiated( ) const;
 
   Bial::Image< int > getMask( ) const;
+  Bial::Image< int > getSeeds( ) const;
 };
 
 #endif /* SEGMENTATIONTOOL_H */

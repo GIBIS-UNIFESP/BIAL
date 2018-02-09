@@ -22,9 +22,9 @@ public:
   Vector< std::tuple< Image< T >, Vector< size_t > > > NoDetector< T >::Run( ) {
     Vector< std::tuple< Image< T >, Vector< size_t > > > v;
     std::tuple< Image< T >, Vector< size_t > > t;
-    Image< int > mask( this->img.size( 0 ), this->img.size( 1 ) );
+    Vector< size_t > mask( this->img.size(  ) );
     for( size_t i = 0; i < mask.size( ); ++i ) {
-      mask[ i ] = 1;
+      mask[ i ] = i;
     }
     t = std::tie( this->img, mask );
     v.push_back( t );

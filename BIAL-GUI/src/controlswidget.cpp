@@ -4,12 +4,14 @@
 #include "ui_controlswidget.h"
 #include <QTimer>
 
-ControlsWidget::ControlsWidget( QWidget *parent ) : QWidget( parent ), ui( new Ui::ControlsWidget ) {
+ControlsWidget::ControlsWidget( Controller *controller, QWidget *parent ) :
+  controller( controller ),
+  QWidget( parent ),
+  ui( new Ui::ControlsWidget ) {
   ui->setupUi( this );
 
   timer = new QTimer( this );
   timer->setInterval( 1000 / ui->spinBoxSpeed->value( ) );
-  controller = nullptr;
   ui->pushButton4Views->hide( );
   ui->pushButton_3RGB->hide( );
   /*  ui->groupBoxEditor->hide( ); */
@@ -17,6 +19,14 @@ ControlsWidget::ControlsWidget( QWidget *parent ) : QWidget( parent ), ui( new U
   ui->horizontalSliderZoom->setEnabled( false );
   ui->horizontalSliderBrightness->setEnabled( false );
   ui->horizontalSliderContrast->setEnabled( false );
+
+  connect( controller, &Controller::currentImageChanged, this, &ControlsWidget::imageChanged );
+  connect( controller, &Controller::imageUpdated, this, &ControlsWidget::imageUpdated );
+  connect( controller, &Controller::containerUpdated, this, &ControlsWidget::updateRange );
+  connect( ui->folderHorizontalSlider, &QAbstractSlider::valueChanged, controller, &Controller::setCurrentImagePos );
+  connect( ui->folderSpinBox, SIGNAL(valueChanged(int)), controller, SLOT(setCurrentImagePos(int)) );
+  connect( timer, &QTimer::timeout, controller, &Controller::loadNextImage );
+  updateRange( );
 
   /*
    *  ui->horizontalSliderZoom->setEnabled(false);
@@ -34,18 +44,6 @@ ControlsWidget::ControlsWidget( QWidget *parent ) : QWidget( parent ), ui( new U
 ControlsWidget::~ControlsWidget( ) {
   delete ui;
 }
-
-void ControlsWidget::setController( Controller *value ) {
-  controller = value;
-  connect( controller, &Controller::currentImageChanged, this, &ControlsWidget::imageChanged );
-  connect( controller, &Controller::imageUpdated, this, &ControlsWidget::imageUpdated );
-  connect( controller, &Controller::containerUpdated, this, &ControlsWidget::updateRange );
-  connect( ui->folderHorizontalSlider, &QAbstractSlider::valueChanged, controller, &Controller::setCurrentImagePos );
-  connect( ui->folderSpinBox, SIGNAL( valueChanged( int ) ), controller, SLOT( setCurrentImagePos( int ) ) );
-  connect( timer, &QTimer::timeout, controller, &Controller::loadNextImage );
-  updateRange( );
-}
-
 void ControlsWidget::imageChanged( ) {
   GuiImage *img = controller->currentImage( );
   if( img == nullptr ) {

@@ -217,7 +217,7 @@ namespace Bial {
           size_t xblck = BLCK * ( col % grid_cols ) / grid_cols;
           size_t ymask = 2 * ( ( row % grid_rows ) % blck_rows ) / blck_rows;
           size_t xmask = 2 * ( ( col % grid_cols ) % blck_cols ) / blck_cols;
-          level[ ygrid ][ xgrid ] [ yblck ][ xblck ] [ ymask ][ xmask ] += pxl;
+          level[ ygrid ][ xgrid ] [ yblck ][ xblck ] [ ymask ][ xmask ] += img[pxl];//pxl;
         }
         COMMENT( "Normalize level-----------------------------------------------------------", 3 );
         for( size_t ygrid = 0; ygrid < GRID; ++ygrid ) {

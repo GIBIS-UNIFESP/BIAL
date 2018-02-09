@@ -9,7 +9,12 @@
 #include <QMainWindow>
 
 #include "activeContourWidget.h"
+#include "controlswidget.h"
+#include "labelswidget.h"
 #include "segmentationwidget.h"
+#include "thumbswidget.h"
+
+#include <thirdParty/qcustomplot.h>
 
 namespace Ui {
   class MainWindow;
@@ -22,13 +27,14 @@ public:
   explicit MainWindow( QWidget *parent = 0 );
   ~MainWindow( );
 
-  void commandLineOpen( const QCommandLineParser &parser,
+  void commandLineOpen(const QCommandLineParser &parser,
                         const QCommandLineOption &dicomdir,
                         const QCommandLineOption &folder,
-                        const QCommandLineOption &label );
+                        const QCommandLineOption &label , const QCommandLineOption &liveWire);
 
   bool loadLabel( QString filename );
 
+  void setTool( int toolType );
 private:
   void createConnections( );
   void setupLogoview( );
@@ -113,8 +119,23 @@ private:
   QAction *actionSegmentationTool;
   QAction *actionLiveWireTool;
 
+  ThumbsWidget *thumbsWidget;
+  QDockWidget *thumbsDock;
+
+  ControlsWidget *controlsWidget;
+  QDockWidget *controlsDock;
+
+  LabelsWidget *labelsWidget;
+  QDockWidget *labelsDock;
+
+
+  QCustomPlot *histogramWidget;
+  QDockWidget *histogramDock;
+
   QDockWidget *segmentationDock;
   QDockWidget *livewireDock;
+
+
 
   SegmentationWidget *segmentationWidget;
   ActiveContourWidget *livewireWidget;
