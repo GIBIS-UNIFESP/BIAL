@@ -257,7 +257,7 @@ const Bial::Vector< int > &ActiveContourTool::getSelectedMethods( ) const {
   return( m_selectedMethods );
 }
 
-QVector< std::shared_ptr< ActiveContourMethod > > ActiveContourTool::getMethods( ) const {
+Bial::Vector< std::shared_ptr< ActiveContourMethod > > ActiveContourTool::getMethods( ) const {
   return( m_methods );
 }
 

@@ -101,7 +101,7 @@ namespace Bial {
   void ClusteringIFT< C, D >::Run( ) {
     try {
       if( uniform_adjacency != nullptr ) { 
-        COMMENT( "Running with uniform adjacency.", 1 );
+        COMMENT( "Running with uniform adjacency. KNN-based.", 1 );
         while( !this->queue->Empty( ) ) {
           size_t index = this->queue->Remove( );
           COMMENT( "Initializing removed data " << index, 4 );
@@ -137,7 +137,7 @@ namespace Bial {
         }
       }
       else {
-        COMMENT( "Running with variable adjacency.", 1 );
+        COMMENT( "Running with variable adjacency. LSH-based.", 1 );
         while( !this->queue->Empty( ) ) {
           size_t index = this->queue->Remove( );
           COMMENT( "Initializing removed data " << index, 4 );

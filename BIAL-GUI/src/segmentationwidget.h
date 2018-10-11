@@ -2,7 +2,6 @@
 #define SEGMENTATIONWIDGET_H
 
 #include "segmentationtool.h"
-
 #include <QWidget>
 
 namespace Ui {
@@ -54,6 +53,8 @@ private slots:
 private:
   Ui::Segmentationwidget *ui;
   SegmentationTool *tool;
+
+  bool segmentation_button_pressed = false;
 };
 
 #endif /* SEGMENTATIONWIDGET_H */

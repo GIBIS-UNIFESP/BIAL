@@ -9,8 +9,8 @@ Controller::Controller( int views, QObject *parent )
   : QObject( parent ), bw2dFormat( new BW2DFormat( this ) ), rgb2dFormat( new RGB2DFormat( this ) ),
   bw3dFormat( new BW3DFormat( this ) ) {
   for( int item = 0; item < views; ++item ) {
-    m_pixmapItems.append( new QGraphicsPixmapItem( ) );
-    m_labelItems.append( new QGraphicsPixmapItem( ) );
+    m_pixmapItems.push_back( new QGraphicsPixmapItem( ) );
+    m_labelItems.push_back( new QGraphicsPixmapItem( ) );
   }
   m_currentImagePos = -1;
 

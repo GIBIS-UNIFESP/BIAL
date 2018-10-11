@@ -30,7 +30,7 @@
 #include <QPointF>
 #include <Vector.hpp>
 #include <algorithm>
-LiveWireMethod::LiveWireMethod( const QVector< size_t > &points, const Bial::Image< int > &grayImg,
+LiveWireMethod::LiveWireMethod( const QVector<size_t> &points, const Bial::Image< int > &grayImg,
                                 const Bial::Image< int > &grad ) :
   ActiveContourMethod( points, grayImg, grad, QColor( 0, 255, 0 ) ) {
 

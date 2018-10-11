@@ -137,7 +137,7 @@ namespace Bial {
       size_t elm = 0;
       for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
         if( mask[ pxl ] != 0 ) {
-          backg( elm ) = source[ pxl ];
+          backg( elm ) = filtered[ pxl ];
           ++elm;
         }
       }
@@ -150,7 +150,7 @@ namespace Bial {
         filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa - step, 1, radius );
         for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
           if( mask[ pxl ] != 0 ) {
-            backg( elm ) = source[ pxl ];
+            backg( elm ) = filtered[ pxl ];
             ++elm;
           }
         }
@@ -169,7 +169,7 @@ namespace Bial {
           filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa + step, 1, radius );
           for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
             if( mask[ pxl ] != 0 ) {
-              backg( elm ) = source[ pxl ];
+              backg( elm ) = filtered[ pxl ];
               ++elm;
             }
           }

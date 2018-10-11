@@ -45,12 +45,19 @@ void SegmentationWidget::setTool( Tool *sTool ) {
 }
 
 void SegmentationWidget::on_SegmentationButton_clicked( ) {
+  segmentation_button_pressed = true;
   double alpha = ui->AlphaSpinBox->value( );
   double beta = ui->BetaSpinBox->value( );
   int pf_type = ( ui->pfmaxgeo->isChecked( ) ? 0 : ( ui->pfmax->isChecked( ) ? 1 : 2 ) );
   try {
-    int new_val = tool->connect( pf_type, alpha, beta );
+    COMMENT(" Tryied to start segmentating. ", 0);
+    int new_val = tool->connect( pf_type, alpha, beta, 0 ); 
+    COMMENT(" Finished segmentating with pf_type = " << pf_type << ". ", 0);
     ui->AnchorPointsspinBox->setValue( new_val );
+    segmentation_button_pressed = false; 
+    if( tool->getDrawType( ) == 3) {
+      tool->setEllipsesMovable( true );
+    }
   }
   catch( std::runtime_error &err ) {
     QMessageBox::warning( this, "ERROR", err.what( ) );
@@ -69,14 +76,20 @@ void SegmentationWidget::on_drawButton_clicked( ) {
   tool->setEllipsesMovable( false );
 }
 
-void SegmentationWidget::on_ClearButton_clicked( ) {
-    tool->clearSeeds( );
+void SegmentationWidget::on_ClearButton_clicked( ) { 
+    tool->clearSeeds( ); // ---
+    tool->clearMask( );
+    tool->setExtremity( ); 
+    tool->setLabelAdjacencies( ); 
+    COMMENT(" Cleared seeds. ", 3 );
 }
 
 void SegmentationWidget::on_LiveWirePostButton_clicked( ) {
-  tool->setDrawType( 3 );
-  tool->setSeedsVisibility( true );
-  tool->setEllipsesMovable( true );
+  if( tool-> hasMask( ) ){
+    tool->setDrawType( 3 );
+    tool->setSeedsVisibility( true );
+    tool->setEllipsesMovable( true );
+  }
 }
 
 void SegmentationWidget::on_AlphaSpinBox_valueChanged( double arg1 ) {
@@ -88,8 +101,14 @@ void SegmentationWidget::on_BetaSpinBox_valueChanged( double arg1 ) {
 }
 
 void SegmentationWidget::on_AnchorPointsspinBox_valueChanged( int arg1 ) {
-  tool->setAnchors( arg1 );
-  tool->LiveWirePostProcessing( arg1 );
+    tool->setAnchors( arg1 );
+    if( !segmentation_button_pressed ) { // Happens when the anchor's number is changed manually by it's spinBox.
+      double alpha = ui->AlphaSpinBox->value( );
+      double beta = ui->BetaSpinBox->value( );
+      int pf_type = ( ui->pfmaxgeo->isChecked( ) ? 0 : ( ui->pfmax->isChecked( ) ? 1 : 2 ) );
+      tool->connect( pf_type, alpha, beta, arg1 );
+    }
+    tool->setEllipsesMovable( true );
 }
 
 void SegmentationWidget::on_pushButtonShowSeeds_clicked( bool checked ) {
