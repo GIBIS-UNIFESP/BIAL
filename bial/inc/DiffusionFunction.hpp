@@ -20,6 +20,8 @@ namespace Bial {
 
   public:
 
+    const float _sqrt_5_ = 2.236067977f;
+
     /**
      * @date 2013/Nov/19 
      * @param none. 
@@ -128,19 +130,7 @@ namespace Bial {
 
   protected:
 
-    /** @brief  the power of the equation. Range: (0.0, 1.0] */
-    float power; 
-
   public:
-
-    /**
-     * @date 2013/Nov/18 
-     * @param new_power: the power of the equation. Range: (0.0, 1.0] 
-     * @return none. 
-     * @brief Basic constructor. 
-     * @warning none. 
-     */
-    RobustDiffusionFunction( float new_power = 1.0 );
 
     /**
      * @date 2013/Nov/18 

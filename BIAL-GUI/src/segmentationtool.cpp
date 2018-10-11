@@ -1,3 +1,8 @@
+/*
+- Tirar diagonais e tratar pelo rótulo.
+*/
+
+
 #include "Adjacency.hpp"
 #include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
@@ -93,6 +98,14 @@ Bial::Image< int > SegmentationTool::getSeeds( ) const {
   return( seeds );
 }
 
+void SegmentationTool::setExtremity( ) {
+  extremity_pxl.clear( );
+}
+
+void SegmentationTool::setLabelAdjacencies( ) {
+  lbl_adj_list.clear( );
+}
+
 SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) try :
   Tool( guiImage, viewer ), seeds( guiImage->getDim( ) ), adj( ), queue( nullptr ), m_scene( viewer->getScene( 0 ) ) {
   COMMENT( "Initiating segmentation tool.", 0 );
@@ -100,6 +113,8 @@ SegmentationTool::SegmentationTool( GuiImage *guiImage, ImageViewer *viewer ) tr
   drawing = false;
   setObjectName( "SegmentationTool" );
   setHasLabel( true );
+  setExtremity( );
+  setLabelAdjacencies( );
   alpha = 0;
   beta = 0.5;
   thickness = 0;
@@ -185,24 +200,36 @@ void SegmentationTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_
   try {
     timer.start( );
     if( drawType == 3 ) {
-      COMMENT( "Moving anchor.", 0 );
+      COMMENT( "Moving anchor.", 3 );
+      int anchor_number = -1;
       moved_anchor = m_scene->itemAt( pt, QTransform( ) );
-      if( moved_anchor != nullptr ) {
-        moved_anchor_index = 0;
-        while( anchor_ellipse[ moved_anchor_index ] != moved_anchor )
-          ++moved_anchor_index;
-        COMMENT( "Moving anchor " << moved_anchor_index, 0 );
+      COMMENT( "Checking if the clicked pixel refers to an anchor.", 3 );
+      for( int pos = 0; pos < anchor_ellipse.size(); ++pos){
+        if( anchor_ellipse[ pos ] ==  moved_anchor){
+          anchor_number = pos;
+          COMMENT("anchor selected = " << pos , 0 );
+        }
+      }
+      if( ( moved_anchor != nullptr ) && ( anchor_number >= 0) ) {
+        COMMENT( "Clicked pixel does refer to an anchor.", 0 ) ;
+        moved_anchor_index = anchor_number;
         size_t img_size = seed_img.size( );
-        int previous_anchor_index = moved_anchor_index == 0 ? anchors : moved_anchor_index;
+        int previous_anchor_index = ( moved_anchor_index == 0 ) ? anchors : moved_anchor_index;
+        int true_moved_anchor_index  = ( moved_anchor_index == 0) ? 1 : moved_anchor_index + 1;
         COMMENT( "Erasing current paths to run Livewire.", 0 );
         for( size_t pxl = 0; pxl < img_size; ++pxl ) {
           int contour_label = border[ pxl ];
-          if( ( contour_label == moved_anchor_index + 1 ) || ( contour_label == previous_anchor_index ) ) {
+          if( ( contour_label == previous_anchor_index ) || ( contour_label == true_moved_anchor_index ) ) {
             label[ 2 ][ pxl ] = 0;
-            mask[ pxl ] = 0;
+            mask[ pxl ] = 0;    
           }
         }
+        COMMENT( "Paths with labels " << previous_anchor_index << " and " << true_moved_anchor_index << " where updated.", 3 );
         emit guiImage->imageUpdated( );
+      }
+      else {
+        COMMENT( "Clicked pixel does not refer to an anchor.", 0)
+        moved_anchor = nullptr;
       }
     }
     else {
@@ -239,29 +266,6 @@ void SegmentationTool::mouseClicked( QPointF pt, Qt::MouseButtons buttons, size_
 
 void SegmentationTool::mouseMoved( QPointF pt, size_t axis ) {
   try {
-//    if( moved_anchor != nullptr ) {
-//      size_t x_size = seed_img.size( 0 );
-//      size_t img_size = seed_img.size( );
-//      int previous_anchor_index = moved_anchor_index == 0 ? anchors : moved_anchor_index + 1;
-//      COMMENT( "Erasing current paths to run Livewire.", 0 );
-//      for( size_t pxl = 0; pxl < img_size; ++pxl ) {
-//        int contour_label = border[ pxl ];
-//        if( ( contour_label == moved_anchor_index ) || ( contour_label == previous_anchor_index ) )
-//          label[ 2 ][ pxl ] = 0;
-//      }
-//      COMMENT( "Computing new anchor postion from " << pt.x( ) << ", " <<  pt.y( ), 0 );
-//      size_t pos = static_cast< size_t >( pt.x( ) + pt.y( ) * x_size );
-//      COMMENT( "Updating anchor position from " << anchor_position[ moved_anchor_index ] << " to " << pos, 0 );
-//      anchor_position[ moved_anchor_index ] = pos;
-//      if( moved_anchor_index == 0 ) {
-//        anchor_position[ anchors ] = pos - 1;
-//        SegmentationTool::LiveWire( grad.IntImage( ), my_seed, seed_img, border, anchors, anchor_position[ anchors - 1 ], anchor_position[ anchors ], -1 );
-//      }
-//      else
-//        SegmentationTool::LiveWire( grad.IntImage( ), my_seed, seed_img, border, moved_anchor_index, anchor_position[ moved_anchor_index - 1 ], anchor_position[ moved_anchor_index ], -1 );
-//      SegmentationTool::LiveWire( grad.IntImage( ), my_seed, seed_img, border, moved_anchor_index + 1, anchor_position[ moved_anchor_index ], anchor_position[ moved_anchor_index + 1 ], -1 );
-//    }
-//    else
     if( drawing ) {
       const Bial::FastTransform &transf = guiImage->getTransform( axis );
       Bial::Point3D current = transf( pt.x( ), pt.y( ), ( double ) guiImage->currentSlice( axis ) );
@@ -305,23 +309,29 @@ void SegmentationTool::mouseReleased( QPointF pt, Qt::MouseButtons buttons, size
       anchor_position[ moved_anchor_index ] = pos;
       Bial::Image< int > my_grad( grad.IntImage( ) );
       Bial::Intensity::Complement( my_grad );
+      COMMENT("Running two LiveWire algorithms, the first one between the moved anchor and it's previous and the second one between the moved anchor and it's next.", 3 );
       if( moved_anchor_index == 0 ) {
         anchor_position[ anchors ] = pos - 1;
-        SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, anchors, anchor_position[ anchors - 1 ], anchor_position[ anchors ], -1 );
+        COMMENT("First LiveWire, with ini_pxl = " << anchor_position[ anchors - 1 ] << " , and end_pxl = " << anchor_position[ 0 ] << ".", 0);
+        SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, anchors, anchor_position[ anchors - 1 ], anchor_position[ 0 ], -1 );
       }
-      else
+      else{ 
+        COMMENT("First LiveWire, with ini_pxl = " << anchor_position[ moved_anchor_index - 1] << " , and end_pxl = " << anchor_position[ moved_anchor_index ] << ".", 3 );
         SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, moved_anchor_index, anchor_position[ moved_anchor_index - 1 ], anchor_position[ moved_anchor_index ], -1 );
-      SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, moved_anchor_index + 1, anchor_position[ moved_anchor_index ], anchor_position[ moved_anchor_index + 1 ], -1 );
-
+      }
+      int true_moved_anchor_index  = ( moved_anchor_index == 0) ? 1 : moved_anchor_index + 1;
+      COMMENT("Second LiveWire, with ini_pxl = " << anchor_position[ moved_anchor_index ] << " , and end_pxl = " << anchor_position[ true_moved_anchor_index ] << ".", 3 );
+      SegmentationTool::LiveWire( my_grad, my_seed, seed_img, border, true_moved_anchor_index, anchor_position[ moved_anchor_index ], anchor_position[ true_moved_anchor_index ], -1 );
       moved_anchor = nullptr;
+      emit guiImage->imageUpdated( );
     }
     else if( drawing ) {
       const Bial::FastTransform &transf = guiImage->getTransform( axis );
       Bial::Point3D current = transf( pt.x( ), pt.y( ), ( double ) guiImage->currentSlice( axis ) );
       drawSeed( lastPoint, current );
       drawing = false;
+      emit guiImage->imageUpdated( );
     }
-    emit guiImage->imageUpdated( );
     Q_UNUSED( buttons );
     Q_UNUSED( axis );
     Q_UNUSED( pt );
@@ -376,7 +386,6 @@ void SegmentationTool::sliceChanged( size_t axis, size_t slice ) {
 
 void SegmentationTool::drawSeed( Bial::Point3D last, Bial::Point3D current ) {
   try {
-    /*  std::cout << last << current << std::endl; */
     Bial::Vector< float > vLast;
     Bial::Vector< float > vCurrent;
     size_t dims = guiImage->getDims( );
@@ -459,11 +468,38 @@ void SegmentationTool::clearSeeds( ) {
   }
 }
 
+void SegmentationTool::clearMask( ) {
+  try {
+    for( size_t i = 0; i < mask.size( ); ++i ) {
+      mask[ i ] = 0;
+    }
+    emit guiImage->imageUpdated( );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
 void SegmentationTool::setEllipsesMovable( bool movable ) {
-  for( size_t idx = 0; idx < anchors; ++idx ) {
-    auto ellipse = anchor_ellipse[ idx ];
-    ellipse->setFlag( QGraphicsItem::ItemIsSelectable, movable );
-    ellipse->setFlag( QGraphicsItem::ItemIsMovable, movable );
+  if( anchor_ellipse.size() > 0 ){ 
+    for( size_t idx = 0; idx < anchors; ++idx ) {
+      auto ellipse = anchor_ellipse[ idx ];
+      ellipse->setFlag( QGraphicsItem::ItemIsSelectable, movable );
+      ellipse->setFlag( QGraphicsItem::ItemIsMovable, movable );
+    }
   }
 }
 
@@ -1080,7 +1116,7 @@ int SegmentationTool::connect(int pf_type, double alpha, double beta ) {
             Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getClrImage( ) ) );
             GeodesicSum( img, obj_seed, bkg_seed, alpha, beta );
             break;
-          }
+            }
             case Bial::MultiImageType::rcl_img: {
             Bial::Image< int > img( Bial::ColorSpace::ARGBtoGraybyLuminosity< int >( guiImage->getRclImage( ) ) );
             GeodesicSum( img, obj_seed, bkg_seed, alpha, beta );
@@ -1412,34 +1448,35 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
   Bial::Adjacency adj( Bial::AdjacencyType::Circular( 1.7 ) );
   Bial::AdjacencyIterator adj_itr( label[ 0 ], adj );
   size_t adj_size = adj.size( );
-  int obj_seed_lbl = 1;
-  int bkg_seed_lbl = -1;
+  int obj_seed_lbl = 1; // Will eventually increase depending on the number of disconnected initial object seeds.
+  int bkg_seed_lbl = -1; // Will eventually decrease depending on the number of disconnected initial background seeds.
   size_t adj_pxl;
   COMMENT( "Label seeds into connected components.", 0 );
   for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
     if( visited[ src_pxl ] )
       continue;
     visited[ src_pxl ] = true;
-    if( seeds[ src_pxl ] != 0 ) {
-      COMMENT( "If seed pixel, label it as a component and propagate the label to connected other seed pixels. ", 3 );
+    if( seeds[ src_pxl ] != 0 ) { // If pxl refers to a seed pixel.
       if( seeds[ src_pxl ] == 1 ) {
+        COMMENT( "If seed pixel, label it as a component and propagate the label to other connected seed pixels. ", 3 );
         my_seed[ src_pxl ] = obj_seed_lbl;
         ++obj_seed_lbl;
       }
       else {
+        COMMENT( "If background pixel, label it as a component and propagate the label to other connected background pixels. ", 3 );
         my_seed[ src_pxl ] = bkg_seed_lbl;
         --bkg_seed_lbl;
       }
       std::queue< size_t > simple_queue;
       simple_queue.push( src_pxl );
       do {
-        size_t sed_pxl = simple_queue.front( );
+        size_t seed_pxl = simple_queue.front( );
         simple_queue.pop( );
         for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
-          if( ( adj_itr.AdjIdx2( sed_pxl, adj_idx, adj_pxl ) ) && ( seeds[ adj_pxl ] == seeds[ sed_pxl ] ) &&
-              ( !visited[ adj_pxl ] ) ) {
+          if( ( adj_itr.AdjIdx2( seed_pxl, adj_idx, adj_pxl ) ) && ( seeds[ adj_pxl ] == seeds[ seed_pxl ] ) 
+            && ( !visited[ adj_pxl ] ) ) { 
             visited[ adj_pxl ] = true;
-            my_seed[ adj_pxl ] = my_seed[ sed_pxl ];
+            my_seed[ adj_pxl ] = my_seed[ seed_pxl ];
             simple_queue.push( adj_pxl );
           }
         }
@@ -1471,22 +1508,22 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
     for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
       if( adj_itr.AdjIdx2( src_pxl, adj_idx, adj_pxl ) ) {
         if( ( my_label[ adj_pxl ] == 0 ) && ( label[ 0 ][ src_pxl ] == label[ 0 ][ adj_pxl ] ) ) {
-          COMMENT( "Adjacent pixel belong to non-visited region with same label. Propagate.", 0 );
+          //COMMENT( "Adjacent pixel belong to non-visited region with same label. Propagate.", 0 );
           bucket_queue.Insert( adj_pxl, my_cost[ adj_pxl ] );
           my_label[ adj_pxl ] = my_label[ src_pxl ];
           my_pred[ adj_pxl ] = src_pxl;
         }
         // Equality test to check if both pixels belong to object or background. Inequality test to check if seed components are distinct.
         else if( ( my_label[ src_pxl ] * my_label[ adj_pxl ] > 0 ) && ( my_label[ src_pxl ] != my_label[ adj_pxl ] ) ) {
-          COMMENT( "Both object or background rooted pixels, but with distinct source seed groups.", 0 );
+          //COMMENT( "Both object or background rooted pixels, but with distinct source seed groups.", 0 );
           if( ( my_label[ src_pxl ] > 0 ) && ( obj_adj( my_label[ src_pxl ], my_label[ adj_pxl ] ) == static_cast< int >( img_size ) ) ) {
-            COMMENT( "First time these two object seed component labels touch each other.", 0 );
+            //COMMENT( "First time these two object seed component labels touch each other.", 0 );
             obj_adj( my_label[ src_pxl ], my_label[ adj_pxl ] ) = src_pxl;
             obj_adj( my_label[ adj_pxl ], my_label[ src_pxl ] ) = adj_pxl;
             obj_order.push_back( std::make_tuple( my_label[ src_pxl ], my_label[ adj_pxl ] ) );
           }
           if( ( my_label[ src_pxl ] < 0 ) && ( bkg_adj( -my_label[ src_pxl ], -my_label[ adj_pxl ] ) == static_cast< int >( img_size ) ) ) {
-            COMMENT( "First time these two backgorund seed component labels touch each other.", 0 );
+            //COMMENT( "First time these two background seed component labels touch each other.", 0 );
             bkg_adj( -my_label[ src_pxl ], -my_label[ adj_pxl ] ) = src_pxl;
             bkg_adj( -my_label[ adj_pxl ], -my_label[ src_pxl ] ) = adj_pxl;
             bkg_order.push_back( std::make_tuple( -my_label[ src_pxl ], -my_label[ adj_pxl ] ) );
@@ -1496,14 +1533,14 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
     }
   }
   Bial::Write( my_label, "/tmp/my_label_components.pgm" );
-  COMMENT( "Connecting object seeds through object region.", 0 );
+  COMMENT( "Connecting object seeds through object region.", 3 );
   Bial::Matrix< int > obj_conn_map( obj_seed_lbl, obj_seed_lbl );
   obj_conn_map.Set( 0 );
   for( size_t obj_idx = 0; obj_idx < obj_order.size( ); ++obj_idx ) {
     int obj_0 = std::get< 0 >( obj_order[ obj_idx ] );
     int obj_1 = std::get< 1 >( obj_order[ obj_idx ] );
     if( obj_conn_map( obj_0, obj_1 ) == 0 ) {
-      COMMENT( "Labels not connected between them. Make connection using predecessors.", 3 );
+      //COMMENT( "Labels not connected between them. Make connection using predecessors.", 0 );
       obj_conn_map( obj_0, obj_1 ) = 1;
       obj_conn_map( obj_1, obj_0 ) = 1;
       for( size_t obj_map_idx = 0; obj_map_idx < static_cast< size_t >( obj_seed_lbl ); ++obj_map_idx ) {
@@ -1516,13 +1553,13 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
           obj_conn_map( obj_map_idx, obj_0 ) = 1;
         }
       }
-      COMMENT( "Labeling path from object label 0.", 3 );
+      //COMMENT( "Labeling path from object label 0.", 0 );
       size_t pxl = obj_adj( obj_0, obj_1 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = 1;
         pxl = my_pred[ pxl ];
       }
-      COMMENT( "Labeling path from object label 1.", 3 );
+      //COMMENT( "Labeling path from object label 1.", 0 );
       pxl = obj_adj( obj_1, obj_0 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = 1;
@@ -1537,10 +1574,10 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
     int bkg_0 = std::get< 0 >( bkg_order[ bkg_idx ] );
     int bkg_1 = std::get< 1 >( bkg_order[ bkg_idx ] );
     if( bkg_conn_map( bkg_0, bkg_1 ) == 0 ) {
-      COMMENT( "Labels not connected between them. Make connection using predecessors.", 3 );
+      //COMMENT( "Labels not connected between them. Make connection using predecessors.", 0 );
       bkg_conn_map( bkg_0, bkg_1 ) = 1;
       bkg_conn_map( bkg_1, bkg_0 ) = 1;
-      COMMENT( "Update the connectivity map.", 3 );
+      //COMMENT( "Update the connectivity map.", 0 );
       for( size_t bkg_map_idx = 0; bkg_map_idx < static_cast< size_t >( -bkg_seed_lbl ); ++bkg_map_idx ) {
         if( ( bkg_conn_map( bkg_0, bkg_map_idx ) == 1 ) && ( bkg_conn_map( bkg_1, bkg_map_idx ) == 0 ) ) {
           bkg_conn_map( bkg_1, bkg_map_idx ) = 1;
@@ -1551,13 +1588,13 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
           bkg_conn_map( bkg_map_idx, bkg_0 ) = 1;
         }
       }
-      COMMENT( "Labeling path from background label 0.", 3 );
+      //COMMENT( "Labeling path from background label 0.", 0 );
       size_t pxl = bkg_adj( bkg_0, bkg_1 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = -1;
         pxl = my_pred[ pxl ];
       }
-      COMMENT( "Labeling path from background label 1.", 3 );
+      //COMMENT( "Labeling path from background label 1.", 0 );
       pxl = bkg_adj( bkg_1, bkg_0 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = -1;
@@ -1593,7 +1630,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     Bial::AdjacencyIterator adj_itr( label[ 0 ], adj );
     size_t adj_size = adj.size( );
     Bial::Image< int > my_grad( grad.IntImage( ) );
-    Bial::Write( my_grad, "/tmp/my_grad.pgm" );
+    Bial::Write( my_grad, "/tmp/my_grad.pgm" ); 
     Bial::Write( label[ 0 ], "/tmp/my_label.pgm" );
     Bial::Write( seeds, "/tmp/my_ini_seeds.pgm" );
     border = Bial::Image< int >( label[ 0 ].Dim( ) );
@@ -1640,9 +1677,9 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
         qDebug( "Error in contour tracking. Contour must be holeless and without pixel-wise width paths." );
         return;
       }
-      COMMENT( "Raster the adjacent pixels in clockwise direction, starting from the first adjacent to opposite direction of the last movement.", 0 );
+      COMMENT( "Raster the adjacent pixels in clockwise direction, starting from the first adjacent to opposite direction of the last movement.", 3 );
       COMMENT( "adj_idx: " << adj_idx << ", curr_cntr_pxl - 1: " << curr_cntr_pxl - 1 << ", contour[ " << curr_cntr_pxl - 1 << " ]: " <<
-               ( contour[ curr_cntr_pxl - 1 ] ) % label[ 0 ].size( 0 ) << ", " << std::floor( ( contour[ curr_cntr_pxl - 1 ] ) / label[ 0 ].size( 0 ) ), 0 );
+               ( contour[ curr_cntr_pxl - 1 ] ) % label[ 0 ].size( 0 ) << ", " << std::floor( ( contour[ curr_cntr_pxl - 1 ] ) / label[ 0 ].size( 0 ) ), 4 );
       adj_idx = ( adj_idx + 5 ) % trc_adj_size;
       do{
         if( ( trc_adj_itr.AdjIdx2( contour[ curr_cntr_pxl - 1 ], adj_idx, adj_pxl ) ) && ( border[ adj_pxl ] == 1 ) ) {
@@ -1670,25 +1707,25 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
       size_t max_pos = cur_pos + anchor_radius;
       int max_energy = my_grad[ cur_pos ];
       anchor_position[ ancr_idx ] = contour[ cur_pos ];
-      COMMENT( "Initial anchor: " << contour[ cur_pos ], 0 );
-      COMMENT( "cur_pos: " << cur_pos << ", max_pos: " << max_pos << ", max_energy: " << max_energy, 0 );
+      COMMENT( "Initial anchor: " << contour[ cur_pos ], 4 );
+      COMMENT( "cur_pos: " << cur_pos << ", max_pos: " << max_pos << ", max_energy: " << max_energy, 3 );
       while( cur_pos <= max_pos ) {
         ++cur_pos;
-        COMMENT( "max_energy: " << max_energy << ", my_grad[ " << cur_pos << " ]: " << my_grad[ cur_pos ], 0 );
+        COMMENT( "max_energy: " << max_energy << ", my_grad[ " << cur_pos << " ]: " << my_grad[ cur_pos ], 3 );
         if( max_energy < my_grad[ contour[ cur_pos ] ] ) {
           max_energy = my_grad[ contour[ cur_pos ] ];
           anchor_position[ ancr_idx ] = contour[ cur_pos ];
-          COMMENT( "Selected anchor: " << contour[ cur_pos ], 0 );
+          COMMENT( "Selected anchor: " << contour[ cur_pos ], 4 );
         }
       }
       ++ancr_idx;
     }
     anchor_position[ anchors ] = contour[ last_pxl - 1 ]; // Error: It should be last_pxl, but it is not closing the last border segment with it.
-    COMMENT( "Anchors: " << anchors + 1, 0 );
+    COMMENT( "Anchors: " << anchors + 1, 4 );
     for( size_t ancr_idx = 0; ancr_idx <= anchors; ++ancr_idx ) {
-      COMMENT( "Anchor[ " << ancr_idx << " ]: " << anchor_position[ ancr_idx ], 0 );
+      COMMENT( "Anchor[ " << ancr_idx << " ]: " << anchor_position[ ancr_idx ], 3 );
     }
-    COMMENT( "Labeling contour sectors. Used as limitation for livewire to avoid crossing the wrong borders.", 0 );
+    COMMENT( "Labeling contour sectors. Used as limitation for livewire to avoid crossing the wrong borders.", 3 );
     ancr_idx = 0;
     for( size_t cntr_idx = 0; cntr_idx < last_pxl; ++cntr_idx ) {
       border[ contour[ cntr_idx ] ] = ancr_idx + 1;
@@ -1696,13 +1733,14 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
         ++ancr_idx;
     }
     Bial::Write( border, "/tmp/my_border.pgm" );
-    COMMENT( "Linking all background/object seeds in order to avoid leaving them in/out of the contour.", 0 );
+    COMMENT( "Linking all background/object seeds in order to avoid leaving them in/out of the contour.", 3 );
     Bial::Image< int > my_seed( ConnectSeeds( ) );
     Bial::Write( my_seed, "/tmp/my_conn_seeds.pgm" );
     COMMENT( "Labeling seed image to set allowed paths. Internal seeds are forbidden. " <<
-             "Crossing single object seed line is forbidden.", 0 );
+             "Crossing single object seed line is forbidden.", 3 );
     Bial::Image< int > seed_bdr( my_seed - Bial::Morphology::ErodeBin( my_seed, Bial::AdjacencyType::Circular( 1.5f ) ) );
-    COMMENT( "Detecting isolated point that are not necessary to the continuity of object seed borders. These are pixels with only one coninuous adjacent object border segment. Labeled to 3.", 0 );
+    COMMENT( "Detecting isolated point that are not necessary to the continuity of object seed borders." <<  
+              "These are pixels with only one continuous adjacent object border segment. Labeled to 3.", 3 );
     for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
       if( seed_bdr[ src_pxl ] == 1 ) {
         bool initialized_adj = false;
@@ -1730,11 +1768,15 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
             initialized_adj = true;
           }
         }
-        if( ( borders < 2 ) && ( non_borders < 2 ) )
-          seed_bdr[ src_pxl ] = 3;
+        if( ( borders < 2 ) && ( non_borders < 2 ) ){
+          seed_bdr[ src_pxl ] = 3; 
+          COMMENT("Extremity pixel detected. Store it.", 3 );
+          extremity_pxl.push_back( src_pxl ); 
+        }
       }
     }
     std::queue< size_t > seed_queue;
+    Bial::Vector< bool > extremity( img_size, false);
     seed_img = Bial::Image< int >( my_grad.Dim( ) ); // -2: Forbidden pixel; -1: allowed pixel; 0: not visited; > 0: non-seed adjacent to seed border.
     int seed_side_lbl = 1; // Label assigned to each side of a single pixel line of seeds.
     COMMENT( "Building seed_img. It contains the forbidden regions with -2, allowed regions with -1. " <<
@@ -1751,8 +1793,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
           seed_img[ src_pxl ] = -2;
         }
         else {
-          COMMENT( "Non-seed pixel. Allow live-wire to pass over it. " <<
-                   "Must check if it is adjacent to object seed border pixel", 3 );
+          COMMENT( "Non-seed pixel. Allow live-wire to pass over it. Must check if it is adjacent to object seed border pixel", 3 );
           seed_img[ src_pxl ] = -1;
           seed_queue.push( src_pxl );
           COMMENT( "Checking if src_pxl belongs to a border. If so, paint all border with the same color.", 3 );
@@ -1764,34 +1805,31 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
             for( adj_idx = 0; adj_idx < trc_adj_size; ++adj_idx ) {
               if( ( trc_adj_itr.AdjIdx2( brd_pxl, adj_idx, adj_pxl ) ) && ( seed_bdr[ adj_pxl ] % 2 == 1 ) ) {
                 COMMENT( "Adjacent to seed border pixel. Setting label.", 3 );
-                seed_img[ brd_pxl ] = seed_side_lbl;
                 if( seed_bdr[ adj_pxl ] == 3 ) {
                   adj_seed_type = "end_point";
+                }
+                else{
+                  adj_seed_type = "middle_point";
                   break;
                 }
-                else
-                  adj_seed_type = "middle_point";
               }
             }
             if( adj_seed_type == "middle_point" ) {
+              seed_img[ brd_pxl ] = seed_side_lbl;
               COMMENT( "Inserting in queue all non-seed 4-adjacent pixels if it is non-seed pixel.", 3 );
-              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 1, adj_pxl ) ) &&
-                  ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
+              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 1, adj_pxl ) ) && ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 )  ) {
                 seed_img[ adj_pxl ] = -1;
                 seed_queue.push( adj_pxl );
               }
-              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 3, adj_pxl ) ) &&
-                  ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
+              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 3, adj_pxl ) ) && ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
                 seed_img[ adj_pxl ] = -1;
                 seed_queue.push( adj_pxl );
               }
-              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 5, adj_pxl ) ) &&
-                  ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
+              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 5, adj_pxl ) ) && ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
                 seed_img[ adj_pxl ] = -1;
                 seed_queue.push( adj_pxl );
               }
-              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 7, adj_pxl ) ) &&
-                  ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
+              if( ( trc_adj_itr.AdjIdx2( brd_pxl, 7, adj_pxl ) ) && ( seed_img[ adj_pxl ] == 0 ) && ( my_seed[ adj_pxl ] == 0 ) ) {
                 seed_img[ adj_pxl ] = -1;
                 seed_queue.push( adj_pxl );
               }
@@ -1804,9 +1842,40 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
         }
       }
     }
-    COMMENT( "border labels:" << seed_side_lbl, 0 );
+    COMMENT( "Propagating extremity pixel's labels to non-visited regions.", 3 );
+    size_t extremity_pxl_size = extremity_pxl.size( );
+    for( size_t idx = 0; idx < extremity_pxl_size; ++idx ) {
+      size_t pxl = extremity_pxl[ idx ];
+      seed_img[ pxl ] = seed_side_lbl;
+      for( adj_idx = 0; adj_idx < trc_adj_size; ++adj_idx ) {
+        if( ( trc_adj_itr.AdjIdx2( pxl, adj_idx, adj_pxl ) ) && ( seed_bdr[ adj_pxl ] == 0 ) && ( seed_img[ adj_pxl ] < 1 ) ) 
+          seed_img[ adj_pxl ] = seed_side_lbl;
+      }
+      ++seed_side_lbl;
+    } 
+    COMMENT( "Assigning neighbour labels to the label adjacency vector.", 3 );
+    lbl_adj_list = Bial::Vector< Bial::Vector< size_t > >( seed_side_lbl );
+    for( size_t idx = 0; idx < extremity_pxl_size; ++idx ) {
+      size_t src_pxl = extremity_pxl[ idx ];
+      int src_lbl = seed_img[ src_pxl ];
+      for( adj_idx = 0; adj_idx < trc_adj_size; ++adj_idx ) {
+        if( ( trc_adj_itr.AdjIdx2( src_pxl, adj_idx, adj_pxl ) ) && ( seed_img[ adj_pxl ] > 0 ) &&
+          ( src_lbl != seed_img[ adj_pxl ] ) ) {
+          size_t adj_lbl = seed_img[ adj_pxl ];
+          size_t adj_lbl_idx = 0;
+          size_t src_lbl_size = lbl_adj_list[ src_lbl ].size( );
+          while( ( adj_lbl_idx < src_lbl_size ) && ( adj_lbl != lbl_adj_list[ src_lbl ][ adj_lbl_idx ] ) )
+            ++adj_lbl_idx;
+          if( adj_lbl_idx == src_lbl_size )
+            lbl_adj_list[ src_lbl ].push_back( adj_lbl );
+          lbl_count++;
+        }
+      }
+    }
+    COMMENT( "Number of border labels:" << seed_side_lbl, 0 );
     Bial::Write( seed_bdr, "/tmp/my_seed_brd.pgm" );
-    COMMENT( "Computing gradient complement.", 0 );
+    Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
+    COMMENT( "Computing gradient complement.", 4 );
 //    Bial::Intensity::Complement( my_grad );
 //    COMMENT( "Linking anchors with livewire.", 0 );
     label[ 2 ] = mask;
@@ -1823,9 +1892,10 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
 //    Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
 //    mask = label[ 2 ];
 //    Bial::Write( mask, "/tmp/my_livewire.pgm" );
-    COMMENT( "Printing the anchors into the label.", 0 );
+    COMMENT( "Printing the anchors into the label.", 4 );
     PrintAnchors( my_grad.size( 0 ) );
     emit guiImage->imageUpdated( );
+  
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -1845,15 +1915,25 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
   }
 }
 
-int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_img, const Bial::Image< int > &borders, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl ) {
-  // seed_img -> -2: Forbidden pixel; -1: allowed pixel; 0: not visited; > 0: non-seed adjacent to seed border.
+// my_grad: gradient complement of the image.
+// my_seed: image containing connected bkg and obj seeds. 0: no seed; 1: obj seed; 2: background seed; 3: obj seed end point.
+// seed_zone_img: image containning connected bkg seeds and contours around connected obj seeds. 0: no seed or contour; 1 to n-1: distinct obj contour; n: bkg seed.
+// borders: pixels of the border of the segmented region by region growing divided in segments by the anchors. Each segment has a color. 0: no border; 1-n border segments.
+// anchor: current anchor number, which is the same as the border segment color.
+// ini_pxl, end_pxl: anchor coordinates and last pixel in the path which is the point before next anchor.
+// obj_seed_contour_lbl: 0: if initial pixel does no belong to contour of object seeds. > 0: if pixel belongs to contour of object seeds or lays on object seeds. In the last case,
+//                       it has the label of the object seed contour from which the path reached seed pixels.
+
+int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_zone_img,
+                                const Bial::Image< int > &borders, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl ) {
+  // seed_zone_img -> -2: Forbidden pixel; -1: allowed pixel; 0: not visited; > 0: non-seed adjacent to seed border.
   try {
     if( ( ini_pxl == 0 ) || ( end_pxl == 0 ) ) {
       std::cout << "ini_pxl = " << ini_pxl << ", end_pxl: " << end_pxl << std::endl;
     }
     size_t size = my_grad.size( );
     size_t x_size = my_grad.size( 0 );
-    COMMENT( "Initiating maps and seeds.", 0 );
+    COMMENT( "Initiating maps and seeds.", 4 );
     Bial::Image< int > value( my_grad );
     Bial::Image< int > predecessor( my_grad.Dim( ), my_grad.PixelSize( ) );
     Bial::Image< int > seed_brd( value.Dim( ) );
@@ -1868,7 +1948,7 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     adj( 7, 0 ) = 0; adj( 7 , 1 ) = -1; //N
     Bial::RotatingBucketQueue queue( size, my_grad.Maximum( ) + 1 );
     for( size_t pxl = 0; pxl < size; ++pxl ) {
-      if( ( label[ 2 ][ pxl ] != 0 ) || ( seed_img[ pxl ] == -2 ) )
+      if( ( label[ 2 ][ pxl ] != 0 ) || ( seed_zone_img[ pxl ] == -2 ) )
         value[ pxl ] = 0;
       else
         value[ pxl ] = std::numeric_limits< int >::max( );
@@ -1877,55 +1957,58 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     seed_brd[ ini_pxl ] = brd_lbl;
     queue.Insert( ini_pxl, 0 );
     predecessor[ ini_pxl ] = -1;
-    COMMENT( "Computing IFT.", 0 );
+    COMMENT( "Computing IFT.", 4 );
     Bial::AdjacencyIterator adj_itr( value, adj );
     size_t adj_size = adj.size( );
     size_t src_pxl = ini_pxl;
     size_t adj_pxl;
     while( ( !queue.Empty( ) ) && ( src_pxl != end_pxl ) ) {
-      COMMENT( "Initializing removed data.", 4 );
       src_pxl = queue.Remove( );
-      COMMENT( "Reseting last seed border label if steped out of seed border.", 3 );
+      //COMMENT( "Reseting last seed border label if steped out of seed border.", 3 );
       queue.Finished( src_pxl );
       for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
         if( ( adj_itr.AdjIdx2( src_pxl, adj_idx, adj_pxl ) ) &&
             ( queue.State( adj_pxl ) != Bial::BucketState::REMOVED ) &&
             ( value[ src_pxl ] < value[ adj_pxl ] ) ) {
-          COMMENT( "Checking for forbidden segmentation border crossing.", 3 );
-          if( ( ( borders[ adj_pxl ] != 0 ) && ( borders[ adj_pxl ] != static_cast< int >( anchor ) ) ) ) // ||
-              //( ( adj_idx % 2 == 0 ) && ( borders[ adj_pxl - adj( adj_idx, 0 ) ] != 0 ) &&
-               // ( borders[ adj_pxl - x_size * adj( adj_idx, 1 ) ] == borders[ adj_pxl - adj( adj_idx, 0 ) ] ) &&
-                //( borders[ adj_pxl - adj( adj_idx, 0 ) ] != static_cast< int >( anchor ) ) ) )
+          COMMENT("Checking for forbidden segmentation border crossing.", 3);
+          if ( borders[adj_pxl] == -2 ) {
+            COMMENT( "Avoiding forbidden regions: background and internal object seeds.", 3);
             continue;
-          COMMENT( "Checking for forbidden interior of object seed region or background seed region crossing.", 3 );
-          if( ( seed_img[ adj_pxl ] == -2 ) ||
-              ( ( adj_idx % 2 == 0 ) && ( seed_img[ adj_pxl - x_size * adj( adj_idx, 1 ) ] == -2 ) &&
-                ( seed_img[ adj_pxl - adj( adj_idx, 0 ) ] == -2 ) ) )
+          }
+          /*
+          if ( ( borders[ adj_pxl ] != static_cast< int >( anchor ) ) // Avoid crossing borders from other segments.
+              || ((adj_idx % 2 == 0) && (borders[ adj_pxl - adj( adj_idx, 0 ) ] != 0 ) && // If it is a diagonal direction and neighbor in the horizontal of this diagonal belongs to a border...
+              ( borders[ adj_pxl - x_size * adj(adj_idx, 1)] == borders[ adj_pxl - adj(adj_idx, 0) ] ) && // and vertical and horizontal of the diagonal belong to the same border...
+              ( borders[ adj_pxl - adj( adj_idx, 0 ) ] != static_cast< int >( anchor ) ) ) ) // and the horizontal does not belong to current border segment.
+              continue; // In this case, it is not a valid adjacent to propagate the cost.
+          if ( ( seed_zone_img[adj_pxl] == -2) || // If adjacent is over forbidden region or...
+              ((adj_idx % 2 == 0) && (seed_zone_img[adj_pxl - x_size * adj(adj_idx, 1)] == -2) && // If it is a diagonal and the vertical of the diagonal direction is background seed...
+              (seed_zone_img[adj_pxl - adj(adj_idx, 0)] == -2))) // and horizontal of the diagonal direction is background seed.
+              continue; // In this case, it is not a valid adjacent to propagate the cost.
+          int src_seed_lbl = seed_brd[ src_pxl ];
+          if( ( src_seed_lbl > 0)  && ( seed_zone_img[ adj_pxl ] > 0 ) && ( seed_zone_img[ adj_pxl ] != src_seed_lbl ) 
+            && ( seed_zone_img[ adj_pxl ] != static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 0 ] ) )
+            && ( seed_zone_img[ adj_pxl ] != static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 1 ] ) ) )
             continue;
-          COMMENT( "Checking for forbidden object seed region crossing.", 3 );
-          if( seed_img[ adj_pxl ] > 0 ) {
-            if( ( seed_brd[ src_pxl ] != -1 ) && ( seed_brd[ src_pxl ] != 0 ) &&
-                ( seed_img[ adj_pxl ] != seed_brd[ src_pxl ] ) )
+          if( my_seed[ adj_pxl ] == 1 ) {
+            bool prop_allowed = false;
+            size_t adj_pxl2;
+            for( size_t adj_idx2 = 0; adj_idx2 < adj_size; ++adj_idx2 ) {
+              if( adj_itr.AdjIdx2( adj_pxl, adj_idx2, adj_pxl2 ) ) {
+                if ( ( seed_zone_img[ adj_pxl2 ] == src_seed_lbl )  
+                  || ( seed_zone_img[ adj_pxl2 ] == static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 0 ] ) )
+                  || ( seed_zone_img[ adj_pxl2 ] == static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 1 ] ) ) ){
+                  prop_allowed = true;
+                }
+              }
+            }
+            if ( !prop_allowed )
               continue;
           }
-//          COMMENT( "If final anchor lays on a object seed pixel, then the path reaching it must have the same seed " <<
-//                   "label as occurs in the adjacency of the anchor. This avoids the next path from getting stuck.", 3 );
-//          if( ( adj_pxl == end_pxl ) && ( my_seed[ end_pxl ] == 1 ) ) {
-//            bool same_label = false;
-//            size_t adj_end_pxl;
-//            for( size_t inter_adj_idx = 0; inter_adj_idx < adj_size; ++inter_adj_idx ) {
-//              if( ( adj_itr.AdjIdx2( end_pxl, inter_adj_idx, adj_end_pxl ) ) &&
-//                  ( seed_img[ adj_end_pxl ] == seed_brd[ src_pxl ] ) && ( src_pxl != adj_end_pxl ) ) {
-//                COMMENT( "Found an adjacent pixel, other than src_pxl with the same label.", 3 );
-//                same_label = true;
-//              }
-//            }
-//            if( !same_label )
-//              continue;
-//          }
+          */
           int previous_value = value[ adj_pxl ];
           int prop_value = value[ src_pxl ] + ( my_grad[ src_pxl ] + my_grad[ adj_pxl ] ) / 2;
-          if( previous_value > prop_value ) {
+          if( previous_value > prop_value ) { 
             value[ adj_pxl ] = prop_value;
             predecessor[ adj_pxl ] = src_pxl;
             if( my_seed[ adj_pxl ] == 0 )
@@ -1938,18 +2021,15 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
       }
     }
     COMMENT( "Painting final path.", 0 );
+    
     for( src_pxl = end_pxl; src_pxl != ini_pxl; src_pxl = predecessor[ src_pxl ] ) {
       label[ 2 ][ src_pxl ] = 1;
-      if( src_pxl == 0 )  {// There is a bug here. Must be corrected. Bug occurs when last path reaches dead end and current path can not leave.
-        std::cout << "bug detected." << ". ini_pxl = " << ini_pxl << ", end_pxl: " << end_pxl << std::endl;
-        //Bial::Write( value, "/tmp/my_lw_value.pgm" );
-        //Bial::Write( seed_brd, "/tmp/my_lw_seed_br.pgm" );
-        //Bial::Write( predecessor, "/tmp/my_lw_pred.pgm" );
-        break;
-      }
+      border[ src_pxl ] = anchor; // Re-labelling the pixel
     }
     label[ 2 ][ ini_pxl ] = 1;
     mask = label[ 2 ];
+    
+    COMMENT(" LiveWire executed, label " << anchor << " was updated, from ini_pxl = " << ini_pxl << " to end_pxl = " << end_pxl << ".", 3);
     return( seed_brd[ end_pxl ] );
   }
   catch( std::bad_alloc &e ) {
@@ -1969,4 +2049,3 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     throw( std::logic_error( msg ) );
   }
 }
-

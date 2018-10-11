@@ -45,11 +45,14 @@ void SegmentationWidget::setTool( Tool *sTool ) {
 }
 
 void SegmentationWidget::on_SegmentationButton_clicked( ) {
+  segmentation_flag = true;
   double alpha = ui->AlphaSpinBox->value( );
   double beta = ui->BetaSpinBox->value( );
   int pf_type = ( ui->pfmaxgeo->isChecked( ) ? 0 : ( ui->pfmax->isChecked( ) ? 1 : 2 ) );
   try {
+    COMMENT(" Tryied to start segmentating. ", 3);
     int new_val = tool->connect( pf_type, alpha, beta );
+    COMMENT(" Finished segmentating. ", 3);
     ui->AnchorPointsspinBox->setValue( new_val );
   }
   catch( std::runtime_error &err ) {
@@ -70,7 +73,10 @@ void SegmentationWidget::on_drawButton_clicked( ) {
 }
 
 void SegmentationWidget::on_ClearButton_clicked( ) {
+    // ---
+    //tool->setExtremity( );
     tool->clearSeeds( );
+    tool->clearMask( );
 }
 
 void SegmentationWidget::on_LiveWirePostButton_clicked( ) {
@@ -88,8 +94,9 @@ void SegmentationWidget::on_BetaSpinBox_valueChanged( double arg1 ) {
 }
 
 void SegmentationWidget::on_AnchorPointsspinBox_valueChanged( int arg1 ) {
-  tool->setAnchors( arg1 );
-  tool->LiveWirePostProcessing( arg1 );
+    tool->setAnchors( arg1 );
+    //tool->LiveWirePostProcessing( arg1 );
+    tool->setEllipsesMovable( true );
 }
 
 void SegmentationWidget::on_pushButtonShowSeeds_clicked( bool checked ) {

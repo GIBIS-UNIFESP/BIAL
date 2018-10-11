@@ -45,7 +45,7 @@ namespace Bial {
     const size_t adj_size;
     /** @brief Number of dimensions in image and adjacency. */
     const size_t dims;
-    /** @brief Vector containing the displacements to the adjacent pixels. */
+    /** @brief Vector containing the displacements in terms of global pixel index to the adjacent pixels. */
     Vector< int > displacement;
 
   public:

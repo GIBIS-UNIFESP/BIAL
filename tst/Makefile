@@ -219,7 +219,7 @@ File-ReadDir: libbial
 
 
 
-Filtering: Filtering-Anisotropic Filtering-Gaussian Filtering-Mean Filtering-Median Filtering-OptimalAnisotropic
+Filtering: Filtering-Anisotropic Filtering-Gaussian Filtering-Mean Filtering-Median Filtering-NonLocalAnisotropic Filtering-OptimalAnisotropic Filtering-OptimalNonLocalAnisotropic
 
 Filtering-AdaptiveAnisotropic: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -234,6 +234,12 @@ Filtering-Median: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Filtering-Mean: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Filtering-NonLocalAnisotropic: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Filtering-OptimalNonLocalAnisotropic: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Filtering-OptimalAnisotropic: libbial

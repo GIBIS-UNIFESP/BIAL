@@ -19,8 +19,8 @@ int main( int argc, char **argv ) {
     cout << "Usage: " << argv[ 0 ] << " <Input image> <output image> <initial_kappa> [<diffusion function> "
          << "[<adjacency radius>] ]" << endl;
     cout << "\t\t<conservativeness>: (conserve all edges) 0.0 to 1.0 (remove all noise)." << endl;
-    cout << "\t\t<diffusion function>: 0: Power(1.0); 1: Power(2.0); 2: Gaussian; 3: Robust(0.5); 4: Robust(1.0)."
-         << "Default: 4." << endl;
+    cout << "\t\t<diffusion function>: 0: Power(1.0); 1: Power(2.0); 2: Gaussian; 3: Robust."
+         << "Default: 3." << endl;
     cout << "\t\t<initial_kappa>: Kappa for adaptive filtering. Suggested: 50.0 to 2000.0." << endl;
     return( 0 );
   }
@@ -42,7 +42,7 @@ int main( int argc, char **argv ) {
   }
   DiffusionFunction *diff_func;
   if( argc < 5 ) {
-    diff_func = new RobustDiffusionFunction( 1.0 );
+    diff_func = new RobustDiffusionFunction;
   }
   else {
     int func = atof( argv[ 4 ] );
@@ -56,10 +56,7 @@ int main( int argc, char **argv ) {
       diff_func = new GaussianDiffusionFunction;
     }
     else if( func == 3 ) {
-      diff_func = new RobustDiffusionFunction( 0.5 );
-    }
-    else if( func == 4 ) {
-      diff_func = new RobustDiffusionFunction( 1.0 );
+      diff_func = new RobustDiffusionFunction;
     }
     else {
       cout << "Error: Invalid diffusion function option. Expected: 0 to 4. Found: " << func << endl;
