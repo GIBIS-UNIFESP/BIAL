@@ -23,22 +23,18 @@ float NonLocalEdgeRegionKappa( const Image< D > &source, const Image< D > &mask,
 			       const DiffusionFunction *diff_func, const Vector< Image< D > > &map ) {
   try {
     float best_proportion = 1.01;
-
     COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge "
 	     << "region.", 3 );
     Vector< int > edges;
     for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
-      if( mask[ pxl ] != 0 ) {
+      if( mask[ pxl ] != 0 )
 	edges.push_back( source[ pxl ] );
-      }
     }
     float max_std = Statistics::StandardDeviation( edges );
-
     COMMENT( "Estimate best edge kappa based on the maximum standard deviation in a binary search.", 3 );
     float kappa = 2 * max_std;
     float step = kappa / 2.0;
     Image< D > filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa, 1, map );
-    
     size_t elm = 0;
     for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
       if( mask[ pxl ] != 0 ) {
@@ -47,13 +43,10 @@ float NonLocalEdgeRegionKappa( const Image< D > &source, const Image< D > &mask,
       }
     }
     float best_std = Statistics::StandardDeviation( edges );
-
     COMMENT( "Binary search for the best kappa.", 3 );
     while( step > 2.0 ) {
-
       COMMENT( "Searching to the right.", 4 );
       filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa + step, 1, map );
-
       for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
 	if( mask[ pxl ] != 0 ) {
 	  edges( elm ) = filtered[ pxl ];
@@ -68,7 +61,6 @@ float NonLocalEdgeRegionKappa( const Image< D > &source, const Image< D > &mask,
       else {
 	COMMENT( "Searching to the left.", 4 );
 	filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa - step, 1, map );
-	
 	for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
 	  if( mask[ pxl ] != 0 ) {
 	    edges( elm ) = filtered[ pxl ];
@@ -84,7 +76,6 @@ float NonLocalEdgeRegionKappa( const Image< D > &source, const Image< D > &mask,
       step /= 2.0;
     }
     COMMENT( "edge std: " << best_std << ", edge kappa: " << kappa, 3 );
-
     return( kappa );
   }
   catch( std::bad_alloc &e ) {
@@ -149,7 +140,7 @@ float NonLocalFlatRegionKappa( const Image< D > &source, const Image< D > &mask,
       float std = Statistics::StandardDeviation( backg );
       COMMENT( "Searching right with kappa: " << kappa + step << " and std: " << std, 0 );
       COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
-      if( ( ( std < 0.8f * base_std ) && ( std < best_std ) ) || ( std > 0.8f * base_std ) ) {
+      if( ( std > 0.8f * base_std ) && ( std > 0.99f * best_std ) ) {
 	best_std = std;
 	kappa = kappa + step;
 	COMMENT( "New kappa: " << kappa, 0 );
@@ -169,7 +160,7 @@ float NonLocalFlatRegionKappa( const Image< D > &source, const Image< D > &mask,
 	std = Statistics::StandardDeviation( backg );
 	COMMENT( "Searching left with kappa: " << kappa - step << " with std: " << std, 0 );
 	COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
-	if( ( std < 0.8f * base_std ) && ( std < best_std * 1.01f ) ) {
+	if( std < best_std * 1.01f ) {
 	  best_std = std;
 	  kappa = kappa - step;
 	  COMMENT( "New kappa: " << kappa, 0 );
