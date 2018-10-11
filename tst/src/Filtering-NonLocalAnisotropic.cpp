@@ -1,27 +1,26 @@
 /* Biomedical Image Analysis Library */
 /* See README file in the root instalation directory for more information. */
 
-/* Date: 2012/Sep/21 */
+/* Date: 2018/Oct/10 */
 /* Content: Test file. */
 /* Description: Test with filtering. */
 
-#include "DiffusionFunction.hpp"
-#include "FileImage.hpp"
-#include "FilteringAnisotropicDiffusion.hpp"
-#include "Image.hpp"
+#include "Filtering-NonLocalAnisotropicBasics.cpp"
 
 using namespace std;
 using namespace Bial;
 
 int main( int argc, char **argv ) {
-  if( ( argc < 3 ) || ( argc > 7 ) ) {
+  if( ( argc < 3 ) || ( argc > 9 ) ) {
     cout << "Usage: " << argv[ 0 ] << " <Input image> <output image> [<diffusion function> [<iterations> [<kappa> " <<
-    "[<adjacency radius>]]]] " << endl;
+    "[<search radius> [<patch radius> [<patch adjacents>]]]]]] " << endl;
     cout << "\t\t<diffusion function>: 0: Power(1.0); 1: Power(2.0); 2: Gaussian; 3: Robust."
          << "Default: 3." << endl;
     cout << "\t\t<iterations>: 1 to 1000. Default: 3." << endl;
     cout << "\t\t<kappa>: 1.0 to 10000.0. Default: 10.0." << endl;
-    cout << "\t\t<adjacency radius>: 1.0 to 3.0. Default: 1.01." << endl;
+    cout << "\t\t<non-local search adjacency radius>: 0.0 to 10.0. Default: 5.00." << endl;
+    cout << "\t\t<non-local patch adjacency radius>: 1.0 to 5.0. Default: 3.00." << endl;
+    cout << "\t\t<non-local patch adjacents>: 0 to 4. Default: 1." << endl;
     return( 0 );
   }
   /* Reading inputs: */
@@ -43,11 +42,27 @@ int main( int argc, char **argv ) {
       return( 0 );
     }
   }
-  float radius = 1.01;
+  float search_radius = 5.00;
   if( argc > 6 ) {
-    radius = atof( argv[ 6 ] );
-    if( ( radius < 1.0 ) || ( radius > 3.0 ) ) {
-      cout << "Error: Invalid adjacency radius. Expected: 1.0 to 3.0. Found: " << radius << endl;
+    search_radius = atof( argv[ 6 ] );
+    if( ( search_radius < 0.0 ) || ( search_radius > 10.0 ) ) {
+      cout << "Error: Invalid search adjacency radius. Expected: 0.0 to 10.0. Found: " << search_radius << endl;
+      return( 0 );
+    }
+  }
+  float patch_radius = 3.00;
+  if( argc > 7 ) {
+    patch_radius = atof( argv[ 7 ] );
+    if( ( patch_radius < 1.0 ) || ( search_radius > 5.0 ) ) {
+      cout << "Error: Invalid patch adjacency radius. Expected: 1.0 to 5.0. Found: " << patch_radius << endl;
+      return( 0 );
+    }
+  }
+  size_t patch_adjacents = 1;
+  if( argc > 8 ) {
+    patch_adjacents = atoi( argv[ 8 ] );
+    if( ( patch_adjacents < 0 ) || ( patch_adjacents > 4 ) ) {
+      cout << "Error: Invalid patch adjacents. Expected: 0 to 4. Found: " << patch_adjacents << endl;
       return( 0 );
     }
   }
@@ -74,7 +89,7 @@ int main( int argc, char **argv ) {
       return( 0 );
     }
   }
-  Image< int > res( Filtering::AnisotropicDiffusion( src, diff_func, kappa, iterations, radius ) );
+  Image< int > res( NonLocalAnisotropicDiffusion( src, diff_func, kappa, iterations, search_radius, patch_radius, patch_adjacents ) );
   NiftiHeader nii( res );
   
   Write( res, argv[ 2 ], argv[ 1 ] );

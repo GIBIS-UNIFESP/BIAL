@@ -69,7 +69,7 @@ namespace Bial {
       }
       float edge_kappa = 2 * Statistics::StandardDeviation( edges );
       COMMENT( "Filtering image.", 0 );
-      RobustDiffusionFunction diff_func( 1.0 );
+      RobustDiffusionFunction diff_func;
       Image< D > filtered = Filtering::AdaptiveAnisotropicDiffusion( img, &diff_func, edge_kappa, 1.01 );
       COMMENT( "Computing median features.", 0 );
       Feature< D > feats = MedianFeature( filtered, AdjacencyType::HyperSpheric( 1.1, img.Dims( ) ), 0.5 );

@@ -15,6 +15,8 @@
 namespace Bial {
 
   template< class D >
+  class Vector;
+  template< class D >
   class Image;
   class Adjacency;
   class DiffusionFunction;
@@ -53,7 +55,8 @@ namespace Bial {
     /**
      * @date 2013/Nov/27 
      * @param img: Input image. 
-     * @param res: Output image. 
+     * @param res: Output image.
+     * @param weight: pre-computed weight vector based on relative distance between adjacents.
      * @param integration_constant: Constant of integration based on adjacency size. 
      * @param diff_function: diffusion function. 
      * @param kappa: constant to control the gradient range to be filtered. 
@@ -65,24 +68,9 @@ namespace Bial {
      * @warning none. 
      */
     template< class D >
-    void AnisotropicDiffusionThread( Image< D > &img, Image< D > &res, double integration_constant,
-                                     const DiffusionFunction *diff_func, float kappa, Adjacency &adj,
-                                            size_t thread, size_t total_threads );
-
-    /**
-     * @date 2013/Nov/18 
-     * @param img: Input image. 
-     * @param diff_function: diffusion function. 
-     * @param kappa: constant to control the gradient range to be filtered. 
-     * @param pxl: reference pixel. 
-     * @param adj: adjacency relation. 
-     * @return Returns the value of the flow of pxl with respect to its adjacents in adjacency adj. 
-     * @brief The flow is computed based the diffusion function. 
-     * @warning none. 
-     */
-    template< class D >
-    double Flow( const Image< D > &img, const DiffusionFunction *diff_func, float kappa, const size_t pxl, 
-                 const Adjacency &adj );
+    void AnisotropicDiffusionThread( Image< D > &img, Image< D > &res, const Vector< double > &weight,
+				     double integration_constant, const DiffusionFunction *diff_func, float kappa,
+				     Adjacency &adj, size_t thread, size_t total_threads );
 
   }
 

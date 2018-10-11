@@ -20,8 +20,8 @@ int main( int argc, char **argv ) {
     cout << "Usage: " << argv[ 0 ] << " <Input image> <output image> <conservativeness> [<diffusion function> "
          << "[<adjacency radius> [<edge_region> <flat_region>]]]" << endl;
     cout << "\t\t<conservativeness>: (conserve all edges) 0.0 to 1.0 (remove all noise)." << endl;
-    cout << "\t\t<diffusion function>: 0: Power(1.0); 1: Power(2.0); 2: Gaussian; 3: Robust(0.5); 4: Robust(1.0)."
-         << "Default: 4." << endl;
+    cout << "\t\t<diffusion function>: 0: Power(1.0); 1: Power(2.0); 2: Gaussian; 3: Robust."
+         << "Default: 3." << endl;
     cout << "\t\t<edge_region>: Canny edge detection." << endl;
     cout << "\t\t<flat_region>: Background segmentation." << endl;
     return( 0 );
@@ -44,7 +44,7 @@ int main( int argc, char **argv ) {
   }
   DiffusionFunction *diff_func;
   if( argc < 5 ) {
-    diff_func = new RobustDiffusionFunction( 1.0 );
+    diff_func = new RobustDiffusionFunction;
   }
   else {
     int func = atof( argv[ 4 ] );
@@ -58,10 +58,7 @@ int main( int argc, char **argv ) {
       diff_func = new GaussianDiffusionFunction;
     }
     else if( func == 3 ) {
-      diff_func = new RobustDiffusionFunction( 0.5 );
-    }
-    else if( func == 4 ) {
-      diff_func = new RobustDiffusionFunction( 1.0 );
+      diff_func = new RobustDiffusionFunction;
     }
     else {
       cout << "Error: Invalid diffusion function option. Expected: 0 to 4. Found: " << func << endl;
@@ -69,6 +66,7 @@ int main( int argc, char **argv ) {
     }
   }
   if( argc > 6 ) {
+    std::cout << "Using input images for flat and edge regions." << std::endl;
     Image< int > edge_region( Read< int >( argv[ 6 ] ) );
     Image< int > flat_region( Read< int >( argv[ 7 ] ) );
     Image< int > res( Filtering::OptimalAnisotropicDiffusion( src, diff_func, radius, conservativeness, 
@@ -76,6 +74,7 @@ int main( int argc, char **argv ) {
     Write( res, argv[ 2 ] );
   }
   else {
+    std::cout << "Computing flat and edge region images." << std::endl;
     Image< int > res( Filtering::OptimalAnisotropicDiffusion( src, diff_func, radius, conservativeness ) );
     Write( res, argv[ 2 ] );
   }

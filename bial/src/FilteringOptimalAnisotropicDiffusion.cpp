@@ -18,6 +18,7 @@
 #if defined ( BIAL_EXPLICIT_FilteringOptimalAnisotropicDiffusion ) || ( BIAL_IMPLICIT_BIN )
 
 #include "FilteringAnisotropicDiffusion.hpp"
+#include "FilteringMean.hpp"
 #include "DiffusionFunction.hpp"
 #ifdef BIAL_DEBUG
 #include "FileImage.hpp"
@@ -75,7 +76,6 @@ namespace Bial {
           kappa = kappa + step;
         }
         else {
-
           COMMENT( "Searching to the left.", 4 );
           filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa - step, 1, radius );
           for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
@@ -118,71 +118,77 @@ namespace Bial {
   float Filtering::FlatRegionKappa( const Image< D > &source, const Image< D > &mask, 
                                     const DiffusionFunction *diff_func, float radius, float kappa ) {
     try {
-      float best_proportion = 1.01;
-
-      COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge "
-               << "region.", 3 );
+      COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge region.", 0 );
+      COMMENT( "Initial edge kappa: " << kappa, 0 );
       Vector< int > backg;
       for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
-        if( mask[ pxl ] != 0 ) {
+        if( mask[ pxl ] != 0 )
           backg.push_back( source[ pxl ] );
-        }
       }
-      float min_std = Statistics::StandardDeviation( backg );
-
-      COMMENT( "Estimate best kappa for flat region based on the minimum standard deviation in a binary search.", 3 );
-      kappa = kappa / 2.0;
-      float step = kappa / 2.0;
-      Image< D > filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa, 1, radius );
-      size_t elm = 0;
-      for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
+      COMMENT( "Getting first standard deviation given by input image.", 0 );
+      float base_std = Statistics::StandardDeviation( backg );
+      COMMENT( "Getting standard deviation given by strong mean filter of input image.", 0 );
+      Image< D > filtered( Filtering::AnisotropicDiffusion( source, diff_func, kappa, 1, radius ) );
+      for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
         if( mask[ pxl ] != 0 ) {
-          backg( elm ) = filtered[ pxl ];
-          ++elm;
-        }
+	  backg[ elm ] = filtered[ pxl ];
+	  ++elm;
+	}
       }
       float best_std = Statistics::StandardDeviation( backg );
-
-      COMMENT( "Binary search for the best kappa.", 3 );
+      COMMENT( "base_std: " << base_std << ". best_std: " << best_std, 0 );
+      COMMENT( "Base standard deviation: " << base_std << ".", 0 );
+      COMMENT( "Estimate best kappa for flat region based on the base and smooth standard deviation values in a binary search.", 0 );
+      COMMENT( "Start searching for the kappa which gives the lowest standard deviation. Looking for the point in " <<
+	       "which the standard deviaction varies less than 1% and is close to smooth standard deviation value.", 0 );
+      float step = kappa / 2;
+      bool change_dir = false;
       while( step > 2.0 ) {
-
-        COMMENT( "Searching left.", 4 );
-        filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa - step, 1, radius );
-        for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-          if( mask[ pxl ] != 0 ) {
-            backg( elm ) = filtered[ pxl ];
-            ++elm;
-          }
-        }
-        float std = Statistics::StandardDeviation( backg );
-        if( ( std < best_std ) ||
-            ( std::fabs( std - best_proportion * min_std ) <= std::fabs( best_std - best_proportion * min_std ) ) ) {
-          best_std = std;
-          kappa = kappa - step;
-          if( min_std > std ) {
-            min_std = std;
-          }
-        }
+	COMMENT( "Searching to the right of current kappa.", 3 );
+	filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa + step, 1, radius );
+	for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
+	  if( mask[ pxl ] != 0 ) {
+	    backg( elm ) = filtered[ pxl ];
+	    ++elm;
+	  }
+	}
+	float std = Statistics::StandardDeviation( backg );
+	COMMENT( "Searching right with kappa: " << kappa + step << " and std: " << std, 0 );
+	COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
+	if( ( ( std < 0.8f * base_std ) && ( std < best_std ) ) || ( std > 0.8f * base_std ) ) {
+	  best_std = std;
+	  kappa = kappa + step;
+	  COMMENT( "New kappa: " << kappa, 0 );
+	  if( change_dir )
+	    step /= 2.0;
+	}
         else {
-
-          COMMENT( "Searching right.", 4 );
-          filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa + step, 1, radius );
-          for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-            if( mask[ pxl ] != 0 ) {
-              backg( elm ) = filtered[ pxl ];
-              ++elm;
-            }
-          }
-          std = Statistics::StandardDeviation( backg );
-          if( std::fabs( std - best_proportion * min_std ) < std::fabs( best_std - best_proportion * min_std ) ) {
-            best_std = std;
-            kappa = kappa + step;
-          }
+	  COMMENT( "Searching to the left of current kappa.", 3 );
+	  filtered = Filtering::AnisotropicDiffusion( source, diff_func, kappa - step, 1, radius );
+	  for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
+	    if( mask[ pxl ] != 0 ) {
+	      backg( elm ) = filtered[ pxl ];
+	      ++elm;
+	    }
+	  }
+	  std = Statistics::StandardDeviation( backg );
+	  COMMENT( "Searching left with kappa: " << kappa - step << " with std: " << std, 0 );
+	  COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
+	  if( ( std < 0.8f * base_std ) && ( std < best_std * 1.01f ) ) {
+	    best_std = std;
+	    kappa = kappa - step;
+	    COMMENT( "New kappa: " << kappa, 0 );
+	    change_dir = true;
+	    step /= 2.0;
+	  }
+	  else {
+	    COMMENT( "No update.", 0 );
+	    change_dir = true;
+	    step /= 2.0;
+	  }
         }
-        step /= 2.0;
       }
-      COMMENT( "flat std: " << best_std << ", flat kappa: " << kappa, 3 );
-
+      COMMENT( "flat std: " << best_std << ", flat kappa: " << kappa, 0 );
       return( kappa );
     }
     catch( std::bad_alloc &e ) {
@@ -263,6 +269,7 @@ namespace Bial {
         init_kappa = edge_kappa + conservativeness * ( flat_kappa - edge_kappa );
       }
       COMMENT( "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa << ", init_kappa: " << init_kappa, 0 );
+      std::cout << "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa << ", init_kappa: " << init_kappa << std::endl;
 
       COMMENT( "Returning adaptive filter based on initial kappa value.", 0 );
       return( Filtering::AdaptiveAnisotropicDiffusion( img, diff_func, init_kappa, radius ) );

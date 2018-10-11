@@ -38,8 +38,7 @@ namespace Bial {
     return( 0.375 * kappa );
   }
 
-  /* Gaussian Diffusion Function **************************************************************************************
-  **/
+  /* Gaussian Diffusion Function **************************************************************************************/
 
   float GaussianDiffusionFunction::operator()( float kappa, float grad ) const {
     return( exp( 0.5 * -pow( grad / kappa, 2.0 ) ) );
@@ -49,25 +48,16 @@ namespace Bial {
     return( 0.75 * kappa * std::exp( -0.5 ) );
   }
 
-  /* Robust Diffusion Function ****************************************************************************************
-  **/
-
-  RobustDiffusionFunction::RobustDiffusionFunction( float new_power ) : power( new_power ) {
-    if( ( power <= 0.0 ) || ( power > 1.0 ) ) {
-      std::string msg( BIAL_ERROR( "Power must be in range: (0.0, 1.0]. Given: " + std::to_string( power ) ) );
-      throw( std::logic_error( msg ) );
-    }
-  }
+  /* Robust Diffusion Function ****************************************************************************************/
 
   float RobustDiffusionFunction::operator()( float kappa, float grad ) const {
-    if( ( grad >= -kappa * sqrt( 5.0 ) ) && ( grad <= kappa * sqrt( 5.0 ) ) ) {
-      return( pow( 1 - ( grad * grad ) / ( 5.0 * kappa * kappa ), 2.0 ) );
-    }
-    return( 0 );
+    float robust_factor = grad / ( kappa * _sqrt_5_ );
+    robust_factor *= robust_factor;
+    return( std::max( 0.0f, 1.0f - robust_factor ) );
   }
 
   float RobustDiffusionFunction::Reduction( float kappa ) const {
-    return( 0.48 * kappa );
+    return( 0.48f * kappa );
   }
 
 }

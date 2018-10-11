@@ -1,3 +1,7 @@
+/*
+- Tirar diagonais e tratar pelo rótulo.
+*/
+
 #include "Adjacency.hpp"
 #include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
@@ -447,6 +451,31 @@ void SegmentationTool::clearSeeds( ) {
     DeleteEllipses( );
     
     maskVisible = false;
+    emit guiImage->imageUpdated( );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
+void SegmentationTool::clearMask( ) {
+  try {
+    for( size_t i = 0; i < mask.size( ); ++i ) {
+      mask[ i ] = 0;
+    }
     emit guiImage->imageUpdated( );
   }
   catch( std::bad_alloc &e ) {
@@ -1668,7 +1697,7 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
     int obj_0 = std::get< 0 >( obj_order[ obj_idx ] );
     int obj_1 = std::get< 1 >( obj_order[ obj_idx ] );
     if( obj_conn_map( obj_0, obj_1 ) == 0 ) {
-      COMMENT( "Labels not connected between them. Make connection using predecessors.", 3 );
+      //COMMENT( "Labels not connected between them. Make connection using predecessors.", 0 );
       obj_conn_map( obj_0, obj_1 ) = 1;
       obj_conn_map( obj_1, obj_0 ) = 1;
       for( size_t obj_map_idx = 0; obj_map_idx < static_cast< size_t >( obj_seed_lbl ); ++obj_map_idx ) {
@@ -1681,13 +1710,13 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
           obj_conn_map( obj_map_idx, obj_0 ) = 1;
         }
       }
-      COMMENT( "Labeling path from object label 0.", 3 );
+      //COMMENT( "Labeling path from object label 0.", 0 );
       size_t pxl = obj_adj( obj_0, obj_1 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = 1;
         pxl = my_pred[ pxl ];
       }
-      COMMENT( "Labeling path from object label 1.", 3 );
+      //COMMENT( "Labeling path from object label 1.", 0 );
       pxl = obj_adj( obj_1, obj_0 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = 1;
@@ -1702,10 +1731,10 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
     int bkg_0 = std::get< 0 >( bkg_order[ bkg_idx ] );
     int bkg_1 = std::get< 1 >( bkg_order[ bkg_idx ] );
     if( bkg_conn_map( bkg_0, bkg_1 ) == 0 ) {
-      COMMENT( "Labels not connected between them. Make connection using predecessors.", 3 );
+      //COMMENT( "Labels not connected between them. Make connection using predecessors.", 0 );
       bkg_conn_map( bkg_0, bkg_1 ) = 1;
       bkg_conn_map( bkg_1, bkg_0 ) = 1;
-      COMMENT( "Update the connectivity map.", 3 );
+      //COMMENT( "Update the connectivity map.", 0 );
       for( size_t bkg_map_idx = 0; bkg_map_idx < static_cast< size_t >( -bkg_seed_lbl ); ++bkg_map_idx ) {
         if( ( bkg_conn_map( bkg_0, bkg_map_idx ) == 1 ) && ( bkg_conn_map( bkg_1, bkg_map_idx ) == 0 ) ) {
           bkg_conn_map( bkg_1, bkg_map_idx ) = 1;
@@ -1716,13 +1745,13 @@ Bial::Image< int > SegmentationTool::ConnectSeeds( ) {
           bkg_conn_map( bkg_map_idx, bkg_0 ) = 1;
         }
       }
-      COMMENT( "Labeling path from background label 0.", 3 );
+      //COMMENT( "Labeling path from background label 0.", 0 );
       size_t pxl = bkg_adj( bkg_0, bkg_1 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = -1;
         pxl = my_pred[ pxl ];
       }
-      COMMENT( "Labeling path from background label 1.", 3 );
+      //COMMENT( "Labeling path from background label 1.", 0 );
       pxl = bkg_adj( bkg_1, bkg_0 );
       while( my_pred[ pxl ] != -1 ) {
         my_seed[ pxl ] = -1;
@@ -1760,7 +1789,8 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     size_t adj_size = adj.size( );
     Bial::Image< int > my_grad( grad.IntImage( ) );
     Bial::Write( my_grad, "/tmp/my_grad.pgm" ); 
-    Bial::Write( label[ 0 ], "/tmp/my_initial_label.pgm" );
+    Bial::Write( label[ 0 ], "/tmp/my_label.pgm" );
+    Bial::Write( seeds, "/tmp/my_ini_seeds.pgm" );
     border = Bial::Image< int >( label[ 0 ].Dim( ) );
     size_t adj_pxl;
     COMMENT( "Computing the higest energy in the object contourn and the size of the contourn.", 3 );
@@ -1995,6 +2025,7 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
           size_t src_lbl_size = lbl_adj_list[ src_lbl ].size( );
           while( ( adj_lbl_idx < src_lbl_size ) && ( adj_lbl != lbl_adj_list[ src_lbl ][ adj_lbl_idx ] ) )
             ++adj_lbl_idx;
+          /////////<<<<<<< HEAD - COMMIT...
           if( adj_lbl_idx == src_lbl_size ) {
             lbl_adj_list[ src_lbl ].push_back( adj_lbl );
             lbl_adj_list[ adj_lbl ].push_back( src_lbl );
@@ -2028,9 +2059,38 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
     Bial::Write( seed_bdr, "/tmp/my_seed_brd.pgm" );
     Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
     Bial::Write( border, "/tmp/my_border_lbls.pgm" );
+    // ======= - COMMIT END ...
+//           if( adj_lbl_idx == src_lbl_size )
+//             lbl_adj_list[ src_lbl ].push_back( adj_lbl );
+//           lbl_count++;
+//         }
+//       }
+//     }
+//     COMMENT( "Number of border labels:" << seed_side_lbl, 0 );
+//     Bial::Write( seed_bdr, "/tmp/my_seed_brd.pgm" );
+//     Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
+//     COMMENT( "Computing gradient complement.", 4 );
+// //    Bial::Intensity::Complement( my_grad );
+// //    COMMENT( "Linking anchors with livewire.", 0 );
+//     label[ 2 ] = mask;
+// //    int brd_lbl = seed_img[ anchor_position[ 0 ] ];
+// //    for( ancr_idx = 0; ancr_idx < anchors; ++ancr_idx )
+// //      brd_lbl = LiveWire( my_grad, my_seed, seed_img, borders, ancr_idx + 1, anchor_position[ ancr_idx ], anchor_position[ ancr_idx + 1 ], brd_lbl );
+// //    COMMENT( "Returning result.", 0 );
+// //    for( size_t src_pxl = 0; src_pxl < img_size; ++src_pxl ) {
+// //      if( seed_img[ src_pxl ] == -1 )
+// //        seed_img[ src_pxl ] = 0;
+// //      if( seed_img[ src_pxl ] == -2 )
+// //        seed_img[ src_pxl ] = seed_side_lbl + 1;
+// //    }
+// //    Bial::Write( seed_img, "/tmp/my_seed_img.pgm" );
+// //    mask = label[ 2 ];
+// //    Bial::Write( mask, "/tmp/my_livewire.pgm" );
+// >>>>>>> 650de6f435c6034e60876d3e7809804a4c96a5f4
     COMMENT( "Printing the anchors into the label.", 4 );
     PrintAnchors( my_grad.size( 0 ) );
     emit guiImage->imageUpdated( );
+  
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -2062,7 +2122,6 @@ void SegmentationTool::LiveWirePostProcessing( size_t anchors ) {
 // seed_zone_img -> -2: Forbidden pixel; -1: allowed pixel; 0: not visited; > 0: non-seed adjacent to seed border.
 int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::Image< int > &my_seed, const Bial::Image< int > &seed_zone_img,
                                 const Bial::Image< int > &borders, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl ) {
-  
   try {
     if( ( ini_pxl == 0 ) || ( end_pxl == 0 ) ) {
       std::cout << "ini_pxl = " << ini_pxl << ", end_pxl: " << end_pxl << std::endl;
@@ -2105,6 +2164,7 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
       for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
         if( ( adj_itr.AdjIdx2( src_pxl, adj_idx, adj_pxl ) ) &&
             ( queue.State( adj_pxl ) != Bial::BucketState::REMOVED ) &&
+            // <<<<<<< HEAD - COMMIT...
             ( value[ src_pxl ] < value[ adj_pxl ] ) ) { 
           COMMENT( "Avoiding forbidden regions: background and internal object seeds.", 3 );
           if ( borders[ adj_pxl ] == -2 ){
@@ -2114,24 +2174,22 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
           COMMENT( "Avoid crossing borders from other segments. If it is a diagonal direction and neighbor in the horizontal of this diagonal belongs to a border" <<
                    "and vertical and horizontal of the diagonal belong to the same border and the horizontal does not belong to current border segment.", 3 );
           /*
-          if( ( propagated_paths[ adj_pxl ] != static_cast< int >( anchor ) )  || // border trocado por propagated_paths.
+            if( ( propagated_paths[ adj_pxl ] != static_cast< int >( anchor ) )  || // border trocado por propagated_paths.
           */
           if( ( adj_idx % 2 == 0 ) && ( borders[ adj_pxl - adj( adj_idx, 0 ) ] != 0 ) &&
               ( borders[ adj_pxl - x_size * adj( adj_idx, 1 ) ] == borders[ adj_pxl - adj( adj_idx, 0 ) ] ) &&
               ( borders[ adj_pxl - adj( adj_idx, 0 ) ] != static_cast< int >( anchor ) ) ) {
-                COMMENT( "Pixel " << adj_pxl << " avoided crossing borders from other segments.", 0 );
-                continue; // In this case, it is not a valid adjacent to propagate the cost.
-              }
-              
+            COMMENT( "Pixel " << adj_pxl << " avoided crossing borders from other segments.", 0 );
+            continue; // In this case, it is not a valid adjacent to propagate the cost.
+          }
           COMMENT( "Checking if adjacent is over forbidden region or If it is a diagonal and the vertical of the diagonal " <<
                    "direction is background seed and the horizontal of the diagonal direction is background seed.", 3 );
           if( ( seed_zone_img[ adj_pxl ] == -2 ) ||
               ( ( adj_idx % 2 == 0 ) && ( seed_zone_img[ adj_pxl - x_size * adj( adj_idx, 1 ) ] == -2 ) &&
-              ( seed_zone_img[ adj_pxl - adj( adj_idx, 0 ) ] == -2 ) ) ) {
-                COMMENT( "Pixel " << adj_pxl << " avoided crossing forbidden region or diagonal.", 0 );
-                continue; // 
-              }
-              
+                ( seed_zone_img[ adj_pxl - adj( adj_idx, 0 ) ] == -2 ) ) ) {
+            COMMENT( "Pixel " << adj_pxl << " avoided crossing forbidden region or diagonal.", 0 );
+            continue; // 
+          }
           int src_seed_lbl = seed_brd[ src_pxl ];
           COMMENT( "Checking for ... something...", 3 ); // It might be a bug here.
           if( ( src_seed_lbl > 0 )  && ( seed_zone_img[ adj_pxl ] > 0 ) && ( seed_zone_img[ adj_pxl ] != src_seed_lbl ) ) {
@@ -2142,11 +2200,35 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
               }
             }
           }
+          // ======= END - COMMIT...
+          //   ( value[ src_pxl ] < value[ adj_pxl ] ) ) {
+          // COMMENT("Checking for forbidden segmentation border crossing.", 3);
+          // if ( borders[adj_pxl] == -2 ) {
+          //   COMMENT( "Avoiding forbidden regions: background and internal object seeds.", 3);
+          //   continue;
+          // }
+          // /*
+          // if ( ( borders[ adj_pxl ] != static_cast< int >( anchor ) ) // Avoid crossing borders from other segments.
+          //     || ((adj_idx % 2 == 0) && (borders[ adj_pxl - adj( adj_idx, 0 ) ] != 0 ) && // If it is a diagonal direction and neighbor in the horizontal of this diagonal belongs to a border...
+          //     ( borders[ adj_pxl - x_size * adj(adj_idx, 1)] == borders[ adj_pxl - adj(adj_idx, 0) ] ) && // and vertical and horizontal of the diagonal belong to the same border...
+          //     ( borders[ adj_pxl - adj( adj_idx, 0 ) ] != static_cast< int >( anchor ) ) ) ) // and the horizontal does not belong to current border segment.
+          //     continue; // In this case, it is not a valid adjacent to propagate the cost.
+          // if ( ( seed_zone_img[adj_pxl] == -2) || // If adjacent is over forbidden region or...
+          //     ((adj_idx % 2 == 0) && (seed_zone_img[adj_pxl - x_size * adj(adj_idx, 1)] == -2) && // If it is a diagonal and the vertical of the diagonal direction is background seed...
+          //     (seed_zone_img[adj_pxl - adj(adj_idx, 0)] == -2))) // and horizontal of the diagonal direction is background seed.
+          //     continue; // In this case, it is not a valid adjacent to propagate the cost.
+          // int src_seed_lbl = seed_brd[ src_pxl ];
+          // if( ( src_seed_lbl > 0)  && ( seed_zone_img[ adj_pxl ] > 0 ) && ( seed_zone_img[ adj_pxl ] != src_seed_lbl ) 
+          //   && ( seed_zone_img[ adj_pxl ] != static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 0 ] ) )
+          //   && ( seed_zone_img[ adj_pxl ] != static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 1 ] ) ) )
+          //   continue;
+          // >>>>>>> 650de6f435c6034e60876d3e7809804a4c96a5f4
           if( my_seed[ adj_pxl ] == 1 ) {
             bool prop_allowed = false;
             size_t adj_pxl2;
             for( size_t adj_idx2 = 0; adj_idx2 < adj_size; ++adj_idx2 ) {
               if( adj_itr.AdjIdx2( adj_pxl, adj_idx2, adj_pxl2 ) ) {
+                // <<<<<<< HEAD - COMMIT...
                 if( seed_zone_img[ adj_pxl2 ] == src_seed_lbl ) {
                   for( size_t lbl_idx = 0; lbl_idx < lbl_adj_list[ src_seed_lbl ].size( ); ++lbl_idx ) {
                     if( seed_zone_img[ adj_pxl2 ] == static_cast< int >( lbl_adj_list[ src_seed_lbl ][ lbl_idx ] ) ) {
@@ -2160,6 +2242,19 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
             if ( !prop_allowed )
               continue;
           }
+          // ======= END - COMMIT...
+//                 if ( ( seed_zone_img[ adj_pxl2 ] == src_seed_lbl )  
+//                   || ( seed_zone_img[ adj_pxl2 ] == static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 0 ] ) )
+//                   || ( seed_zone_img[ adj_pxl2 ] == static_cast< int >( lbl_adj_list[ src_seed_lbl ][ 1 ] ) ) ){
+//                   prop_allowed = true;
+//                 }
+//               }
+//             }
+//             if ( !prop_allowed )
+//               continue;
+//           }
+//           */
+// >>>>>>> 650de6f435c6034e60876d3e7809804a4c96a5f4
           int previous_value = value[ adj_pxl ];
           int prop_value = value[ src_pxl ] + ( my_grad[ src_pxl ] + my_grad[ adj_pxl ] ) / 2;
           if( previous_value > prop_value ) { 
@@ -2174,6 +2269,7 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
         }
       }
     }
+    //<<<<<<< HEAD - COMMIT...
     COMMENT( "Painting final path and re-labelling pixels. ini_pxl: " << ini_pxl, 0 );
     for( src_pxl = end_pxl; src_pxl != ini_pxl; src_pxl = predecessor[ src_pxl ] ) {
       label[ 2 ][ src_pxl ] = 1;
@@ -2186,7 +2282,6 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     label[ 2 ][ ini_pxl ] = 1;
     mask = label[ 2 ];
     COMMENT(" LiveWire executed, label " << anchor << " was updated, from ini_pxl = " << ini_pxl << " to end_pxl = " << end_pxl << ".", 0 );
-    
     Bial::Write( value, "/tmp/final_value.pgm" );
     Bial::Write( border, "/tmp/final_border_labels.pgm" );
     Bial::Write( label[ 2 ], "/tmp/final_label[2].pgm" );
@@ -2194,7 +2289,17 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     Bial::Write( seed_brd, "/tmp/final_seed_brd.pgm" );
     Bial::Write( my_seed, "/tmp/final_my_seed.pgm" );
     Bial::Write( seed_zone_img, "/tmp/final_seed_zone_img.pgm" );
+    // ======= END - COMMIT...
+//     COMMENT( "Painting final path.", 0 );
+//     for( src_pxl = end_pxl; src_pxl != ini_pxl; src_pxl = predecessor[ src_pxl ] ) {
+//       label[ 2 ][ src_pxl ] = 1;
+//       border[ src_pxl ] = anchor; // Re-labelling the pixel
+//     }
+//     label[ 2 ][ ini_pxl ] = 1;
+//     mask = label[ 2 ];
     
+//     COMMENT(" LiveWire executed, label " << anchor << " was updated, from ini_pxl = " << ini_pxl << " to end_pxl = " << end_pxl << ".", 3);
+// >>>>>>> 650de6f435c6034e60876d3e7809804a4c96a5f4
     return( seed_brd[ end_pxl ] );
   }
   catch( std::bad_alloc &e ) {
@@ -2214,9 +2319,3 @@ int SegmentationTool::LiveWire( const Bial::Image< int > &my_grad, const Bial::I
     throw( std::logic_error( msg ) );
   }
 }
-
-/*
-my_border_lbls
-my_label_compponents
-my_label
-*/
