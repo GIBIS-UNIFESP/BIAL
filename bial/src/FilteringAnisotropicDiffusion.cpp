@@ -28,6 +28,68 @@
 
 namespace Bial {
 
+  Vector< double > Filtering::WeightVector( const Adjacency &adj, size_t adj_size, size_t img_dims ) {
+    try {
+      COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
+      Vector< double > weight( adj_size, 0 );
+      for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
+	COMMENT( "Computing L2 distance.", 4 );
+	double distance = 0.0;
+	for( size_t dim = 0; dim < img_dims; ++dim )
+	  distance += adj( adj_idx, dim ) * adj( adj_idx, dim );
+	weight[ adj_idx ] = 1.0 / std::sqrt( distance );
+      }
+      return( weight );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+  double Filtering::IntegrationConstant( const Adjacency &adj, size_t adj_size, size_t img_dims ) {
+    try {
+      COMMENT( "Computing integration constant.", 2 );
+      double integration_constant = 0.0;
+      for( size_t idx = 1; idx < adj_size; ++idx ) {
+        double distance = 0.0;
+        for( size_t dim = 0; dim < img_dims; ++dim )
+          distance += std::abs( adj( idx, dim ) );
+        integration_constant += 1.0 / distance;
+      }
+      integration_constant = 1.0 / integration_constant;
+      return( integration_constant );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
   template< class D >
   Image< D > Filtering::AdaptiveAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func,
                                                       float init_kappa, float radius ) {
@@ -67,6 +129,50 @@ namespace Bial {
     }
   }
 
+  template< class D >
+  Image< D > Filtering::QuickAnisotropicDiffusion( const Image< D > &img, const Vector< size_t > &mask,
+						   const DiffusionFunction *diff_func, float kappa,
+						   const Adjacency &adj, const AdjacencyIterator &adj_itr,
+						   const Vector< double > & weight, double integration_constant ) {
+    try {
+      Image< D > res( img );
+      size_t adj_size = adj.size( );
+      size_t mask_size = mask.size( );
+      COMMENT( "Computing diffusion filter.", 2 );
+      size_t adj_pxl;
+      for( size_t src_pxl = 0; src_pxl < mask_size; ++src_pxl ) {
+	size_t pxl = mask[ src_pxl ];
+	COMMENT( "Computing intensity flow from adjacents.", 4 );
+	double flow = 0.0;
+	for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
+	  if( adj_itr.AdjIdx( pxl, adj_idx, adj_pxl ) ) {
+	    D grad = img[ adj_pxl ] - img[ pxl ];
+	    flow += weight[ adj_idx ] * grad * ( *diff_func )( kappa, grad );
+	  }
+	}
+	COMMENT( "Updating pixel intensity with adjacent flow.", 4 );
+	res[ pxl ] = img[ pxl ] + integration_constant * flow;
+      }
+      return( res );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+  
   /* Main diffusion function */
   template< class D >
   Image< D > Filtering::AnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func, float kappa,
@@ -75,28 +181,14 @@ namespace Bial {
       Image< D > res( img );
       Adjacency adj( AdjacencyType::HyperSpheric( radius, img.Dims( ) ) );
       size_t adj_size = adj.size( );
-      COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
-      Vector< double > weight( adj_size, 0 );
       size_t img_dims = img.Dims( );
-      for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
-	COMMENT( "Computing L2 distance.", 4 );
-	double distance = 0.0;
-	for( size_t dim = 0; dim < img_dims; ++dim )
-	  distance += adj( adj_idx, dim ) * adj( adj_idx, dim );
-	weight[ adj_idx ] = 1.0 / std::sqrt( distance );
-      }
+      COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
+      Vector< double > weight( Filtering::WeightVector( adj, adj_size, img_dims ) );
       COMMENT( "Computing integration constant.", 2 );
-      double integration_constant = 0.0;
-      for( size_t idx = 1; idx < adj_size; ++idx ) {
-        double distance = 0.0;
-        for( size_t dim = 0; dim < img.Dims( ); ++dim )
-          distance += std::abs( adj( idx, dim ) );
-        integration_constant += 1.0 / distance;
-      }
-      integration_constant = 1.0 / integration_constant;
+      double integration_constant = Filtering::IntegrationConstant( adj, adj_size, img_dims );
+      COMMENT( "Computing diffusion filter.", 2 );
       for( size_t itr = 0; itr < iterations; ++itr ) {
-        COMMENT( "Computing diffusion filter.", 2 );
-        try {
+	try {
           size_t total_threads = 12;
           Vector< std::thread > threads;
           for( size_t thd = 0; thd < total_threads; ++thd ) {
@@ -218,6 +310,26 @@ namespace Bial {
                                                        double integration_constant,
                                                        const DiffusionFunction *diff_func, float kappa,
                                                        Adjacency &adj, size_t thread, size_t total_threads );
+
+  template Image< int > Filtering::QuickAnisotropicDiffusion( const Image< int > &img, const Vector< size_t > &mask,
+							      const DiffusionFunction *diff_func, float kappa,
+							      const Adjacency &adj, const AdjacencyIterator &adj_itr,
+							      const Vector< double > & weight, double integration_constant );
+
+  template Image< llint > Filtering::QuickAnisotropicDiffusion( const Image< llint > &img, const Vector< size_t > &mask,
+								const DiffusionFunction *diff_func, float kappa,
+								const Adjacency &adj, const AdjacencyIterator &adj_itr,
+								const Vector< double > & weight, double integration_constant );
+  
+  template Image< float > Filtering::QuickAnisotropicDiffusion( const Image< float > &img, const Vector< size_t > &mask,
+								const DiffusionFunction *diff_func, float kappa,
+								const Adjacency &adj, const AdjacencyIterator &adj_itr,
+								const Vector< double > & weight, double integration_constant );
+
+  template Image< double > Filtering::QuickAnisotropicDiffusion( const Image< double > &img, const Vector< size_t > &mask,
+								 const DiffusionFunction *diff_func, float kappa,
+								 const Adjacency &adj, const AdjacencyIterator &adj_itr,
+								 const Vector< double > & weight, double integration_constant );
 
 #endif
 

@@ -16,6 +16,8 @@
 
 namespace Bial {
 
+  class Adjacency;
+  class AdjacencyIterator;
   template< class D >
   class Image;
   class Kernel;
@@ -29,21 +31,28 @@ namespace Bial {
      * @param source: Input image. 
      * @param mask: Input mask with edge region. 
      * @param diff_function: diffusion function. 
-     * @param radius: Adjacency radius for diff_function. 
+     * @param weight: Weight vector. Use WeightVector function to compute it.
+     * @param integraction_constant: Use IntegrationConstant function to compute it.
+     * @param adj: Adjacency relation. 
+     * @param adj_itr: Adjacency iterator. Passed here for faster computation.
      * @return Best edge kappa to filter source image. 
      * @brief Finds the best edge kappa to filter source image. 
      * @warning none. 
      */
     template< class D >
     float EdgeRegionKappa( const Image< D > &source, const Image< D > &mask, const DiffusionFunction *diff_func,
-                                  float radius );
+			   const Vector< double > &weight, const double integration_constant, const Adjacency &adj,
+			   const AdjacencyIterator &adj_itr );
 
     /**
      * @date 2013/Nov/29 
      * @param source: Input image. 
      * @param mask: Input mask with edge region. 
      * @param diff_function: diffusion function. 
-     * @param radius: Adjacency radius for diff_function. 
+     * @param weight: Weight vector. Use WeightVector function to compute it.
+     * @param integraction_constant: Use IntegrationConstant function to compute it.
+     * @param adj: Adjacency relation. 
+     * @param adj_itr: Adjacency iterator. Passed here for faster computation.
      * @param kappa: Best edge kappa used for initialization. 
      * @return Best flat kappa to filter source image. 
      * @brief Finds the best flat kappa to filter source image. 
@@ -51,7 +60,8 @@ namespace Bial {
      */
     template< class D >
     float FlatRegionKappa( const Image< D > &source, const Image< D > &mask, const DiffusionFunction *diff_func,
-                                  float radius, float kappa );
+			   const Vector< double > &weight, const double integration_constant, const Adjacency &adj,
+			   const AdjacencyIterator &adj_itr, float kappa );
 
     /**
      * @date 2013/Dec/06 
