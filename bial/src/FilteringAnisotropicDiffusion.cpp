@@ -95,15 +95,14 @@ namespace Bial {
                                                       float init_kappa, float radius ) {
     try {
       COMMENT( "Avoid flitering flat image.", 1 );
-      if( init_kappa <= 50.0 ) {
+      if( init_kappa <= 10.0 )
         return( Image< D >( img ) );
-      }
       COMMENT( "Initial filtering with kappa: " << init_kappa, 1 );
-      Image< D > res = Filtering::AnisotropicDiffusion( img, diff_func, init_kappa, 1, radius );
+      Image< D > res = Filtering::AnisotropicDiffusion( img, diff_func, init_kappa, 1, radius ); // Change this for the quick format.
       COMMENT( "Reducing kappa.", 1 );
       float kappa = init_kappa - diff_func->Reduction( init_kappa );
       COMMENT( "Filtering until low value of kappa is reached.", 1 );
-      while( kappa > 50.0 ) {
+      while( kappa > 10.0 ) {
         COMMENT( "New kappa: " << kappa, 2 );
         std::swap( img, res );
         res = Filtering::AnisotropicDiffusion( img, diff_func, kappa, 1, radius );
@@ -133,7 +132,7 @@ namespace Bial {
   Image< D > Filtering::QuickAnisotropicDiffusion( const Image< D > &img, const Vector< size_t > &mask,
 						   const DiffusionFunction *diff_func, float kappa,
 						   const Adjacency &adj, const AdjacencyIterator &adj_itr,
-						   const Vector< double > & weight, double integration_constant ) {
+						   const Vector< double > &weight, double integration_constant ) {
     try {
       Image< D > res( img );
       size_t adj_size = adj.size( );

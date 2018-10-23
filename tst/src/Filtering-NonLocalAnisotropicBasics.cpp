@@ -17,15 +17,17 @@ using namespace std;
 using namespace Bial;
 
 template< class D >
-Vector< Image< D > > PatchSimilarityMap( Vector< Image< D > > &map, const Image< D > &img, const float search_radius,
-					 const float patch_radius, const size_t patch_adjacents,
-					 const size_t thread, const size_t total_threads ) {
+void PatchSimilarityMap( Vector< Image< D > > &map, const Image< D > &img, const float search_radius,
+			 const float patch_radius, const size_t patch_adjacents,
+			 const size_t thread, const size_t total_threads ) {
   COMMENT( "Dealing with thread limits.", 3 );
-  size_t min_index = thread * img.Size( ) / total_threads;
-  size_t max_index = ( thread + 1 ) * img.Size( ) / total_threads;
+  size_t img_size = img.Size( );
+  size_t img_dims = img.Dims( );
+  size_t min_index = thread * img_size / total_threads;
+  size_t max_index = ( thread + 1 ) * img_size / total_threads;
   COMMENT( "Basic variables.", 3 );
-  Adjacency search_adj( AdjacencyType::HyperSpheric( search_radius, img.Dims( ) ) ); // adjacency with size given by the radius for searching similar patches.
-  Adjacency patch_adj( AdjacencyType::HyperSpheric( patch_radius, img.Dims( ) ) ); // adjacency with size given by the radius which defines the size of the patch.
+  Adjacency search_adj( AdjacencyType::HyperSpheric( search_radius, img_dims ) ); // adjacency with size given by the radius for searching similar patches.
+  Adjacency patch_adj( AdjacencyType::HyperSpheric( patch_radius, img_dims ) ); // adjacency with size given by the radius which defines the size of the patch.
   size_t search_adj_size = search_adj.size( );
   size_t patch_adj_size = patch_adj.size( );
   AdjacencyIterator search_adj_itr( img, search_adj );
@@ -33,10 +35,13 @@ Vector< Image< D > > PatchSimilarityMap( Vector< Image< D > > &map, const Image<
   size_t target_pxl;
   size_t target_adj_pxl;
   size_t source_adj_pxl;
+  Vector< int > target_patch_dist( search_adj_size, 0 );
+  Vector< size_t > target_patch_index( search_adj_size, 0 );
+  Vector< size_t > target_patch_common_elements( search_adj_size, 0 );
   for( size_t source_pxl = min_index; source_pxl < max_index; ++source_pxl ) {
-    Vector< int > target_patch_dist( search_adj_size, 0 );
-    Vector< size_t > target_patch_index( search_adj_size, 0 );
-    Vector< size_t > target_patch_common_elements( search_adj_size, 0 );
+    target_patch_dist = 0;
+    target_patch_index = 0;
+    target_patch_common_elements = 0;
     for( size_t search_adj_idx = 1; search_adj_idx < search_adj_size; ++search_adj_idx ) {
       COMMENT( "For each valid position, compare source and target patches.", 4 );
       if( search_adj_itr.AdjIdx( source_pxl, search_adj_idx, target_pxl ) ) {
@@ -60,25 +65,39 @@ Vector< Image< D > > PatchSimilarityMap( Vector< Image< D > > &map, const Image<
 	}
       }
       COMMENT( "Assigning last patch data to last position.", 4 );
-      target_patch_common_elements[ search_adj_idx ] = target_patch_common_elements[ 0 ];
-      target_patch_dist[ search_adj_idx ] = target_patch_dist[ 0 ];
-      target_patch_index[ search_adj_idx ] = target_patch_index[ 0 ];
+      std::swap( target_patch_common_elements[ 0 ], target_patch_common_elements[ search_adj_idx ] );
+      std::swap( target_patch_dist[ 0 ], target_patch_dist[ search_adj_idx ] );
+      std::swap( target_patch_index[ 0 ], target_patch_index[ search_adj_idx ] );
     }
     COMMENT( "Assigning the index of the best patches.", 3 );
     for( size_t adj_index = 0; adj_index < patch_adjacents; ++adj_index )
       map[ adj_index ][ source_pxl ] = target_patch_index[ search_adj_size - 1 - adj_index ];
+    // if( ( source_pxl > 5794237 ) && ( source_pxl < 5794242 ) ) {
+    //   std::cout << "pixel: " << source_pxl << ". map[ 0 ]: " << map[ 0 ][ source_pxl ] << ". map[ 1 ]: " << map[ 1 ][ source_pxl ] << std::endl;
+    //   std::cout << "target_patch_common_elements: " << target_patch_common_elements << std::endl;
+    //   std::cout << "target_patch_dist: " << target_patch_dist << std::endl;
+    //   std::cout << "target_patch_index: " << target_patch_index << std::endl;
+    //   for( size_t patch_adj_idx = 0; patch_adj_idx < patch_adj_size; ++patch_adj_idx ) {
+    // 	if( patch_adj_itr.AdjIdx( source_pxl, patch_adj_idx, source_adj_pxl ) &&
+    // 	    ( patch_adj_itr.AdjIdx( map[ 0 ][ source_pxl ], patch_adj_idx, target_adj_pxl ) ) ) {
+    // 	  std::cout << patch_adj_idx << ": src img: " << img[ source_adj_pxl ] << ", tgt img: " << img[ target_adj_pxl ] << std::endl;
+    // 	}
+    //   }
+    //   for( size_t patch_adj_idx = 0; patch_adj_idx < patch_adj_size; ++patch_adj_idx ) {
+    // 	if( patch_adj_itr.AdjIdx( source_pxl, patch_adj_idx, source_adj_pxl ) &&
+    // 	    ( patch_adj_itr.AdjIdx( map[ 1 ][ source_pxl ], patch_adj_idx, target_adj_pxl ) ) ) {
+    // 	  std::cout << patch_adj_idx << ": src img: " << img[ source_adj_pxl ] << ", tgt img: " << img[ target_adj_pxl ] << std::endl;
+    // 	}
+    //   }
+    // }
   }
-  return( map );
 }
 
 
 template< class D >
-void NonLocalAnisotropicDiffusionThread( Image< D > &img, Image< D > &res,
-					 const Vector< Image< D > > &map,
-					 const Vector< double > &weight,
-					 const double integration_constant,
-					 const DiffusionFunction *diff_func,
-					 const float kappa, const Adjacency &adj,
+void NonLocalAnisotropicDiffusionThread( Image< D > &img, Image< D > &res, const Vector< Image< D > > &map,
+					 const Vector< double > &weight, const double integration_constant,
+					 const DiffusionFunction *diff_func, const float kappa, const Adjacency &adj,
 					 const size_t thread, const size_t total_threads ) {
   try {
     COMMENT( "Dealing with thread limits.", 3 );
@@ -88,14 +107,15 @@ void NonLocalAnisotropicDiffusionThread( Image< D > &img, Image< D > &res,
     size_t adj_size = adj.size( );
     size_t adj_pxl;
     for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
-      COMMENT( "Computing intensity flow from adjacents.", 4 );
       double flow = 0.0;
+      COMMENT( "Computing intensity flow from adjacents.", 4 );
       for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
 	if( adj_itr.AdjIdx( pxl, adj_idx, adj_pxl ) ) {
 	  D grad = img[ adj_pxl ] - img[ pxl ];
 	  flow += weight[ adj_idx ] * grad * ( *diff_func )( kappa, grad );
 	}
       }
+      COMMENT( "Computing intensity flow from non-locals.", 4 );
       for( size_t adj_idx = 0; adj_idx < map.size( ); ++adj_idx ) {
 	D grad = img[ map[ adj_idx ][ pxl ] ] - img[ pxl ];
 	flow += grad * ( *diff_func )( kappa, grad );
@@ -166,10 +186,10 @@ Image< D > NonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction
 
 template< class D >
 Image< D > NonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func, const float kappa,
-					 const size_t iterations, const Vector< Image< D > > &map ) {
+					 const size_t iterations, float radius, const Vector< Image< D > > &map ) {
   try {
     Image< D > res( img );
-    Adjacency adj( AdjacencyType::HyperSpheric( 1.01, img.Dims( ) ) );
+    Adjacency adj( AdjacencyType::HyperSpheric( radius, img.Dims( ) ) );
     size_t adj_size = adj.size( );
     COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
     Vector< double > weight( adj_size, 0 );

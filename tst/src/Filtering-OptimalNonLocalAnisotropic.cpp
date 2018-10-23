@@ -18,75 +18,297 @@ using namespace std;
 using namespace Bial;
 
 
+Vector< double > NonLocalWeightVector( const Adjacency &adj, const size_t adj_size, const size_t img_dims ) {
+  try {
+    COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
+    Vector< double > weight( 2 * adj_size, 0 );
+    COMMENT( "Local adjacents.", 0 );
+    for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
+      COMMENT( "Computing L2 distance.", 4 );
+      double distance = 0.0;
+      for( size_t dim = 0; dim < img_dims; ++dim )
+	distance += adj( adj_idx, dim ) * adj( adj_idx, dim );
+      weight[ adj_idx ] = 1.0 / std::sqrt( distance );
+    }
+    COMMENT( "Non-local adjacents.", 0 );
+    for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
+      COMMENT( "Computing L2 distance.", 4 );
+      double distance = 0.0;
+      for( size_t dim = 0; dim < img_dims; ++dim )
+	distance += ( 1 + adj( adj_idx, dim ) ) * ( 1 + adj( adj_idx, dim ) );
+      weight[ adj_idx + adj_size ] = 1.0 / std::sqrt( distance );
+    }
+    return( weight );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
+double NonLocalIntegrationConstant( const Adjacency &adj, const size_t adj_size, const size_t img_dims,
+					       const size_t patch_adjacents ) {
+  try {
+    COMMENT( "Computing integration constant.", 3 );
+    double integration_constant = 0.0;
+    COMMENT( "Local contribution.", 3 );
+    for( size_t idx = 1; idx < adj_size; ++idx ) {
+      double distance = 0.0;
+      for( size_t dim = 0; dim < img_dims; ++dim )
+	distance += std::abs( adj( idx, dim ) );
+      integration_constant += 1.0 / distance;
+    }
+    COMMENT( "Non-local contribution.", 3 );
+    for( size_t idx = 0; idx < adj_size; ++idx ) {
+      double distance = 0.0;
+      for( size_t dim = 0; dim < img_dims; ++dim )
+	distance += 1 + std::abs( adj( idx, dim ) );
+      integration_constant += patch_adjacents / distance;
+    }
+    integration_constant = 1.0 / integration_constant;
+    return( integration_constant );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
+template< class D >
+void QuickNonLocalAnisotropicDiffusionThread( const Image< D > &img, Image< D > &res,
+					      const DiffusionFunction *diff_func, float kappa,
+					      const Adjacency &adj, const AdjacencyIterator &adj_itr,
+					      const Vector< double > &weight, double integration_constant,
+					      const Vector< Image< D > > &map, size_t thread,
+					      size_t total_threads ) {
+  try {
+    COMMENT( "Dealing with thread limits.", 3 );
+    size_t img_size = img.size( );
+    size_t min_index = thread * img_size / total_threads;
+    size_t max_index = ( thread + 1 ) * img_size / total_threads;
+    size_t adj_size = adj.size( );
+    size_t adj_pxl;
+    for( size_t pxl = min_index; pxl < max_index; ++pxl ) {
+      COMMENT( "Computing intensity flow from adjacents.", 4 );
+      double flow = 0.0;
+      for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
+	if( adj_itr.AdjIdx( pxl, adj_idx, adj_pxl ) ) {
+	  D grad = img[ adj_pxl ] - img[ pxl ];
+	  flow += weight[ adj_idx ] * grad * ( *diff_func )( kappa, grad );
+	}
+      }
+      for( size_t nonlocal_idx = 0; nonlocal_idx < map.size( ); ++nonlocal_idx ) {
+	size_t nonlocal_pxl = map[ nonlocal_idx ][ pxl ];
+	for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
+	  if( adj_itr.AdjIdx( nonlocal_pxl, adj_idx, adj_pxl ) ) {
+	    D grad = img[ adj_pxl ] - img[ pxl ];
+	    flow += weight[ adj_size + adj_idx ] * grad * ( *diff_func )( kappa, grad );
+	  }
+	}
+      }
+      COMMENT( "Updating pixel intensity with adjacent flow.", 4 );
+      res[ pxl ] = img[ pxl ] + integration_constant * flow;
+    }
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
+
+
+
+template< class D >
+Image< D > QuickNonLocalAnisotropicDiffusion( const Image< D > &img, const DiffusionFunction *diff_func, float kappa,
+					      const Adjacency &adj, const AdjacencyIterator &adj_itr,
+					      const Vector< double > &weight, double integration_constant,
+					      const Vector< Image< D > > &map ) {
+  try {
+    Image< D > res( img );
+    COMMENT( "Computing diffusion filter.", 2 );
+    try {
+      size_t total_threads = 12;
+      Vector< std::thread > threads;
+      for( size_t thd = 0; thd < total_threads; ++thd ) {
+	threads.push_back( std::thread( &QuickNonLocalAnisotropicDiffusionThread< D >, std::ref( img ), std::ref( res ),
+					std::ref( diff_func ), kappa, std::ref( adj ), std::ref( adj_itr ),
+					std::ref( weight ), integration_constant, std::ref( map ), thd,
+					total_threads ) );
+      }
+      for( size_t thd = 0; thd < total_threads; ++thd ) {
+	threads( thd ).join( );
+      }
+    }
+    catch( std::exception &e ) {
+      BIAL_WARNING( "Failed to run in multi-thread. Exception: " << e.what( ) );
+      QuickNonLocalAnisotropicDiffusionThread( img, res, diff_func, kappa, adj, adj_itr, weight, integration_constant,
+						     map, 0, 1 );
+    }
+    return( res );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
+template< class D >
+Image< D > QuickNonLocalAnisotropicDiffusion( const Image< D > &img, const Vector< size_t > &mask,
+					      const DiffusionFunction *diff_func, float kappa,
+					      const Adjacency &adj, const AdjacencyIterator &adj_itr,
+					      const Vector< double > &weight, double integration_constant,
+					      const Vector< Image< D > > &map ) {
+  try {
+    Image< D > res( img );
+    size_t adj_size = adj.size( );
+    size_t mask_size = mask.size( );
+    COMMENT( "Computing diffusion filter.", 2 );
+    size_t adj_pxl;
+    for( size_t src_pxl = 0; src_pxl < mask_size; ++src_pxl ) {
+      size_t pxl = mask[ src_pxl ];
+      COMMENT( "Computing intensity flow from adjacents.", 4 );
+      double flow = 0.0;
+      for( size_t adj_idx = 1; adj_idx < adj_size; ++adj_idx ) {
+	if( adj_itr.AdjIdx( pxl, adj_idx, adj_pxl ) ) {
+	  D grad = img[ adj_pxl ] - img[ pxl ];
+	  flow += weight[ adj_idx ] * grad * ( *diff_func )( kappa, grad );
+	}
+      }
+      for( size_t nonlocal_idx = 0; nonlocal_idx < map.size( ); ++nonlocal_idx ) {
+	size_t nonlocal_pxl = map[ nonlocal_idx ][ pxl ];
+	for( size_t adj_idx = 0; adj_idx < adj_size; ++adj_idx ) {
+	  if( adj_itr.AdjIdx( nonlocal_pxl, adj_idx, adj_pxl ) ) {
+	    D grad = img[ adj_pxl ] - img[ pxl ];
+	    flow += weight[ adj_size + adj_idx ] * grad * ( *diff_func )( kappa, grad );
+	  }
+	}
+      }
+      COMMENT( "Updating pixel intensity with adjacent flow.", 4 );
+      res[ pxl ] = img[ pxl ] + integration_constant * flow;
+    }
+    return( res );
+  }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+}
+
 template< class D >
 float NonLocalEdgeRegionKappa( const Image< D > &source, const Image< D > &mask, 
-			       const DiffusionFunction *diff_func, const Vector< Image< D > > &map ) {
+			       const DiffusionFunction *diff_func, const Vector< double > &weight,
+			       const double integration_constant, const Adjacency &adj,
+			       const AdjacencyIterator &adj_itr, float &step, const Vector< Image< D > > &map ) {
   try {
     COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge "
 	     << "region.", 3 );
-    Vector< int > edges;
+    COMMENT( "Computing mask vector.", 3 );
+    Vector< size_t > mask_vector;
     for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
-      if( mask[ pxl ] != 0 ) {
-	edges.push_back( source[ pxl ] );
-      }
+      if( mask[ pxl ] != 0 )
+	mask_vector.push_back( pxl );
     }
+    size_t mask_vector_size = mask_vector.size( );
+    COMMENT( "edges pixel vector.", 3 );
+    Vector< int > edges( mask_vector_size );
+    for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
+      edges[ pxl ] = source[ mask_vector[ pxl ] ];
     float base_std = Statistics::StandardDeviation( edges );
+
     COMMENT( "Estimate best edge kappa based on the maximum standard deviation in a binary search.", 3 );
-    float kappa = 2 * base_std;
-    float step = kappa / 2.0;
-    Image< D > filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa, 1, map );
-    size_t elm = 0;
-    for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
-      if( mask[ pxl ] != 0 ) {
-	edges( elm ) = filtered[ pxl ];
-	++elm;
-      }
-    }
-    float best_std = Statistics::StandardDeviation( edges );
-    bool change_dir = false;
-    COMMENT( "Binary search for the best kappa.", 3 );
-    while( step > 2.0 ) {
-      COMMENT( "Searching to the right.", 4 );
-      filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa + step, 1, map );
-      for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-	if( mask[ pxl ] != 0 ) {
-	  edges( elm ) = filtered[ pxl ];
-	  ++elm;
-	}
-      }
+    float kappa = base_std / 50;
+    step = kappa;
+    Image< D > filtered( QuickNonLocalAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj,
+							    adj_itr, weight, integration_constant, map ) );
+    for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
+      edges[ pxl ] = filtered[ mask_vector[ pxl ] ];
+    float prev_std = Statistics::StandardDeviation( edges );
+    Vector< float > kappas;
+    Vector< float > std_diff;
+    kappas.push_back( kappa );
+    std_diff.push_back( 0.0f );
+    float max_std_diff = 0.0f;
+    do {
+      filtered = QuickNonLocalAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr,
+						    weight, integration_constant, map );
+      for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
+	edges[ pxl ] = filtered[ mask_vector[ pxl ] ];
       float std = Statistics::StandardDeviation( edges );
-      if( ( std  > base_std * 0.8f ) && ( std::fabs( std - best_std ) > best_std * 0.01f ) ) {
-	best_std = std;
-	kappa = kappa + step;
-	COMMENT( "New kappa: " << kappa, 0 );
-	if( change_dir )
-	  step /= 2.0;
-      }
-      else {
-	COMMENT( "Searching to the left.", 4 );
-	filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa - step, 1, map );
-	for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-	  if( mask[ pxl ] != 0 ) {
-	    edges( elm ) = filtered[ pxl ];
-	    ++elm;
-	  }
-	}
-	std = Statistics::StandardDeviation( edges );
-	if( ( std  > base_std * 0.8f ) && ( std::fabs( std - best_std ) > best_std * 0.01f ) ) {
-	  best_std = std;
-	  kappa = kappa - step;
-	  COMMENT( "New kappa: " << kappa, 0 );
-	  change_dir = true;
-	  step /= 2.0;
-	}
-	else {
-	  COMMENT( "No update.", 0 );
-	  change_dir = true;
-	  step /= 2.0;
-	}
+      kappas.push_back( kappa + step );
+      std_diff.push_back( prev_std - std );
+      if( max_std_diff < prev_std - std )
+	max_std_diff = prev_std - std;
+      prev_std = std;
+      kappa += step;
+    } while( ( kappa < base_std ) || ( std_diff[ std_diff.size( ) - 2 ] > std_diff[ std_diff.size( ) - 1 ] ) );
+    COMMENT( "max_std_diff: " << max_std_diff << ", std_diff: " << std_diff << "kappas: " << kappas, 3 );
+    for( size_t idx = 1; idx < std_diff.size( ); ++idx ) {
+      if( std_diff[ idx ] > 0.01 * max_std_diff ) {
+	COMMENT( "edge kappa: " << kappas[ idx ], 3 );
+	return( kappas[ idx ] );
       }
     }
-    COMMENT( "edge std: " << best_std << ", edge kappa: " << kappa, 3 );
     return( kappa );
   }
   catch( std::bad_alloc &e ) {
@@ -108,79 +330,43 @@ float NonLocalEdgeRegionKappa( const Image< D > &source, const Image< D > &mask,
 }
 
 template< class D >
-float NonLocalFlatRegionKappa( const Image< D > &source, const Image< D > &mask, 
-			       const DiffusionFunction *diff_func, float kappa, const Vector< Image< D > > &map ) {
+float NonLocalFlatRegionKappa( const Image< D > &source, const Image< D > &mask, const DiffusionFunction *diff_func,
+			       const Vector< double > &weight, const double integration_constant, const Adjacency &adj,
+			       const AdjacencyIterator &adj_itr, float step, const Vector< Image< D > > &map ) {
   try {
-    COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge region.", 0 );
-    COMMENT( "Initial edge kappa: " << kappa, 0 );
-    Vector< int > backg;
+    COMMENT( "Computing mask vector.", 3 );
+    Vector< size_t > mask_vector;
     for( size_t pxl = 0; pxl < mask.size( ); ++pxl ) {
       if( mask[ pxl ] != 0 )
-	backg.push_back( source[ pxl ] );
+	mask_vector.push_back( pxl );
     }
-    COMMENT( "Getting first standard deviation given by input image.", 0 );
-    float base_std = Statistics::StandardDeviation( backg );
+    size_t mask_vector_size = mask_vector.size( );
+    COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge region.", 0 );
+    float kappa = step;
+    Vector< int > backg( mask_vector_size );
     COMMENT( "Getting standard deviation given by strong mean filter of input image.", 0 );
-    Image< D > filtered( NonLocalAnisotropicDiffusion( source, diff_func, kappa, 1, map ) );
-    for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-      if( mask[ pxl ] != 0 ) {
-	backg[ elm ] = filtered[ pxl ];
-	++elm;
-      }
-    }
-    float best_std = Statistics::StandardDeviation( backg );
-    COMMENT( "base_std: " << base_std << ". best_std: " << best_std, 0 );
-    COMMENT( "Base standard deviation: " << base_std << ".", 0 );
-    COMMENT( "Estimate best kappa for flat region based on the base and smooth standard deviation values in a binary search.", 0 );
-    COMMENT( "Start searching for the kappa which gives the lowest standard deviation. Looking for the point in " <<
-	     "which the standard deviaction varies less than 1% and is close to smooth standard deviation value.", 0 );
-    float step = kappa / 2;
-    bool change_dir = false;
-    while( step > 2.0 ) {
-      COMMENT( "Searching to the right of current kappa.", 3 );
-      filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa + step, 1, map );
-      for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-	if( mask[ pxl ] != 0 ) {
-	  backg( elm ) = filtered[ pxl ];
-	  ++elm;
-	}
-      }
+    Image< D > filtered( QuickNonLocalAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj, adj_itr,
+							    weight, integration_constant, map ) );
+    for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
+      backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
+    float prev_std = Statistics::StandardDeviation( backg );
+    COMMENT( "Estimate best kappa for flat region.", 0 );
+    float max_diff = 0.0f;
+    float diff;
+    do {
+      filtered = QuickNonLocalAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr,
+						    weight, integration_constant, map );
+      for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
+	backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
       float std = Statistics::StandardDeviation( backg );
-      COMMENT( "Searching right with kappa: " << kappa + step << " and std: " << std, 0 );
-      COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
-      if( ( std < 0.8f * base_std ) && ( std < best_std * 1.01f ) ) {
-	best_std = std;
-	kappa = kappa + step;
-	COMMENT( "New kappa: " << kappa, 0 );
-	if( change_dir )
-	  step /= 2.0;
-      }
-      else {
-	COMMENT( "Searching to the left of current kappa.", 3 );
-	filtered = NonLocalAnisotropicDiffusion( source, diff_func, kappa - step, 1, map );
-	for( size_t pxl = 0, elm = 0; pxl < mask.size( ); ++pxl ) {
-	  if( mask[ pxl ] != 0 ) {
-	    backg( elm ) = filtered[ pxl ];
-	    ++elm;
-	  }
-	}
-	std = Statistics::StandardDeviation( backg );
-	COMMENT( "Searching left with kappa: " << kappa - step << " with std: " << std, 0 );
-	COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
-	if( ( std < 0.8f * base_std ) && ( std < best_std * 1.01f ) ) {
-	  best_std = std;
-	  kappa = kappa - step;
-	  COMMENT( "New kappa: " << kappa, 0 );
-	  change_dir = true;
-	  step /= 2.0;
-	}
-	else {
-	  COMMENT( "No update.", 0 );
-	  change_dir = true;
-	  step /= 2.0;
-	}
-      }
-    }
+      diff = prev_std - std;
+      if( max_diff < diff )
+	max_diff = diff;
+      COMMENT( "prev_std: " << prev_std << ", std: " << std << ", max_diff: " << max_diff
+	       << ", diff: " << diff << ", kappa: " << kappa << ", step: " << step, 3 );
+      kappa += step;
+      prev_std = std;
+    } while( diff > 0.01 * max_diff );
     COMMENT( "flat std: " << best_std << ", flat kappa: " << kappa, 0 );
     return( kappa );
   }
@@ -204,28 +390,23 @@ float NonLocalFlatRegionKappa( const Image< D > &source, const Image< D > &mask,
 
 template< class D >
 Image< D > AdaptiveNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func,
-						 float init_kappa, const Vector< Image< D > > &map ) {
+						 float init_kappa, const Adjacency &adj,
+						 const AdjacencyIterator &adj_itr, const Vector< double > &weight,
+						 double integration_constant, const Vector< Image< D > > &map ) {
   try {
     COMMENT( "Avoid flitering flat image.", 1 );
-    if( init_kappa <= 50.0 ) {
+    if( init_kappa <= 10.0 )
       return( Image< D >( img ) );
-    }
     COMMENT( "Initial filtering with kappa: " << init_kappa, 1 );
-
-
-
-    // Parei aqui! Tirar calculo de locais de dentro de nonlocal....
-
-    
-    
-    Image< D > res = NonLocalAnisotropicDiffusion( img, diff_func, init_kappa, 1, map );
+    Image< D > res = QuickNonLocalAnisotropicDiffusion( img, diff_func, init_kappa, adj, adj_itr, weight,
+							integration_constant, map );
     COMMENT( "Reducing kappa.", 1 );
     float kappa = init_kappa - diff_func->Reduction( init_kappa );
     COMMENT( "Filtering until low value of kappa is reached.", 1 );
-    while( kappa > 50.0 ) {
+    while( kappa > 10.0 ) {
       COMMENT( "New kappa: " << kappa, 2 );
       std::swap( img, res );
-      res = NonLocalAnisotropicDiffusion( img, diff_func, kappa, 1, map );
+      res = QuickNonLocalAnisotropicDiffusion( img, diff_func, kappa, adj, adj_itr, weight, integration_constant, map );
       kappa -= diff_func->Reduction( kappa );
     }
     return( res );
@@ -252,7 +433,8 @@ template< class D >
 Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func,
 						float conservativeness, const Image< D > &canny, 
 						const Image< D > &backg, const float search_radius,
-						const float patch_radius, const size_t patch_adjacents ) {
+						const float patch_radius, const float flow_radius,
+						const size_t patch_adjacents ) {
   try {
     if( img.Dims( ) != canny.Dims( ) ) {
       std::string msg( BIAL_ERROR( "Input image and canny image dimensions do not match." ) );
@@ -274,8 +456,7 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
       Vector< std::thread > threads;
       for( size_t thd = 0; thd < total_threads; ++thd ) {
 	threads.push_back( std::thread( &PatchSimilarityMap< D >, std::ref( map ), std::ref( img ),
-					search_radius, patch_radius, patch_adjacents,
-					thd, total_threads ) );
+					search_radius, patch_radius, patch_adjacents, thd, total_threads ) );
       }
       for( size_t thd = 0; thd < total_threads; ++thd ) {
 	threads( thd ).join( );
@@ -285,19 +466,33 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
       BIAL_WARNING( "Failed to run in multi-thread. Exception: " << e.what( ) );
       PatchSimilarityMap( map, img, search_radius, patch_radius, patch_adjacents, 0, 1 );
     }
+    std::cout << "Finished computing patches." << std::endl;
+    COMMENT( "Creating initial data structures.", 0 );
+    Adjacency adj( AdjacencyType::HyperSpheric( flow_radius, img.Dims( ) ) );
+    AdjacencyIterator adj_itr( img, adj );
+    size_t adj_size = adj.size( );
+    size_t img_dims = img.Dims( );
+    COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
+    Vector< double > weight( NonLocalWeightVector( adj, adj_size, img_dims ) );
+    COMMENT( "Computing integration constant.", 2 );
+    double integration_constant = NonLocalIntegrationConstant( adj, adj_size, img_dims, patch_adjacents );
     COMMENT( "Computing initial kappa using edge and flat regions.", 0 );
-    std::cout << "Computing edge kappa." << std::endl;
-    float edge_kappa = NonLocalEdgeRegionKappa( img, canny, diff_func, map );
-    std::cout << "Computing flat kappa." << std::endl;
-    float flat_kappa = NonLocalFlatRegionKappa( img, backg, diff_func, edge_kappa, map );
+    float step;
+    float edge_kappa = NonLocalEdgeRegionKappa( img, canny, diff_func, weight, integration_constant, adj, adj_itr,
+						step, map );
+    std::cout << "edge_kappa: " << edge_kappa << std::endl;
+    float flat_kappa = NonLocalFlatRegionKappa( img, backg, diff_func, weight, integration_constant, adj, adj_itr,
+						step, map );
+    std::cout << "flat_kappa: " << flat_kappa << std::endl;
     float init_kappa = ( edge_kappa + flat_kappa ) / 2.0;
-    if( edge_kappa < flat_kappa ) {
+    if( edge_kappa < flat_kappa )
       init_kappa = edge_kappa + conservativeness * ( flat_kappa - edge_kappa );
-    }
     COMMENT( "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa << ", init_kappa: " << init_kappa, 0 );
-    std::cout << "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa << ", init_kappa: " << init_kappa << std::endl;
+    std::cout << "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa
+	      << ", init_kappa: " << init_kappa << std::endl;
     COMMENT( "Returning adaptive filter based on initial kappa value.", 0 );
-    return( AdaptiveNonLocalAnisotropicDiffusion( img, diff_func, init_kappa, map ) );
+    return( AdaptiveNonLocalAnisotropicDiffusion( img, diff_func, init_kappa, adj, adj_itr, weight,
+						  integration_constant, map ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -319,7 +514,8 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
 
 template< class D >
 Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func,
-						float conservativeness, const float search_radius, const float patch_radius,
+						float conservativeness, const float search_radius,
+						const float patch_radius, const float flow_radius,
 						const size_t patch_adjacents ) {
   try {
     if( ( conservativeness < 0.0 ) || ( conservativeness > 1.0 ) ) {
@@ -333,7 +529,7 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
     Image< D > backg = Segmentation::Background( img, canny );
     COMMENT( "Filtering with optimum anisotropic diffusion filter.", 0 );
     return( OptimalNonLocalAnisotropicDiffusion( img, diff_func, conservativeness, canny, backg,
-						 search_radius, patch_radius, patch_adjacents ) );
+						 search_radius, patch_radius, flow_radius, patch_adjacents ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -354,9 +550,10 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
 }
 
 int main( int argc, char **argv ) {
-  if( ( argc < 4 ) || ( argc == 6 ) || ( argc > 10 ) ) {
+  if( ( argc < 4 ) || ( argc == 6 ) || ( argc > 11 ) ) {
     cout << "Usage: " << argv[ 0 ] << " <Input image> <output image> <conservativeness> [<diffusion function> "
-         << "[<edge_region> <flat_region> [<non-local search adjacency radius> [<non-local patch adjacency radius> [<non-local patch adjacents>]]]]]" << endl;
+         << "[<edge_region> <flat_region> [<non-local search adjacency radius> [<non-local patch adjacency radius> "
+	 << "[<flow adjacency radius> [<non-local patch adjacents>]]]]]]" << endl;
     cout << "\t\t<conservativeness>: (conserve all edges) 0.0 to 1.0 (remove all noise)." << endl;
     cout << "\t\t<diffusion function>: 0: Power(1.0); 1: Power(2.0); 2: Gaussian; 3: Robust."
          << "Default: 3." << endl;
@@ -364,6 +561,7 @@ int main( int argc, char **argv ) {
     cout << "\t\t<flat_region>: Background segmentation." << endl;
     cout << "\t\t<non-local search adjacency radius>: 0.0 to 10.0. Default: 5.00." << endl;
     cout << "\t\t<non-local patch adjacency radius>: 1.0 to 5.0. Default: 3.00." << endl;
+    cout << "\t\t<flow adjacency radius>: 1.01 to 2.0. Default: 1.01." << endl;
     cout << "\t\t<non-local patch adjacents>: 0 to 4. Default: 1." << endl;
     return( 0 );
   }
@@ -414,9 +612,17 @@ int main( int argc, char **argv ) {
       return( 0 );
     }
   }
-  size_t patch_adjacents = 1;
+  float flow_radius = 1.01;
   if( argc > 9 ) {
-    patch_adjacents = atoi( argv[ 9 ] );
+    flow_radius = atof( argv[ 9 ] );
+    if( ( flow_radius < 1.0 ) || ( flow_radius > 2.0 ) ) {
+      cout << "Error: Invalid flow adjacency radius. Expected: 1.01 to 2.0. Found: " << flow_radius << endl;
+      return( 0 );
+    }
+  }
+  size_t patch_adjacents = 1;
+  if( argc > 10 ) {
+    patch_adjacents = atoi( argv[ 10 ] );
     if( ( patch_adjacents < 0 ) || ( patch_adjacents > 4 ) ) {
       cout << "Error: Invalid patch adjacents. Expected: 0 to 4. Found: " << patch_adjacents << endl;
       return( 0 );
@@ -427,13 +633,13 @@ int main( int argc, char **argv ) {
     Image< int > edge_region( Read< int >( argv[ 5 ] ) );
     Image< int > flat_region( Read< int >( argv[ 6 ] ) );
     Image< int > res( OptimalNonLocalAnisotropicDiffusion( src, diff_func, conservativeness, edge_region, flat_region,
-							   search_radius, patch_radius, patch_adjacents ) );
+							   search_radius, patch_radius, flow_radius, patch_adjacents ) );
     Write( res, argv[ 2 ] );
   }
   else {
     std::cout << "Computing flat and edge region images." << std::endl;
-    Image< int > res( OptimalNonLocalAnisotropicDiffusion( src, diff_func, conservativeness,
-							   search_radius, patch_radius, patch_adjacents ) );
+    Image< int > res( OptimalNonLocalAnisotropicDiffusion( src, diff_func, conservativeness, search_radius,
+							   patch_radius, flow_radius, patch_adjacents ) );
     Write( res, argv[ 2 ] );
   }
   if( argc < 5 ) {

@@ -37,7 +37,7 @@ namespace Bial {
   float Filtering::EdgeRegionKappa( const Image< D > &source, const Image< D > &mask, 
                                     const DiffusionFunction *diff_func, const Vector< double > &weight,
 				    const double integration_constant, const Adjacency &adj,
-				    const AdjacencyIterator &adj_itr ) {
+				    const AdjacencyIterator &adj_itr, float &step ) {
     try {
       COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge "
                << "region.", 3 );
@@ -48,61 +48,42 @@ namespace Bial {
 	  mask_vector.push_back( pxl );
       }
       size_t mask_vector_size = mask_vector.size( );
+      COMMENT( "edges pixel vector.", 3 );
       Vector< int > edges( mask_vector_size );
       for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	edges[ pxl ] = source[ mask_vector[ pxl ] ];
       float base_std = Statistics::StandardDeviation( edges );
       COMMENT( "Estimate best edge kappa based on the maximum standard deviation in a binary search.", 3 );
       float kappa = base_std / 50;
-      float step = kappa;
+      step = kappa;
       Image< D > filtered( Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj, adj_itr, weight, integration_constant ) );
       for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	edges[ pxl ] = filtered[ mask_vector[ pxl ] ];
       float prev_std = Statistics::StandardDeviation( edges );
-      size_t lower = 0;
-      while( lower < 3 ) {
-	
-      }
-      
-      bool change_dir = false;
-      COMMENT( "Binary search for the best kappa.", 3 );
-      while( step > 2.0 ) {
-	std::cout << "kappa: " << kappa << ", step: " << step << std::endl;
-        COMMENT( "Searching to the right.", 4 );
-        filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr, weight, integration_constant );
+      Vector< float > kappas;
+      Vector< float > std_diff;
+      kappas.push_back( kappa );
+      std_diff.push_back( 0.0f );
+      float max_std_diff = 0.0f;
+      do {
+	filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr, weight, integration_constant );
 	for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	  edges[ pxl ] = filtered[ mask_vector[ pxl ] ];
         float std = Statistics::StandardDeviation( edges );
-	std::cout << "std: " << std << ", base_std: " << base_std << ", best_std: " << best_std << std::endl;
-	float fraction = step / ( std - best_std ); // Parei aqui!!!
-	if( ( std  > base_std * 0.8f ) && ( std::fabs( std - best_std ) > best_std * 0.01f ) ) { /////////////////////////////////////////////////////////////////////////////////
-          best_std = std;
-          kappa = kappa + step;
-	  COMMENT( "New kappa: " << kappa, 0 );
-	  if( change_dir )
-	    step /= 2.0;
+	kappas.push_back( kappa + step );
+	std_diff.push_back( prev_std - std );
+	if( max_std_diff < prev_std - std )
+	  max_std_diff = prev_std - std;
+	prev_std = std;
+	kappa += step;
+      } while( ( kappa < base_std ) || ( std_diff[ std_diff.size( ) - 2 ] > std_diff[ std_diff.size( ) - 1 ] ) );
+      COMMENT( "max_std_diff: " << max_std_diff << ", std_diff: " << std_diff << "kappas: " << kappas, 3 );
+      for( size_t idx = 1; idx < std_diff.size( ); ++idx ) {
+	if( std_diff[ idx ] > 0.01 * max_std_diff ) {
+	  COMMENT( "edge kappa: " << kappas[ idx ], 3 );
+	  return( kappas[ idx ] );
 	}
-        else {
-          COMMENT( "Searching to the left.", 4 );
-          filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa - step, adj, adj_itr, weight, integration_constant );
-	  for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
-	    edges[ pxl ] = filtered[ mask_vector[ pxl ] ];
-          std = Statistics::StandardDeviation( edges );
-          if( ( std  > base_std * 0.8f ) && ( std::fabs( std - best_std ) > best_std * 0.01f ) ) { /////////////////////////////////////////////////////////////////////////////////
-            best_std = std;
-            kappa = kappa - step;
-	    COMMENT( "New kappa: " << kappa, 0 );
-	    change_dir = true;
-	    step /= 2.0;
-          }
-	  else {
-	    COMMENT( "No update.", 0 );
-	    change_dir = true;
-	    step /= 2.0;
-	  }
-        }
       }
-      COMMENT( "edge std: " << best_std << ", edge kappa: " << kappa, 3 );
       return( kappa );
     }
     catch( std::bad_alloc &e ) {
@@ -127,7 +108,7 @@ namespace Bial {
   float Filtering::FlatRegionKappa( const Image< D > &source, const Image< D > &mask, 
                                     const DiffusionFunction *diff_func, const Vector< double > &weight,
 				    const double integration_constant, const Adjacency &adj,
-				    const AdjacencyIterator &adj_itr, float kappa ) {
+				    const AdjacencyIterator &adj_itr, float step ) {
     try {
       COMMENT( "Computing mask vector.", 3 );
       Vector< size_t > mask_vector;
@@ -137,62 +118,29 @@ namespace Bial {
       }
       size_t mask_vector_size = mask_vector.size( );
       COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge region.", 0 );
-      COMMENT( "Initial edge kappa: " << kappa, 0 );
+      float kappa = step;
       Vector< int > backg( mask_vector_size );
-      for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
-	backg[ pxl ] = source[ mask_vector[ pxl ] ];
-      COMMENT( "Getting first standard deviation given by input image.", 0 );
-      float base_std = Statistics::StandardDeviation( backg );
       COMMENT( "Getting standard deviation given by strong mean filter of input image.", 0 );
       Image< D > filtered( Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj, adj_itr, weight, integration_constant ) );
       for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
-      float best_std = Statistics::StandardDeviation( backg );
-      COMMENT( "base_std: " << base_std << ". best_std: " << best_std, 0 );
-      COMMENT( "Base standard deviation: " << base_std << ".", 0 );
-      COMMENT( "Estimate best kappa for flat region based on the base and smooth standard deviation values in a binary search.", 0 );
-      COMMENT( "Start searching for the kappa which gives the lowest standard deviation. Looking for the point in " <<
-	       "which the standard deviaction varies less than 1% and is close to smooth standard deviation value.", 0 );
-      float step = kappa / 2;
-      bool change_dir = false;
-      while( step > 2.0 ) {
-	std::cout << "kappa: " << kappa << ", step: " << step << std::endl;
-	COMMENT( "Searching to the right of current kappa.", 3 );
+      float prev_std = Statistics::StandardDeviation( backg );
+      COMMENT( "Estimate best kappa for flat region.", 0 );
+      float max_diff = 0.0f;
+      float diff;
+      do {
 	filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr, weight, integration_constant );
 	for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	  backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
 	float std = Statistics::StandardDeviation( backg );
-	std::cout << "std: " << std << ", base_std: " << base_std << ", best_std: " << best_std << std::endl;
-	COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
-	if( ( std < 0.8f * base_std ) && ( std < best_std * 0.99f ) ) { ////////////////////////////////////////////////////////////////////////
-	  best_std = std;
-	  kappa = kappa + step;
-	  COMMENT( "New kappa: " << kappa, 0 );
-	  if( change_dir )
-	    step /= 2.0;
-	}
-        else {
-	  COMMENT( "Searching to the left of current kappa.", 3 );
-	  filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa - step, adj, adj_itr, weight, integration_constant );
-	  for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
-	    backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
-	  std = Statistics::StandardDeviation( backg );
-	  COMMENT( "Searching left with kappa: " << kappa - step << " with std: " << std, 0 );
-	  COMMENT( "Checking if standard deviation varies in more than 1%.", 3 );
-	  if( ( std < 0.8f * base_std ) && ( std < best_std * 1.01f ) ) { ////////////////////////////////////////////////////////////////////////
-	    best_std = std;
-	    kappa = kappa - step;
-	    COMMENT( "New kappa: " << kappa, 0 );
-	    change_dir = true;
-	    step /= 2.0;
-	  }
-	  else {
-	    COMMENT( "No update.", 0 );
-	    change_dir = true;
-	    step /= 2.0;
-	  }
-        }
-      }
+	diff = prev_std - std;
+	if( max_diff < diff )
+	  max_diff = diff;
+	COMMENT( "prev_std: " << prev_std << ", std: " << std << ", max_diff: " << max_diff
+		 << ", diff: " << diff << ", kappa: " << kappa << ", step: " << step, 3 );
+	kappa += step;
+	prev_std = std;
+      } while( diff > 0.01 * max_diff );
       COMMENT( "flat std: " << best_std << ", flat kappa: " << kappa, 0 );
       return( kappa );
     }
@@ -278,14 +226,14 @@ namespace Bial {
       
       COMMENT( "Computing initial kappa using edge and flat regions.", 0 );
       std::cout << "Computing initial kappa using edge and flat regions." << std::endl;
-      float edge_kappa = EdgeRegionKappa( img, canny, diff_func, weight, integration_constant, adj, adj_itr );
+      float step;
+      float edge_kappa = EdgeRegionKappa( img, canny, diff_func, weight, integration_constant, adj, adj_itr, step );
       std::cout << "edge_kappa: " << edge_kappa << std::endl;
-      float flat_kappa = FlatRegionKappa( img, backg, diff_func, weight, integration_constant, adj, adj_itr, edge_kappa );
+      float flat_kappa = FlatRegionKappa( img, backg, diff_func, weight, integration_constant, adj, adj_itr, step );
       std::cout << "flat_kappa: " << flat_kappa << std::endl;
       float init_kappa = ( edge_kappa + flat_kappa ) / 2.0;
-      if( edge_kappa < flat_kappa ) {
+      if( edge_kappa < flat_kappa )
         init_kappa = edge_kappa + conservativeness * ( flat_kappa - edge_kappa );
-      }
       COMMENT( "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa << ", init_kappa: " << init_kappa, 0 );
       std::cout << "edge_kappa: " << edge_kappa << ", flat_kappa: " << flat_kappa << ", init_kappa: " << init_kappa << std::endl;
 
@@ -315,11 +263,11 @@ namespace Bial {
   template float Filtering::EdgeRegionKappa( const Image< int > &source, const Image< int > &mask,
                                              const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr );
+					     const AdjacencyIterator &adj_itr, float &step );
   template float Filtering::FlatRegionKappa( const Image< int > &source, const Image< int > &mask,
 					     const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr, float kappa );
+					     const AdjacencyIterator &adj_itr, float step );
   template Image< int > Filtering::OptimalAnisotropicDiffusion( Image< int > img, const DiffusionFunction *diff_func,
                                                    float radius, float conservativeness );
   template Image< int > Filtering::OptimalAnisotropicDiffusion( Image< int > img, const DiffusionFunction *diff_func,
@@ -329,11 +277,11 @@ namespace Bial {
   template float Filtering::EdgeRegionKappa( const Image< llint > &source, const Image< llint > &mask,
                                              const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr );
+					     const AdjacencyIterator &adj_itr, float &step );
   template float Filtering::FlatRegionKappa( const Image< llint > &source, const Image< llint > &mask,
 					     const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr, float kappa );
+					     const AdjacencyIterator &adj_itr, float step );
   template Image< llint > Filtering::OptimalAnisotropicDiffusion( Image< llint > img, const DiffusionFunction *diff_func,
                                                    float radius, float conservativeness );
   template Image< llint > Filtering::OptimalAnisotropicDiffusion( Image< llint > img, const DiffusionFunction *diff_func,
@@ -343,11 +291,11 @@ namespace Bial {
   template float Filtering::EdgeRegionKappa( const Image< float > &source, const Image< float > &mask,
                                              const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr );
+					     const AdjacencyIterator &adj_itr, float &step );
   template float Filtering::FlatRegionKappa( const Image< float > &source, const Image< float > &mask,
 					     const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr, float kappa );
+					     const AdjacencyIterator &adj_itr, float step );
   template Image< float > Filtering::OptimalAnisotropicDiffusion( Image< float > img, const DiffusionFunction *diff_func,
                                                    float radius, float conservativeness );
   template Image< float > Filtering::OptimalAnisotropicDiffusion( Image< float > img, const DiffusionFunction *diff_func,
@@ -357,11 +305,11 @@ namespace Bial {
   template float Filtering::EdgeRegionKappa( const Image< double > &source, const Image< double > &mask,
                                              const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr );
+					     const AdjacencyIterator &adj_itr, float &step );
   template float Filtering::FlatRegionKappa( const Image< double > &source, const Image< double > &mask,
 					     const DiffusionFunction *diff_func, const Vector< double > &weight,
 					     const double integration_constant, const Adjacency &adj,
-					     const AdjacencyIterator &adj_itr, float kappa );
+					     const AdjacencyIterator &adj_itr, float step );
   template Image< double > Filtering::OptimalAnisotropicDiffusion( Image< double > img, const DiffusionFunction *diff_func,
                                                    float radius, float conservativeness );
   template Image< double > Filtering::OptimalAnisotropicDiffusion( Image< double > img, const DiffusionFunction *diff_func,

@@ -35,6 +35,7 @@ namespace Bial {
      * @param integraction_constant: Use IntegrationConstant function to compute it.
      * @param adj: Adjacency relation. 
      * @param adj_itr: Adjacency iterator. Passed here for faster computation.
+     * @param step: size of step in search for the best kappa. Computed based on initial standard deviation of noise.
      * @return Best edge kappa to filter source image. 
      * @brief Finds the best edge kappa to filter source image. 
      * @warning none. 
@@ -42,7 +43,7 @@ namespace Bial {
     template< class D >
     float EdgeRegionKappa( const Image< D > &source, const Image< D > &mask, const DiffusionFunction *diff_func,
 			   const Vector< double > &weight, const double integration_constant, const Adjacency &adj,
-			   const AdjacencyIterator &adj_itr );
+			   const AdjacencyIterator &adj_itr, float &step );
 
     /**
      * @date 2013/Nov/29 
@@ -53,7 +54,7 @@ namespace Bial {
      * @param integraction_constant: Use IntegrationConstant function to compute it.
      * @param adj: Adjacency relation. 
      * @param adj_itr: Adjacency iterator. Passed here for faster computation.
-     * @param kappa: Best edge kappa used for initialization. 
+     * @param step: size of step in search for the best kappa.
      * @return Best flat kappa to filter source image. 
      * @brief Finds the best flat kappa to filter source image. 
      * @warning none. 
@@ -61,7 +62,7 @@ namespace Bial {
     template< class D >
     float FlatRegionKappa( const Image< D > &source, const Image< D > &mask, const DiffusionFunction *diff_func,
 			   const Vector< double > &weight, const double integration_constant, const Adjacency &adj,
-			   const AdjacencyIterator &adj_itr, float kappa );
+			   const AdjacencyIterator &adj_itr, float step );
 
     /**
      * @date 2013/Dec/06 
