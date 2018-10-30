@@ -9,6 +9,7 @@
 #include "DiffusionFunction.hpp"
 #include "FileImage.hpp"
 #include "Filtering-NonLocalAnisotropicBasics.cpp"
+#include "FilteringOptimalAnisotropicDiffusion.hpp"
 #include "DiffusionFunction.hpp"
 #include "GradientCanny.hpp"
 #include "SegmentationBackground.hpp"
@@ -18,7 +19,7 @@ using namespace std;
 using namespace Bial;
 
 
-Vector< double > NonLocalWeightVector( const Adjacency &adj, const size_t adj_size, const size_t img_dims ) {
+Vector< double > NonLocalWeightVector( const Adjacency &adj, const size_t adj_size, const size_t img_dims, const float patch_distance ) {
   try {
     COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
     Vector< double > weight( 2 * adj_size, 0 );
@@ -35,7 +36,7 @@ Vector< double > NonLocalWeightVector( const Adjacency &adj, const size_t adj_si
       COMMENT( "Computing L2 distance.", 4 );
       double distance = 0.0;
       for( size_t dim = 0; dim < img_dims; ++dim )
-	distance += ( 1 + adj( adj_idx, dim ) ) * ( 1 + adj( adj_idx, dim ) );
+	distance += ( patch_distance + adj( adj_idx, dim ) ) * ( patch_distance + adj( adj_idx, dim ) );
       weight[ adj_idx + adj_size ] = 1.0 / std::sqrt( distance );
     }
     return( weight );
@@ -59,7 +60,7 @@ Vector< double > NonLocalWeightVector( const Adjacency &adj, const size_t adj_si
 }
 
 double NonLocalIntegrationConstant( const Adjacency &adj, const size_t adj_size, const size_t img_dims,
-					       const size_t patch_adjacents ) {
+				    const size_t patch_adjacents, const float patch_distance ) {
   try {
     COMMENT( "Computing integration constant.", 3 );
     double integration_constant = 0.0;
@@ -74,7 +75,7 @@ double NonLocalIntegrationConstant( const Adjacency &adj, const size_t adj_size,
     for( size_t idx = 0; idx < adj_size; ++idx ) {
       double distance = 0.0;
       for( size_t dim = 0; dim < img_dims; ++dim )
-	distance += 1 + std::abs( adj( idx, dim ) );
+	distance += patch_distance + std::abs( adj( idx, dim ) );
       integration_constant += patch_adjacents / distance;
     }
     integration_constant = 1.0 / integration_constant;
@@ -433,7 +434,7 @@ template< class D >
 Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func,
 						float conservativeness, const Image< D > &canny, 
 						const Image< D > &backg, const float search_radius,
-						const float patch_radius, const float flow_radius,
+						const float patch_radius, const float patch_distance,
 						const size_t patch_adjacents ) {
   try {
     if( img.Dims( ) != canny.Dims( ) ) {
@@ -450,39 +451,45 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
       throw( std::logic_error( msg ) );
     }
     COMMENT( "Computing the map of adjacent patches.", 0 );
-    Vector< Image< D > > map( patch_adjacents, Image< D >( img.Dim( ) ) ); // Resulting map with a image for each patch adjacent.
-    try {
-      size_t total_threads = 12;
-      Vector< std::thread > threads;
-      for( size_t thd = 0; thd < total_threads; ++thd ) {
-	threads.push_back( std::thread( &PatchSimilarityMap< D >, std::ref( map ), std::ref( img ),
-					search_radius, patch_radius, patch_adjacents, thd, total_threads ) );
+    Vector< Image< D > > map; // Resulting map with a image for each patch adjacent.
+    for( size_t patch = 0; patch < patch_adjacents; ++patch )
+      map.push_back( Image< D >( img.Dim( ) ) );
+    if( patch_adjacents > 0 ) {
+      try {
+	size_t total_threads = 12;
+	Vector< std::thread > threads;
+	for( size_t thd = 0; thd < total_threads; ++thd ) {
+	  threads.push_back( std::thread( &PatchSimilarityMap< D >, std::ref( map ), std::ref( img ),
+					  search_radius, patch_radius, patch_adjacents, thd, total_threads ) );
+	}
+	for( size_t thd = 0; thd < total_threads; ++thd ) {
+	  threads( thd ).join( );
+	}
       }
-      for( size_t thd = 0; thd < total_threads; ++thd ) {
-	threads( thd ).join( );
+      catch( std::exception &e ) {
+	BIAL_WARNING( "Failed to run in multi-thread. Exception: " << e.what( ) );
+	PatchSimilarityMap( map, img, search_radius, patch_radius, patch_adjacents, 0, 1 );
       }
-    }
-    catch( std::exception &e ) {
-      BIAL_WARNING( "Failed to run in multi-thread. Exception: " << e.what( ) );
-      PatchSimilarityMap( map, img, search_radius, patch_radius, patch_adjacents, 0, 1 );
     }
     std::cout << "Finished computing patches." << std::endl;
     COMMENT( "Creating initial data structures.", 0 );
-    Adjacency adj( AdjacencyType::HyperSpheric( flow_radius, img.Dims( ) ) );
+    Adjacency adj( AdjacencyType::HyperSpheric( patch_radius, img.Dims( ) ) );
     AdjacencyIterator adj_itr( img, adj );
     size_t adj_size = adj.size( );
     size_t img_dims = img.Dims( );
     COMMENT( "Creating weight applied to each adjacent pixel based to its relative position to the filtered pixel.", 2 );
-    Vector< double > weight( NonLocalWeightVector( adj, adj_size, img_dims ) );
+    Vector< double > weight( NonLocalWeightVector( adj, adj_size, img_dims, patch_distance ) );
     COMMENT( "Computing integration constant.", 2 );
-    double integration_constant = NonLocalIntegrationConstant( adj, adj_size, img_dims, patch_adjacents );
+    double integration_constant = NonLocalIntegrationConstant( adj, adj_size, img_dims, patch_adjacents, patch_distance );
     COMMENT( "Computing initial kappa using edge and flat regions.", 0 );
     float step;
-    float edge_kappa = NonLocalEdgeRegionKappa( img, canny, diff_func, weight, integration_constant, adj, adj_itr,
-						step, map );
+    //float edge_kappa = NonLocalEdgeRegionKappa( img, canny, diff_func, weight, integration_constant, adj, adj_itr, step, map );
+    Vector< double > local_weight( Filtering::WeightVector( adj, adj_size, img_dims ) );
+    double local_integration_constant = Filtering::IntegrationConstant( adj, adj_size, img_dims );
+    float edge_kappa = Filtering::EdgeRegionKappa( img, canny, diff_func, local_weight, local_integration_constant, adj, adj_itr, step );
     std::cout << "edge_kappa: " << edge_kappa << std::endl;
-    float flat_kappa = NonLocalFlatRegionKappa( img, backg, diff_func, weight, integration_constant, adj, adj_itr,
-						step, map );
+    //float flat_kappa = NonLocalFlatRegionKappa( img, backg, diff_func, weight, integration_constant, adj, adj_itr, step, map );
+    float flat_kappa = Filtering::FlatRegionKappa( img, backg, diff_func, local_weight, local_integration_constant, adj, adj_itr, step );
     std::cout << "flat_kappa: " << flat_kappa << std::endl;
     float init_kappa = ( edge_kappa + flat_kappa ) / 2.0;
     if( edge_kappa < flat_kappa )
@@ -515,7 +522,7 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
 template< class D >
 Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionFunction *diff_func,
 						float conservativeness, const float search_radius,
-						const float patch_radius, const float flow_radius,
+						const float patch_radius, const float patch_distance,
 						const size_t patch_adjacents ) {
   try {
     if( ( conservativeness < 0.0 ) || ( conservativeness > 1.0 ) ) {
@@ -529,7 +536,7 @@ Image< D > OptimalNonLocalAnisotropicDiffusion( Image< D > img, const DiffusionF
     Image< D > backg = Segmentation::Background( img, canny );
     COMMENT( "Filtering with optimum anisotropic diffusion filter.", 0 );
     return( OptimalNonLocalAnisotropicDiffusion( img, diff_func, conservativeness, canny, backg,
-						 search_radius, patch_radius, flow_radius, patch_adjacents ) );
+						 search_radius, patch_radius, patch_distance, patch_adjacents ) );
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -559,9 +566,9 @@ int main( int argc, char **argv ) {
          << "Default: 3." << endl;
     cout << "\t\t<edge_region>: Canny edge detection." << endl;
     cout << "\t\t<flat_region>: Background segmentation." << endl;
-    cout << "\t\t<non-local search adjacency radius>: 0.0 to 10.0. Default: 5.00." << endl;
-    cout << "\t\t<non-local patch adjacency radius>: 1.0 to 5.0. Default: 3.00." << endl;
-    cout << "\t\t<flow adjacency radius>: 1.01 to 2.0. Default: 1.01." << endl;
+    cout << "\t\t<non-local search adjacency radius>: 0.0 to 5.0. Default: 3.0." << endl;
+    cout << "\t\t<patch adjacency radius>: 1.0 to 1.9. Default: 1.5." << endl;
+    cout << "\t\t<patch distance>: 0.01 to 2.0. Default: 0.01." << endl;
     cout << "\t\t<non-local patch adjacents>: 0 to 4. Default: 1." << endl;
     return( 0 );
   }
@@ -596,27 +603,27 @@ int main( int argc, char **argv ) {
       return( 0 );
     }
   }
-  float search_radius = 5.00;
+  float search_radius = 3.0f;
   if( argc > 7 ) {
     search_radius = atof( argv[ 7 ] );
-    if( ( search_radius < 0.0 ) || ( search_radius > 10.0 ) ) {
-      cout << "Error: Invalid search adjacency radius. Expected: 0.0 to 10.0. Found: " << search_radius << endl;
+    if( ( search_radius < 0.0f ) || ( search_radius > 5.0f ) ) {
+      cout << "Error: Invalid search adjacency radius. Expected: 0.0 to 5.0. Found: " << search_radius << endl;
       return( 0 );
     }
   }
-  float patch_radius = 3.00;
+  float patch_radius = 1.5f;
   if( argc > 8 ) {
     patch_radius = atof( argv[ 8 ] );
-    if( ( patch_radius < 1.0 ) || ( search_radius > 5.0 ) ) {
-      cout << "Error: Invalid patch adjacency radius. Expected: 1.0 to 5.0. Found: " << patch_radius << endl;
+    if( ( patch_radius < 1.0f ) || ( patch_radius > 1.9f ) ) {
+      cout << "Error: Invalid patch adjacency radius. Expected: 1.0 to 1.9. Found: " << patch_radius << endl;
       return( 0 );
     }
   }
-  float flow_radius = 1.01;
+  float patch_distance = 0.01f;
   if( argc > 9 ) {
-    flow_radius = atof( argv[ 9 ] );
-    if( ( flow_radius < 1.0 ) || ( flow_radius > 2.0 ) ) {
-      cout << "Error: Invalid flow adjacency radius. Expected: 1.01 to 2.0. Found: " << flow_radius << endl;
+    patch_distance = atof( argv[ 9 ] );
+    if( ( patch_distance < 0.009f ) || ( patch_distance > 2.0f ) ) {
+      cout << "Error: Invalid patch distance. Expected: 0.01 to 2.0. Found: " << patch_distance << endl;
       return( 0 );
     }
   }
@@ -633,13 +640,13 @@ int main( int argc, char **argv ) {
     Image< int > edge_region( Read< int >( argv[ 5 ] ) );
     Image< int > flat_region( Read< int >( argv[ 6 ] ) );
     Image< int > res( OptimalNonLocalAnisotropicDiffusion( src, diff_func, conservativeness, edge_region, flat_region,
-							   search_radius, patch_radius, flow_radius, patch_adjacents ) );
+							   search_radius, patch_radius, patch_distance, patch_adjacents ) );
     Write( res, argv[ 2 ] );
   }
   else {
     std::cout << "Computing flat and edge region images." << std::endl;
     Image< int > res( OptimalNonLocalAnisotropicDiffusion( src, diff_func, conservativeness, search_radius,
-							   patch_radius, flow_radius, patch_adjacents ) );
+							   patch_radius, patch_distance, patch_adjacents ) );
     Write( res, argv[ 2 ] );
   }
   if( argc < 5 ) {

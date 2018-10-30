@@ -9,7 +9,7 @@
 #include "FileImage.hpp"
 #include "FilteringAnisotropicDiffusion.hpp"
 #include "Image.hpp"
-
+#include "ImageFrame.hpp"
 #include "AdjacencyIterator.hpp"
 #include "AdjacencyRound.hpp"
 
@@ -21,78 +21,86 @@ void PatchSimilarityMap( Vector< Image< D > > &map, const Image< D > &img, const
 			 const float patch_radius, const size_t patch_adjacents,
 			 const size_t thread, const size_t total_threads ) {
   COMMENT( "Dealing with thread limits.", 3 );
-  size_t img_size = img.Size( );
+  //size_t img_size = img.Size( );
   size_t img_dims = img.Dims( );
-  size_t min_index = thread * img_size / total_threads;
-  size_t max_index = ( thread + 1 ) * img_size / total_threads;
+  //size_t min_index = thread * img_size / total_threads;
+  //size_t max_index = ( thread + 1 ) * img_size / total_threads;
+  size_t min_z = thread * img.size( 2 ) / total_threads;
+  size_t max_z = ( thread + 1 ) * img.size( 2 ) / total_threads;
   COMMENT( "Basic variables.", 3 );
   Adjacency search_adj( AdjacencyType::HyperSpheric( search_radius, img_dims ) ); // adjacency with size given by the radius for searching similar patches.
   Adjacency patch_adj( AdjacencyType::HyperSpheric( patch_radius, img_dims ) ); // adjacency with size given by the radius which defines the size of the patch.
   size_t search_adj_size = search_adj.size( );
   size_t patch_adj_size = patch_adj.size( );
-  AdjacencyIterator search_adj_itr( img, search_adj );
-  AdjacencyIterator patch_adj_itr( img, patch_adj );
+  size_t frame_size = std::ceil( search_radius + patch_radius );
+  Image< D > framed_img( ImageOp::AddFrame( img, frame_size ) );
+  //Write( framed_img, "dat/framed_img.nii.gz" );
+  //AdjacencyIterator search_adj_itr( img, search_adj );
+  //AdjacencyIterator patch_adj_itr( img, patch_adj );
+  AdjacencyIterator search_adj_itr( framed_img, search_adj );
+  AdjacencyIterator patch_adj_itr( framed_img, patch_adj );
   size_t target_pxl;
   size_t target_adj_pxl;
   size_t source_adj_pxl;
   Vector< int > target_patch_dist( search_adj_size, 0 );
   Vector< size_t > target_patch_index( search_adj_size, 0 );
   Vector< size_t > target_patch_common_elements( search_adj_size, 0 );
-  for( size_t source_pxl = min_index; source_pxl < max_index; ++source_pxl ) {
-    target_patch_dist = 0;
-    target_patch_index = 0;
-    target_patch_common_elements = 0;
-    for( size_t search_adj_idx = 1; search_adj_idx < search_adj_size; ++search_adj_idx ) {
-      COMMENT( "For each valid position, compare source and target patches.", 4 );
-      if( search_adj_itr.AdjIdx( source_pxl, search_adj_idx, target_pxl ) ) {
-	target_patch_index[ 0 ] = target_pxl;
-	for( size_t patch_adj_idx = 0; patch_adj_idx < patch_adj_size; ++patch_adj_idx ) {
-	  if( patch_adj_itr.AdjIdx( source_pxl, patch_adj_idx, source_adj_pxl ) &&
-	      ( patch_adj_itr.AdjIdx( target_pxl, patch_adj_idx, target_adj_pxl ) ) ) {
-	    target_patch_dist[ 0 ] += std::abs( img[ source_adj_pxl ] - img[ target_adj_pxl ] );
+  //for( size_t source_pxl = min_index; source_pxl < max_index; ++source_pxl ) {
+  size_t source_pxl_z = ( min_z + frame_size ) * framed_img.Displacement( 1 );
+  for( size_t z = min_z; z < max_z; ++z, source_pxl_z += framed_img.Displacement( 1 ) ) {
+    size_t source_pxl_yz = source_pxl_z + frame_size * framed_img.size( 0 );
+    for( size_t y = 0; y < img.size( 1 ); ++y, source_pxl_yz += framed_img.size( 0 ) ) {
+      size_t source_pxl = source_pxl_yz + frame_size;
+      for( size_t x = 0; x < img.size( 0 ); ++x, ++source_pxl ) {
+	target_patch_dist = 0;
+	target_patch_index = 0;
+	target_patch_common_elements = 0;
+	for( size_t search_adj_idx = 1; search_adj_idx < search_adj_size; ++search_adj_idx ) {
+	  COMMENT( "For each valid position, compare source and target patches.", 4 );
+	  //if( search_adj_itr.AdjIdx( source_pxl, search_adj_idx, target_pxl ) ) {
+	  target_pxl = search_adj_itr( source_pxl, search_adj_idx );
+	  target_patch_index[ 0 ] = x + search_adj( search_adj_idx, 0 ) + ( y + search_adj( search_adj_idx, 1 ) ) * img.size( 0 ) +
+	    ( z + search_adj( search_adj_idx, 2 ) ) * img.Displacement( 1 );
+	                                   //target_pxl - frame_size * ( framed_img.Displacement( 1 ) + framed_img.size( 0 ) + frame_size ); // Esse valor tá errado. Correto seria gerar a partir de x,y,z...
+	  for( size_t patch_adj_idx = 0; patch_adj_idx < patch_adj_size; ++patch_adj_idx ) {
+	    //if( patch_adj_itr.AdjIdx( source_pxl, patch_adj_idx, source_adj_pxl ) &&
+	    //( patch_adj_itr.AdjIdx( target_pxl, patch_adj_idx, target_adj_pxl ) ) ) {
+	    source_adj_pxl = patch_adj_itr( source_pxl, patch_adj_idx );
+	    target_adj_pxl = patch_adj_itr( target_pxl, patch_adj_idx );
+	    target_patch_dist[ 0 ] += std::abs( framed_img[ source_adj_pxl ] - framed_img[ target_adj_pxl ] );
 	    ++target_patch_common_elements[ 0 ];
+	    //}
 	  }
+	  //}
+	  COMMENT( "Sorting target patches by number of common elements (inc) followed by distance (dec).", 4 );
+	  for( size_t sort_adj_idx = 1; sort_adj_idx < search_adj_idx; ++sort_adj_idx ) {
+	    if( ( target_patch_common_elements[ 0 ] < target_patch_common_elements[ sort_adj_idx ] ) ||
+		( ( target_patch_common_elements[ 0 ] == target_patch_common_elements[ sort_adj_idx ] ) &&
+		  ( target_patch_dist[ 0 ] > target_patch_dist[ sort_adj_idx ] ) ) ) {
+	      std::swap( target_patch_common_elements[ 0 ], target_patch_common_elements[ sort_adj_idx ] );
+	      std::swap( target_patch_dist[ 0 ], target_patch_dist[ sort_adj_idx ] );
+	      std::swap( target_patch_index[ 0 ], target_patch_index[ sort_adj_idx ] );
+	    }
+	  }
+	  COMMENT( "Assigning last patch data to last position.", 4 );
+	  std::swap( target_patch_common_elements[ 0 ], target_patch_common_elements[ search_adj_idx ] );
+	  std::swap( target_patch_dist[ 0 ], target_patch_dist[ search_adj_idx ] );
+	  std::swap( target_patch_index[ 0 ], target_patch_index[ search_adj_idx ] );
 	}
+	COMMENT( "Assigning the index of the best patches.", 3 );
+	for( size_t adj_index = 0; adj_index < patch_adjacents; ++adj_index )
+	  map[ adj_index ]( x, y, z ) = target_patch_index[ search_adj_size - 1 - adj_index ];
+	// size_t tst_pxl = x + y * img.size( 0 ) + z * img.Displacement( 1 );
+	// if( ( tst_pxl > 5794237 ) && ( tst_pxl < 5794242 ) ) {
+	//   std::cout << "pixel: " << tst_pxl << ". map[ 0 ]: " << map[ 0 ][ tst_pxl ] << ". map[ 1 ]: " << map[ 1 ][ tst_pxl ] << std::endl;
+	//   std::cout << "target_patch_common_elements: " << target_patch_common_elements << std::endl;
+	//   std::cout << "target_patch_dist: " << target_patch_dist << std::endl;
+	//   std::cout << "target_patch_index: " << target_patch_index << std::endl;
+	// }
       }
-      COMMENT( "Sorting target patches by number of common elements (inc) followed by distance (dec).", 4 );
-      for( size_t sort_adj_idx = 1; sort_adj_idx < search_adj_idx; ++sort_adj_idx ) {
-	if( ( target_patch_common_elements[ 0 ] < target_patch_common_elements[ sort_adj_idx ] ) ||
-	    ( ( target_patch_common_elements[ 0 ] == target_patch_common_elements[ sort_adj_idx ] ) &&
-	      ( target_patch_dist[ 0 ] > target_patch_dist[ sort_adj_idx ] ) ) ) {
-	  std::swap( target_patch_common_elements[ 0 ], target_patch_common_elements[ sort_adj_idx ] );
-	  std::swap( target_patch_dist[ 0 ], target_patch_dist[ sort_adj_idx ] );
-	  std::swap( target_patch_index[ 0 ], target_patch_index[ sort_adj_idx ] );
-	}
-      }
-      COMMENT( "Assigning last patch data to last position.", 4 );
-      std::swap( target_patch_common_elements[ 0 ], target_patch_common_elements[ search_adj_idx ] );
-      std::swap( target_patch_dist[ 0 ], target_patch_dist[ search_adj_idx ] );
-      std::swap( target_patch_index[ 0 ], target_patch_index[ search_adj_idx ] );
     }
-    COMMENT( "Assigning the index of the best patches.", 3 );
-    for( size_t adj_index = 0; adj_index < patch_adjacents; ++adj_index )
-      map[ adj_index ][ source_pxl ] = target_patch_index[ search_adj_size - 1 - adj_index ];
-    // if( ( source_pxl > 5794237 ) && ( source_pxl < 5794242 ) ) {
-    //   std::cout << "pixel: " << source_pxl << ". map[ 0 ]: " << map[ 0 ][ source_pxl ] << ". map[ 1 ]: " << map[ 1 ][ source_pxl ] << std::endl;
-    //   std::cout << "target_patch_common_elements: " << target_patch_common_elements << std::endl;
-    //   std::cout << "target_patch_dist: " << target_patch_dist << std::endl;
-    //   std::cout << "target_patch_index: " << target_patch_index << std::endl;
-    //   for( size_t patch_adj_idx = 0; patch_adj_idx < patch_adj_size; ++patch_adj_idx ) {
-    // 	if( patch_adj_itr.AdjIdx( source_pxl, patch_adj_idx, source_adj_pxl ) &&
-    // 	    ( patch_adj_itr.AdjIdx( map[ 0 ][ source_pxl ], patch_adj_idx, target_adj_pxl ) ) ) {
-    // 	  std::cout << patch_adj_idx << ": src img: " << img[ source_adj_pxl ] << ", tgt img: " << img[ target_adj_pxl ] << std::endl;
-    // 	}
-    //   }
-    //   for( size_t patch_adj_idx = 0; patch_adj_idx < patch_adj_size; ++patch_adj_idx ) {
-    // 	if( patch_adj_itr.AdjIdx( source_pxl, patch_adj_idx, source_adj_pxl ) &&
-    // 	    ( patch_adj_itr.AdjIdx( map[ 1 ][ source_pxl ], patch_adj_idx, target_adj_pxl ) ) ) {
-    // 	  std::cout << patch_adj_idx << ": src img: " << img[ source_adj_pxl ] << ", tgt img: " << img[ target_adj_pxl ] << std::endl;
-    // 	}
-    //   }
-    // }
   }
 }
-
 
 template< class D >
 void NonLocalAnisotropicDiffusionThread( Image< D > &img, Image< D > &res, const Vector< Image< D > > &map,
