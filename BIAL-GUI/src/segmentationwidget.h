@@ -54,7 +54,7 @@ private:
   Ui::Segmentationwidget *ui;
   SegmentationTool *tool;
 
-  bool segmentation_flag = false;
+  bool segmentation_button_pressed = false;
 };
 
 #endif /* SEGMENTATIONWIDGET_H */

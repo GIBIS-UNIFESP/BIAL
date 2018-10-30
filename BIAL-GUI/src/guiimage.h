@@ -35,7 +35,7 @@ class GuiImage : public QObject {
   /**
    * @brief cachedPixmaps holds a copy of the last generated pixmap at each view.
    */
-  QVector< QPixmap > cachedPixmaps;
+  Bial::Vector< QPixmap > cachedPixmaps;
   /**
    * @brief needUpdate is a flag that determines if a pixmap needs to be updated.
    */
@@ -43,7 +43,7 @@ class GuiImage : public QObject {
   /**
    * @brief equalization is the equalization transform.
    */
-  QVector< int > equalization;
+  Bial::Vector< int > equalization;
   /**
    * @brief histogram is the input image histogram.
    */
@@ -59,7 +59,7 @@ class GuiImage : public QObject {
   /**
    * @brief transform is the affine transform related to each view.
    */
-  QVector< Bial::FastTransform > transform;
+  Bial::Vector< Bial::FastTransform > transform;
   /**
    * @brief bounding is the bounding box that determines each view boundings.
    */

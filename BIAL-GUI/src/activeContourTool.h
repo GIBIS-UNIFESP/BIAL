@@ -23,7 +23,7 @@ private:
   Bial::Vector< int > m_selectedMethods;
   Path m_currentPath;
   QVector< size_t > m_pointIdxs;
-  QVector< std::shared_ptr< ActiveContourMethod > > m_methods;
+  Bial::Vector< std::shared_ptr< ActiveContourMethod > > m_methods;
   QPointF m_lastPoint;
 
   int m_currentMethod;
@@ -76,7 +76,7 @@ public:
   void enter( );
   void leave( );
   const Bial::Vector< int > &getSelectedMethods( ) const;
-  QVector< std::shared_ptr< ActiveContourMethod > > getMethods( ) const;
+  Bial::Vector< std::shared_ptr< ActiveContourMethod > > getMethods( ) const;
   Path getCurrentPath( ) const;
   int getCurrentMethod( ) const;
   void setCurrentMethod( int currentMethod );

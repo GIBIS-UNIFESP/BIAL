@@ -30,10 +30,11 @@ private:
   double curr_alpha;
   double curr_beta;
   QGraphicsScene *m_scene; // Qt scene for drawing.
-  QVector< QGraphicsEllipseItem* > anchor_ellipse; // Ellipses of LW anchors.
+  QVector< QGraphicsEllipseItem* > anchor_ellipse; // Ellipses of LiveWire anchors.
   Bial::Vector< size_t > anchor_position; // Indexes of the LW anchors.
   Bial::Vector< size_t > extremity_pxl; // Values of the initial and final pixels for each input seed.
-  Bial::Vector< Bial::Vector< size_t > > lbl_adj_list; // Neighbour labels are stored to keep track of labeled paths.
+  Bial::Vector< Bial::Vector< size_t > > lbl_adj_list; // Neighbour labels stored to keep track of labeled paths.
+  Bial::Image< int > propagated_paths; // Image for correct LiveWire segmentation through regions of different labels.
   QGraphicsItem *moved_anchor;
   int moved_anchor_index;
   Bial::Vector< int > free_pxl;
@@ -114,7 +115,7 @@ public:
                const Bial::Image< int > &border, size_t anchor, size_t ini_pxl, size_t end_pxl, int brd_lbl );
 
   /* pf_type: 0-maxgeo, 1-max, 2-sum */
-  int connect( int pf_type, double alpha, double beta );
+  int connect( int pf_type, double alpha, double beta, int new_anchors );
   int GetBorderLength( );
 
   double getAlpha( ) const;
@@ -138,7 +139,6 @@ public:
 
   void setExtremity( ); 
   void setLabelAdjacencies( );
-
 };
 
 #endif /* SEGMENTATIONTOOL_H */

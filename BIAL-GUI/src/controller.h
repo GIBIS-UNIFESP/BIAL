@@ -33,8 +33,8 @@ class Controller : public QObject {
    *        and one for the current label.
    *
    */
-  QVector< QGraphicsPixmapItem* > m_pixmapItems;
-  QVector< QGraphicsPixmapItem* > m_labelItems;
+  Bial::Vector< QGraphicsPixmapItem* > m_pixmapItems;
+  Bial::Vector< QGraphicsPixmapItem* > m_labelItems;
   /**
    *
    * @brief m_currentImagePos holds the current image position.
@@ -73,7 +73,7 @@ public:
    * @return A pointer to the guiimage at position pos.
    *
    */
-  GuiImage* imageAt( int pos );
+  GuiImage* imageAt(int pos );
   /**
    *
    * @brief currentImagePos
