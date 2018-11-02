@@ -30,7 +30,7 @@ int main( int argc, char **argv ) {
         res( y, z ) = img( slice, y, z );
       }
     }
-    Write( res, argv[ 2 ], argv[ 1 ] );
+    Write( res, argv[ 2 ] );
   }
   else if( dir == 1 ) {
     Image< int > res( x_size, z_size );
@@ -39,7 +39,7 @@ int main( int argc, char **argv ) {
         res( x, z ) = img( x, slice, z );
       }
     }
-    Write( res, argv[ 2 ], argv[ 1 ] );
+    Write( res, argv[ 2 ] );
   }
   else {
     Image< int > res( x_size, y_size );
@@ -48,7 +48,7 @@ int main( int argc, char **argv ) {
         res( x, y ) = img( x, y, slice );
       }
     }
-    Write( res, argv[ 2 ], argv[ 1 ] );
+    Write( res, argv[ 2 ] );
   }
 
   return( 0 );

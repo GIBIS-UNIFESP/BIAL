@@ -496,31 +496,6 @@ void SegmentationTool::clearMask( ) {
   }
 }
 
-void SegmentationTool::clearMask( ) {
-  try {
-    for( size_t i = 0; i < mask.size( ); ++i ) {
-      mask[ i ] = 0;
-    }
-    emit guiImage->imageUpdated( );
-  }
-  catch( std::bad_alloc &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
-    throw( std::runtime_error( msg ) );
-  }
-  catch( std::runtime_error &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
-    throw( std::runtime_error( msg ) );
-  }
-  catch( const std::out_of_range &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
-    throw( std::out_of_range( msg ) );
-  }
-  catch( const std::logic_error &e ) {
-    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
-    throw( std::logic_error( msg ) );
-  }
-}
-
 void SegmentationTool::setEllipsesMovable( bool movable ) {
   if( anchor_ellipse.size() > 0 ){ 
     for( size_t idx = 0; idx < anchors; ++idx ) {

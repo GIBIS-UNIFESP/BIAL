@@ -832,7 +832,7 @@ Bial::Image< int > DragDrop::filtering_adaptive_anisotropic( ) {
    *    }
    *  }
    */
-  DiffusionFunction *diff_func = new RobustDiffusionFunction( 0.5 );
+  DiffusionFunction *diff_func = new RobustDiffusionFunction;
 
   QStringList options;
   options << "RobustDiffusion(0.5)"
@@ -843,10 +843,10 @@ Bial::Image< int > DragDrop::filtering_adaptive_anisotropic( ) {
 
   QString option = QInputDialog::getItem( this, "Function", "Function: ", options );
   if( option == "RobustDiffusion(0.5)" ) {
-    diff_func = new RobustDiffusionFunction( 0.5 );
+    diff_func = new RobustDiffusionFunction;
   }
   if( option == "RobustDiffusion(1.0)" ) {
-    diff_func = new RobustDiffusionFunction( 1.0 );
+    diff_func = new RobustDiffusionFunction;
   }
   if( option == "PowerDiffusion(1.0)" ) {
     diff_func = new PowerDiffusionFunction( 1.0 );
@@ -912,7 +912,7 @@ Bial::Image< int > DragDrop::filtering_anisotropic( ) {
    *  }
    */
 
-  DiffusionFunction *diff_func = new RobustDiffusionFunction( 0.5 );
+  DiffusionFunction *diff_func = new RobustDiffusionFunction;
 
   QStringList options;
   options << "RobustDiffusion(0.5)"
@@ -923,10 +923,10 @@ Bial::Image< int > DragDrop::filtering_anisotropic( ) {
 
   QString option = QInputDialog::getItem( this, "Function", "Function: ", options );
   if( option == "RobustDiffusion(0.5)" ) {
-    diff_func = new RobustDiffusionFunction( 0.5 );
+    diff_func = new RobustDiffusionFunction;
   }
   if( option == "RobustDiffusion(1.0)" ) {
-    diff_func = new RobustDiffusionFunction( 1.0 );
+    diff_func = new RobustDiffusionFunction;
   }
   if( option == "PowerDiffusion(1.0)" ) {
     diff_func = new PowerDiffusionFunction( 1.0 );
@@ -1058,7 +1058,7 @@ Bial::Image< int > DragDrop::filtering_optimum_anisotropic( ) {
    *    }
    *  }
    */
-  DiffusionFunction *diff_func = new RobustDiffusionFunction( 0.5 );
+  DiffusionFunction *diff_func = new RobustDiffusionFunction;
 
   QStringList options;
   options << "RobustDiffusion(0.5)"
@@ -1069,10 +1069,10 @@ Bial::Image< int > DragDrop::filtering_optimum_anisotropic( ) {
 
   QString option = QInputDialog::getItem( this, "Function", "Function: ", options );
   if( option == "RobustDiffusion(0.5)" ) {
-    diff_func = new RobustDiffusionFunction( 0.5 );
+    diff_func = new RobustDiffusionFunction;
   }
   if( option == "RobustDiffusion(1.0)" ) {
-    diff_func = new RobustDiffusionFunction( 1.0 );
+    diff_func = new RobustDiffusionFunction;
   }
   if( option == "PowerDiffusion(1.0)" ) {
     diff_func = new PowerDiffusionFunction( 1.0 );

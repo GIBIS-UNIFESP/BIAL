@@ -321,7 +321,10 @@ Hough: Hough-Circles
 Hough-Circles: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
-Image: Image-AND Image-BinaryMask Image-Copy Image-CMeansClustering Image-Compare Image-Convert Image-CutHorizontal Image-Diff Image-DiffPixel Image-Dilate Image-DilateBin Image-Equalize Image-Erode Image-ErodeBin Image-Flip Image-GetSlice Image-MinimumSpanningForest Image-Merge Image-Normalize.cpp Image-Print Image-ROI Image-Rotate_90 Image-Size Image-Sum
+Image: Image-AddScalar Image-AND Image-BinaryMask Image-Copy Image-CMeansClustering Image-Compare Image-Convert Image-CutHorizontal Image-Diff Image-DiffPixel Image-Dilate Image-DilateBin Image-Equalize Image-Erode Image-ErodeBin Image-Flip Image-GetSlice Image-Invert Image-MinimumSpanningForest Image-Merge Image-Normalize.cpp Image-Print Image-ROI Image-Rotate_90 Image-Size Image-Status Image-Sum
+
+Image-AddScalar: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-AND: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -371,6 +374,9 @@ Image-Flip: libbial
 Image-GetSlice: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
+Image-Invert:  libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
 Image-MinimumSpanningForest: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
@@ -399,6 +405,9 @@ Image-Rotate_90: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-Size: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Image-Status: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-Sum: libbial

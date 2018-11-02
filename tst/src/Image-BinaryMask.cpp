@@ -17,13 +17,20 @@ int main( int argc, char **argv ) {
     cout << "Usage: " << argv[ 0 ] << " <input image> <output image>" << endl;
     exit( -1 );
   }
-  Image< int > scn( Read< int >( argv[ 1 ] ) );
+  Image< float > scn( Read< float >( argv[ 1 ] ) );
+  size_t zeros = 0;
+  size_t non_zeros = 0;
   for( size_t p = 0; p < scn.size( ); ++p ) {
-    if( scn[ p ] != 0 ) {
+    if( ( scn[ p ] >  -0.00001 ) && ( scn[ p ] <  0.00001 ) ) {
+      scn[ p ] = 0;
+      ++zeros;
+    }
+    else {
       scn[ p ] = 1;
+      ++non_zeros;
     }
   }
-  Write( scn, argv[ 2 ], argv[ 1 ] );
-
+  std::cout << "Zeros: " << zeros << ", non-zeros: " << non_zeros << std::endl;
+  Write( scn, argv[ 2 ] );
   return( 0 );
 }

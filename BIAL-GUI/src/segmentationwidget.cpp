@@ -180,6 +180,10 @@ void SegmentationWidget::on_pushButtonSave_clicked( ) {
       qDebug( ) << "Saving to " << outFname;
 
       Bial::Image< int > result = tool->getMask( );
+      for( size_t pxl = 0; pxl < result.size( ); ++pxl ) {
+          if( result[ pxl ] != 0 )
+              result[ pxl ] = 1;
+      }
       Bial::Write( result, outFname.toStdString( ), finfo.absoluteFilePath( ).toStdString( ) );
     }
     catch( std::invalid_argument &e ) {
