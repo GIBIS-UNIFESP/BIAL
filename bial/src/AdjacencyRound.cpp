@@ -307,7 +307,7 @@ namespace Bial {
           }
         }
       }
-      COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
+      COMMENT( "Initializing the adjacency relation.", 1 );
       Adjacency result( size, 2 );
       size_t i = 0;
       for( int dy = -max_radius; dy <= static_cast< int >( max_radius ); ++dy ) {
@@ -322,6 +322,56 @@ namespace Bial {
               result( i, 1 ) = dy;
               ++i;
             }
+          }
+        }
+      }
+      return( result );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
+
+  Adjacency AdjacencyType::Disc( float radius ) {
+    try {
+      COMMENT( "Computing adjacency size.", 1 );
+      size_t max_radius = static_cast< size_t >( radius );
+      size_t max_radius_2 = static_cast< size_t >( radius * radius );
+      size_t size = 0;
+      for( int dy = -max_radius; dy <= static_cast< int >( max_radius ); ++dy ) {
+        for( int dx = -max_radius; dx <= static_cast< int >( max_radius ); ++dx ) {
+          if( ( ( dx * dx ) + ( dy * dy ) ) <= static_cast< int >( max_radius_2 ) )
+            ++size;
+	}
+      }
+      COMMENT( "Initializing the adjacency relation. Put central element in the first position.", 1 );
+      Adjacency result( size, 3 );
+      result( 0, 0 ) = 0.0f;
+      result( 0, 1 ) = 0.0f;
+      result( 0, 2 ) = 0.0f;
+      size_t i = 1;
+      for( int dy = -max_radius; dy <= static_cast< int >( max_radius ); ++dy ) {
+        for( int dx = -max_radius; dx <= static_cast< int >( max_radius ); ++dx ) {
+          if( ( ( dx != 0 ) || ( dy != 0 ) ) &&
+              ( ( ( dx * dx ) + ( dy * dy ) ) <= static_cast< int >( max_radius_2 ) ) ) {
+            result( i, 0 ) = dx;
+            result( i, 1 ) = dy;
+	    result( i, 2 ) = 0;
+            ++i;
           }
         }
       }

@@ -219,7 +219,7 @@ File-ReadDir: libbial
 
 
 
-Filtering: Filtering-Anisotropic Filtering-Gaussian Filtering-Mean Filtering-Median Filtering-NonLocalAnisotropic Filtering-OptimalAnisotropic Filtering-OptimalNonLocalAnisotropic
+Filtering: Filtering-AdaptiveAnisotropic Filtering-Anisotropic Filtering-FlatEdgePoints Filtering-Gaussian Filtering-KappaSelection Filtering-Mean Filtering-Median Filtering-NonLocalAnisotropic Filtering-OptimalAnisotropic Filtering-OptimalNonLocalAnisotropic
 
 Filtering-AdaptiveAnisotropic: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -227,7 +227,13 @@ Filtering-AdaptiveAnisotropic: libbial
 Filtering-Anisotropic: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
+Filtering-FlatEdgePoints: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
 Filtering-Gaussian: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Filtering-KappaSelection: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Filtering-Median: libbial
@@ -321,7 +327,7 @@ Hough: Hough-Circles
 Hough-Circles: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
-Image: Image-AddScalar Image-AND Image-BinaryMask Image-Copy Image-CMeansClustering Image-Compare Image-Convert Image-CutHorizontal Image-Diff Image-DiffPixel Image-Dilate Image-DilateBin Image-Equalize Image-Erode Image-ErodeBin Image-Flip Image-GetSlice Image-Invert Image-MinimumSpanningForest Image-Merge Image-Normalize.cpp Image-Print Image-ROI Image-Rotate_90 Image-Size Image-Status Image-Sum
+Image: Image-AddScalar Image-AND Image-BinaryMask Image-Copy Image-CMeansClustering Image-Compare Image-Convert Image-CutHorizontal Image-Diff Image-DiffPixel Image-Dilate Image-DilateBin Image-EdgeNoise Image-Equalize Image-Erode Image-ErodeBin Image-Flip Image-GetSlice Image-Histogram Image-Invert Image-MinimumSpanningForest Image-Merge Image-Normalize.cpp Image-PixelSize Image-Print Image-ROI Image-Rotate_90 Image-SetIntensityRange Image-Size Image-Status Image-Sum
 
 Image-AddScalar: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -359,6 +365,9 @@ Image-Dilate: libbial
 Image-DilateBin: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
+Image-EdgeNoise: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
 Image-Equalize: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
@@ -372,6 +381,9 @@ Image-Flip: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-GetSlice: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Image-Histogram:  libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-Invert:  libbial
@@ -395,6 +407,9 @@ Image-MultiplyMask: libbial
 Image-Normalize: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
+Image-PixelSize: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
 Image-Print: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
@@ -402,6 +417,9 @@ Image-ROI: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-Rotate_90: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Image-SetIntensityRange: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Image-Size: libbial
@@ -691,7 +709,7 @@ SuperPixel-RhombicDodecahedronSeeds: libbial
 
 
 
-Statistics: Statistics-Accuracy Statistics-BorderValidate Statistics-EdgeCompareBaddeley Statistics-MAD Statistics-MultiClassLabeling
+Statistics: Statistics-Accuracy Statistics-BorderValidate Statistics-Crossings Statistics-CrossingszSlices Statistics-EdgeCompareBaddeley Statistics-FilteringAccuracy Statistics-GRBAC Statistics-GRBACzSlices Statistics-MAD Statistics-MultiClassLabeling
 
 Statistics-Accuracy: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -699,7 +717,22 @@ Statistics-Accuracy: libbial
 Statistics-BorderValidate: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
-Statistics-EdgeCompareBaddeley:libbial
+Statistics-Crossings: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Statistics-CrossingszSlices: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Statistics-EdgeCompareBaddeley: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Statistics-FilteringAccuracy: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Statistics-GRBAC: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Statistics-GRBACzSlices: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Statistics-MAD: libbial

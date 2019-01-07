@@ -51,13 +51,14 @@ namespace Bial {
   /* Robust Diffusion Function ****************************************************************************************/
 
   float RobustDiffusionFunction::operator()( float kappa, float grad ) const {
-    float robust_factor = grad / ( kappa * _sqrt_5_ );
-    robust_factor *= robust_factor;
-    return( std::max( 0.0f, 1.0f - robust_factor ) );
+    float flow = grad / ( kappa * _sqrt_5_ );
+    flow *= flow;
+    flow = std::max( 0.0f, 1.0f - flow );
+    return( flow * flow );
   }
 
   float RobustDiffusionFunction::Reduction( float kappa ) const {
-    return( 0.48f * kappa );
+    return( 0.64 * kappa ); // Maximum reduction: 0.64 kappa. 3/4 of that is 0.48 kappa
   }
 
 }

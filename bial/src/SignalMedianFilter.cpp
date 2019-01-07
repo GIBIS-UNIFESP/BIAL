@@ -18,12 +18,15 @@
 
 #if defined ( BIAL_EXPLICIT_SignalMedianFilter ) || ( BIAL_IMPLICIT_BIN )
 
+#include "Image.hpp"
 #include "RandomQueue.hpp"
 #include "Signal.hpp"
+#include "Vector.hpp"
 
 namespace Bial {
 
-  void SignalOp::MedianFilter( Signal &sgn, size_t kernel_size ) {
+  template< class T >
+  void SignalOp::MedianFilter( T &sgn, size_t kernel_size ) {
     try {
       if( sgn.size( ) >= kernel_size ) {
         COMMENT( "Fast median filter. Data size: " << sgn.size( ), 1 );
@@ -64,9 +67,10 @@ namespace Bial {
     }
   }
 
-  Signal SignalOp::MedianFilter( const Signal &sgn, size_t kernel_size ) {
+  template< class T >
+  T SignalOp::MedianFilter( const T &sgn, size_t kernel_size ) {
     try {
-      Signal median( sgn );
+      T median( sgn );
       MedianFilter( median, kernel_size );
       return( median );
     }
@@ -90,6 +94,18 @@ namespace Bial {
 
 #ifdef BIAL_EXPLICIT_SignalMedianFilter
 
+  template void SignalOp::MedianFilter( Vector< int > &img, size_t kernel_size );
+  template Vector< int > SignalOp::MedianFilter( const Vector< int > &img, size_t kernel_size );
+  template void SignalOp::MedianFilter( Vector< llint > &img, size_t kernel_size );
+  template Vector< llint > SignalOp::MedianFilter( const Vector< llint > &img, size_t kernel_size );
+  template void SignalOp::MedianFilter( Vector< float > &img, size_t kernel_size );
+  template Vector< float > SignalOp::MedianFilter( const Vector< float > &img, size_t kernel_size );
+  template void SignalOp::MedianFilter(Vector< double > &img, size_t kernel_size );
+  template Vector< double > SignalOp::MedianFilter( const Vector< double > &img, size_t kernel_size );
+
+  template void SignalOp::MedianFilter( Signal &img, size_t kernel_size );
+  template Signal SignalOp::MedianFilter( const Signal &img, size_t kernel_size );
+  
 #endif
 
 }

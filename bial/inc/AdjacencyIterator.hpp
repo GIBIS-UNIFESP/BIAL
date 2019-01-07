@@ -54,14 +54,23 @@ namespace Bial {
      * @date 2014/Apr/14
      * @param img: An image used to compute the boundaries and other dimensions.
      * @param adj: The adjacency relation to iterate on.
-     * @param index: Index of reference pixel in the adjacency relation.
-     * @param pos: Initial position in adjacency relation to start iteration.
      * @return none.
      * @brief Basic Constructor.
      * @warning none.
      */
     template< class D > 
     AdjacencyIterator( const Image< D > &img, const Adjacency &adj );
+
+    /**
+     * @date 2018/Nov/07
+     * @param adj: The adjacency relation to iterate on.
+     * @param img: An image used to compute the boundaries and other dimensions.
+     * @return none.
+     * @brief Basic Constructor.
+     * @warning none.
+     */
+    template< class D > 
+    AdjacencyIterator( const Adjacency &adj, const Image< D > &img );
 
     /**
      * @date 2013/Oct/23

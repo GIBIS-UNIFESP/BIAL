@@ -20,6 +20,6 @@ int main( int argc, char **argv ) {
   Image< int > img2( Read< int >( argv[ 2 ] ) );
   Image< int > res( img1 - img2 );
 
-  Write( res, argv[ 3 ], argv[ 1 ] );
+  Write( res, argv[ 3 ] );
   return( 0 );
 }

@@ -44,14 +44,14 @@ namespace Bial {
       COMMENT( "Setting seed pixels.", 0 );
       COMMENT( "Creating bucket queue with the longest distance in the image.", 0 );
       SimpleBucketQueue queue( size, border.size( 0 ) * border.size( 0 ) + border.size( 1 ) * border.size( 1 ) + 
-                                 border.size( 2 ) * border.size( 2 ) + 1 );
+			       border.size( 2 ) * border.size( 2 ) + 1 );
       for( size_t pxl = 0; pxl < size; ++pxl ) {
         if( border[ pxl ] != 0 ) {
           root[ pxl ] = pxl;
           queue.Insert( pxl, sqr_value[ pxl ] );
         }
         else
-          sqr_value[ pxl ] = std::numeric_limits< int >::max( ); // Mudado de D para float. Voltei aqora...
+          sqr_value[ pxl ] = std::numeric_limits< int >::max( );
       }
       COMMENT( "Running Image IFT. Queue: " << ( queue.Empty( ) ? "empty" : "not empty" ), 0 );
       Vector< size_t > adj_coords( 3 );
@@ -67,19 +67,21 @@ namespace Bial {
           queue.Finished( src_index );
           size_t previous_value;
           for( size_t adj_pos = 0; adj_pos < adj_size; ++adj_pos ) {
-            if( ( adj_itr.AdjVct( src_coords, adj_pos, adj_coords ) ) && 
-                ( adj_index = src_index + adj_itr.Displacement( adj_pos ) ) && 
-                ( previous_value = sqr_value[ adj_index ] ) && ( src_value < previous_value ) ) {
-              COMMENT( "Conquering: " << adj_index << " with previous_sqr_value: " << previous_value, 4 );
-              D prp_value = ( root_coords[ 0 ] - adj_coords[ 0 ] ) * ( root_coords[ 0 ] - adj_coords[ 0 ] ) +
-                ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] ) + 
-                ( root_coords[ 2 ] - adj_coords[ 2 ] ) * ( root_coords[ 2 ] - adj_coords[ 2 ] );
-              COMMENT( "Updating value.", 3 );
-              if( static_cast< int >( previous_value ) > prp_value ) {
-                sqr_value[ adj_index ] = prp_value;
-                root[ adj_index ] = root[ src_index ];
-                queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
-              }
+	    if( adj_itr.AdjVct( src_coords, adj_pos, adj_coords ) ) {
+	      adj_index = src_index + adj_itr.Displacement( adj_pos );
+	      previous_value = sqr_value[ adj_index ];
+	      if( src_value < previous_value ) {
+		COMMENT( "Conquering: " << adj_index << " with previous_sqr_value: " << previous_value, 4 );
+		D prp_value = ( root_coords[ 0 ] - adj_coords[ 0 ] ) * ( root_coords[ 0 ] - adj_coords[ 0 ] ) +
+		  ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] ) + 
+		  ( root_coords[ 2 ] - adj_coords[ 2 ] ) * ( root_coords[ 2 ] - adj_coords[ 2 ] );
+		COMMENT( "Updating value.", 3 );
+		if( static_cast< int >( previous_value ) > prp_value ) {
+		  sqr_value[ adj_index ] = prp_value;
+		  root[ adj_index ] = root[ src_index ];
+		    queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
+		}
+	      }
             }
           }
         }
@@ -96,24 +98,26 @@ namespace Bial {
           queue.Finished( src_index );
           size_t previous_value;
           for( size_t adj_pos = 0; adj_pos < adj_size; ++adj_pos ) {
-            if( ( adj_itr.AdjVct2( src_coords, adj_pos, adj_coords ) ) && 
-                ( adj_index = src_index + adj_itr.Displacement( adj_pos ) ) && 
-                ( previous_value = sqr_value[ adj_index ] ) && ( src_value < previous_value ) ) {
-              COMMENT( "Conquering: " << adj_index << " with previous_sqr_value: " << previous_value, 4 );
-              D prp_value = ( root_coords[ 0 ] - adj_coords[ 0 ] ) * ( root_coords[ 0 ] - adj_coords[ 0 ] ) +
-                ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] );
-              COMMENT( "Updating value.", 3 );
-              if( static_cast< int >( previous_value ) > prp_value ) {
-                sqr_value[ adj_index ] = prp_value;
-                root[ adj_index ] = root[ src_index ];
-                queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
-              }
+            if( adj_itr.AdjVct2( src_coords, adj_pos, adj_coords ) ) { 
+	      adj_index = src_index + adj_itr.Displacement( adj_pos ); 
+	      previous_value = sqr_value[ adj_index ];
+	      if( src_value < previous_value ) {
+		COMMENT( "Conquering: " << adj_index << " with previous_sqr_value: " << previous_value, 4 );
+		D prp_value = ( root_coords[ 0 ] - adj_coords[ 0 ] ) * ( root_coords[ 0 ] - adj_coords[ 0 ] ) +
+		  ( root_coords[ 1 ] - adj_coords[ 1 ] ) * ( root_coords[ 1 ] - adj_coords[ 1 ] );
+		COMMENT( "Updating value.", 3 );
+		if( static_cast< int >( previous_value ) > prp_value ) {
+		  sqr_value[ adj_index ] = prp_value;
+		  root[ adj_index ] = root[ src_index ];
+		  queue.Update( adj_index, previous_value, sqr_value[ adj_index ] );
+		}
+	      }
             }
           }
         }
       }
       for( size_t pxl = 0; pxl < size; ++pxl )
-        value[ pxl ] = std::sqrt( sqr_value[ pxl ] );
+        value[ pxl ] = std::sqrt( static_cast< double >( sqr_value[ pxl ] ) );
       return( value );
     }
     catch( std::bad_alloc &e ) {
@@ -223,7 +227,7 @@ namespace Bial {
         }
       }
       for( size_t pxl = 0; pxl < size; ++pxl )
-        value[ pxl ] = std::sqrt( sqr_value[ pxl ] );
+        value[ pxl ] = std::sqrt( static_cast< double >( sqr_value[ pxl ] ) );
       return( value );
     }
     catch( std::bad_alloc &e ) {

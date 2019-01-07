@@ -22,7 +22,7 @@
 namespace Bial {
 
   template< template< class D > class C, class D >
-  inline float Statistics::Average( C< D > data ) {
+  inline float Statistics::Average( const C< D > &data ) {
     try {
       return( Statistics::Average( data, 0, data.size( ) ) );
     }
@@ -45,7 +45,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  float Statistics::Average( C< D > data, size_t first, size_t size ) {
+  float Statistics::Average( const C< D > &data, size_t first, size_t size ) {
     try {
       if( first + size > data.size( ) ) {
         std::string msg( BIAL_ERROR( "Maximum element index is greater than data size. Given data size: " +
@@ -83,23 +83,23 @@ namespace Bial {
 
 #ifdef BIAL_EXPLICIT_StatisticsAverage
 
-  template float Statistics::Average( Image< int > data );
-  template float Statistics::Average( Image< int > data, size_t first, size_t size );
-  template float Statistics::Average( Image< llint > data );
-  template float Statistics::Average( Image< llint > data, size_t first, size_t size );
-  template float Statistics::Average( Image< float > data );
-  template float Statistics::Average( Image< float > data, size_t first, size_t size );
-  template float Statistics::Average( Image< double > data );
-  template float Statistics::Average( Image< double > data, size_t first, size_t size );
+  template float Statistics::Average( const Image< int > &data );
+  template float Statistics::Average( const Image< int > &data, size_t first, size_t size );
+  template float Statistics::Average( const Image< llint > &data );
+  template float Statistics::Average( const Image< llint > &data, size_t first, size_t size );
+  template float Statistics::Average( const Image< float > &data );
+  template float Statistics::Average( const Image< float > &data, size_t first, size_t size );
+  template float Statistics::Average( const Image< double > &data );
+  template float Statistics::Average( const Image< double > &data, size_t first, size_t size );
 
-  template float Statistics::Average( Vector< int > data );
-  template float Statistics::Average( Vector< int > data, size_t first, size_t size );
-  template float Statistics::Average( Vector< llint > data );
-  template float Statistics::Average( Vector< llint > data, size_t first, size_t size );
-  template float Statistics::Average( Vector< float > data );
-  template float Statistics::Average( Vector< float > data, size_t first, size_t size );
-  template float Statistics::Average( Vector< double > data );
-  template float Statistics::Average( Vector< double > data, size_t first, size_t size );
+  template float Statistics::Average( const Vector< int > &data );
+  template float Statistics::Average( const Vector< int > &data, size_t first, size_t size );
+  template float Statistics::Average( const Vector< llint > &data );
+  template float Statistics::Average( const Vector< llint > &data, size_t first, size_t size );
+  template float Statistics::Average( const Vector< float > &data );
+  template float Statistics::Average( const Vector< float > &data, size_t first, size_t size );
+  template float Statistics::Average( const Vector< double > &data );
+  template float Statistics::Average( const Vector< double > &data, size_t first, size_t size );
 
 #endif
 

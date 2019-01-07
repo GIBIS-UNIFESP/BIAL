@@ -24,7 +24,7 @@ namespace Bial {
      * @warning none.
      */
     template< template< class D > class C, class D >
-    float StandardDeviation( C< D > data );
+    float StandardDeviation( const C< D > &data );
 
     /**
      * @date 2013/Dec/06
@@ -36,7 +36,7 @@ namespace Bial {
      * @warning none.
      */
     template< template< class D > class C, class D >
-    float StandardDeviation( C< D > data, size_t first, size_t size );
+    float StandardDeviation( const C< D > &data, size_t first, size_t size );
 
     /**
      * @date 2013/Nov/26
@@ -47,7 +47,7 @@ namespace Bial {
      * @warning none.
      */
     template< template< class D > class C, class D >
-    float StandardDeviation( C< D > data, float average );
+    float StandardDeviation( const C< D > &data, float average );
 
     /**
      * @date 2013/Dec/06
@@ -60,7 +60,7 @@ namespace Bial {
      * @warning none.
      */
     template< template< class D > class C, class D >
-    float StandardDeviation( C< D > data, size_t first, size_t size, float average );
+    float StandardDeviation( const C< D > &data, size_t first, size_t size, float average );
 
   }
 

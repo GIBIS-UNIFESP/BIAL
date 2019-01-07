@@ -27,7 +27,8 @@ namespace Bial {
      * @brief Filters input signal by a median kernel of size kernel_size. 
      * @warning none. 
      */
-    void MedianFilter( Signal &sgn, size_t kernel_size );
+    template< class T >
+    void MedianFilter( T &sgn, size_t kernel_size );
 
     /**
      * @date 2012/Sep/11 
@@ -37,7 +38,8 @@ namespace Bial {
      * @brief Returns a copy of input signal filtered by median kernel of size kernel_size. 
      * @warning none. 
      */
-    Signal MedianFilter( const Signal &sgn, size_t kernel_size );
+    template< class T >
+    T MedianFilter( const T &sgn, size_t kernel_size );
 
   }
 

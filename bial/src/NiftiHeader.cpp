@@ -35,18 +35,18 @@ namespace Bial {
 
   NiftiHeader::NiftiHeader( ) try 
     : data_type( 10, '\0' ), db_name( 18, '\0' ),extents( NiftiHeader::ANALYZE_EXTENT ), session_error( 0 ), 
-        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( 8, 0 ), intent_p1( 0.0 ), intent_p2( 0.0 ),
-        intent_p3( 0.0 ), intent_code( NiftiIntent::NONE ), datatype( NiftiType::INT8 ), bitpix( 8 ), slice_start( 0 ),
-        pixdim( 8, 0.0 ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ), scl_slope( 0.0 ), scl_inter( 0.0 ), 
+        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( 8, 0 ), intent_p1( 0.0f ), intent_p2( 0.0f ),
+        intent_p3( 0.0f ), intent_code( NiftiIntent::NONE ), datatype( NiftiType::INT8 ), bitpix( 8 ), slice_start( 0 ),
+        pixdim( 8, 0.0f ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ), scl_slope( 0.0f ), scl_inter( 0.0f ), 
         slice_end( 0 ), slice_code( NiftiSlice::UNKNOWN ), xyz_units( NiftiUnit::UNKNOWN ), 
-        time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0 ), cal_min( 0.0 ), slice_duration( 0.0 ), toffset( 0.0 ), 
+        time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0f ), cal_min( 0.0f ), slice_duration( 0.0f ), toffset( 0.0f ), 
         glmax( 255 ), glmin( 0 ), descrip( 80, '\0' ), aux_file( 24, '\0' ), qform_code( NiftiXForm::UNKNOWN ), 
-        sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0 ), quatern_c( 0.0 ), quatern_d( 0.0 ), qoffset_x( 0.0 ), 
-        qoffset_y( 0.0 ), qoffset_z( 0.0 ), qfac( 1.0 ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
-      qtm.Set( 0.0 );
-      stm.Set( 0.0 );
-      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0;
-      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0;
+        sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0f ), quatern_c( 0.0f ), quatern_d( 0.0f ), qoffset_x( 0.0f ), 
+        qoffset_y( 0.0f ), qoffset_z( 0.0f ), qfac( 1.0f ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
+      qtm.Set( 0.0f );
+      stm.Set( 0.0f );
+      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0f;
+      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0f;
   }
   catch( std::bad_alloc &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
@@ -68,21 +68,21 @@ namespace Bial {
   NiftiHeader::NiftiHeader( const Vector< size_t > &new_dim, const Vector< float > &new_pixdim, NiftiType new_datatype,
                             bool one_file ) try 
     : data_type( 10, '\0' ), db_name( 18, '\0' ), extents( NiftiHeader::ANALYZE_EXTENT ), session_error( 0 ), 
-        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( new_dim ), intent_p1( 0.0 ), 
-        intent_p2( 0.0 ), intent_p3( 0.0 ), intent_code( NiftiIntent::NONE ), datatype( new_datatype ), bitpix( 8 ),
-        slice_start( 0 ), pixdim( new_pixdim ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ), scl_slope( 0.0 ),
-        scl_inter( 0.0 ), slice_end( 0 ), slice_code( NiftiSlice::UNKNOWN ), xyz_units( NiftiUnit::UNKNOWN ), 
-        time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0 ), cal_min( 0.0 ), slice_duration( 0.0 ), toffset( 0.0 ), 
+        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( new_dim ), intent_p1( 0.0f ), 
+        intent_p2( 0.0f ), intent_p3( 0.0f ), intent_code( NiftiIntent::NONE ), datatype( new_datatype ), bitpix( 8 ),
+        slice_start( 0 ), pixdim( new_pixdim ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ), scl_slope( 0.0f ),
+        scl_inter( 0.0f ), slice_end( 0 ), slice_code( NiftiSlice::UNKNOWN ), xyz_units( NiftiUnit::UNKNOWN ), 
+        time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0f ), cal_min( 0.0f ), slice_duration( 0.0f ), toffset( 0.0f ), 
         glmax( 255 ), glmin( 0 ), descrip( 80, '\0' ), aux_file( 24, '\0' ), qform_code( NiftiXForm::UNKNOWN ), 
-        sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0 ), quatern_c( 0.0 ), quatern_d( 0.0 ), qoffset_x( 0.0 ), 
-        qoffset_y( 0.0 ), qoffset_z( 0.0 ), qfac( 1.0 ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
-      qtm.Set( 0.0 );
-      stm.Set( 0.0 );
-      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0;
-      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0;
+        sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0f ), quatern_c( 0.0f ), quatern_d( 0.0f ), qoffset_x( 0.0f ), 
+        qoffset_y( 0.0f ), qoffset_z( 0.0f ), qfac( 1.0f ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
+      qtm.Set( 0.0f );
+      stm.Set( 0.0f );
+      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0f;
+      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0f;
       SetBitPix( );
       if( !one_file ) {
-        vox_offset = 0.0;
+        vox_offset = 0.0f;
       }
     }
   catch( std::bad_alloc &e ) {
@@ -105,24 +105,24 @@ namespace Bial {
   template< class D >
   NiftiHeader::NiftiHeader( const Image< D > &img, bool one_file ) try 
     : data_type( 10, '\0' ), db_name( 18, '\0' ), extents( NiftiHeader::ANALYZE_EXTENT ), session_error( 0 ), 
-        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( img.Dim( ) ), intent_p1( 0.0 ), 
-        intent_p2( 0.0 ), intent_p3( 0.0 ), intent_code( NiftiIntent::NONE ), datatype( DataTypeDecode( img[ 0 ] ) ), 
+        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( img.Dim( ) ), intent_p1( 0.0f ), 
+        intent_p2( 0.0f ), intent_p3( 0.0f ), intent_code( NiftiIntent::NONE ), datatype( DataTypeDecode( img[ 0 ] ) ), 
         bitpix( 8 ), slice_start( 0 ), pixdim( img.PixelSize( ) ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ),
-        scl_slope( 0.0 ), scl_inter( 0.0 ), slice_end( 0 ), slice_code( NiftiSlice::UNKNOWN ),
-        xyz_units( NiftiUnit::UNKNOWN ), time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0 ), cal_min( 0.0 ),
-        slice_duration( 0.0 ), toffset( 0.0 ), glmax( 255 ), glmin( 0 ), descrip( 80, '\0' ), aux_file( 24, '\0' ),
-        qform_code( NiftiXForm::UNKNOWN ), sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0 ), quatern_c( 0.0 ),
-        quatern_d( 0.0 ), qoffset_x( 0.0 ), qoffset_y( 0.0 ), qoffset_z( 0.0 ), qfac( 1.0 ), qtm( 4, 4 ), stm( 4, 4 ),
+        scl_slope( 0.0f ), scl_inter( 0.0f ), slice_end( 0 ), slice_code( NiftiSlice::UNKNOWN ),
+        xyz_units( NiftiUnit::UNKNOWN ), time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0f ), cal_min( 0.0f ),
+        slice_duration( 0.0f ), toffset( 0.0f ), glmax( 255 ), glmin( 0 ), descrip( 80, '\0' ), aux_file( 24, '\0' ),
+        qform_code( NiftiXForm::UNKNOWN ), sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0f ), quatern_c( 0.0f ),
+        quatern_d( 0.0f ), qoffset_x( 0.0f ), qoffset_y( 0.0f ), qoffset_z( 0.0f ), qfac( 1.0f ), qtm( 4, 4 ), stm( 4, 4 ),
         intent_name( 16, '\0' ) {
       if( img.Dims( ) == 2 )
         dim.pop_back( );
-      qtm.Set( 0.0 );
-      stm.Set( 0.0 );
-      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0;
-      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0;
+      qtm.Set( 0.0f );
+      stm.Set( 0.0f );
+      qtm[ 0 ] = qtm[ 5 ] = qtm[ 10 ] = qtm[ 15 ] = 1.0f;
+      stm[ 0 ] = stm[ 5 ] = stm[ 10 ] = stm[ 15 ] = 1.0f;
       SetBitPix( );
       if( !one_file ) {
-        vox_offset = 0.0;
+        vox_offset = 0.0f;
       }
     }
   catch( std::bad_alloc &e ) {
@@ -145,14 +145,14 @@ namespace Bial {
 
   NiftiHeader::NiftiHeader( const std::string &filename ) try 
     : data_type( 10, '\0' ), db_name( 18, '\0' ), extents( NiftiHeader::ANALYZE_EXTENT ), session_error( 0 ),
-        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( 8, 0 ), intent_p1( 0.0 ), intent_p2( 0.0 ),
-        intent_p3( 0.0 ), intent_code( NiftiIntent::NONE ), datatype( NiftiType::INT8 ), bitpix( 8 ), slice_start( 0 ),
-        pixdim( 8, 0.0 ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ), scl_slope( 0.0 ), scl_inter( 0.0 ), 
+        regular( 'r' ), freq_dim( 0 ), phase_dim( 0 ), slice_dim( 0 ), dim( 8, 0 ), intent_p1( 0.0f ), intent_p2( 0.0f ),
+        intent_p3( 0.0f ), intent_code( NiftiIntent::NONE ), datatype( NiftiType::INT8 ), bitpix( 8 ), slice_start( 0 ),
+        pixdim( 8, 0.0f ), vox_offset( NiftiHeader::NIFTI_HEADER_SIZE + 4.0 ), scl_slope( 0.0f ), scl_inter( 0.0f ), 
         slice_end( 0 ), slice_code( NiftiSlice::UNKNOWN ), xyz_units( NiftiUnit::UNKNOWN ), 
-        time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0 ), cal_min( 0.0 ), slice_duration( 0.0 ), toffset( 0.0 ), 
+        time_units( NiftiUnit::UNKNOWN ), cal_max( 0.0f ), cal_min( 0.0f ), slice_duration( 0.0f ), toffset( 0.0f ), 
         glmax( 255 ), glmin( 0 ), descrip( 80, '\0' ), aux_file( 24, '\0' ), qform_code( NiftiXForm::UNKNOWN ), 
-        sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0 ), quatern_c( 0.0 ), quatern_d( 0.0 ), qoffset_x( 0.0 ),
-        qoffset_y( 0.0 ), qoffset_z( 0.0 ), qfac( 1.0 ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
+        sform_code( NiftiXForm::UNKNOWN ), quatern_b( 0.0f ), quatern_c( 0.0f ), quatern_d( 0.0f ), qoffset_x( 0.0f ),
+        qoffset_y( 0.0f ), qoffset_z( 0.0f ), qfac( 1.0f ), qtm( 4, 4 ), stm( 4, 4 ), intent_name( 16, '\0' ) {
       
       /* Opening file. */
       std::string hdrname( NiftiHeader::ExistingHeaderFileName( filename ) );
@@ -174,19 +174,19 @@ namespace Bial {
         }
       }
       file.read( reinterpret_cast< char* >( &data_type[ 0 ] ), 10 * sizeof( char ) ); /* data_type */
-      COMMENT( "data_type: " << data_type, 1 );
+      COMMENT( "data_type: " << data_type, 2 );
       file.read( reinterpret_cast< char* >( &db_name[ 0 ] ), 18 * sizeof( char ) ); /* db_name */
-      COMMENT( "db_name: " << db_name, 1 );
+      COMMENT( "db_name: " << db_name, 2 );
       file.read( reinterpret_cast< char* >( &extents ), 7 * sizeof( char ) ); /* extents, session_error, regular */
-      COMMENT( "extents: " << extents, 1 );
+      COMMENT( "extents: " << extents, 2 );
       char dim_info;
       file.read( reinterpret_cast< char* >( &dim_info ), sizeof( char ) ); /* dim_info */
       freq_dim = dim_info & 0x03;
       phase_dim = ( dim_info >> 2 ) & 0x03;
       slice_dim = ( dim_info >> 4 ) & 0x03;
-      COMMENT( "freq_dim: " << freq_dim, 1 );
-      COMMENT( "phase_dim: " << phase_dim, 1 );
-      COMMENT( "slice_dim: " << slice_dim, 1 );
+      COMMENT( "freq_dim: " << freq_dim, 2 );
+      COMMENT( "phase_dim: " << phase_dim, 2 );
+      COMMENT( "slice_dim: " << slice_dim, 2 );
       Array< short, 8 > hdr_dim;
       file.read( reinterpret_cast< char* >( &hdr_dim ), 8 * sizeof( short ) ); /* hdr_dim */
       if( swap ) {
@@ -220,24 +220,24 @@ namespace Bial {
         }
       }
       file.read( reinterpret_cast< char* >( &intent_p1 ), 10 * sizeof( short ) );
-      COMMENT( "intent_p1: " << intent_p1, 1 );
-      COMMENT( "intent_p2: " << intent_p2, 1 );
-      COMMENT( "intent_p3: " << intent_p3, 1 );
-      COMMENT( "intent_code: " << static_cast< short >( intent_code ), 1 );
-      COMMENT( "datatype: " << static_cast< short >( datatype ), 1 );
-      COMMENT( "bitpix: " << bitpix, 1 );
-      COMMENT( "slice_start: " << slice_start, 1 );
+      COMMENT( "intent_p1: " << intent_p1, 2 );
+      COMMENT( "intent_p2: " << intent_p2, 2 );
+      COMMENT( "intent_p3: " << intent_p3, 2 );
+      COMMENT( "intent_code: " << static_cast< short >( intent_code ), 2 );
+      COMMENT( "datatype: " << static_cast< short >( datatype ), 2 );
+      COMMENT( "bitpix: " << bitpix, 2 );
+      COMMENT( "slice_start: " << slice_start, 2 );
 
       Array< float, 8 > hdr_pixdim;
       file.read( reinterpret_cast< char* >( &hdr_pixdim ), 8 * sizeof( float ) ); /* hdr_pixdim */
       if( swap ) {
         NiftiHeader::Swap4Bytes( 1, reinterpret_cast< void* >( &( hdr_pixdim[ 0 ] ) ) );
       }
-      if( hdr_pixdim[ 0 ] < 0.0 ) {
-        qfac = -1.0;
+      if( hdr_pixdim[ 0 ] < 0.0f ) {
+        qfac = -1.0f;
       }
       else {
-        qfac = 1.0;
+        qfac = 1.0f;
       }
       pixdim = Vector< float >( dim.size( ) );
       for( dms = 0; dms < static_cast< int >( pixdim.size( ) ); ++dms ) {
@@ -257,8 +257,8 @@ namespace Bial {
       file.read( reinterpret_cast< char* >( &descrip[ 0 ] ), 80 * sizeof( char ) ); /* descrip */
       file.read( reinterpret_cast< char* >( &aux_file[ 0 ] ), 24 * sizeof( char ) ); /* aux_file */
       COMMENT( "qform_code, sform_code, quatern_b, quatern_c, quatern_d, qoffset_x, qoffset_y, qoffset_z", 2 );
-      qtm.Set( 0.0 );
-      stm.Set( 0.0 );
+      qtm.Set( 0.0f );
+      stm.Set( 0.0f );
       file.read( reinterpret_cast< char* >( &qform_code ), 14 * sizeof( short ) );
       file.read( reinterpret_cast< char* >( &stm[ 0 ] ), 12 * sizeof( float ) ); /* stm */
       file.read( reinterpret_cast< char* >( &intent_name[ 0 ] ), 16 * sizeof( char ) ); /* intent_name */
@@ -277,9 +277,9 @@ namespace Bial {
         SwapHeader( );
       }
       if( ( datatype != NiftiType::UINT8 ) && ( datatype != NiftiType::INT16 ) && ( datatype != NiftiType::INT32 ) &&
-          ( datatype != NiftiType::INT64 ) && ( datatype != NiftiType::FLOAT32 ) && ( datatype != NiftiType::FLOAT64 )
-          && ( datatype != NiftiType::INT8 ) && ( datatype != NiftiType::UINT16 ) && ( datatype != NiftiType::UINT32 )
-          && ( datatype != NiftiType::UINT64 ) ) {
+          ( datatype != NiftiType::INT64 ) && ( datatype != NiftiType::FLOAT32 ) && ( datatype != NiftiType::FLOAT64 ) &&
+          ( datatype != NiftiType::INT8 ) && ( datatype != NiftiType::UINT16 ) && ( datatype != NiftiType::UINT32 ) &&
+          ( datatype != NiftiType::UINT64 ) ) {
         std::string msg( BIAL_ERROR( "Unsupported nifti header." ) );
         throw( std::logic_error( msg ) );
       }
@@ -288,37 +288,40 @@ namespace Bial {
         COMMENT( "Use grid spacing for qtm.", 2 );
         qtm( 0, 0 ) = pixdim[ 0 ]; /* nim->dx; grid spacings */
         qtm( 1, 1 ) = pixdim[ 1 ]; /* nim->dy; along diagonal */
-        qtm( 2, 2 ) = pixdim[ 2 ]; /* nim->dz; */
-        qtm( 0, 1 ) = qtm( 0, 2 ) = qtm( 0, 3 ) = 0.0; /* off diagonal is zero */
-        qtm( 1, 0 ) = qtm( 1, 2 ) = qtm( 1, 3 ) = 0.0;
-        qtm( 2, 0 ) = qtm( 2, 1 ) = qtm( 2, 3 ) = 0.0;
-        qtm( 3, 0 ) = qtm( 3, 1 ) = qtm( 3, 2 ) = 0.0; /* last row is always [ 0 0 0 1 ] */
-        qtm( 3, 3 ) = 1.0;
+	if( pixdim.size( ) > 2 )
+	  qtm( 2, 2 ) = pixdim[ 2 ]; /* nim->dz; */
+	else
+	  qtm( 2, 2 ) = 1;
+        qtm( 0, 1 ) = qtm( 0, 2 ) = qtm( 0, 3 ) = 0.0f; /* off diagonal is zero */
+        qtm( 1, 0 ) = qtm( 1, 2 ) = qtm( 1, 3 ) = 0.0f;
+        qtm( 2, 0 ) = qtm( 2, 1 ) = qtm( 2, 3 ) = 0.0f;
+        qtm( 3, 0 ) = qtm( 3, 1 ) = qtm( 3, 2 ) = 0.0f; /* last row is always [ 0 0 0 1 ] */
+        qtm( 3, 3 ) = 1.0f;
         qform_code = NiftiXForm::UNKNOWN;
       }
       else {
         COMMENT( "Use the quaternion-specified transformation.", 2 );
-        quatern_b = std::isfinite( quatern_b ) ? quatern_b : 0.0;
-        quatern_c = std::isfinite( quatern_c ) ? quatern_c : 0.0;
-        quatern_d = std::isfinite( quatern_d ) ? quatern_d : 0.0;
-        qoffset_x = std::isfinite( qoffset_x ) ? qoffset_x : 0.0;
-        qoffset_y = std::isfinite( qoffset_y ) ? qoffset_y : 0.0;
-        qoffset_z = std::isfinite( qoffset_z ) ? qoffset_z : 0.0;
+        quatern_b = std::isfinite( quatern_b ) ? quatern_b : 0.0f;
+        quatern_c = std::isfinite( quatern_c ) ? quatern_c : 0.0f;
+        quatern_d = std::isfinite( quatern_d ) ? quatern_d : 0.0f;
+        qoffset_x = std::isfinite( qoffset_x ) ? qoffset_x : 0.0f;
+        qoffset_y = std::isfinite( qoffset_y ) ? qoffset_y : 0.0f;
+        qoffset_z = std::isfinite( qoffset_z ) ? qoffset_z : 0.0f;
         QuaternToMat( pixdim );
       }
       if( sform_code <= NiftiXForm::UNKNOWN ) {
         COMMENT( "sform_code <= 0, then no sto transformation.", 2 );
         sform_code = NiftiXForm::UNKNOWN;
       }
-      scl_slope = std::isfinite( scl_slope ) ? scl_slope : 0.0;
-      scl_inter = std::isfinite( scl_inter ) ? scl_inter : 0.0;
-      intent_p1 = std::isfinite( intent_p1 ) ? intent_p1 : 0.0;
-      intent_p2 = std::isfinite( intent_p2 ) ? intent_p2 : 0.0;
-      intent_p3 = std::isfinite( intent_p3 ) ? intent_p3 : 0.0;
-      toffset = std::isfinite( toffset ) ? toffset : 0.0;
-      slice_duration = std::isfinite( slice_duration ) ? slice_duration : 0.0;
-      cal_min = std::isfinite( cal_min ) ? cal_min : 0.0;
-      cal_max = std::isfinite( cal_max ) ? cal_max : 0.0;
+      scl_slope = std::isfinite( scl_slope ) ? scl_slope : 0.0f;
+      scl_inter = std::isfinite( scl_inter ) ? scl_inter : 0.0f;
+      intent_p1 = std::isfinite( intent_p1 ) ? intent_p1 : 0.0f;
+      intent_p2 = std::isfinite( intent_p2 ) ? intent_p2 : 0.0f;
+      intent_p3 = std::isfinite( intent_p3 ) ? intent_p3 : 0.0f;
+      toffset = std::isfinite( toffset ) ? toffset : 0.0f;
+      slice_duration = std::isfinite( slice_duration ) ? slice_duration : 0.0f;
+      cal_min = std::isfinite( cal_min ) ? cal_min : 0.0f;
+      cal_max = std::isfinite( cal_max ) ? cal_max : 0.0f;
     }
   catch( std::ios_base::failure &e ) {
     std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Error opening/reading/closing Nifti file." ) );
@@ -417,16 +420,16 @@ namespace Bial {
       file.write( reinterpret_cast< const char* >( hdr_dim.data( ) ), 8 * sizeof( short ) ); /* hdr_dim */
       COMMENT( "intent_p1, float intent_p2, intent_p3, intent_code, datatype, bitpix, slice_start", 2 );
       file.write( reinterpret_cast< const char* >( &intent_p1 ), 10 * sizeof( short ) );
-      Vector< float > hdr_pixdim( 8, 1.0 );
+      Vector< float > hdr_pixdim( 8, 1.0f );
       hdr_pixdim( 0 ) = qfac;
       for( size_t dms = 0; dms < dim.size( ); ++dms )
         hdr_pixdim( dms + 1 ) = pixdim( dms );
       file.write( reinterpret_cast< const char* >( hdr_pixdim.data( ) ), 8 * sizeof( float ) ); /* hdr_pixdim */
-      float vox_offset = NiftiHeader::NIFTI_HEADER_SIZE + 4.0;
-      if( !one_file )
-        vox_offset = 0;
-      COMMENT( "vox_offset, scl_slope, scl_inter, slice_end, slice_code.", 2 );
-      file.write( reinterpret_cast< const char* >( &vox_offset ), 15 * sizeof( char ) );
+      float vox_offset = ( one_file ? NiftiHeader::NIFTI_HEADER_SIZE + 4.0f : 0.0f );
+      COMMENT( "vox_offset.", 2 );
+      file.write( reinterpret_cast< const char* >( &vox_offset ), 4 * sizeof( char ) );
+      COMMENT( "scl_slope, scl_inter, slice_end, slice_code.", 2 );
+      file.write( reinterpret_cast< const char* >( &scl_slope ), 11 * sizeof( char ) );
       char xyzt_units = ( static_cast< char >( xyz_units ) & 0x07 ) | ( static_cast< char >( time_units ) & 0x38 );
       file.write( reinterpret_cast< const char* >( &xyzt_units ), sizeof( char ) ); /* xyzt_units */
       COMMENT( "cal_max, cal_min, slice_duration, toffset, glmax, glmin.", 2 );
@@ -439,12 +442,7 @@ namespace Bial {
       file.write( intent_name.c_str( ), 16 * sizeof( char ) ); /* intent_name */
       Vector< char > magic( 8, 0 );
       magic( 0 ) = 'n'; magic( 2 ) = '1';
-      if( one_file ) {
-        magic( 1 ) = '+';
-      }
-      else {
-        magic( 1 ) = 'i';
-      }
+      magic( 1 ) = ( one_file ? '+' : 'i' );
       file.write( magic.data( ), 8 * sizeof( char ) ); /* magic */
     }
     catch( std::ios_base::failure &e ) {
@@ -1142,8 +1140,8 @@ namespace Bial {
       double c = quatern_c;
       double d = quatern_d;
       COMMENT( "last row is always [ 0 0 0 1 ]", 2 );
-      qtm( 3, 0 ) = qtm( 3, 1 ) = qtm( 3, 2 ) = 0.0;
-      qtm( 3, 3 ) = 1.0;
+      qtm( 3, 0 ) = qtm( 3, 1 ) = qtm( 3, 2 ) = 0.0f;
+      qtm( 3, 3 ) = 1.0f;
       COMMENT( "Compute a parameter from b,c,d.", 2 );
       double a = 1.0l - ( b * b + c * c + d * d );
       if( a < 1.e-7l ) {
@@ -1163,9 +1161,9 @@ namespace Bial {
        * pixdim refers to the image space is it? Maybe in this function
        * is, but not in MatToQuatern.
        */
-      double xd = ( pixel_dim[ 0 ] > 0.0 ) ? pixel_dim[ 0 ] : 1.0; /* make sure are positive */
-      double yd = ( pixel_dim[ 1 ] > 0.0 ) ? pixel_dim[ 1 ] : 1.0; /* make sure are positive */
-      double zd = ( pixel_dim[ 2 ] > 0.0 ) ? pixel_dim[ 2 ] : 1.0; /* make sure are positive */
+      double xd = ( pixel_dim[ 0 ] > 0.0f ) ? pixel_dim[ 0 ] : 1.0; /* make sure are positive */
+      double yd = ( pixel_dim[ 1 ] > 0.0f ) ? pixel_dim[ 1 ] : 1.0; /* make sure are positive */
+      double zd = ( pixel_dim[ 2 ] > 0.0f ) ? pixel_dim[ 2 ] : 1.0; /* make sure are positive */
       if( qfac < 0.0 ) {
         zd = -zd; /* left handedness? */
       }
@@ -1273,10 +1271,10 @@ namespace Bial {
       COMMENT( "Compute the determinant to determine if it is proper.", 2 );
       zd = MatrixOp::Determinant( P ); /* should be -1 or 1 */
       if( zd > 0 ) { /* proper */
-        qfac = 1.0;
+        qfac = 1.0f;
       }
       else {                  /* improper ==> flip 3rd column */
-        qfac = -1.0;
+        qfac = -1.0f;
         r13 = -r13; r23 = -r23; r33 = -r33;
       }
       COMMENT( "Compute quaternion parameters.", 2 );

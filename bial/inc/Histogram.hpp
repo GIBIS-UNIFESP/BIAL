@@ -51,39 +51,6 @@ namespace Bial {
     template< template< class D > class C, class D >
     Signal FuzzyHistogram( const C< D > &data, double data_step = 1.0 );
 
-    /**
-     * @date 2012/Sep/11 
-     * @param data: Input data. 
-     * @param data_step: Data step between two consecutive samples. 
-     * @return Normalized histogram of data. 
-     * @brief Static constructor. 
-     * @warning none. 
-     */
-    template< template< class D > class C, class D >
-    Signal NormalizedHistogram( const C< D > &data, double data_step = 1.0 );
-
-    /**
-     * @date 2012/Sep/11 
-     * @param data: Input data. 
-     * @param data_step: Data step between two consecutive samples. 
-     * @return Accumulated histogram of data. 
-     * @brief Static constructor. 
-     * @warning none. 
-     */
-    template< template< class D > class C, class D >
-    Signal AccumulatedHistogram( const C< D > &data, double data_step = 1.0 );
-
-    /**
-     * @date 2012/Sep/11 
-     * @param data: Input data. 
-     * @param data_step: Data step between two consecutive samples. 
-     * @return Equalized histogram of data. 
-     * @brief Static constructor. 
-     * @warning none. 
-     */
-    template< template< class D > class C, class D >
-    Signal EqualizedHistogram( const C< D > &data, double data_step = 1.0 );
-
   }
 
 }

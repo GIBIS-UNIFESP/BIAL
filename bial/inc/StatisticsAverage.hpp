@@ -24,7 +24,7 @@ namespace Bial {
      * @warning none.
      */
     template< template< class D > class C, class D >
-    float Average( C< D > data );
+    float Average( const C< D > &data );
 
     /**
      * @date 2013/Dec/06
@@ -36,7 +36,7 @@ namespace Bial {
      * @warning none.
      */
     template< template< class D > class C, class D >
-    float Average( C< D > data, size_t first, size_t size );
+    float Average( const C< D > &data, size_t first, size_t size );
 
   }
 

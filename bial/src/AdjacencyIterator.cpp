@@ -63,6 +63,28 @@ namespace Bial {
     throw( std::logic_error( msg ) );
   }
 
+  template< class D > 
+  AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< D > &img ) try :
+    AdjacencyIterator::AdjacencyIterator( img, adj ) {
+    }
+  catch( std::bad_alloc &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( std::runtime_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+    throw( std::runtime_error( msg ) );
+  }
+  catch( const std::out_of_range &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+    throw( std::out_of_range( msg ) );
+  }
+  catch( const std::logic_error &e ) {
+    std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+    throw( std::logic_error( msg ) );
+  }
+
+  
   size_t AdjacencyIterator::operator()( size_t src_index, size_t adj_position ) const {
     try {
       return( src_index + displacement[ adj_position ] );
@@ -226,6 +248,13 @@ namespace Bial {
   template AdjacencyIterator::AdjacencyIterator( const Image< double > &img, const Adjacency &adj );
   template AdjacencyIterator::AdjacencyIterator( const Image< Color > &img, const Adjacency &adj );
   template AdjacencyIterator::AdjacencyIterator( const Image< RealColor > &img, const Adjacency &adj );
+
+  template AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< int > &img );
+  template AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< llint > &img );
+  template AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< float > &img );
+  template AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< double > &img );
+  template AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< Color > &img );
+  template AdjacencyIterator::AdjacencyIterator( const Adjacency &adj, const Image< RealColor > &img );
 
 #endif
 

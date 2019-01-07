@@ -65,6 +65,50 @@ namespace Bial {
     }
   }
 
+  template< template< class D > class C, class D >
+  std::tuple< size_t, size_t, size_t, size_t >
+  Statistics::PositiveNegative( const C< D > &src_label, const C< D > &tgt_label, size_t slice ) {
+    try {
+      if( src_label.size( ) != tgt_label.size( ) ) {
+        std::string msg( BIAL_ERROR( "Input data dimensions do not match." ) );
+        throw( std::logic_error( msg ) );
+      }
+      size_t TP = 0, TN = 0, FP = 0, FN = 0;
+      size_t slice_size = src_label.Displacement( 1 );
+      for( size_t pxl = slice * slice_size; pxl < slice_size * ( slice + 1 ); ++pxl ) {
+        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) != 0 ) ) {
+          ++TP;
+        }
+        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) == 0 ) ) {
+          ++TN;
+        }
+        if( ( src_label( pxl ) != 0 ) && ( tgt_label( pxl ) == 0 ) ) {
+          ++FP;
+        }
+        if( ( src_label( pxl ) == 0 ) && ( tgt_label( pxl ) != 0 ) ) {
+          ++FN;
+        }
+      }
+      return( std::tie( TP, TN, FP, FN ) );
+    }
+    catch( std::bad_alloc &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Memory allocation error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( std::runtime_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Runtime error." ) );
+      throw( std::runtime_error( msg ) );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
+    catch( const std::logic_error &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Logic Error." ) );
+      throw( std::logic_error( msg ) );
+    }
+  }
+
   template< class D >
   std::tuple< size_t, size_t, size_t, size_t > Statistics::PositiveNegative( const Image< D > &src_label, 
                                                                              const Image< D > &tgt_label, float dist ) {
@@ -485,6 +529,15 @@ namespace Bial {
   template size_t Statistics::FalseNegative( const Image< double > &src_label, const Image< double > &tgt_label, 
                                              float dist );
 
+  template std::tuple< size_t, size_t, size_t, size_t > 
+  Statistics::PositiveNegative( const Image< int > &src_label, const Image< int > &tgt_label, size_t slice );
+  template std::tuple< size_t, size_t, size_t, size_t > 
+  Statistics::PositiveNegative( const Image< llint > &src_label, const Image< llint > &tgt_label, size_t slice );
+  template std::tuple< size_t, size_t, size_t, size_t > 
+  Statistics::PositiveNegative( const Image< float > &src_label, const Image< float > &tgt_label, size_t slice );
+  template std::tuple< size_t, size_t, size_t, size_t > 
+  Statistics::PositiveNegative( const Image< double > &src_label, const Image< double > &tgt_label, size_t slice );
+  
 #endif
 
 }

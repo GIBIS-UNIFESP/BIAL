@@ -34,6 +34,21 @@ namespace Bial {
                                                                    const C< D > &tgt_label );
 
     /**
+     * @date 2019/Jan/07
+     * @param src_label: A binary label data.
+     * @param tgt_label: A binary label data.
+     * @param slice: slice in z dimension.
+     * @return The number of true positive, true negative, false positive, and false negative pixels as comparing
+     * src_label to tgt_label.
+     * @brief Computes and returns the number of true positive, true negative, false positive, and false negative
+     * pixels as comparing src_label to tgt_label for a slice of a 3D image.
+     * @warning none.
+     */
+    template< template< class D > class C, class D >
+    std::tuple< size_t, size_t, size_t, size_t >
+    PositiveNegative( const C< D > &src_label, const C< D > &tgt_label, size_t slice );
+
+    /**
      * @date 2015/May/26
      * @param src_label: A binary label data.
      * @param tgt_label: A binary label data.

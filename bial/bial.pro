@@ -317,7 +317,16 @@ HEADERS += \
     inc/Vector.hpp \
     inc/VideoIO.hpp \
     inc/SimpleBucketQueue.hpp \
-    inc/RotatingBucketQueue.hpp
+    inc/RotatingBucketQueue.hpp \
+    inc/StatisticsSSIM.hpp \
+    inc/StatisticsPSNR.hpp \
+    inc/StatisticsCovariance.hpp \
+    inc/StatisticsMeanSquareError.hpp \
+    inc/StatisticsQILV.hpp \
+    inc/StatisticsIQI.hpp \
+    inc/StatisticsEntropyDifference.hpp \
+    inc/AdjacencySequential.hpp \
+    inc/StatisticsGRBAC.hpp
 
 SOURCES += \
     src/Adjacency.cpp \
@@ -506,7 +515,16 @@ SOURCES += \
     src/TransformEuclDist.cpp \
     src/TransformEuclDistInv.cpp \
     src/SimpleBucketQueue.cpp \
-    src/RotatingBucketQueue.cpp
+    src/RotatingBucketQueue.cpp \
+    src/StatisticsSSIM.cpp \
+    src/StatisticsCovariance.cpp \
+    src/StatisticsPSNR.cpp \
+    src/StatisticsMeanSquareError.cpp \
+    src/StatisticsQILV.cpp \
+    src/StatisticsEntropyDifference.cpp \
+    src/StatisticsIQI.cpp \
+    src/AdjacencySequential.cpp \
+    src/StatisticsGRBAC.cpp
 
 DISTFILES += \
     uncrustify.cfg

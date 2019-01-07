@@ -15,7 +15,7 @@ using namespace std;
 using namespace Bial;
 
 int main( int argc, char **argv ) {
-  if( argc < 2 ) {
+  if( argc < 3 ) {
     cout << "Usage: " << argv[ 0 ] << " <binary image> <output image>" << endl;
     return( 0 );
   }

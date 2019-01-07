@@ -53,8 +53,10 @@ namespace Bial {
       for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	edges[ pxl ] = source[ mask_vector[ pxl ] ];
       float base_std = Statistics::StandardDeviation( edges );
+      std::cout << "base_std: " << base_std << std::endl;
       COMMENT( "Estimate best edge kappa based on the maximum standard deviation in a binary search.", 3 );
       float kappa = base_std / 50;
+      std::cout << "init kappa and step size: " << kappa << std::endl;
       step = kappa;
       Image< D > filtered( Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj, adj_itr, weight, integration_constant ) );
       for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
@@ -77,10 +79,12 @@ namespace Bial {
 	prev_std = std;
 	kappa += step;
       } while( ( kappa < base_std ) || ( std_diff[ std_diff.size( ) - 2 ] > std_diff[ std_diff.size( ) - 1 ] ) );
-      COMMENT( "max_std_diff: " << max_std_diff << ", std_diff: " << std_diff << "kappas: " << kappas, 3 );
+      COMMENT( "max_std_diff: " << max_std_diff << "\nstd_diff: " << std_diff << "\nkappas: " << kappas, 3 );
+      std::cout << "max_std_diff: " << max_std_diff << ", std_diff: " << std_diff << "kappas: " << kappas << std::endl;
       for( size_t idx = 1; idx < std_diff.size( ); ++idx ) {
-	if( std_diff[ idx ] > 0.01 * max_std_diff ) {
+	if( std_diff[ idx ] > 0.05 * max_std_diff ) {
 	  COMMENT( "edge kappa: " << kappas[ idx ], 3 );
+	  std::cout << "edge kappa index: " << idx << std::endl;
 	  return( kappas[ idx ] );
 	}
       }
@@ -119,29 +123,42 @@ namespace Bial {
       size_t mask_vector_size = mask_vector.size( );
       COMMENT( "Get initial kappa, minimum standard deviation of flat region, and maximum standard deviation of edge region.", 0 );
       float kappa = step;
+      std::cout << "init kappa and step size: " << kappa << std::endl;
       Vector< int > backg( mask_vector_size );
       COMMENT( "Getting standard deviation given by strong mean filter of input image.", 0 );
-      Image< D > filtered( Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj, adj_itr, weight, integration_constant ) );
+      Image< D > filtered( Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa, adj, adj_itr,
+								 weight, integration_constant ) );
       for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
       float prev_std = Statistics::StandardDeviation( backg );
       COMMENT( "Estimate best kappa for flat region.", 0 );
       float max_diff = 0.0f;
-      float diff;
+      Vector< float > diff( 4, 0.0 );
       do {
-	filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr, weight, integration_constant );
+	filtered = Filtering::QuickAnisotropicDiffusion( source, mask_vector, diff_func, kappa + step, adj, adj_itr,
+							 weight, integration_constant );
 	for( size_t pxl = 0; pxl < mask_vector_size; ++pxl )
 	  backg[ pxl ] = filtered[ mask_vector[ pxl ] ];
 	float std = Statistics::StandardDeviation( backg );
-	diff = prev_std - std;
-	if( max_diff < diff )
-	  max_diff = diff;
+	COMMENT( "Computing average difference in standard deviation.", 3 );
+	diff[ 0 ] = diff[ 1 ];
+	diff[ 1 ] = diff[ 2 ];
+	diff[ 2 ] = prev_std - std;
+	diff[ 3 ] = diff[ 0 ] + diff[ 1 ] + diff[ 2 ];
+	if( max_diff < diff[ 3 ] )
+	  max_diff = diff[ 3 ];
+	COMMENT( "Checking for small increase before decreasing standard deviation. In this case, do not consider previous decrease values.", 3 );
+	if( diff[ 3 ] < 0.0f )
+	  max_diff = 0.0f;
 	COMMENT( "prev_std: " << prev_std << ", std: " << std << ", max_diff: " << max_diff
-		 << ", diff: " << diff << ", kappa: " << kappa << ", step: " << step, 3 );
+		 << ", mean diff: " << diff[ 3 ] << ", kappa: " << kappa << ", step: " << step, 3 );
+	std::cout << "prev_std: " << prev_std << ", std: " << std << ", max_diff: " << max_diff
+		  << ", mean diff: " << diff[ 3 ] << ", kappa: " << kappa << ", step: " << step << std::endl;
 	kappa += step;
 	prev_std = std;
-      } while( diff > 0.01 * max_diff );
-      COMMENT( "flat std: " << best_std << ", flat kappa: " << kappa, 0 );
+      }
+      while( ( diff[ 3 ] > 0.01f * max_diff ) || ( diff[ 3 ] <= 0.0f ) || ( kappa < 800.0f ) );
+      std::cout << "Final flat kappa: " << kappa << std::endl;
       return( kappa );
     }
     catch( std::bad_alloc &e ) {

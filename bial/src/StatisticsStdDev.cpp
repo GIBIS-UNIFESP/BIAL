@@ -23,7 +23,7 @@
 namespace Bial {
 
   template< template< class D > class C, class D >
-  inline float Statistics::StandardDeviation( C< D > data ) {
+  inline float Statistics::StandardDeviation( const C< D > &data ) {
     try {
       float average = Statistics::Average( data, 0, data.size( ) );
       return( Statistics::StandardDeviation( data, 0, data.size( ), average ) );
@@ -47,7 +47,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline float Statistics::StandardDeviation( C< D > data, size_t first, size_t size ) {
+  inline float Statistics::StandardDeviation( const C< D > &data, size_t first, size_t size ) {
     try {
       if( first + size > data.size( ) ) {
         std::string msg( BIAL_ERROR( "Maximum element index is greater than data size. Given data size: " +
@@ -77,7 +77,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  inline float Statistics::StandardDeviation( C< D > data, float average ) {
+  inline float Statistics::StandardDeviation( const C< D > &data, float average ) {
     try {
       return( Statistics::StandardDeviation( data, average, 0, data.size( ) ) );
     }
@@ -100,7 +100,7 @@ namespace Bial {
   }
 
   template< template< class D > class C, class D >
-  float Statistics::StandardDeviation( C< D > data, size_t first, size_t size, float average ) {
+  float Statistics::StandardDeviation( const C< D > &data, size_t first, size_t size, float average ) {
     try {
       if( first + size > data.size( ) ) {
         std::string msg( BIAL_ERROR( "Maximum element index is greater than data size. Given data size: " +
@@ -138,39 +138,39 @@ namespace Bial {
 
 #ifdef BIAL_EXPLICIT_StatisticsStdDev
 
-  template float Statistics::StandardDeviation( Image< int > data );
-  template float Statistics::StandardDeviation( Image< int > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Image< int > data, float average );
-  template float Statistics::StandardDeviation( Image< int > data, size_t first, size_t size, float average );
-  template float Statistics::StandardDeviation( Image< llint > data );
-  template float Statistics::StandardDeviation( Image< llint > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Image< llint > data, float average );
-  template float Statistics::StandardDeviation( Image< llint > data, size_t first, size_t size, float average );
-  template float Statistics::StandardDeviation( Image< float > data );
-  template float Statistics::StandardDeviation( Image< float > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Image< float > data, float average );
-  template float Statistics::StandardDeviation( Image< float > data, size_t first, size_t size, float average );
-  template float Statistics::StandardDeviation( Image< double > data );
-  template float Statistics::StandardDeviation( Image< double > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Image< double > data, float average );
-  template float Statistics::StandardDeviation( Image< double > data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Image< int > &data );
+  template float Statistics::StandardDeviation( const Image< int > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Image< int > &data, float average );
+  template float Statistics::StandardDeviation( const Image< int > &data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Image< llint > &data );
+  template float Statistics::StandardDeviation( const Image< llint > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Image< llint > &data, float average );
+  template float Statistics::StandardDeviation( const Image< llint > &data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Image< float > &data );
+  template float Statistics::StandardDeviation( const Image< float > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Image< float > &data, float average );
+  template float Statistics::StandardDeviation( const Image< float > &data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Image< double > &data );
+  template float Statistics::StandardDeviation( const Image< double > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Image< double > &data, float average );
+  template float Statistics::StandardDeviation( const Image< double > &data, size_t first, size_t size, float average );
 
-  template float Statistics::StandardDeviation( Vector< int > data );
-  template float Statistics::StandardDeviation( Vector< int > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Vector< int > data, float average );
-  template float Statistics::StandardDeviation( Vector< int > data, size_t first, size_t size, float average );
-  template float Statistics::StandardDeviation( Vector< llint > data );
-  template float Statistics::StandardDeviation( Vector< llint > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Vector< llint > data, float average );
-  template float Statistics::StandardDeviation( Vector< llint > data, size_t first, size_t size, float average );
-  template float Statistics::StandardDeviation( Vector< float > data );
-  template float Statistics::StandardDeviation( Vector< float > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Vector< float > data, float average );
-  template float Statistics::StandardDeviation( Vector< float > data, size_t first, size_t size, float average );
-  template float Statistics::StandardDeviation( Vector< double > data );
-  template float Statistics::StandardDeviation( Vector< double > data, size_t first, size_t size );
-  template float Statistics::StandardDeviation( Vector< double > data, float average );
-  template float Statistics::StandardDeviation( Vector< double > data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Vector< int > &data );
+  template float Statistics::StandardDeviation( const Vector< int > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Vector< int > &data, float average );
+  template float Statistics::StandardDeviation( const Vector< int > &data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Vector< llint > &data );
+  template float Statistics::StandardDeviation( const Vector< llint > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Vector< llint > &data, float average );
+  template float Statistics::StandardDeviation( const Vector< llint > &data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Vector< float > &data );
+  template float Statistics::StandardDeviation( const Vector< float > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Vector< float > &data, float average );
+  template float Statistics::StandardDeviation( const Vector< float > &data, size_t first, size_t size, float average );
+  template float Statistics::StandardDeviation( const Vector< double > &data );
+  template float Statistics::StandardDeviation( const Vector< double > &data, size_t first, size_t size );
+  template float Statistics::StandardDeviation( const Vector< double > &data, float average );
+  template float Statistics::StandardDeviation( const Vector< double > &data, size_t first, size_t size, float average );
 
 #endif
 

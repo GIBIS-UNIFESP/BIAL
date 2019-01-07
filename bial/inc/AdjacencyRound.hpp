@@ -73,7 +73,7 @@ namespace Bial {
     /**
      * @date 2013/Nov/14
      * @param radius: vector with hyper ellipse radii.
-     * @return adjacency relation with hyper ellipsoid form.
+     * @return Adjacency relation with hyper ellipsoid form.
      * @brief Create and return a ND hyper ellipsoid adjacency relation of radii given by 'radius'.
      * @warning none.
      */
@@ -82,12 +82,22 @@ namespace Bial {
     /**
      * @date 2012/Jul/06
      * @param radius: the radius of the circunference adjacency.
-     * @return adjacency relation with circunference form.
+     * @return Adjacency relation with circunference form.
      * @brief Create and return a 2D circunference adjacency relation of radius 'radius'.
      * @warning none.
      */
     Adjacency Circunference( float radius );
 
+    /**
+     * @date 2018/Dec/18
+     * @param radius: the radius of the disc adjacency.
+     * @return Adjacency relation with disc shape.
+     * @brief Create and return a 3D disc adjacency relation of radius 'radius'. The disc is flat in plane z. \
+     This adjacency is the same as the circular, but for 3D images.
+     * @warning none.
+     */
+    Adjacency Disc( float radius );
+    
   }
 
 }

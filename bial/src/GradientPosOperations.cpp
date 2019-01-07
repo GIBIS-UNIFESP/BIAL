@@ -52,10 +52,9 @@ namespace Bial {
                 size_t opp_dir = Bit::Flip( Bit::Flip( adj_dir, 0 ), 2 );
                 size_t opp_elm = adj_itr( elm, opp_dir );
                 if( canny[ opp_elm ] != 0 ) {
-                  COMMENT( "0 and 2 elm: " << canny.Coordinates( elm ) << ", adj_elm: " << canny.Coordinates( adj_elm )
-			   << ", opp_elm: " << canny.Coordinates(
-								 opp_elm ) << ", adj_dir: " << adj_dir <<
-                           ", opp_dir: " << opp_dir, 0 );
+                  COMMENT( "0 and 2 elm: " << canny.Coordinates( elm ) << ", adj_elm: " <<
+			   canny.Coordinates( adj_elm ) << ", opp_elm: " << canny.Coordinates( opp_elm ) <<
+			   ", adj_dir: " << adj_dir << ", opp_dir: " << opp_dir, 0 );
                   int side1_dir = Bit::Flip( Bit::Flip( adj_dir, 0 ), 1 );
                   int side2_dir = Bit::Flip( Bit::Flip( adj_dir, 2 ), 1 );
                   size_t side1_elm = adj_itr( elm, side1_dir );
