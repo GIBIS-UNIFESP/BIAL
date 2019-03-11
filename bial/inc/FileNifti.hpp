@@ -206,8 +206,8 @@ namespace Bial {
       }
       }
       delete[]( reinterpret_cast< unsigned char* >( dataptr ) );
-      //if( hdr.SclSlope( ) != 0.0 )
-      //res = res * hdr.SclSlope( ) + hdr.SclInter( );
+      if( hdr.SclSlope( ) != 0.0 )
+      res = res * hdr.SclSlope( ) + hdr.SclInter( );
       return( res );
     }
     catch( std::ios_base::failure &e ) {
@@ -379,8 +379,8 @@ namespace Bial {
       }
       }
       delete[] ( reinterpret_cast< unsigned char* >( dataptr ) );
-      //if( hdr.SclSlope( ) > 0.0001 )
-      //res = res * hdr.SclSlope( ) + hdr.SclInter( );
+      if( hdr.SclSlope( ) > 0.0001 )
+        res = res * hdr.SclSlope( ) + hdr.SclInter( );
       return( res );
     }
     catch( std::ios_base::failure &e ) {
@@ -424,8 +424,8 @@ namespace Bial {
       new_hdr.Write( file, one_file );
       COMMENT( "Dealing with data slop that multiplies and adds values to the image.", 2 );
       Image< D > slc_img( img );
-      //if( hdr.SclSlope( ) != 0.0 )
-      //slc_img = ( slc_img - hdr.SclInter( ) ) / hdr.SclSlope( );
+      if( hdr.SclSlope( ) != 0.0 )
+        slc_img = ( slc_img - hdr.SclInter( ) ) / hdr.SclSlope( );
       COMMENT( "Opening data file if using img and hdr extensions.", 2 );
       if( !one_file ) {
         file.close( );
@@ -563,8 +563,8 @@ namespace Bial {
       new_hdr.Write( file, one_file );
       COMMENT( "Dealing with data slop that multiplies and adds values to the image.", 2 );
       Image< Color > slc_img( img );
-      //if( hdr.SclSlope( ) != 0.0 )
-      //slc_img = ( slc_img - hdr.SclInter( ) ) / hdr.SclSlope( );
+      if( hdr.SclSlope( ) != 0.0 )
+        slc_img = ( slc_img - hdr.SclInter( ) ) / hdr.SclSlope( );
       COMMENT( "Opening data file if using img and hdr extensions.", 2 );
       if( !one_file ) {
         file.close( );

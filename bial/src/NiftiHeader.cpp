@@ -1544,6 +1544,10 @@ namespace Bial {
     }
   }
 
+  void NiftiHeader::DataTypeString( std::string &data ) {
+    data_type = data;
+  }
+  
   template< class O >
   O &NiftiHeader::PrintOrientation( O &os ) const {
     try {

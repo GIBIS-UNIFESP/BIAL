@@ -27,11 +27,7 @@ namespace Bial {
   template< template< class D > class C, class D >
   float Statistics::SSIM( const C< D > &src_img, const C< D > &tgt_img ) {
     try {
-      size_t size = src_img.size( );
-      if( size != tgt_img.size( ) ) {
-        std::string msg( BIAL_ERROR( "Input data dimensions do not match." ) );
-        throw( std::logic_error( msg ) );
-      }
+      size_t size = src_img.Maximum( ) - src_img.Minimum( );
       const float k1 = 0.0001f;
       const float k2 = 0.0009f;
       const float c1 = k1 * size * size;

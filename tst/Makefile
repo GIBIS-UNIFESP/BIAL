@@ -526,7 +526,7 @@ Matrix-Time: libbial
 
 
 
-MRI: MRI-CopyNiftiHeader MRI-Dimensions MRI-NiftiHeader MRI-Orientation MRI-SetOffset MRI-SetNiftiHeader MRI-Threshold
+MRI: MRI-CopyNiftiHeader MRI-Dimensions MRI-NiftiHeader MRI-Orientation MRI-SetOffset MRI-SetNiftiHeader MRI-SetRegularType MRI-Threshold
 
 MRI-CopyNiftiHeader: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -544,6 +544,9 @@ MRI-SetOffset: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 MRI-SetNiftiHeader: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+MRI-SetRegularType: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 MRI-Threshold: libbial
@@ -709,7 +712,7 @@ SuperPixel-RhombicDodecahedronSeeds: libbial
 
 
 
-Statistics: Statistics-Accuracy Statistics-BorderValidate Statistics-Crossings Statistics-CrossingszSlices Statistics-EdgeCompareBaddeley Statistics-FilteringAccuracy Statistics-GRBAC Statistics-GRBACzSlices Statistics-MAD Statistics-MultiClassLabeling
+Statistics: Statistics-Accuracy Statistics-BorderValidate Statistics-Crossings Statistics-CrossingszSlices Statistics-EdgeCompareBaddeley Statistics-FilteringAccuracy Statistics-GRBAC Statistics-GRBACzSlices Statistics-MAD Statistics-MultiClassLabeling Statistics-PositiveNegative
 
 Statistics-Accuracy: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
@@ -739,6 +742,9 @@ Statistics-MAD: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 Statistics-MultiClassLabeling: libbial
+	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
+
+Statistics-PositiveNegative: libbial
 	$(CXX) $(BIAL_CC_FLAGS) -o $(BIN)/$@ $(SRC)/$(@).cpp $(BIAL_LINK_FLAGS)
 
 

@@ -793,6 +793,15 @@ namespace Bial {
     static void DataTypeSizes( int datatype, size_t &nbyper, size_t &swapsize );
 
     /**
+     * @date 2019/feb/12
+     * @param data: String to be set.
+     * @return none.
+     * @brief Writes data_type field.
+     * @warning none.
+     */
+    void DataTypeString( std::string &data );
+    
+    /**
      * @date 2012/Aug/06
      * @param os: An output stream.
      * @return A reference to the given output stream.
