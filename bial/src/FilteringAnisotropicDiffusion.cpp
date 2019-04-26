@@ -187,7 +187,7 @@ namespace Bial {
       double integration_constant = Filtering::IntegrationConstant( adj, adj_size, img_dims );
       COMMENT( "Computing diffusion filter.", 2 );
       for( size_t itr = 0; itr < iterations; ++itr ) {
-	try {
+  try {
           size_t total_threads = 12;
           Vector< std::thread > threads;
           for( size_t thd = 0; thd < total_threads; ++thd ) {

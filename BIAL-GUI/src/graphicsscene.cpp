@@ -13,12 +13,12 @@ GraphicsScene::GraphicsScene( QObject *parent ) : QGraphicsScene( parent ) {
 
 void GraphicsScene::setOverlayPen( const QPen &overlayPen ) {
   m_overlayPen = overlayPen;
-  update( );
+  //update( );
 }
 
 void GraphicsScene::setOverlayPos( QPointF pos ) {
   m_overlayPos = pos;
-  update( );
+  //update( );
 }
 
 bool GraphicsScene::overlay( ) const {
@@ -27,7 +27,7 @@ bool GraphicsScene::overlay( ) const {
 
 void GraphicsScene::setOverlay( bool overlay ) {
   m_overlay = overlay;
-  update( );
+  //update( );
 }
 
 void GraphicsScene::drawForeground( QPainter *painter, const QRectF &rect ) {

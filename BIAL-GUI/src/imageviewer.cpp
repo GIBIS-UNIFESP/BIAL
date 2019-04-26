@@ -13,6 +13,7 @@
 #include "imagewidget.h"
 
 ImageViewer::ImageViewer( QWidget *parent ) try : QWidget( parent ) {
+  COMMENT( "Here", 0 );
   m_controller = nullptr;
   for( size_t i = 0; i < views.size( ); ++i ) {
     views[ i ] = new ImageWidget( this );

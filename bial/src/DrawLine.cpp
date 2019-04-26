@@ -172,7 +172,7 @@ namespace Bial {
       const int xf = static_cast< int >( displacement[ 0 ] ) + static_cast< int >( last_coord[ 0 ] );
       const int yf = static_cast< int >( displacement[ 1 ] ) + static_cast< int >( last_coord[ 1 ] );
       const int zf = ( img.Dims( ) > 2 ) ? ( static_cast< int >( displacement[ 2 ] + last_coord[ 2 ] ) ) : 0;
-      COMMENT( "End = (" << xf << ", " << yf << ", " << zf << ").", 3 );
+      END_CMT( "End = (" << xf << ", " << yf << ", " << zf << ").", 3 );
 
       int xd = 0, yd = 0, zd = 0;
       const int dx = xf - x;
@@ -315,7 +315,7 @@ namespace Bial {
       const int xf = static_cast< int >( displacement[ 0 ] ) + static_cast< int >( last_coord[ 0 ] );
       const int yf = static_cast< int >( displacement[ 1 ] ) + static_cast< int >( last_coord[ 1 ] );
       const int zf = ( img.Dims( ) > 2 ) ? ( static_cast< int >( displacement[ 2 ] + last_coord[ 2 ] ) ) : 0;
-      COMMENT( "End = (" << xf << ", " << yf << ", " << zf << ").", 3 );
+      END_CMT( "End = (" << xf << ", " << yf << ", " << zf << ").", 3 );
 
       int xd = 0, yd = 0, zd = 0;
       const int dx = xf - x;
@@ -456,7 +456,7 @@ namespace Bial {
       const int xf = static_cast< int >( displacement[ 0 ] ) + static_cast< int >( last_coord[ 0 ] );
       const int yf = static_cast< int >( displacement[ 1 ] ) + static_cast< int >( last_coord[ 1 ] );
       const int zf = ( first_coord.size( ) > 2 ) ? ( static_cast< int >( displacement[ 2 ] + last_coord[ 2 ] ) ) : 0;
-      COMMENT( "End = (" << xf << ", " << yf << ", " << zf << ").", 3 );
+      END_CMT( "End = (" << xf << ", " << yf << ", " << zf << ").", 3 );
 
       int xd = 0, yd = 0, zd = 0;
       const int dx = xf - x;

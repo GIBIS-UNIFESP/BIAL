@@ -145,15 +145,29 @@ typedef std::complex< double > bial_complex;
 namespace Bial {
 
   /**
-   * @brief Determines the COMMENT macro verbosity.
+   * @brief Determines the COMMENT macro verbosity and identation.
    */
   extern int verbose;
+  extern std::string comment_ident;
 }
 #ifdef BIAL_DEBUG
-#define COMMENT( exp, num )                                             \
+#define BGN_CMT( exp, num )           \
   if( Bial::verbose > num ) {						\
-    std::cerr << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " => " << exp << std::endl; }
+    std::cerr << Bial::comment_ident << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " => " \
+      << exp << std::endl; \
+    Bial::comment_ident += " "; }
+#define END_CMT( exp, num )           \
+  if( Bial::verbose > num ) {						\
+    Bial::comment_ident.resize( std::max( static_cast< int >( Bial::comment_ident.size( ) ) - 1, 0 ) ); \
+    std::cerr << Bial::comment_ident << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " => " \
+      << exp << std::endl; }
+#define COMMENT( exp, num )             \
+  if( Bial::verbose > num ) {						\
+    std::cerr << Bial::comment_ident << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " => " \
+      << exp << std::endl; }
 #else
+#define BGN_CMT( exp, num ) { }
+#define END_CMT( exp, num ) { }
 #define COMMENT( exp, num ) { }
 #define DEBUG_WRITE( obj, exp, num ) { }
 #endif

@@ -101,7 +101,10 @@ namespace Bial {
   int verbose = BIAL_DEBUG;
 #else
   int verbose = 0;
+
 #endif
+
+std::string comment_ident( "" );
 
 }
 

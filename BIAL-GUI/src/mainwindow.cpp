@@ -7,6 +7,7 @@
 #include "mainwindow.h"
 #include "thumbswidget.h"
 #include "ui_mainwindow.h"
+#include "Common.hpp"
 
 #include <QDockWidget>
 #include <QFileDialog>
@@ -21,6 +22,7 @@
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent ), ui( new Ui::MainWindow ),
   m_controller( new Controller( 4, this ) ) {
+  COMMENT( "Here", 0 );
   ui->setupUi( this );
   setDockOptions( DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 

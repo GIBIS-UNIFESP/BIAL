@@ -1,4 +1,5 @@
 #include "graphicsview.h"
+#include "Common.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -8,6 +9,7 @@
 #include <QScrollBar>
 
 GraphicsView::GraphicsView( QWidget *parent ) : QGraphicsView( parent ) {
+  COMMENT( "Here", 0 );
   _pan = false;
   _space = false;
   _panStartX = 0;

@@ -2,6 +2,7 @@
 #include "thumbswidget.h"
 
 #include "defaulttool.h"
+#include "labelswidget.h"
 #include <QDebug>
 #include <QFile>
 #include <qsettings.h>
