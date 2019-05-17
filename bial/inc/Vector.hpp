@@ -500,6 +500,15 @@ namespace Bial {
      */
     template< class O >
     O &PrintDimensions( O &os ) const;
+
+    /**
+     * @date 2019/May/15
+     * @param element: An element to be found in the vector.
+     * @return True if the element is in the vector.
+     * @brief Searches for an element inside the vector.
+     * @warning none.
+     */
+    bool Has( D element ) const;
   };
 
   template< >
@@ -824,6 +833,15 @@ namespace Bial {
      */
     template< class O >
     O &PrintDimensions( O &os ) const;
+
+    /**
+     * @date 2019/May/15
+     * @param element: An element to be found in the vector.
+     * @return True if the element is in the vector.
+     * @brief Searches for an element inside the vector.
+     * @warning none.
+     */
+    bool Has( bool element ) const;
   };
 
   /**
@@ -2908,7 +2926,6 @@ namespace Bial {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
       throw( std::out_of_range( msg ) );
     }
-    ;
   }
 
   template< class D >
@@ -2922,7 +2939,21 @@ namespace Bial {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
       throw( std::out_of_range( msg ) );
     }
-    ;
+  }
+
+  template< class D >
+  bool Vector< D >::Has( D elm ) const {
+    try {
+      for( size_t idx = 0; idx < _size; ++idx ) {
+        if( QK_DATA( idx ) == elm )
+          return( true );
+      }
+      return( false );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
   }
 
   /* Vector< bool > ****************************************************************************************************
@@ -3955,7 +3986,6 @@ namespace Bial {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
       throw( std::out_of_range( msg ) );
     }
-    ;
   }
 
   template< class O >
@@ -3968,7 +3998,20 @@ namespace Bial {
       std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
       throw( std::out_of_range( msg ) );
     }
-    ;
+  }
+
+  inline bool Vector< bool >::Has( bool elm ) const {
+    try {
+      for( size_t idx = 0; idx < _size; ++idx ) {
+        if( _data[ idx ] == elm )
+          return( true );
+      }
+      return( false );
+    }
+    catch( const std::out_of_range &e ) {
+      std::string msg( e.what( ) + std::string( "\n" ) + BIAL_ERROR( "Out of range exception." ) );
+      throw( std::out_of_range( msg ) );
+    }
   }
 
   /* Functions *********************************************************************************************************/
@@ -4159,7 +4202,6 @@ namespace Bial {
       throw( std::logic_error( msg ) );
     }
   }
-
 
 }
 #endif

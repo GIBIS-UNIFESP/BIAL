@@ -50,6 +50,18 @@ namespace Bial {
 
   public:
 
+    /**
+    * @date 2019/May/03
+    * @param adj: The adjacency relation to iterate on.
+    * @param x_size: Number of pixels in dimension x.
+    * @param y_size: Number of pixels in dimension y.
+    * @param z_size: Number of pixels in dimension z.
+    * @return none.
+    * @brief Basic Constructor.
+    * @warning none.
+    */
+    AdjacencyIterator( const Adjacency &adj, size_t x_size, size_t y_size, size_t zsize = 1 );
+
      /**
      * @date 2014/Apr/14
      * @param img: An image used to compute the boundaries and other dimensions.
@@ -71,6 +83,15 @@ namespace Bial {
      */
     template< class D > 
     AdjacencyIterator( const Adjacency &adj, const Image< D > &img );
+
+    /**
+    * @date 2019/May/03
+    * @param copy: The adjacency iterator to be copied.
+    * @return none.
+    * @brief Copy Constructor.
+    * @warning none.
+    */
+    AdjacencyIterator( const AdjacencyIterator &copy );
 
     /**
      * @date 2013/Oct/23

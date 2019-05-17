@@ -158,7 +158,7 @@ namespace Bial {
     Bial::comment_ident += " "; }
 #define END_CMT( exp, num )           \
   if( Bial::verbose > num ) {						\
-    Bial::comment_ident.resize( std::max( static_cast< int >( Bial::comment_ident.size( ) ) - 1, 0 ) ); \
+    Bial::comment_ident.resize( static_cast< size_t >( std::max( static_cast< int >( Bial::comment_ident.size( ) ) - 1, 0 ) ) ); \
     std::cerr << Bial::comment_ident << __FILE__ << ": " << __LINE__ << ": " << __FUNCTION__ << " => " \
       << exp << std::endl; }
 #define COMMENT( exp, num )             \
